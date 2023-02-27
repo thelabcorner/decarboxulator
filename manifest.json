@@ -7,7 +7,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
-  "start_url": "/index.html",
+  "start_url": "/thelabcorner/",
   "icons": [
     {
       "src": "windows11/SmallTile.scale-100.png",
