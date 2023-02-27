@@ -1,0 +1,148 @@
+@charset "utf-8";
+
+/* Global styles */
+body {
+    font-family: sans-serif;
+    background-color: #f1f1f1;
+    margin: 0;
+    padding: 0;
+}
+
+h2 {
+    color: #444;
+    margin-bottom: 20px;
+}
+
+.tab {
+    overflow: hidden;
+    border-bottom: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+    width: 50%;
+}
+
+.tab button:hover {
+    background-color: #ddd;
+}
+
+.tab button.active {
+    background-color: #ccc;
+}
+
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+#thcaToThc {
+    background-color: #b5e5b8;
+}
+
+#thcToThca {
+    background-color: #9ad4f4;
+}
+
+button[type="button"] {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+button[type="button"]:hover {
+    background-color: #3e8e41;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="number"] {
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #f1f1f1;
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media screen and (min-width: 600px) {
+    .tab button {
+        width: 25%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .tab button {
+        width: 100%;
+    }
+
+    .tab button.active {
+        border: none;
+    }
+
+    .tab button:focus {
+        border: none;
+    }
+
+    .tab button.active:focus {
+        border: none;
+    }
+
+    #thcaToThcForm, #thcToThcaForm, #decarbTimeForm {
+        max-width: 90%;
+    }
+
+    #decarbTimeForm input[type="number"] {
+        pointer-events: auto;
+    }
+
+    #decarbProgressForm {
+        max-width: 90%;
+    }
+
+    #decarbProgressDescription {
+        max-width: 90%;
+        margin-left: 0;
+        margin-top: 20px;
+    }
+
+    #thcaToThcResult, #thcToThcaResult {
+        font-size: 20px;
+        margin-top: 10px;
+    }
+
+    #decarbProgressResult {
+        font-size: 20px;
+        margin-top: 10px;
+        margin-left: 0;
+    }
+
+    label[for="completion"] {
+        margin-bottom: 5px;
+    }
+
+    button[type="button"] {
+        margin-top: 20px;
+    }
+}
+
