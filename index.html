@@ -35,6 +35,7 @@
     <link href="splashscreens/ipadpro1_splash.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
     <link href="splashscreens/ipadpro3_splash.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
     <link href="splashscreens/ipadpro2_splash.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+    <link href="splashscreens/iphone13promax_splash.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
 
 
     <link href="mobile.css" rel="stylesheet" type="text/css">
@@ -245,7 +246,29 @@
         document.getElementById("decarbTimeResult").innerHTML = "Total decarboxylation time: " + time.toFixed(2) + " hours";
     }
 
-    // Add JavaScript code to perform the calculations and display the results
+
+
+    // Tab Javascript & Dark Mode
+
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+        setTabContentDarkMode(true);
+    }
+
+    function setTabContentDarkMode(isDarkMode) {
+        const tabContents = document.getElementsByClassName('tabcontent');
+        const tabLinks = document.getElementsByClassName('tablinks');
+        for (let i = 0; i < tabContents.length; i++) {
+            if (isDarkMode) {
+                tabContents[i].classList.add('dark');
+                tabLinks[i].classList.add('dark');
+            } else {
+                tabContents[i].classList.remove('dark');
+                tabLinks[i].classList.remove('dark');
+            }
+        }
+    }
+
     function openTab(evt, tabName) {
         let i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tabcontent");
@@ -258,7 +281,9 @@
         }
         document.getElementById(tabName).style.display = "block";
         evt.currentTarget.className += " active";
+        setTabContentDarkMode(document.body.classList.contains('dark'));
     }
+
 
 </script>
 

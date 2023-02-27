@@ -3,9 +3,43 @@
 /* Global styles */
 body {
     font-family: sans-serif;
-    background-color: #f1f1f1;
     margin: 0;
     padding: 0;
+    background-color: #f2f2f2;
+    color: #1c1c1c;
+}
+
+.dark {
+    background-color: #1c1c1c;
+    color: #f2f2f2;
+}
+
+.tabcontent {
+    background-color: #f2f2f2;
+    color: #1c1c1c;
+}
+
+.tabcontent.dark {
+    background-color: #1c1c1c;
+    color: #f2f2f2;
+}
+
+.tablinks {
+    background-color: #f2f2f2;
+    color: #1c1c1c;
+}
+
+.tablinks.active, .tablinks:hover {
+    background-color: #ddd;
+}
+
+.tablinks.dark {
+    background-color: #1c1c1c;
+    color: #f2f2f2;
+}
+
+.tablinks.dark.active, .tablinks.dark:hover {
+    background-color: #555;
 }
 
 h2 {
