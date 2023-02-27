@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <title>THCa to THC Yield Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="new.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'thcaToThc')">THCa Decarboxylation Yield Calculator</button>
+    <button class="tablinks" onclick="openTab(event, 'thcToThca')">THCa Input Finder</button>
+    <button class="tablinks" onclick="openTab(event, 'decarbProgress')">Decarboxylation Progress Tracker</button>
+    <button class="tablinks" onclick="openTab(event, 'decarbTime')">Total Decarboxylation Time Predictor</button>
+</div>
+
+<div id="thcaToThc" class="tabcontent">
+    <h2>THCa to THC Decarboxylation Yield Calculator</h2>
+    <form id="thcaToThcForm">
+        <label for="thcaWeight">Weight of THCa (grams):</label>
+        <input type="number" id="thcaWeight" name="thcaWeight" required>
+        <button type="button" onclick="calculateThcaToThc()">Calculate</button>
+    </form>
+    <div id="thcaToThcResult"></div>
+</div>
+
+<script>
+    function calculateThcaToThc() {
+        const thcaWeight = document.getElementById("thcaWeight").value;
+        const thcWeight = thcaWeight * (314.47 / 358.48);
+        document.getElementById("thcaToThcResult").innerHTML = "THC yield: " + thcWeight.toFixed(2) + " grams";
+    }
+</script>
+
+    <!-- THCA Input Finder - How much THCa to make X grams THC -->
+<div id="thcToThca" class="tabcontent">
+    <h2>THCa Input Finder</h2>
+    <form id="thcToThcaForm">
+        <label for="thcWeight">Desired Weight of THC (grams):</label>
+        <input type="number" id="thcWeight" name="thcWeight" required>
+        <button type="button" onclick="calculateThcToThca()">Calculate</button>
+    </form>
+    <div id="thcToThcaResult"></div>
+</div>
+
+<script>
+    function calculateThcToThca() {
+        const thcWeight = document.getElementById("thcWeight").value;
+        const thcaWeight = thcWeight / (314.47 / 358.48);
+        document.getElementById("thcToThcaResult").innerHTML = "THCa required: " + thcaWeight.toFixed(2) + " grams";
+    }
+</script>
+
+
+
+
+
+
+<div id="decarbProgress" class="tabcontent">
+    <div id="decarbProgressCalc">
+        <h2>Decarboxylation Progress Tracker</h2>
+        <form id="decarbProgressForm">
+            <label for="thcaStartWeight">Input Weight of THCa (grams):</label>
+            <input type="number" id="thcaStartWeight" name="thcaStartWeight" placeholder="114 grams" required oninput="calculateDecarbProgress()">
+            <label for="thcDecarbedWeight">Current Weight of THCa (grams):</label>
+            <input type="number" id="thcDecarbedWeight" name="thcDecarbedWeight" placeholder="100 grams" required oninput="calculateDecarbProgress()">
+            <button type="button" onclick="calculateDecarbProgress()">Calculate</button>
+        </form>
+        <div id="decarbProgressResult"></div>
+        <div id="decarbProgressDescription">
+            <header id="decarbInfoHeader">Instructions:</header>
+            <p><em>The THCA decarboxylation progress tracker is a useful tool for those seeking to accurately monitor and optimize the decarboxylation of their THCA.
+                By inputting the starting weight of THCA and the current weight of decarboxylated material, the tracker utilizes a specialized formula to estimate
+                the predicted weight of decarboxylated material and the percentage of decarboxylation progress on a scale of 0-100% completion. This information is then presented
+                along with the estimated weight of THCA remaining. <br><br>It is important to note that the results produced by this calculator are based on the assumption of
+                complete decarboxylation and may be affected by factors such as temperature, time, and the starting material. As such, the estimates should be used as guidance rather than concrete values.</em></p>
+        </div>
+    </div>
+</div>
+<div id="decarbProgressDisclaimer"><em><br>Note: The results produced by this calculator are an estimate based on the assumption of complete decarboxylation.
+    Other factors such as temperature, time, and the starting material may affect the actual result. Please use these estimates as guidance rather than concrete values.</em></div>
+
+<script>
+    function calculateDecarbProgress() {
+        const InputWeight = document.getElementById("thcaStartWeight").value;
+        const CurrentWeight = document.getElementById("thcDecarbedWeight").value;
+        const LossCalc = InputWeight * 0.877;
+        const DecarbedWeight = InputWeight - CurrentWeight;
+        const WeightLeft = InputWeight - LossCalc - DecarbedWeight;
+        const PercentDecarbed = (DecarbedWeight / (InputWeight - LossCalc)) * 100;
+
+        if (PercentDecarbed < 0 || PercentDecarbed > 100 || InputWeight === "" || CurrentWeight === "" || (InputWeight === "0" && CurrentWeight === "0")) {
+            document.getElementById("decarbProgressResult").innerHTML = "<span style='color: red'>Error: Invalid input values</span>";
+        } else {
+            document.getElementById("decarbProgressResult").innerHTML =
+                "Predicted Decarboxylated Weight: " + LossCalc.toFixed(2) + " grams" +
+
+                "<br><br>Estimated Decarboxylation Progress: " + PercentDecarbed.toFixed(2) + "%" +
+
+                "<br><br>Estimated THCa Remaining: " + WeightLeft.toFixed(2) + " grams" + "";
+        }
+    }
+</script>
+
+
+
+
+
+
+
+<div id="decarbTime" class="tabcontent">
+    <h2>Total Decarboxylation Time Predictor</h2>
+    <form id="decarbTimeForm">
+        <label for="decarbTimeThcaWeight">Starting weight of THCa (grams):</label>
+        <input type="number" id="decarbTimeThcaWeight" name="thcaWeight" required>
+        <label for="completion">Desired completion level (%):</label>
+        <input type="number" id="completion" name="completion" min="0" max="100" required>
+        <label for="temperature">Decarboxylation temperature (F):</label>
+        <input type="number" id="temperature" name="temperature" min="190" max="300" required>
+        <button type="button" onclick="calculateDecarbTime()">Calculate</button>
+        <label for="temperature">Decarboxylation temperature unit:</label>
+        <input type="number" id="tempUnit" name="tempUnit" min="0" required>
+        <select id="unit">
+            <option value="F">Fahrenheit</option>
+            <option value="C">Celsius</option>
+            <option value="K">Kelvin</option>
+        </select>
+
+    </form>
+    <div id="decarbTimeResult"></div>
+</div>
+
+<script>
+    function calculateDecarbTime() {
+        const thcaWeight = document.getElementById("decarbTimeThcaWeight").valueAsNumber;
+        const completion = document.getElementById("completion").valueAsNumber / 100;
+        const temperature = document.getElementById("temperature").valueAsNumber;
+        const tempUnit = document.getElementById("tempUnit").value;
+
+        console.log("Input values:");
+        console.log(" thcaWeight = " + thcaWeight);
+        console.log(" completion = " + completion);
+        console.log(" temperature = " + temperature);
+
+        const thcaMolarMass = 358.5;
+        const activationEnergy = 75;
+        const gasConstant = 8.3145;
+
+        // Convert temperature to Kelvin if necessary
+        let kelvin = temperature;
+        if (tempUnit === "C") {
+            kelvin = temperature + 273.15;
+        } else if (tempUnit === "F") {
+            const fahrenheitTemp = (temperature - 32) * 5 / 9;
+            kelvin = fahrenheitTemp + 273.15;
+        }
+
+        console.log("Constants:");
+        console.log(" thcaMolarMass = " + thcaMolarMass);
+        console.log(" activationEnergy = " + activationEnergy);
+        console.log(" gasConstant = " + gasConstant);
+
+        const rateConstant = Math.exp(-1 * (activationEnergy * 1000) / (gasConstant * kelvin));
+        const initialConcentration = thcaWeight / thcaMolarMass;
+        const desiredConcentration = Math.max(0, initialConcentration * (1 - completion));
+        let time;
+
+        if (initialConcentration < desiredConcentration) {
+            time = Math.log(initialConcentration / desiredConcentration) / (-1 * rateConstant * 3600);
+        } else {
+            time = Math.log(desiredConcentration / initialConcentration) / (rateConstant * 3600);
+        }
+
+        console.log("Calculated values:");
+        console.log(" rateConstant = " + rateConstant);
+        console.log(" initialConcentration = " + initialConcentration);
+        console.log(" desiredConcentration = " + desiredConcentration);
+        console.log(" time = " + time);
+
+        document.getElementById("decarbTimeResult").innerHTML = "Total decarboxylation time: " + time.toFixed(2) + " hours";
+    }
+
+    // Add JavaScript code to perform the calculations and display the results
+    function openTab(evt, tabName) {
+        let i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+</script>
+
+
+<footer>
+    <p id="footerMain">&copy; 2023 TheDabCorner LLC.</p>
+    <a id=footerLisc" href="#license-modal">Fair Source License</a>
+</footer>
+
+<dialog id="license-modal">
+    <h2 style="text-align: center">Fair Source License</h2>
+    <p><b>Fair Source License, version 0.9</b><br><br>
+        <b>Copyright:</b> ©2023 Jackson Cummings - TheDabCorner LLC<br><br>
+
+        <b>Licensor:</b> <em>Jackson Cummings</em><br><br>
+
+        <b>Software:</b> <em>Decarboxylation Calculators - TheDabCorner LLC</em><br><br>
+
+        <b>Use Limitation:</b> <em>1 user</em><br><br>
+
+        <b>License Grant:</b><br> Licensor hereby grants to each recipient of the
+        Software ("you") a non-exclusive, non-transferable, royalty-free and
+        fully-paid-up license, under all of the Licensor's copyright and
+        patent rights, to use, copy, distribute, prepare derivative works of,
+        publicly perform and display the Software, subject to the Use
+        Limitation and the conditions set forth below.<br><br>
+
+        <b>Use Limitation:</b><br> The license granted above allows use by up to the
+        number of users per entity set forth above (the "Use Limitation"). For
+        determining the number of users, "you" includes all affiliates,
+        meaning legal entities controlling, controlled by, or under common
+        control with you. If you exceed the Use Limitation, your use is
+        subject to payment of Licensor's then-current list price for licenses.<br><br>
+
+        <b>Conditions:</b><br> Redistribution in source code or other forms must include
+        a copy of this license document to be provided in a reasonable
+        manner. Any redistribution of the Software is only allowed subject to
+        this license.<br><br>
+
+        <b>Trademarks:</b><br> This license does not grant you any right in the
+        trademarks, service marks, brand names or logos of Licensor.<br><br>
+
+        <b>DISCLAIMER:</b><br> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OR
+        CONDITION, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES
+        OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+        NON INFRINGEMENT. LICENSORS HEREBY DISCLAIM ALL LIABILITY, WHETHER IN
+        AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+        CONNECTION WITH THE SOFTWARE.<br><br>
+
+        <b>Termination:</b><br> If you violate the terms of this license, your rights
+        will terminate automatically and will not be reinstated without the
+        prior written consent of Licensor. Any such termination will not
+        affect the right of others who may have received copies of the
+        Software from you.</p>
+    <button>Close</button>
+</dialog>
+
+<script>
+
+    const licenseLink = document.querySelector('a[href="#license-modal"]');
+    const licenseModal = document.querySelector('#license-modal');
+    const closeBtn = licenseModal.querySelector('button');
+
+    licenseLink.addEventListener('click', () => {
+        licenseModal.showModal();
+    });
+
+    closeBtn.addEventListener('click', () => {
+        licenseModal.close();
+});
+
+</script>
+
+</body>
+</html>
