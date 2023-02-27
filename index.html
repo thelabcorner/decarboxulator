@@ -70,7 +70,7 @@
     <h2>THCa Input Finder</h2>
     <form id="thcToThcaForm">
         <label for="thcWeight">Desired Weight of THC (grams):</label>
-        <input type="number" pattern="[0-9]*" placeholder="67 grams" id="thcWeight" name="thcWeight" required>
+        <input type="number" pattern="[0-9]*" placeholder="67 grams" id="thcWeight" name="thcWeight" max="9999999999" required oninput="calculateThcToThca()">
         <button type="button" onclick="calculateThcToThca()">Calculate</button>
     </form>
     <div id="thcToThcaResult"></div>
@@ -87,9 +87,18 @@
 
 <script>
     function calculateThcToThca() {
-        const thcWeight = document.getElementById("thcWeight").value;
+        const thcWeight = document.getElementById("thcWeight").valueAsNumber;
         const thcaWeight = thcWeight / (314.47 / 358.48);
-        document.getElementById("thcToThcaResult").innerHTML = "THCa required: " + thcaWeight.toFixed(2) + " grams";
+        const formattedOutput = thcaWeight.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        if (isNaN(thcWeight) || thcWeight < 0.0000000000000000000000001 || thcWeight > 9999999999.9999999999) {
+            document.getElementById("thcToThcaResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input value(s)</b></span><br>";
+        } else {
+            document.getElementById("thcToThcaResult").innerHTML = "<br><br><b>THCa required: </b><br>" + formattedOutput + " grams";
+        }
     }
 </script>
 
