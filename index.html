@@ -4,7 +4,11 @@
     <title>THCa to THC Yield Calculator</title>
     <link rel="manifest" href="manifest.json">
 
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@600&display=swap" rel="stylesheet">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
     <link rel="icon" type="image/x-icon" sizes="32x32 64x64 48x48 16x16 128x128 512x512" href="icons/favicon.ico">
@@ -97,7 +101,7 @@
         </form>
         <div id="decarbProgressResult"></div>
         <div id="decarbProgressDescription">
-            <header id="decarbInfoHeader">Instructions:</header>
+            <header id="decarbInfoHeader"><b>Instructions:</b></header>
             <p><em>The THCA decarboxylation progress tracker is a useful tool for those seeking to accurately monitor and optimize the decarboxylation of their THCA.
                 By inputting the starting weight of THCA and the current weight of decarboxylated material, the tracker utilizes a specialized formula to estimate
                 the predicted weight of decarboxylated material and the percentage of decarboxylation progress on a scale of 0-100% completion. This information is then presented
@@ -106,8 +110,6 @@
         </div>
     </div>
 </div>
-<div id="decarbProgressDisclaimer"><em><br>Note: The results produced by this calculator are an estimate based on the assumption of complete decarboxylation.
-    Other factors such as temperature, time, and the starting material may affect the actual result. Please use these estimates as guidance rather than concrete values.</em></div>
 
 <script>
     function calculateDecarbProgress() {
@@ -141,14 +143,14 @@
     <h2>Total Decarboxylation Time Predictor</h2>
     <form id="decarbTimeForm">
         <label for="decarbTimeThcaWeight">Starting weight of THCa (grams):</label>
-        <input type="number" id="decarbTimeThcaWeight" name="thcaWeight" required>
+        <input type="number" placeholder="THIS CALCULATOR IS A WORK IN PROGRESS. " id="decarbTimeThcaWeight" name="thcaWeight" required>
         <label for="completion">Desired completion level (%):</label>
-        <input type="number" id="completion" name="completion" min="0" max="100" required>
+        <input type="number" placeholder="IT DOES NOT CURRENTLY WORK." id="completion" name="completion" min="0" max="100" required>
         <label for="temperature">Decarboxylation temperature (F):</label>
-        <input type="number" id="temperature" name="temperature" min="190" max="300" required>
+        <input type="number" placeholder="THIS CALCULATOR IS A WORK IN PROGRESS. IT DOES NOT CURRENTLY WORK." id="temperature" name="temperature" min="190" max="300" required>
         <button type="button" onclick="calculateDecarbTime()">Calculate</button>
         <label for="temperature">Decarboxylation temperature unit:</label>
-        <input type="number" id="tempUnit" name="tempUnit" min="0" required>
+        <input type="number" placeholder="IT DOES NOT CURRENTLY WORK." id="tempUnit" name="tempUnit" min="0" required>
         <select id="unit">
             <option value="F">Fahrenheit</option>
             <option value="C">Celsius</option>
@@ -226,16 +228,19 @@
 
 </script>
 
+<div id="decarbProgressDisclaimer"><em><br>Note: The results produced by this calculator are an estimate based on the assumption of complete decarboxylation.
+    Other factors such as temperature, time, and the starting material may affect the actual result. Please use these estimates as guidance rather than concrete values.</em></div>
 
 <footer>
-    <p id="footerMain">&copy; 2023 TheDabCorner LLC.</p>
-    <a id=footerLisc" href="#license-modal">Fair Source License</a>
+    <p id="footerMain">&#169; 2023 TheDabCorner LLC.</p>
+    <a id="footerLisc" href="#license-modal">Fair Source License</a>
 </footer>
 
 <dialog id="license-modal">
+    <button id="closeButton">X</button>
     <h2 style="text-align: center">Fair Source License</h2>
     <p><b>Fair Source License, version 0.9</b><br><br>
-        <b>Copyright:</b> ©2023 Jackson Cummings - TheDabCorner LLC<br><br>
+        <b>Copyright:</b> &#169; 2023 Jackson Cummings - TheDabCorner LLC<br><br>
 
         <b>Licensor:</b> <em>Jackson Cummings</em><br><br>
 
@@ -277,24 +282,36 @@
         prior written consent of Licensor. Any such termination will not
         affect the right of others who may have received copies of the
         Software from you.</p>
-    <button>Close</button>
 </dialog>
 
 <script>
-
     const licenseLink = document.querySelector('a[href="#license-modal"]');
     const licenseModal = document.querySelector('#license-modal');
     const closeBtn = licenseModal.querySelector('button');
 
+    if (!licenseLink) {
+        console.error('License link not found.');
+    }
+
+    if (!licenseModal) {
+        console.error('License modal not found.');
+    }
+
+    if (!closeBtn) {
+        console.error('Close button not found.');
+    }
+
     licenseLink.addEventListener('click', () => {
+        console.log('Opening modal');
         licenseModal.showModal();
     });
 
     closeBtn.addEventListener('click', () => {
+        console.log('Closing modal');
         licenseModal.close();
     });
-
 </script>
+
 
 </body>
 

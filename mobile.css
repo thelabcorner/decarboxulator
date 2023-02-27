@@ -85,6 +85,97 @@ input[type="number"] {
     box-sizing: border-box;
 }
 
+#decarbTime {
+    background-color: #ff7d7d;
+}
+
+
+#decarbProgress {
+    background-color: #ffd75e;
+}
+
+
+footer {
+    background-color: #292929;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+#footerMain {
+    alignment: center;
+    margin: 0 auto; /* center the element */
+}
+
+#footerLisc {
+    color: #fff;
+    text-decoration: none;
+    border: 1px solid #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    position: relative;
+}
+
+#footerLisc:hover {
+    background-color: #fff;
+    color: #292929;
+    transition: all 0.3s ease;
+}
+
+
+
+
+
+/* Modal */
+dialog {
+    width: 70%;
+    max-width: 700px;
+    max-height: 500px;
+    background-color: #fff;
+    padding: 20px;
+    position: fixed;
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 9998;
+}
+
+/* Add the following styles to create the close button */
+
+#closeButton {
+    background-color: #fff;
+    color: #bdbdbd;
+    border: none;
+    padding: 0;
+    position: sticky;
+    border-radius: 0;
+    cursor: pointer;
+    margin-top: 0;
+    text-align: right;
+    font-family: 'Readex Pro', sans-serif;
+    font-size: 25px;
+}
+
+dialog #closeButton:hover {
+    background-color: #fff;
+    color: #000;
+    transition: all 0.3s ease;
+}
+
+
+/* Mobiles */
+
+
 @media screen and (min-width: 600px) {
     .tab button {
         width: 25%;
