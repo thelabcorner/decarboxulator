@@ -2,8 +2,37 @@
 <html lang="en-US">
 <head>
     <title>THCa to THC Yield Calculator</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="new.css" rel="stylesheet" type="text/css">
+    <link rel="manifest" href="manifest.json">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" sizes="32x32 64x64 48x48 16x16 128x128 512x512" href="icons/favicon.ico">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Decarboxulator">
+    <meta name="apple-mobile-web-app-title" content="Decarboxulator">
+    <meta name="theme-color" content="#ffbd00">
+    <meta name="msapplication-navbutton-color" content="#ffbd00">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="msapplication-starturl" content="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="mobile.css" rel="stylesheet" type="text/css">
+
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
 </head>
 
 <body>
@@ -32,7 +61,7 @@
     }
 </script>
 
-    <!-- THCA Input Finder - How much THCa to make X grams THC -->
+<!-- THCA Input Finder - How much THCa to make X grams THC -->
 <div id="thcToThca" class="tabcontent">
     <h2>THCa Input Finder</h2>
     <form id="thcToThcaForm">
@@ -263,9 +292,10 @@
 
     closeBtn.addEventListener('click', () => {
         licenseModal.close();
-});
+    });
 
 </script>
 
 </body>
+
 </html>
