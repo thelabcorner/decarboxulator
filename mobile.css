@@ -94,6 +94,12 @@ input[type="number"] {
     background-color: #ffd75e;
 }
 
+#progressSeparator {
+    border: none; /* remove the default border */
+    height: 1px; /* set the height of the line */
+    margin: 20px 0; /* add some margin around the line */
+    border-top: 1px solid #333; /* add a border on top of the line */
+}
 
 footer {
     background-color: #292929;

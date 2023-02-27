@@ -70,10 +70,19 @@
     <h2>THCa Input Finder</h2>
     <form id="thcToThcaForm">
         <label for="thcWeight">Desired Weight of THC (grams):</label>
-        <input type="number" id="thcWeight" name="thcWeight" required>
+        <input type="number" pattern="[0-9]*" placeholder="67 grams" id="thcWeight" name="thcWeight" required>
         <button type="button" onclick="calculateThcToThca()">Calculate</button>
     </form>
     <div id="thcToThcaResult"></div>
+    <div id="inputFinderDescription">
+        <header id="finderInfoHeader"><br><hr id="finder Separator"><b>Instructions:</b></header>
+        <p><em>The THCA Input Finder is a useful tool for anyone interested in calculating how much THCA they need to make a certain amount of THC.
+            With just a few simple steps, you can find out exactly how much THCA is required to produce your desired weight of THC. <br><br>To use the THCA Input Finder,
+            simply input the weight of THC you want to produce in grams into the designated field and click the "Calculate" button. The calculator will then
+            use a formula based on the assumption of complete decarboxylation to determine the amount of THCA needed to achieve your desired weight of THC.
+            <br><br>It is important to note that the results produced by this calculator are based on the assumption of complete decarboxylation and may be affected
+            by factors such as temperature, time, and the starting material. As such, the estimates should be used as guidance rather than concrete values.</em></p>
+    </div>
 </div>
 
 <script>
@@ -94,14 +103,14 @@
         <h2>Decarboxylation Progress Tracker</h2>
         <form id="decarbProgressForm">
             <label for="thcaStartWeight">Input Weight of THCa (grams):</label>
-            <input type="number" id="thcaStartWeight" name="thcaStartWeight" placeholder="114 grams" required oninput="calculateDecarbProgress()">
+            <input type="number" pattern="[0-9]*" id="thcaStartWeight" name="thcaStartWeight" placeholder="114 grams" required oninput="calculateDecarbProgress()">
             <label for="thcDecarbedWeight">Current Weight of THCa (grams):</label>
-            <input type="number" id="thcDecarbedWeight" name="thcDecarbedWeight" placeholder="100 grams" required oninput="calculateDecarbProgress()">
+            <input type="number" pattern="[0-9]*" id="thcDecarbedWeight" name="thcDecarbedWeight" placeholder="100 grams" required oninput="calculateDecarbProgress()">
             <button type="button" onclick="calculateDecarbProgress()">Calculate</button>
         </form>
         <div id="decarbProgressResult"></div>
         <div id="decarbProgressDescription">
-            <header id="decarbInfoHeader"><b>Instructions:</b></header>
+            <header id="decarbInfoHeader"><br><hr id="progressSeparator"><b>Instructions:</b></header>
             <p><em>The THCA decarboxylation progress tracker is a useful tool for those seeking to accurately monitor and optimize the decarboxylation of their THCA.
                 By inputting the starting weight of THCA and the current weight of decarboxylated material, the tracker utilizes a specialized formula to estimate
                 the predicted weight of decarboxylated material and the percentage of decarboxylation progress on a scale of 0-100% completion. This information is then presented
@@ -121,14 +130,16 @@
         const PercentDecarbed = (DecarbedWeight / (InputWeight - LossCalc)) * 100;
 
         if (PercentDecarbed < 0 || PercentDecarbed > 100 || InputWeight === "" || CurrentWeight === "" || (InputWeight === "0" && CurrentWeight === "0")) {
-            document.getElementById("decarbProgressResult").innerHTML = "<span style='color: red'>Error: Invalid input values</span>";
+            document.getElementById("decarbProgressResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input values</b></span><br>";
         } else {
             document.getElementById("decarbProgressResult").innerHTML =
-                "Predicted Decarboxylated Weight: " + LossCalc.toFixed(2) + " grams" +
+                "<br><br><b>Predicted Decarboxylated Weight: </b><br>" + LossCalc.toFixed(2) + " grams" +
 
-                "<br><br>Estimated Decarboxylation Progress: " + PercentDecarbed.toFixed(2) + "%" +
+                "<br><br><b>Estimated Decarboxylation Progress: </b><br>" + PercentDecarbed.toFixed(2) + "%" +
 
-                "<br><br>Estimated THCa Remaining: " + WeightLeft.toFixed(2) + " grams" + "";
+                "<br><br><b>Estimated Decarboxylation Progress Remaining: </b><br>" + (100 - PercentDecarbed).toFixed(2) + "%" +
+
+                "<br><br><b>Estimated THCa Remaining: </b><br>" + WeightLeft.toFixed(2) + " grams" + "<br>";
         }
     }
 </script>
