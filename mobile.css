@@ -223,13 +223,10 @@ footer {
     width: 100%;
 }
 
-#footerMain {
-    alignment: center;
-    margin: 0 auto; /* center the element */
-}
-
 #footerLisc {
     color: #fff;
+    alignment: center;
+    margin: 0 auto; /* center the element */
     text-decoration: none;
     border: 1px solid #fff;
     padding: 5px 10px;
