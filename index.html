@@ -533,36 +533,27 @@
     }
 
     function openTab(evt, tabName) {
-        let i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-            if (tabcontent[i].id === tabName) {
-                if (tabcontent[i].style.display === "block") {
-                    // if the tab is already open, close it
-                    tabcontent[i].style.display = "none";
-                    evt.currentTarget.classList.remove("active");
-                } else {
-                    // if the tab is closed, open it
-                    tabcontent[i].style.display = "block";
-                    // remove active class from all tab links
-                    tablinks = document.getElementsByClassName("tablinks");
-                    for (let j = 0; j < tablinks.length; j++) {
-                        tablinks[j].classList.remove("active");
-                    }
-                    evt.currentTarget.classList.add("active");
-                }
-            } else {
-                tabcontent[i].style.display = "none";
-                tablinks = document.querySelectorAll(`[href='#${tabcontent[i].id}']`);
-                for (let j = 0; j < tablinks.length; j++) {
-                    tablinks[j].classList.remove("active");
-                }
-            }
-        }
+        let tabcontent = $(".tabcontent");
+        let tablinks = $(".tablinks");
+
+        // close all tabs except for the selected tab
+        tabcontent.not(`#${tabName}`).slideUp("fast");
+
+        // toggle the selected tab
+        $(`#${tabName}`).slideToggle("fast", function() {
+            // after the animation completes, remove "active" class from all tab links
+            tablinks.removeClass("active");
+        });
+
+        // add "active" class to the selected tab link
+        $(evt.currentTarget).toggleClass("active");
     }
 
 
+
+
 </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <div id="decarbProgressDisclaimer"><em><br>Note: The results produced by this calculator are an estimate based on the assumption of complete decarboxylation.
     Other factors such as temperature, time, and the starting material may affect the actual result. Please use these estimates as guidance rather than concrete values.</em></div>
