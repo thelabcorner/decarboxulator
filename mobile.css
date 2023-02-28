@@ -14,6 +14,29 @@ body {
     color: #f2f2f2;
 }
 
+.spoiler-btn {
+    background-color: #333333;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 8px 16px;
+    width: 100%;
+    text-align: left;
+    outline: none;
+    transition: background-color 0.3s ease;
+}
+
+.spoiler-btn:hover {
+    background-color: #dddddd;
+}
+
+.spoiler-content {
+    max-height: 0;
+    overflow: hidden;
+    overflow-x: auto;
+    transition: max-height 0.3s ease;
+    max-width: 90%;;
+}
 
 .tabcontent {
     background-color: #f2f2f2;
