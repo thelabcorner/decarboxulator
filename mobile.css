@@ -214,9 +214,12 @@ input[type="number"] {
 
 footer {
     background-color: #292929;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
     color: #fff;
     padding: 20px;
-    text-align: center;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -225,9 +228,9 @@ footer {
 
 #footerLisc {
     color: #fff;
-    alignment: center;
-    margin: 0 auto; /* center the element */
     text-decoration: none;
+    display: inline-block;
+    margin-right: 30px;
     border: 1px solid #fff;
     padding: 5px 10px;
     border-radius: 5px;
