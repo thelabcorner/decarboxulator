@@ -129,6 +129,44 @@ input[type="number"] {
     background-color: #ffd75e;
 }
 
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, white, lightgray);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fade-out 0.5s ease-out 1.5s forwards;
+}
+
+#logo-container {
+    width: 5%;
+    padding-top: 5%;
+    position: relative;
+}
+
+#logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+
+@keyframes fade-out {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+
+
 @media (prefers-color-scheme: dark) {
 
     .spoiler-btn {

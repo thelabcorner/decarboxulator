@@ -25,19 +25,6 @@
 
     <meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, shrink-to-fit=no">
 
-    <link href="splashscreens/iphone5_splash.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="splashscreens/iphone6_splash.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="splashscreens/iphoneplus_splash.png" media="(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
-    <link href="splashscreens/iphonex_splash.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
-    <link href="splashscreens/iphonexr_splash.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="splashscreens/iphonexsmax_splash.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
-    <link href="splashscreens/ipad_splash.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="splashscreens/ipadpro1_splash.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="splashscreens/ipadpro3_splash.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="splashscreens/ipadpro2_splash.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="splashscreens/iphone13promax_splash.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
-
-
     <link href="mobile.css" rel="stylesheet" type="text/css">
 
 
@@ -51,20 +38,59 @@
                 });
             });
         }
-
     </script>
 </head>
 
 <body>
+
+<div id="splash-screen">
+    <div id="logo-container">
+        <img id="logo" src="icons/decarboxulator.svg" alt="Decarboxulator">
+    </div>
+
+    <script>
+
+        window.addEventListener('load', function() {
+        var screenWidth = window.innerWidth;
+        var screenHeight = window.innerHeight;
+        var logo = document.getElementById('logo');
+        var logoWidth = logo.getBBox().width;
+        var logoHeight = logo.getBBox().height;
+        var logoRatio = logoWidth / logoHeight;
+        var container = document.getElementById('logo-container');
+        var containerWidth, containerHeight;
+        if (screenWidth / screenHeight > logoRatio) {
+            containerWidth = screenHeight * logoRatio;
+            containerHeight = screenHeight;
+        } else {
+            containerWidth = screenWidth;
+            containerHeight = screenWidth / logoRatio;
+        }
+        container.style.width = containerWidth + 'px';
+        container.style.height = containerHeight + 'px';
+
+        const duration = Math.floor(Math.random() * (3220 - 140) + 140) / 1000;
+
+        document.getElementById('splash-screen').style.animationDuration = duration + 's';
+            console.log('Splash screen duration: ' + duration.toFixed(2) + 's');
+    });
+
+        var splashScreen = document.getElementById('splash-screen');
+        splashScreen.addEventListener('animationend', function() {
+            splashScreen.remove();
+        });
+
+
+    </script>
+
+</div>
+
 <div class="tab">
     <button class="tablinks" onclick="openTab(event, 'thcaToThc')">THCa Decarboxylation Yield Calculator</button>
     <button class="tablinks" onclick="openTab(event, 'thcToThca')">THCa Input Finder</button>
     <button class="tablinks" onclick="openTab(event, 'decarbProgress')">Decarboxylation Progress Tracker</button>
     <button class="tablinks" onclick="openTab(event, 'decarbTime')">Total Decarboxylation Time Predictor</button>
 </div>
-
-
-
 
 <div id="thcaToThc" class="tabcontent">
     <h2>THCa to THC Decarboxylation Yield Calculator</h2>
