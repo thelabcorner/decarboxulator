@@ -128,7 +128,82 @@ input[type="number"] {
     background-color: #ffd75e;
 }
 
+@media (prefers-color-scheme: dark) {
+
+    .spoiler-btn {
+        background-color: #fff;
+        border: none;
+        color: black;
+        cursor: pointer;
+        padding: 8px 16px;
+        width: 100%;
+        text-align: left;
+        outline: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .spoiler-btn:hover {
+        background-color: #dddddd;
+    }
+
+    .spoiler-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    #decarbTime {
+        background-color: #7a4aa8;
+    }
+
+    #decarbProgress {
+        background-color: #a88c4a;
+    }
+    #thcaToThc {
+        background-color: #4aa87a;
+    }
+
+    #thcToThca {
+        background-color: #4a76a8;
+    }
+
+    #thcaToThc h2 {
+        color: #fff;
+    }
+
+    #thcToThca h2 {
+        color: #fff;
+    }
+
+    #decarbProgress h2 {
+        color: #fff;
+    }
+
+    #decarbTime h2 {
+        color: #fff;
+    }
+
+}
+
+#YieldSeparator {
+    color: #000;
+    border: none; /* remove the default border */
+    height: 1px; /* set the height of the line */
+    margin: 20px 0; /* add some margin around the line */
+    border-top: 1px solid #333; /* add a border on top of the line */
+}
+
+
+#finderSeparator {
+    color: #000;
+    border: none; /* remove the default border */
+    height: 1px; /* set the height of the line */
+    margin: 20px 0; /* add some margin around the line */
+    border-top: 1px solid #333; /* add a border on top of the line */
+}
+
 #progressSeparator {
+    color: #fff;
     border: none; /* remove the default border */
     height: 1px; /* set the height of the line */
     margin: 20px 0; /* add some margin around the line */

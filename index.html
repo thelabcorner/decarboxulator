@@ -62,23 +62,118 @@
     <button class="tablinks" onclick="openTab(event, 'decarbTime')">Total Decarboxylation Time Predictor</button>
 </div>
 
+
+
+
 <div id="thcaToThc" class="tabcontent">
     <h2>THCa to THC Decarboxylation Yield Calculator</h2>
     <form id="thcaToThcForm">
         <label for="thcaWeight">Weight of THCa (grams):</label>
-        <input type="number" id="thcaWeight" name="thcaWeight" required>
+        <input type="number" pattern="[0-9]*" placeholder="34.2 grams" id="thcaWeight" name="thcaWeight" required oninput="calculateThcaToThc()">
         <button type="button" onclick="calculateThcaToThc()">Calculate</button>
     </form>
+
     <div id="thcaToThcResult"></div>
-</div>
+    <br><hr id="YieldSeparator">
+    <div id="decarbYieldDescription">
+        <button class="spoiler-btn" onclick="toggleSpoiler('dcYieldInstructions')"><b>Instructions:</b></button>
+        <div id="dcYieldInstructions" class="spoiler-content">
+            <p>To use the THCa to THC Decarboxylation Yield Calculator, follow these simple steps:</p>
+            <ol>
+                <li>Enter the weight of THCa in grams in the "Weight of THCa" field of the form.</li>
+                <li>Click on the "Calculate" button to generate the result.</li>
+                <li>The estimated yield of THC produced and the estimated CO2 loss will be displayed below the form.</li>
+            </ol>
+            <p>Please enter a positive value between 0.1 and 10 billion in the "Weight of THCa" field. Any value outside this range will result in an error message.</p>
+        </div>
+        <br>
+        <button class="spoiler-btn" onclick="toggleSpoiler('dcYieldCalculations')"><b>Formula(s) Used:</b></button>
+        <div id="dcYieldCalculations" class="spoiler-content">
+            <p>
+                <math>
+                    <mi>THC weight</mi>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>THCa weight</mi>
+                        <mo>&times;</mo>
+                        <mfrac>
+                            <mrow>
+                                <mn>314.47</mn>
+                            </mrow>
+                            <mrow>
+                                <mn>358.48</mn>
+                            </mrow>
+                        </mfrac>
+                    </mrow>
+                </math>
+            </p>
+            <p>
+                <math>
+                    <mi>CO2 loss</mi>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>THCa weight</mi>
+                        <mo>-</mo>
+                        <mi>THC weight</mi>
+                    </mrow>
+                </math>
+            </p>
+        </div>
+    </div>
+
+    </div>
 
 <script>
-    function calculateThcaToThc() {
-        const thcaWeight = document.getElementById("thcaWeight").value;
-        const thcWeight = thcaWeight * (314.47 / 358.48);
-        document.getElementById("thcaToThcResult").innerHTML = "THC yield: " + thcWeight.toFixed(2) + " grams";
+    function toggleSpoiler(spoilerId) {
+        const spoilerContent = document.getElementById(spoilerId);
+        if (spoilerContent.style.maxHeight) {
+            spoilerContent.style.maxHeight = null;
+        } else {
+            spoilerContent.style.maxHeight = spoilerContent.scrollHeight + "px";
+        }
     }
 </script>
+
+<audio id="audio" src="egg.mp3"></audio>
+
+<script>
+
+    function easterEgg() {
+        const audio = document.getElementById('audio');
+        audio.volume = 0.25;
+        audio.play();
+    }
+
+    function calculateThcaToThc() {
+        const thcaWeight = document.getElementById("thcaWeight").valueAsNumber;
+        const thcWeight = thcaWeight * (314.47 / 358.48);
+        const lossCalc = (thcaWeight - thcWeight);
+
+        const formatTHCOut = thcWeight.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        const formatLossOut = lossCalc.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        if (isNaN(thcaWeight) || thcaWeight < 0.0000000000000000000000001 || thcaWeight > 9999999999.9999999999) {
+            document.getElementById("thcaToThcResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input value(s)<br>Note: Please enter a positive value between 0.1 and 10 billion.</b></span><br>";
+        } else {
+            if (thcaWeight === 69420 || thcaWeight === 69 || thcaWeight === 420 || thcaWeight === 710) {
+                easterEgg()
+                document.getElementById("thcaToThcResult").innerHTML = "<br><b>Estimated CO2 Loss: </b><br>" + formatLossOut + " grams" + "<br><br><b>Estimated THC produced: </b><br>" + formatTHCOut + " grams";
+            } else {
+            document.getElementById("thcaToThcResult").innerHTML = "<br><b>Estimated CO2 Loss: </b><br>" + formatLossOut + " grams" + "<br><br><b>Estimated THC produced: </b><br>" + formatTHCOut + " grams";
+            }
+        }
+    }
+</script>
+
+
+
 
 <!-- THCA Input Finder - How much THCa to make X grams THC -->
 <div id="thcToThca" class="tabcontent">
@@ -89,14 +184,47 @@
         <button type="button" onclick="calculateThcToThca()">Calculate</button>
     </form>
     <div id="thcToThcaResult"></div>
+    <br>
+    <hr id="finderSeparator">
     <div id="inputFinderDescription">
-        <header id="finderInfoHeader"><br><hr id="finder Separator"><b>Instructions:</b></header>
-        <p><em>The THCA Input Finder is a useful tool for anyone interested in calculating how much THCA they need to make a certain amount of THC.
-            With just a few simple steps, you can find out exactly how much THCA is required to produce your desired weight of THC. <br><br>To use the THCA Input Finder,
-            simply input the weight of THC you want to produce in grams into the designated field and click the "Calculate" button. The calculator will then
-            use a formula based on the assumption of complete decarboxylation to determine the amount of THCA needed to achieve your desired weight of THC.
-            <br><br>It is important to note that the results produced by this calculator are based on the assumption of complete decarboxylation and may be affected
-            by factors such as temperature, time, and the starting material. As such, the estimates should be used as guidance rather than concrete values.</em></p>
+        <button class="spoiler-btn" onclick="toggleSpoiler('inputFinderInstructions')"><b>Instructions:</b></button>
+        <div id="inputFinderInstructions" class="spoiler-content">
+            <p><em>Instructions:</em></p>
+            <ol>
+                <li>Input the weight of THC you want to produce in grams into the designated field.</li>
+                <li>Click on the "Calculate" button to generate the result.</li>
+                <li>The estimated weight of THCA required to produce the desired weight of THC will be displayed below the form.</li>
+            </ol>
+        </div>
+        <br>
+        <button class="spoiler-btn" onclick="toggleSpoiler('inputFinderCalculations')"><b>Formula(s) Used:</b></button>
+        <div id="inputFinderCalculations" class="spoiler-content">
+            <br>
+            <math>
+                <mrow>
+                    <mi>THCA Needed</mi>
+                    <mo>=</mo>
+                    <mfrac>
+                        <mrow>
+                            <mi>THC Desired</mi>
+                        </mrow>
+                        <mrow>
+                            <mo>(</mo>
+                            <mfrac>
+                                <mrow>
+                                    <mn>314.47</mn>
+                                </mrow>
+                                <mrow>
+                                    <mn>358.48</mn>
+                                </mrow>
+                            </mfrac>
+                            <mo>)</mo>
+                        </mrow>
+                    </mfrac>
+                </mrow>
+            </math>
+
+        </div>
     </div>
 </div>
 
@@ -110,7 +238,7 @@
         });
 
         if (isNaN(thcWeight) || thcWeight < 0.0000000000000000000000001 || thcWeight > 9999999999.9999999999) {
-            document.getElementById("thcToThcaResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input value(s)</b></span><br>";
+            document.getElementById("thcToThcaResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input value(s)<br>Note: Please enter a positive value between 0.1 and 10 billion.</b></span><br>";
         } else {
             document.getElementById("thcToThcaResult").innerHTML = "<br><br><b>THCa required: </b><br>" + formattedOutput + " grams";
         }
@@ -133,13 +261,89 @@
             <button type="button" onclick="calculateDecarbProgress()">Calculate</button>
         </form>
         <div id="decarbProgressResult"></div>
-        <div id="decarbProgressDescription">
-            <header id="decarbInfoHeader"><br><hr id="progressSeparator"><b>Instructions:</b></header>
-            <p><em>The THCA decarboxylation progress tracker is a useful tool for those seeking to accurately monitor and optimize the decarboxylation of their THCA.
-                By inputting the starting weight of THCA and the current weight of decarboxylated material, the tracker utilizes a specialized formula to estimate
-                the predicted weight of decarboxylated material and the percentage of decarboxylation progress on a scale of 0-100% completion. This information is then presented
-                along with the estimated weight of THCA remaining. <br><br>It is important to note that the results produced by this calculator are based on the assumption of
-                complete decarboxylation and may be affected by factors such as temperature, time, and the starting material. As such, the estimates should be used as guidance rather than concrete values.</em></p>
+
+
+        <br><hr id="progressSeparator">
+
+        <div id="progressDescription">
+            <button class="spoiler-btn" onclick="toggleSpoiler('progressInstructions')"><b>Instructions:</b></button>
+            <div id="progressInstructions" class="spoiler-content">
+                <p>To use the tool, follow these steps:</p>
+                <ol>
+                    <li>Enter the starting weight of THCA (in grams) in the "Input Weight of THCa" field.</li>
+                    <li>Enter the current weight of decarboxylated material (in grams) in the "Current Weight of THCa" field.</li>
+                    <li>Click the "Calculate" button to generate the results.</li>
+                </ol>
+                <p>The tool will utilize a specialized formula to estimate the predicted weight of decarboxylated material and the percentage of decarboxylation progress. The formula assumes complete decarboxylation and may be affected by factors such as temperature, time, and the starting material. As such, the estimates should be used as guidance rather than concrete values.</p>
+                <p>If there are any errors in the input values, such as negative values or empty fields, an error message will be displayed.</p>
+            </div>
+            <br>
+            <button class="spoiler-btn" onclick="toggleSpoiler('progressCalculations')"><b>Formula(s) Used:</b></button>
+            <div id="progressCalculations" class="spoiler-content">
+                <br>
+                <p><b><u>Main Formula:</u></b></p>
+                <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mtext>Percent Decarboxylation Progress = </mtext>
+                    <mo>(</mo>
+                    <mo>(</mo>
+                    <mfrac>
+                        <mrow>
+                            <mi>Decarboxylated Weight</mi>
+                        </mrow>
+                        <mrow>
+                            <mrow>
+                                <mi>Input Weight</mi>
+                                <mo>-</mo>
+                                <mi>Loss Calculation</mi>
+                            </mrow>
+                        </mrow>
+                    </mfrac>
+                    <mo>)</mo>
+                    <mo>*</mo>
+                    <mn>100</mn>
+                    <mo>)</mo>
+                </math>
+                <hr>
+                <p><u><b>Decarboxylated Weight:</b></u></p>
+                <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mi>Decarboxylated Weight</mi>
+                    <mo>= </mo>
+                    <mi>Input Weight</mi>
+                    <mo>-</mo>
+                    <mi>Current Weight</mi>
+                </math>
+                <hr>
+                <p><u><b>Loss Calculation:</b></u></p>
+                <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mi>Loss Calculation</mi>
+                    <mo>=</mo>
+                    <mi>Input Weight</mi>
+                    <mo>*</mo>
+                    <mn>0.877</mn>
+                </math>
+                <hr>
+                <p><u><b>Predicted Decarboxylated Weight:</b></u></p>
+                <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mtext>Predicted Decarboxylated Weight</mtext>
+                    <mo>=</mo>
+                    <mi>Input Weight</mi>
+                    <mo>*</mo>
+                    <mn>0.877</mn>
+                </math>
+                <hr>
+                <p><b><u>Estimated THCa Remaining:</u></b></p>
+                <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mtext>Estimated THCa Remaining</mtext>
+                    <mo>=</mo>
+                    <mo>(</mo>
+                    <mi>Input Weight</mi>
+                    <mo>-</mo>
+                    <mi>Loss Calculation</mi>
+                    <mo>)</mo>
+                    <mo>-</mo>
+                    <mi>Decarboxylated Weight</mi>
+                </math>
+            </div>
         </div>
     </div>
 </div>
@@ -150,20 +354,53 @@
         const CurrentWeight = document.getElementById("thcDecarbedWeight").value;
         const LossCalc = InputWeight * 0.877;
         const DecarbedWeight = InputWeight - CurrentWeight;
-        const WeightLeft = InputWeight - LossCalc - DecarbedWeight;
+        const WeightLeft = (InputWeight - LossCalc) - DecarbedWeight;
         const PercentDecarbed = (DecarbedWeight / (InputWeight - LossCalc)) * 100;
 
-        if (PercentDecarbed < 0 || PercentDecarbed > 100 || InputWeight === "" || CurrentWeight === "" || (InputWeight === "0" && CurrentWeight === "0")) {
-            document.getElementById("decarbProgressResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input values</b></span><br>";
+
+        const formatWeightLeft = WeightLeft.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        const formatLossCalc = LossCalc.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+
+        if (PercentDecarbed < -50 || PercentDecarbed > 150 || InputWeight === "" || CurrentWeight === "" || (InputWeight === "0" && CurrentWeight === "0")) {
+            document.getElementById("decarbProgressResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input values.</span><br>Note: Please enter realistic, positive values between 0.1 and 10 billion.</b><br>";
         } else {
-            document.getElementById("decarbProgressResult").innerHTML =
-                "<br><br><b>Predicted Decarboxylated Weight: </b><br>" + LossCalc.toFixed(2) + " grams" +
+            if (PercentDecarbed < -0.001 || PercentDecarbed > 100) {
+                document.getElementById("decarbProgressResult").innerHTML = "<br><br><span style='color: orange'><b>Warning: Possible Invalid input values<br>Note: This calculator is designed to pinpoint progress from on a scale of 0-100% completion. The following results are likely inaccurate or impossible.</span></b><br><br><b>Predicted Decarboxylated Weight: </b><br>" + formatLossCalc + " grams" +
 
-                "<br><br><b>Estimated Decarboxylation Progress: </b><br>" + PercentDecarbed.toFixed(2) + "%" +
+                    "<br><br><b>Estimated Decarboxylation Progress: </b><br>" + PercentDecarbed.toFixed(2) + "%" +
 
-                "<br><br><b>Estimated Decarboxylation Progress Remaining: </b><br>" + (100 - PercentDecarbed).toFixed(2) + "%" +
+                    "<br><br><b>Estimated Decarboxylation Progress Remaining: </b><br>" + (100 - PercentDecarbed).toFixed(2) + "%" +
 
-                "<br><br><b>Estimated THCa Remaining: </b><br>" + WeightLeft.toFixed(2) + " grams" + "<br>";
+                    "<br><br><b>Estimated THCa Remaining: </b><br>" + formatWeightLeft + " grams" + "<br>";
+
+            } else {
+                if ((100 - PercentDecarbed) === 0 ) {
+                    document.getElementById("decarbProgressResult").innerHTML = "<br><br><span style='color: limegreen'><b>Complete: Input values indicate decarboxylation has completed.</span></b><br><br><b>Predicted Decarboxylated Weight: </b><br>" + formatLossCalc + " grams" +
+
+                        "<br><br><b>Estimated Decarboxylation Progress: </b><br>" + PercentDecarbed.toFixed(2) + "%" +
+
+                        "<br><br><b>Estimated Decarboxylation Progress Remaining: </b><br>" + (100 - PercentDecarbed).toFixed(2) + "%" +
+
+                        "<br><br><b>Estimated THCa Remaining: </b><br>" + formatWeightLeft + " grams" + "<br>";
+
+                } else {
+                document.getElementById("decarbProgressResult").innerHTML =
+                    "<br><br><b>Predicted Decarboxylated Weight: </b><br>" + formatLossCalc + " grams" +
+
+                    "<br><br><b>Estimated Decarboxylation Progress: </b><br>" + PercentDecarbed.toFixed(2) + "%" +
+
+                    "<br><br><b>Estimated Decarboxylation Progress Remaining: </b><br>" + (100 - PercentDecarbed).toFixed(2) + "%" +
+
+                    "<br><br><b>Estimated THCa Remaining: </b><br>" + formatWeightLeft + " grams" + "<br>";}
+            }
         }
     }
 </script>
@@ -242,8 +479,8 @@
         console.log(" initialConcentration = " + initialConcentration);
         console.log(" desiredConcentration = " + desiredConcentration);
         console.log(" time = " + time);
-
-        document.getElementById("decarbTimeResult").innerHTML = "Total decarboxylation time: " + time.toFixed(2) + " hours";
+        document.getElementById("decarbTimeResult").innerHTML = "<span style='color: red'><b><br>This calculator does not currently work.</b></span>";
+        // document.getElementById("decarbTimeResult").innerHTML = "Total decarboxylation time: " + time.toFixed(2) + " hours";
     }
 
 
