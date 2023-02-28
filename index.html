@@ -660,6 +660,14 @@
         console.log('Closing modal');
         licenseModal.close();
     });
+
+    licenseModal.addEventListener('click', (event) => {
+        if (event.target === licenseModal) {
+            console.log('Closing modal');
+            licenseModal.close();
+        }
+    });
+
 </script>
 
 
