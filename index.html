@@ -167,8 +167,9 @@
 
     function easterEgg() {
         const audio = document.getElementById('audio');
-        audio.volume = 0.17; // Set volume to 50%
+        audio.volume = 1; // Set volume to 50%
         audio.play();
+        fadeOut();
 
         // Define a function to gradually decrease the volume of the audio clip
         function fadeOut() {
@@ -181,11 +182,18 @@
             let step = 0;
 
             const fadeIntervalId = setInterval(() => {
-                step++;
-                audio.volume -= fadeAmount;
-                if (step >= fadeSteps) {
+                if (!audio.paused) {
+                    step++;
+                    audio.volume -= fadeAmount;
+                    if (audio.volume < 0) {
+                        audio.volume = 0;
+                    }
+                    if (step >= fadeSteps) {
+                        clearInterval(fadeIntervalId);
+                        audio.pause();
+                    }
+                } else {
                     clearInterval(fadeIntervalId);
-                    audio.pause();
                 }
             }, fadeInterval);
         }
@@ -220,8 +228,6 @@
         }
     }
 </script>
-
-
 
 
 <!-- THCA Input Finder - How much THCa to make X grams THC -->
@@ -295,8 +301,21 @@
 </script>
 
 
+<script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
 
-
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+      displayMath: [ ['$$','$$'], ['\\[','\\]'] ]
+    }
+    "HTML-CSS": {
+            linebreaks: { automatic: true }
+        }
+  });
+</script>
 
 
 <div id="decarbProgress" class="tabcontent">
@@ -330,68 +349,15 @@
             <button class="spoiler-btn" onclick="toggleSpoiler('progressCalculations')"><b>Formula(s) Used:</b></button>
             <div id="progressCalculations" class="spoiler-content">
                 <br>
-                <p><b><u>Main Formula:</u></b></p>
-                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mtext>Percent Decarboxylation Progress = </mtext>
-                    <mo>(</mo>
-                    <mo>(</mo>
-                    <mfrac>
-                        <mrow>
-                            <mi>Decarboxylated Weight</mi>
-                        </mrow>
-                        <mrow>
-                            <mrow>
-                                <mi>Input Weight</mi>
-                                <mo>-</mo>
-                                <mi>Loss Calculation</mi>
-                            </mrow>
-                        </mrow>
-                    </mfrac>
-                    <mo>)</mo>
-                    <mo>*</mo>
-                    <mn>100</mn>
-                    <mo>)</mo>
-                </math>
+                <p class="container"><b><u>Main Formula:</u></b><br><br>\(\text{Percent Decarboxylation Progress} = \left(\frac{\text{Decarboxylated Weight}}{\text{Input Weight - Loss Calculation}}\right)*100\)</p>
                 <hr>
-                <p><u><b>Decarboxylated Weight:</b></u></p>
-                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mi>Decarboxylated Weight</mi>
-                    <mo>= </mo>
-                    <mi>Input Weight</mi>
-                    <mo>-</mo>
-                    <mi>Current Weight</mi>
-                </math>
+                <p class="container"><u><b>Decarboxylated Weight:</b><br><br></u> \(\text{Decarboxylated Weight} = \text{Input Weight - Current Weight}\)</p>
                 <hr>
-                <p><u><b>Loss Calculation:</b></u></p>
-                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mi>Loss Calculation</mi>
-                    <mo>=</mo>
-                    <mi>Input Weight</mi>
-                    <mo>*</mo>
-                    <mn>0.877</mn>
-                </math>
+                <p class="container"><u><b>Loss Calculation:</b><br><br></u> \(\text{Loss Calculation} = \text{Input Weight} * 0.877\)</p>
                 <hr>
-                <p><u><b>Predicted Decarboxylated Weight:</b></u></p>
-                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mtext>Predicted Decarboxylated Weight</mtext>
-                    <mo>=</mo>
-                    <mi>Input Weight</mi>
-                    <mo>*</mo>
-                    <mn>0.877</mn>
-                </math>
+                <p class="container"><u><b>Predicted Decarboxylated Weight:</b><br><br></u> \(\text{Predicted Decarboxylated Weight} = \text{Input Weight} * 0.877\)</p>
                 <hr>
-                <p><b><u>Estimated THCa Remaining:</u></b></p>
-                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mtext>Estimated THCa Remaining</mtext>
-                    <mo>=</mo>
-                    <mo>(</mo>
-                    <mi>Input Weight</mi>
-                    <mo>-</mo>
-                    <mi>Loss Calculation</mi>
-                    <mo>)</mo>
-                    <mo>-</mo>
-                    <mi>Decarboxylated Weight</mi>
-                </math>
+                <p class="container"><b><u>Estimated THCa Remaining:</u><br><br></b> \(\text{Estimated THCa Remaining} = (\text{Input Weight} - \text{Loss Calculation}) - \text{Decarboxylated Weight}\)</p>
             </div><br>
         </div>
     </div>

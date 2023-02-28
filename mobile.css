@@ -202,6 +202,7 @@ input[type="number"] {
     .spoiler-content {
         max-height: 0;
         overflow: hidden;
+        overflow-x: auto;
         transition: max-height 0.3s ease;
         max-width: 90%;;
     }
@@ -295,7 +296,28 @@ footer {
     transition: all 0.3s ease;
 }
 
+/* MATHJAX */
 
+/* Set the font size of MathJax equations */
+.MathJax_Display {
+    font-size: 1em;
+}
+
+/* Set the width of the container */
+.container {
+    width: 90%;
+    max-width: 800px; /* Set a maximum width to prevent the container from becoming too wide */
+}
+
+/* Force MathJax equations to break into multiple lines on mobile devices */
+@media (max-width: 768px) {
+        .container .MathJax_Display {
+            max-width: 250px;
+            display: block;
+            margin: 0 auto;
+        }
+
+}
 
 
 
@@ -303,7 +325,7 @@ footer {
 dialog {
     width: 70%;
     max-width: 700px;
-    max-height: 500px;
+    max-height: 675px;
     background-color: #fff;
     padding: 20px;
     position: fixed;
@@ -350,11 +372,17 @@ dialog #closeButton:hover {
         width: 25%;
     }
 }
-
+@media (max-width: 900px) {
+    #logo-container {
+        width: 13%;
+        padding-top: 15%;
+        position: relative;
+    }
+}
 @media screen and (max-width: 600px) {
 
     #logo-container {
-        width: 15%;
+        width: 20%;
         padding-top: 15%;
         position: relative;
     }
