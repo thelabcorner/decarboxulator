@@ -118,7 +118,7 @@
                     </mrow>
                 </math>
             </p>
-        </div>
+        </div><br>
     </div>
 
     </div>
@@ -140,9 +140,35 @@
 
     function easterEgg() {
         const audio = document.getElementById('audio');
-        audio.volume = 0.25;
+        audio.currentTime = 11.3; // Set starting point to 0:07
+        audio.volume = 0.17; // Set volume to 50%
         audio.play();
+
+        // Define a function to gradually decrease the volume of the audio clip
+        function fadeOut() {
+            const fadeInterval = 50; // Time interval between volume changes (ms)
+            const fadeDuration = 3000; // Duration of the fade-out (ms)
+            const fadeSteps = fadeDuration / fadeInterval; // Number of volume changes
+            const fadeAmount = audio.volume / fadeSteps; // Amount to decrease volume by each step
+            let step = 0;
+
+            const fadeIntervalId = setInterval(() => {
+                step++;
+                audio.volume -= fadeAmount;
+                if (step >= fadeSteps) {
+                    clearInterval(fadeIntervalId);
+                    audio.pause();
+                }
+            }, fadeInterval);
+        }
+
+        // Start the fade-out after X seconds (when the clip has played for X milliseconds in total)
+        setTimeout(() => {
+            fadeOut();
+        }, 2900);
     }
+
+
 
     function calculateThcaToThc() {
         const thcaWeight = document.getElementById("thcaWeight").valueAsNumber;
@@ -162,7 +188,7 @@
         if (isNaN(thcaWeight) || thcaWeight < 0.0000000000000000000000001 || thcaWeight > 9999999999.9999999999) {
             document.getElementById("thcaToThcResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input value(s)<br>Note: Please enter a positive value between 0.1 and 10 billion.</b></span><br>";
         } else {
-            if (thcaWeight === 69420 || thcaWeight === 69 || thcaWeight === 420 || thcaWeight === 710) {
+            if (thcaWeight === 69420 || thcaWeight === 42069 || thcaWeight === 420 || thcaWeight === 710) {
                 easterEgg()
                 document.getElementById("thcaToThcResult").innerHTML = "<br><b>Estimated CO2 Loss: </b><br>" + formatLossOut + " grams" + "<br><br><b>Estimated THC produced: </b><br>" + formatTHCOut + " grams";
             } else {
@@ -224,7 +250,7 @@
                 </mrow>
             </math>
 
-        </div>
+        </div><br>
     </div>
 </div>
 
@@ -343,7 +369,7 @@
                     <mo>-</mo>
                     <mi>Decarboxylated Weight</mi>
                 </math>
-            </div>
+            </div><br>
         </div>
     </div>
 </div>
@@ -510,15 +536,29 @@
         let i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tabcontent");
         for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
+            if (tabcontent[i].id === tabName) {
+                if (tabcontent[i].style.display === "block") {
+                    // if the tab is already open, close it
+                    tabcontent[i].style.display = "none";
+                    evt.currentTarget.classList.remove("active");
+                } else {
+                    // if the tab is closed, open it
+                    tabcontent[i].style.display = "block";
+                    // remove active class from all tab links
+                    tablinks = document.getElementsByClassName("tablinks");
+                    for (let j = 0; j < tablinks.length; j++) {
+                        tablinks[j].classList.remove("active");
+                    }
+                    evt.currentTarget.classList.add("active");
+                }
+            } else {
+                tabcontent[i].style.display = "none";
+                tablinks = document.querySelectorAll(`[href='#${tabcontent[i].id}']`);
+                for (let j = 0; j < tablinks.length; j++) {
+                    tablinks[j].classList.remove("active");
+                }
+            }
         }
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " active";
-        setTabContentDarkMode(document.body.classList.contains('dark'));
     }
 
 
