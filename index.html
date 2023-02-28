@@ -51,6 +51,72 @@
                 });
             });
         }
+
+        let deferredPrompt;
+
+        // Listen for the beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', function(event) {
+            // Prevent Chrome from automatically showing the install prompt
+            event.preventDefault();
+            // Save the event for later use
+            deferredPrompt = event;
+            // Show a custom install banner
+            showInstallBanner();
+        });
+
+        function showInstallBanner() {
+            // Create the banner element
+            var banner = document.createElement('div');
+            banner.style.position = 'fixed';
+            banner.style.bottom = '0';
+            banner.style.left = '0';
+            banner.style.width = '100%';
+            banner.style.backgroundColor = '#f44336';
+            banner.style.color = 'white';
+            banner.style.padding = '16px';
+            banner.style.zIndex = '9999';
+            banner.innerHTML = `
+    <p>Install this app on your home screen:</p>
+    <button onclick="install()">Install</button>
+    <button onclick="dismiss()">Dismiss</button>
+  `;
+            // Add the banner to the page
+            document.body.appendChild(banner);
+        }
+
+        function install() {
+            // Show the install prompt
+            deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            deferredPrompt.userChoice.then(function(choiceResult) {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                } else {
+                    console.log('User dismissed the install prompt');
+                }
+                // Clear the deferredPrompt variable
+                deferredPrompt = null;
+                // Remove the install banner
+                removeInstallBanner();
+            });
+        }
+
+        function dismiss() {
+            // Clear the deferredPrompt variable
+            deferredPrompt = null;
+            // Remove the install banner
+            removeInstallBanner();
+        }
+
+        function removeInstallBanner() {
+            // Remove the banner from the page
+            let banner = document.querySelector('.install-banner');
+            if (banner) {
+                banner.parentNode.removeChild(banner);
+            }
+        }
+
+
     </script>
 </head>
 
