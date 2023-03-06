@@ -68,6 +68,7 @@ body {
 
 h2 {
     color: #444;
+    text-shadow: 1px 1px 2px black;
     margin-bottom: 20px;
 }
 
@@ -79,6 +80,7 @@ h2 {
 
 .tab button {
     background-color: inherit;
+    text-shadow: 1px 1px 2px black;
     float: left;
     border: none;
     outline: none;
@@ -132,6 +134,32 @@ label {
     margin-bottom: 5px;
     font-weight: bold;
 }
+
+#tempUnit {
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #f1f1f1;
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.3s ease-in-out; /* Add transition property */
+}
+
+#tempUnit select {
+    border-radius: 1px;
+    background-color: #fff;
+}
+
+#tempUnit:focus {
+    outline: none;
+    box-shadow: 0 0 5px #2196f3; /* Add focus style */
+}
+
+#tempUnit option {
+    transition: all 0.3s ease-in-out; /* Add transition property to options as well */
+}
+
 
 input[type="number"] {
     padding: 8px;

@@ -462,78 +462,218 @@
 
 
 <div id="decarbTime" class="tabcontent">
-    <h2>Total Decarboxylation Time Predictor</h2>
-    <form id="decarbTimeForm">
-        <label for="decarbTimeThcaWeight">Starting weight of THCa (grams):</label>
-        <input type="number" placeholder="THIS CALCULATOR IS A WORK IN PROGRESS. " id="decarbTimeThcaWeight" name="thcaWeight" required>
-        <label for="completion">Desired completion level (%):</label>
-        <input type="number" placeholder="IT DOES NOT CURRENTLY WORK." id="completion" name="completion" min="0" max="100" required>
-        <label for="temperature">Decarboxylation temperature (F):</label>
-        <input type="number" placeholder="THIS CALCULATOR IS A WORK IN PROGRESS. IT DOES NOT CURRENTLY WORK." id="temperature" name="temperature" min="190" max="300" required>
-        <button type="button" onclick="calculateDecarbTime()">Calculate</button>
-        <label for="temperature">Decarboxylation temperature unit:</label>
-        <input type="number" placeholder="IT DOES NOT CURRENTLY WORK." id="tempUnit" name="tempUnit" min="0" required>
-        <select id="unit">
-            <option value="F">Fahrenheit</option>
-            <option value="C">Celsius</option>
-            <option value="K">Kelvin</option>
-        </select>
+    <div id="decarbTimeCalc">
+        <h2>THCa Decarboxylation Time Calculator</h2>
 
-    </form>
-    <div id="decarbTimeResult"></div>
+        <h2 style="color:red">THIS CALCULATOR IS A WORK IN PROGRESS - IT IS CURRENTLY NONFUNCTIONAL</h2>
+        <form id="decarbTimeForm">
+
+            <label for="sampleSize">Sample Size (grams):</label>
+            <input type="number" pattern="[0-9]*" id="sampleSize" name="sampleSize" placeholder="10 grams" required>
+
+            <label for="thcaConcentration">THCa Concentration:</label>
+            <input type="number" pattern="[0-9]*" id="thcaConcentration" name="percentDecarboxylation" placeholder="67.43%" min="0.01" max="99.99">
+
+            <label for="percentDecarboxylation">Percent Decarboxylation:</label>
+            <input type="number" pattern="[0-9]*" id="percentDecarboxylation" name="percentDecarboxylation" placeholder="80" min="1" max="100" required>
+
+            <label for="tempUnit">Temperature Unit:</label>
+            <select id="tempUnit" name="tempUnit" required>
+                <option value="C">Celsius (&#176;C)</option>
+                <option value="F">Fahrenheit (&#176;F)</option>
+                <option value="K">Kelvin (K)</option>
+            </select>
+
+            <label for="temperature">Temperature:</label>
+            <input type="number" step="any" id="temperature" name="temperature" placeholder="200&#176" required>
+
+            <br><br>
+
+            <button type="button" onclick="calculateDecarbTime()">Calculate</button>
+
+        </form>
+        <div id="decarbTimeResult"></div>
+        <br>
+        <div id="timeDescription">
+            <button class="spoiler-btn" onclick="toggleSpoiler('timeInstructions')"><b>Instructions:</b></button>
+            <div id="timeInstructions" class="spoiler-content">
+                <p>This tool estimates the time required to decarboxylate a sample of THCa (tetrahydrocannabinolic acid) to &#8710;9-THC (tetrahydrocannabinol) based on the sample size, desired percent decarboxylation, and decarboxylation temperature.</p>
+
+                <p>To use this tool, follow these steps:</p>
+                <ol>
+                    <li>Enter the sample size (in grams) in the "Sample Size" field.</li>
+                    <li>Enter the desired percent decarboxylation (up to 99.9%) in the "Percent Decarboxylation" field.</li>
+                    <li>Enter the decarboxylation temperature in the "Temperature" field.</li>
+                    <li>Select the temperature unit (Celsius or Fahrenheit) in the "Temperature Unit" field.</li>
+                    <li>Click the "Calculate" button to generate the results.</li>
+                </ol>
+
+                <p>The tool uses the Arrhenius equation to calculate the rate constant (k) for the decarboxylation reaction, and estimates the time required for the sample to reach the desired percent decarboxylation based on the initial concentration of THCa, decarboxylation efficiency, and heating method.</p>
+
+                <p>Please note that the estimates should be used as guidance rather than concrete values, as the actual time required may be affected by factors such as sample purity, decarboxylation efficiency, and heating method.</p>
+
+                <p>If there are any errors in the input values, such as negative values or empty fields, an error message will be displayed.</p>
+
+            </div> <br>
+            <button class="spoiler-btn" onclick="toggleSpoiler('timeFormulas')"><b>Formulas:</b></button>
+            <div id="timeFormulas" class="spoiler-content">
+                <br>
+                <div id="plot"></div>
+                <br>
+            </div><br>
+
+        </div>
+    </div>
 </div>
 
+
 <script>
-    function calculateDecarbTime() {
-        const thcaWeight = document.getElementById("decarbTimeThcaWeight").valueAsNumber;
-        const completion = document.getElementById("completion").valueAsNumber / 100;
-        const temperature = document.getElementById("temperature").valueAsNumber;
-        const tempUnit = document.getElementById("tempUnit").value;
 
-        console.log("Input values:");
-        console.log(" thcaWeight = " + thcaWeight);
-        console.log(" completion = " + completion);
-        console.log(" temperature = " + temperature);
+    function formatDuration(duration) {
+        var seconds = Math.floor((duration / 1000) % 60);
+        var minutes = Math.floor((duration / (1000 * 60)) % 60);
+        var hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+        var days = Math.floor(duration / (1000 * 60 * 60 * 24));
+        var weeks = Math.floor(duration / (1000 * 60 * 60 * 24 * 7));
+        var months = Math.floor(duration / (1000 * 60 * 60 * 24 * 30));
+        var years = Math.floor(duration / (1000 * 60 * 60 * 24 * 365));
 
-        const thcaMolarMass = 358.5;
-        const activationEnergy = 75;
-        const gasConstant = 8.3145;
-
-        // Convert temperature to Kelvin if necessary
-        let kelvin = temperature;
-        if (tempUnit === "C") {
-            kelvin = temperature + 273.15;
-        } else if (tempUnit === "F") {
-            const fahrenheitTemp = (temperature - 32) * 5 / 9;
-            kelvin = fahrenheitTemp + 273.15;
+        var parts = [];
+        if (years) {
+            parts.push(years + ' year' + (years > 1 ? 's' : ''));
         }
-
-        console.log("Constants:");
-        console.log(" thcaMolarMass = " + thcaMolarMass);
-        console.log(" activationEnergy = " + activationEnergy);
-        console.log(" gasConstant = " + gasConstant);
-
-        const rateConstant = Math.exp(-1 * (activationEnergy * 1000) / (gasConstant * kelvin));
-        const initialConcentration = thcaWeight / thcaMolarMass;
-        const desiredConcentration = Math.max(0, initialConcentration * (1 - completion));
-        let time;
-
-        if (initialConcentration < desiredConcentration) {
-            time = Math.log(initialConcentration / desiredConcentration) / (-1 * rateConstant * 3600);
-        } else {
-            time = Math.log(desiredConcentration / initialConcentration) / (rateConstant * 3600);
+        if (months) {
+            parts.push(months + ' month' + (months > 1 ? 's' : ''));
         }
-
-        console.log("Calculated values:");
-        console.log(" rateConstant = " + rateConstant);
-        console.log(" initialConcentration = " + initialConcentration);
-        console.log(" desiredConcentration = " + desiredConcentration);
-        console.log(" time = " + time);
-        document.getElementById("decarbTimeResult").innerHTML = "<span style='color: red'><b><br>This calculator does not currently work.</b></span>";
-        // document.getElementById("decarbTimeResult").innerHTML = "Total decarboxylation time: " + time.toFixed(2) + " hours";
+        if (weeks) {
+            parts.push(weeks + ' week' + (weeks > 1 ? 's' : ''));
+        }
+        if (days) {
+            parts.push(days + ' day' + (days > 1 ? 's' : ''));
+        }
+        if (hours) {
+            parts.push(hours + ' hour' + (hours > 1 ? 's' : ''));
+        }
+        if (minutes) {
+            parts.push(minutes + ' minute' + (minutes > 1 ? 's' : ''));
+        }
+        if (seconds) {
+            parts.push(seconds + ' second' + (seconds > 1 ? 's' : ''));
+        }
+        if (!parts.length) {
+            parts.push('0 seconds');
+        }
+        return parts.join(' ');
     }
 
 
+    function calculateDecarbTime() {
+        const sampleSizeInput = document.getElementById("sampleSize");
+        const percentDecarboxylationInput = document.getElementById("percentDecarboxylation");
+        const temperatureInput = document.getElementById("temperature");
+        const thcaConcentrationInput = document.getElementById("thcaConcentration");
+        const tempUnitInput = document.getElementById("tempUnit");
+        const resultOutput = document.getElementById("decarbTimeResult");
+
+        const sampleSize = sampleSizeInput.value;
+        const thcaConcentration = thcaConcentrationInput.value;
+        const percentDecarboxylation = percentDecarboxylationInput.value;
+        const temperature = temperatureInput.value;
+        const tempUnit = tempUnitInput.value;
+
+        if (!sampleSize || sampleSize < 0 || !percentDecarboxylation || percentDecarboxylation < 1  || !temperature || temperature < 0) {
+            resultOutput.innerHTML = "<p>Please enter valid input values.</p>";
+        } else if (temperature < 80 && tempUnit === "C" || temperature < 176 && tempUnit === "F" || temperature < 353.15 && tempUnit === "K") {
+            resultOutput.innerHTML = "<p>Please enter input value higher than 80&#176;C, 176&#176;F, or 353.15K.<br>Note: THCa does not decarboxylate at an accurately or easily quantified rate below these temperatures.</p>";
+        } else {
+        const decarbTime = decarboxylationTime(temperature, tempUnit);
+        resultOutput.innerHTML = "<p>Estimated decarboxylation time: " + decarbTime + "</p>";
+        }
+    }
+
+    function decarboxylationTime(temperature, tempUnit) {
+        console.log(`temperature: ${temperature} \n tempUnit: ${tempUnit}`);
+
+        temperature = parseFloat(temperature);
+
+        // Convert temperature to Kelvin if it's not already in Kelvin
+        if (tempUnit === "C") {
+            temperature = temperature + 273.15; // Celsius to Kelvin conversion
+        } else if (tempUnit === "F") {
+            temperature = (temperature + 459.67) * (5 / 9); // Fahrenheit to Kelvin conversion
+        }
+
+        console.log(`temperature after conversion (in Kelvin): ${temperature}`);
+
+        // Calculate the rate constant k using the known rate constants and the input temperature
+        const temperaturesCelsius = [80, 100, 120, 140, 160];
+        const temperaturesKelvin = temperaturesCelsius.map(tempC => tempC + 273.15);
+        const rateConstants = [0.057, 0.376, 0.795, 1.410, 2.819]; // rate constants at different temperatures
+
+        if (temperature < 353.15) {
+            temperature = 353.15;
+        }
+
+        let k = null;
+        for (let i = 0; i < temperaturesKelvin.length - 1; i++) {
+            if (temperature >= temperaturesKelvin[i] && temperature < temperaturesKelvin[i+1]) {
+                const slope = (Math.log(rateConstants[i+1]) - Math.log(rateConstants[i])) / (1 / temperaturesKelvin[i+1] - 1 / temperaturesKelvin[i]);
+                k = Math.exp(Math.log(rateConstants[i]) + slope * (1 / temperature - 1 / temperaturesKelvin[i]));
+                break;
+            }
+        }
+        if (k === null) {
+            // If the input temperature is outside the range of known temperatures, then calculate k using the last known rate constant and the given formula
+            const slope = (Math.log(rateConstants[rateConstants.length - 1]) - Math.log(rateConstants[rateConstants.length - 2])) / (1 / temperaturesKelvin[temperaturesKelvin.length - 1] - 1 / temperaturesKelvin[temperaturesKelvin.length - 2]);
+            k = Math.exp(Math.log(rateConstants[rateConstants.length - 2]) + slope * (1 / temperature - 1 / temperaturesKelvin[temperaturesKelvin.length - 2]));
+        }
+
+        console.log(`k: ${k}`);
+
+        return k;
+    }
+
+
+</script>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<script>
+
+            // PLOT JS
+            const temperatures = Array.from(Array(84), (_, i) => 80 + i * 5);
+
+            const rateConstants = temperatures.map(temp => decarboxylationTime(temp, 'C'));
+
+            if (rateConstants.some(constant => constant === 0)) {
+                console.log('Warning: Rate constant is 0 for some temperatures outside the known range');
+            }
+
+            const plotData = [{
+                x: temperatures,
+                y: rateConstants,
+                mode: 'lines+markers',
+                line: { shape: 'spline', smoothing: 1.5},
+                marker: { size: 6 }
+            }];
+
+            const layout = {
+                title: 'Decarboxylation Rate Constants vs Temperature',
+                xaxis: { title: 'Temperature (&#176;C)', range: [80, 200]},
+                yaxis: { title: 'Rate Constant (min^-1)', type: 'log'}
+            };
+
+
+
+            Plotly.newPlot('plot', plotData, layout);
+
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
+
+
+<script>
 
     // Tab Javascript & Dark Mode
 
