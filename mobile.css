@@ -35,35 +35,32 @@ body {
     overflow: hidden;
     overflow-x: auto;
     transition: max-height 0.3s ease;
-    max-width: 90%;;
+    max-width: 90%;
 }
 
-.tabcontent {
-    background-color: #f2f2f2;
-    color: #1c1c1c;
-}
-
-.tabcontent.dark {
-    background-color: #1c1c1c;
-    color: #f2f2f2;
-}
-
+.tabcontent,
 .tablinks {
     background-color: #f2f2f2;
     color: #1c1c1c;
 }
 
-.tablinks.active, .tablinks:hover {
-    background-color: #ddd;
-}
-
+.tabcontent.dark,
 .tablinks.dark {
     background-color: #1c1c1c;
     color: #f2f2f2;
 }
 
-.tablinks.dark.active, .tablinks.dark:hover {
-    background-color: #555;
+.tablinks,
+.tablinks.dark {
+    background-color: #f2f2f2;
+    color: #1c1c1c;
+}
+
+.tablinks.active,
+.tablinks:hover,
+.tablinks.dark.active,
+.tablinks.dark:hover {
+    background-color: #ddd;
 }
 
 h2 {
@@ -135,6 +132,7 @@ label {
     font-weight: bold;
 }
 
+input[type="number"],
 #tempUnit {
     padding: 8px;
     border: none;
@@ -143,7 +141,6 @@ label {
     margin-bottom: 10px;
     width: 100%;
     box-sizing: border-box;
-    transition: all 0.3s ease-in-out; /* Add transition property */
 }
 
 #tempUnit select {
@@ -153,28 +150,16 @@ label {
 
 #tempUnit:focus {
     outline: none;
-    box-shadow: 0 0 5px #2196f3; /* Add focus style */
+    box-shadow: 0 0 5px #2196f3;
 }
 
 #tempUnit option {
-    transition: all 0.3s ease-in-out; /* Add transition property to options as well */
-}
-
-
-input[type="number"] {
-    padding: 8px;
-    border: none;
-    border-radius: 4px;
-    background-color: #f1f1f1;
-    margin-bottom: 10px;
-    width: 100%;
-    box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
 }
 
 #decarbTime {
     background-color: #ff7d7d;
 }
-
 
 #decarbProgress {
     background-color: #ffd75e;
@@ -210,16 +195,16 @@ input[type="number"] {
     max-height: 100%;
 }
 
-
 @keyframes fade-out {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
-
-
 @media (prefers-color-scheme: dark) {
-
     #splash-screen {
         position: fixed;
         top: 0;
@@ -255,7 +240,7 @@ input[type="number"] {
         overflow: hidden;
         overflow-x: auto;
         transition: max-height 0.3s ease;
-        max-width: 90%;;
+        max-width: 90%;
     }
 
     #decarbTime {
@@ -273,47 +258,26 @@ input[type="number"] {
         background-color: #4a76a8;
     }
 
-    #thcaToThc h2 {
-        color: #fff;
-    }
-
-    #thcToThca h2 {
-        color: #fff;
-    }
-
-    #decarbProgress h2 {
-        color: #fff;
-    }
-
+    #thcaToThc h2,
+    #thcToThca h2,
+    #decarbProgress h2,
     #decarbTime h2 {
         color: #fff;
     }
-
 }
 
-#YieldSeparator {
+#YieldSeparator,
+#finderSeparator,
+#progressSeparator {
     color: #000;
-    border: none; /* remove the default border */
-    height: 1px; /* set the height of the line */
-    margin: 20px 0; /* add some margin around the line */
-    border-top: 1px solid #333; /* add a border on top of the line */
-}
-
-
-#finderSeparator {
-    color: #000;
-    border: none; /* remove the default border */
-    height: 1px; /* set the height of the line */
-    margin: 20px 0; /* add some margin around the line */
-    border-top: 1px solid #333; /* add a border on top of the line */
+    border: none;
+    height: 1px;
+    margin: 20px 0;
+    border-top: 1px solid #333;
 }
 
 #progressSeparator {
     color: #fff;
-    border: none; /* remove the default border */
-    height: 1px; /* set the height of the line */
-    margin: 20px 0; /* add some margin around the line */
-    border-top: 1px solid #333; /* add a border on top of the line */
 }
 
 footer {
@@ -349,28 +313,22 @@ footer {
 
 /* MATHJAX */
 
-/* Set the font size of MathJax equations */
 .MathJax_Display {
     font-size: 1em;
 }
 
-/* Set the width of the container */
 .container {
     width: 90%;
-    max-width: 800px; /* Set a maximum width to prevent the container from becoming too wide */
+    max-width: 800px;
 }
 
-/* Force MathJax equations to break into multiple lines on mobile devices */
 @media (max-width: 768px) {
-        .container .MathJax_Display {
-            max-width: 250px;
-            display: block;
-            margin: 0 auto;
-        }
-
+    .container .MathJax_Display {
+        max-width: 250px;
+        display: block;
+        margin: 0 auto;
+    }
 }
-
-
 
 /* Modal */
 dialog {
@@ -392,8 +350,6 @@ dialog::backdrop {
     z-index: 9998;
 }
 
-/* Add the following styles to create the close button */
-
 #closeButton {
     background-color: #fff;
     color: #bdbdbd;
@@ -414,15 +370,89 @@ dialog #closeButton:hover {
     transition: all 0.3s ease;
 }
 
+#cartridgeIsolateCalculator {
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#calcForm,
+#cartridgeIsolateCalculator form {
+    margin-bottom: 20px;
+}
+
+#calcForm label,
+#cartridgeIsolateCalculator form label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+#calcForm input[type="number"],
+#cartridgeIsolateCalculator form input[type="number"] {
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #f1f1f1;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#calcForm button[type="button"],
+#cartridgeIsolateCalculator form button[type="button"] {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+#calcResult {
+    font-size: 18px;
+}
+
+#cartridgeIsolateCalculator form #calcResult {
+    font-size: 20px;
+}
+
+@media screen and (max-width: 600px) {
+    #cartridgeIsolateCalculator {
+        padding: 10px;
+    }
+
+    #calcForm label,
+    #cartridgeIsolateCalculator form label {
+        margin-bottom: 5px;
+    }
+
+    #calcForm input[type="number"],
+    #cartridgeIsolateCalculator form input[type="number"] {
+        padding: 6px;
+        font-size: 14px;
+    }
+
+    #calcForm button[type="button"],
+    #cartridgeIsolateCalculator form button[type="button"] {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    #calcResult,
+    #cartridgeIsolateCalculator form #calcResult {
+        font-size: 16px;
+    }
+}
 
 /* Mobiles */
-
-
 @media screen and (min-width: 600px) {
     .tab button {
         width: 25%;
     }
 }
+
 @media (max-width: 900px) {
     #logo-container {
         width: 13%;
@@ -430,8 +460,8 @@ dialog #closeButton:hover {
         position: relative;
     }
 }
-@media screen and (max-width: 600px) {
 
+@media screen and (max-width: 600px) {
     #logo-container {
         width: 20%;
         padding-top: 15%;
@@ -442,19 +472,17 @@ dialog #closeButton:hover {
         width: 100%;
     }
 
-    .tab button.active {
-        border: none;
-    }
-
-    .tab button:focus {
-        border: none;
-    }
-
+    .tab button.active,
+    .tab button:focus,
     .tab button.active:focus {
         border: none;
     }
 
-    #thcaToThcForm, #thcToThcaForm, #decarbTimeForm {
+    #thcaToThcForm,
+    #thcToThcaForm,
+    #decarbTimeForm,
+    #decarbProgressForm,
+    #cartridgeIsolateCalculator form {
         max-width: 90%;
     }
 
@@ -462,25 +490,14 @@ dialog #closeButton:hover {
         pointer-events: auto;
     }
 
-    #decarbProgressForm {
-        max-width: 90%;
-    }
-
-    #decarbProgressDescription {
+    #decarbProgressDescription,
+    #thcaToThcResult,
+    #thcToThcaResult,
+    #decarbProgressResult,
+    #cartridgeIsolateCalculator form #calcResult {
         max-width: 90%;
         margin-left: 0;
         margin-top: 20px;
-    }
-
-    #thcaToThcResult, #thcToThcaResult {
-        font-size: 20px;
-        margin-top: 10px;
-    }
-
-    #decarbProgressResult {
-        font-size: 20px;
-        margin-top: 10px;
-        margin-left: 0;
     }
 
     label[for="completion"] {
@@ -491,4 +508,3 @@ dialog #closeButton:hover {
         margin-top: 20px;
     }
 }
-

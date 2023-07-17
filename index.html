@@ -90,13 +90,14 @@
     <button class="tablinks" onclick="openTab(event, 'thcToThca')">THCa Input Finder</button>
     <button class="tablinks" onclick="openTab(event, 'decarbProgress')">Decarboxylation Progress Tracker</button>
     <button class="tablinks" onclick="openTab(event, 'decarbTime')">Total Decarboxylation Time Predictor</button>
+    <button class="tablinks" onclick="openTab(event, 'cartridgeIsolateCalculator')">Cartridge Isolate Calculator</button>
 </div>
 
 <div id="thcaToThc" class="tabcontent">
     <h2>THCa to THC Decarboxylation Yield Calculator</h2>
     <form id="thcaToThcForm">
         <label for="thcaWeight">Weight of THCa (grams):</label>
-        <input type="number" pattern="[0-9]*" placeholder="34.2 grams" id="thcaWeight" name="thcaWeight" required oninput="calculateThcaToThc()">
+        <input type="number" pattern="[0-9]*\.?[0-9]*" placeholder="34.2 grams" id="thcaWeight" name="thcaWeight" required oninput="calculateThcaToThc()">
         <button type="button" onclick="calculateThcaToThc()">Calculate</button>
     </form>
 
@@ -107,11 +108,11 @@
         <div id="dcYieldInstructions" class="spoiler-content">
             <p>To use the THCa to THC Decarboxylation Yield Calculator, follow these simple steps:</p>
             <ol>
-                <li>Enter the weight of THCa in grams in the "Weight of THCa" field of the form.</li>
-                <li>Click on the "Calculate" button to generate the result.</li>
+                <li>Enter the weight of THCa in grams in the &quot;Weight of&quot;THCa&quot; field of the form.</li>
+                <li>Click on the &quot;Calc&quot;late&quot; button to generate the result.</li>
                 <li>The estimated yield of THC produced and the estimated CO2 loss will be displayed below the form.</li>
             </ol>
-            <p>Please enter a positive value between 0.1 and 10 billion in the "Weight of THCa" field. Any value outside this range will result in an error message.</p>
+            <p>Please enter a positive value between 0.1 and 10 billion in the &quot;Weight of&quot;THCa&quot; field. Any value outside this range will result in an error message.</p>
         </div>
         <br>
         <button class="spoiler-btn" onclick="toggleSpoiler('dcYieldCalculations')"><b>Formula(s) Used:</b></button>
@@ -235,7 +236,7 @@
     <h2>THCa Input Finder</h2>
     <form id="thcToThcaForm">
         <label for="thcWeight">Desired Weight of THC (grams):</label>
-        <input type="number" pattern="[0-9]*" placeholder="67 grams" id="thcWeight" name="thcWeight" max="9999999999" required oninput="calculateThcToThca()">
+        <input type="number" pattern="[0-9]*\.?[0-9]*" placeholder="67 grams" id="thcWeight" name="thcWeight" max="9999999999" required oninput="calculateThcToThca()">
         <button type="button" onclick="calculateThcToThca()">Calculate</button>
     </form>
     <div id="thcToThcaResult"></div>
@@ -247,7 +248,7 @@
             <p><em>Instructions:</em></p>
             <ol>
                 <li>Input the weight of THC you want to produce in grams into the designated field.</li>
-                <li>Click on the "Calculate" button to generate the result.</li>
+                <li>Click on the &quot;Calc&quot;late&quot; button to generate the result.</li>
                 <li>The estimated weight of THCA required to produce the desired weight of THC will be displayed below the form.</li>
             </ol>
         </div>
@@ -320,9 +321,9 @@
             <div id="progressInstructions" class="spoiler-content">
                 <p>To use the tool, follow these steps:</p>
                 <ol>
-                    <li>Enter the starting weight of THCA (in grams) in the "Input Weight of THCa" field.</li>
-                    <li>Enter the current weight of decarboxylated material (in grams) in the "Current Weight of THCa" field.</li>
-                    <li>Click the "Calculate" button to generate the results.</li>
+                    <li>Enter the starting weight of THCA (in grams) in the &quot;Input Weight of&quot;THCa&quot; field.</li>
+                    <li>Enter the current weight of decarboxylated material (in grams) in the &quot;Current Weight of&quot;THCa&quot; field.</li>
+                    <li>Click the &quot;Calculate&quot; button to generate the results.</li>
                 </ol>
                 <p>The tool will utilize a specialized formula to estimate the predicted weight of decarboxylated material and the percentage of decarboxylation progress. The formula assumes complete decarboxylation and may be affected by factors such as temperature, time, and the starting material. As such, the estimates should be used as guidance rather than concrete values.</p>
                 <p>If there are any errors in the input values, such as negative values or empty fields, an error message will be displayed.</p>
@@ -501,11 +502,11 @@
 
                 <p>To use this tool, follow these steps:</p>
                 <ol>
-                    <li>Enter the sample size (in grams) in the "Sample Size" field.</li>
-                    <li>Enter the desired percent decarboxylation (up to 99.9%) in the "Percent Decarboxylation" field.</li>
-                    <li>Enter the decarboxylation temperature in the "Temperature" field.</li>
-                    <li>Select the temperature unit (Celsius or Fahrenheit) in the "Temperature Unit" field.</li>
-                    <li>Click the "Calculate" button to generate the results.</li>
+                    <li>Enter the sample size (in grams) in the &quot;Sample&quot;Size&quot; field.</li>
+                    <li>Enter the desired percent decarboxylation (up to 99.9%) in the &quot;Percent Decarboxyl&quot;tion&quot; field.</li>
+                    <li>Enter the decarboxylation temperature in the &quot;Temper&quot;ture&quot; field.</li>
+                    <li>Select the temperature unit (Celsius or Fahrenheit) in the &quot;Temperature&quot;Unit&quot; field.</li>
+                    <li>Click the &quot;Calc&quot;late&quot; button to generate the results.</li>
                 </ol>
 
                 <p>The tool uses the Arrhenius equation to calculate the rate constant (k) for the decarboxylation reaction, and estimates the time required for the sample to reach the desired percent decarboxylation based on the initial concentration of THCa, decarboxylation efficiency, and heating method.</p>
@@ -529,7 +530,101 @@
 
 <script>
 
+    function calculateDecarbTime() {
+        const sampleSizeInput = document.getElementById("sampleSize");
+        const percentDecarboxylationInput = document.getElementById("percentDecarboxylation");
+        const temperatureInput = document.getElementById("temperature");
+        const thcaConcentrationInput = document.getElementById("thcaConcentration");
+        const tempUnitInput = document.getElementById("tempUnit");
+        const resultOutput = document.getElementById("decarbTimeResult");
+
+        const sampleSize = sampleSizeInput.value;
+
+
+        let thcaConcentration = thcaConcentrationInput.value;
+        if (thcaConcentration > 1) {
+            thcaConcentration = thcaConcentration / 100; // if value greater than 1, convert percent to decimal
+        }
+
+
+        let percentDecarboxylation = percentDecarboxylationInput.value;
+
+
+
+        if (percentDecarboxylation > 1) {
+            percentDecarboxylation = percentDecarboxylation / 100; // if value greater than 1, convert percent to decimal
+            if (percentDecarboxylation >= 0.99) {
+                percentDecarboxylation = 0.98;
+            }
+        }
+
+
+        const temperature = temperatureInput.value;
+        const tempUnit = tempUnitInput.value;
+
+        if (!sampleSize || sampleSize < 0 || !percentDecarboxylation  || !temperature) {
+            resultOutput.innerHTML = "<p>Please enter valid input values.</p>";
+        } else if (temperature < 80 && tempUnit === "C" || temperature < 176 && tempUnit === "F" || temperature < 353.15 && tempUnit === "K") {
+            resultOutput.innerHTML = "<p>Please enter input value higher than 80&#176;C, 176&#176;F, or 353.15K.<br>Note: THCa does not decarboxylate at an accurately or easily quantified rate below these temperatures.</p>";
+        } else {
+        const decarbTime = predictTime(sampleSize, thcaConcentration, percentDecarboxylation, temperature, tempUnit);
+        resultOutput.innerHTML = "<p>Estimated decarboxylation time: " + decarbTime + "</p>";
+        }
+    }
+
+    function predictTime(sampleSize, thcaConcentration, percentDecarboxylation, temperature, tempUnit) {
+
+        // Calculate Rate Constant
+        const rateConstant = calculateRateConstant(temperature,tempUnit);
+
+        // Calculate initial mass of THCA in grams
+        const initialMass = sampleSize * thcaConcentration / 1000;
+
+        // Calculate target fraction of THCA
+        const targetFraction = 1 - percentDecarboxylation;
+
+        // Calculate decarboxylation time in seconds using Equation 3
+        const timeSec = -Math.log(targetFraction) / rateConstant;
+
+        console.log(`It will take ${timeSec} seconds for ${percentDecarboxylation * 100}% decarboxylation of THCa.`);
+
+        return formatDuration(timeSec * 1000);
+    }
+
+
+
+    function calculateRateConstant(temperature, tempUnit) {
+        console.log(`temperature: ${temperature} \n tempUnit: ${tempUnit}`);
+
+        temperature = parseFloat(temperature);
+
+        // Convert temperature to Kelvin if it's not already in Kelvin
+        if (tempUnit === "C") {
+            temperature = temperature + 273.15; // Celsius to Kelvin conversion
+        } else if (tempUnit === "F") {
+            temperature = (temperature + 459.67) * (5 / 9); // Fahrenheit to Kelvin conversion
+        }
+
+        console.log(`temperature after conversion (in Kelvin): ${temperature}`);
+
+        // Constants for THCA decarboxylation
+        const A = 0.41 * Math.pow(10, 5); // Pre-exponential factor in s^-1
+        const Ea = 58.7 * 1000; // Activation energy in J/mol
+        const R = 8.3145; // Universal gas constant in J/mol*K
+
+        // Calculate the rate constant k using the Arrhenius equation
+        const k = A * Math.exp(-Ea / (R * temperature));
+
+        console.log(`k: ${k}`);
+
+        return k;
+    }
+
+
+
+
     function formatDuration(duration) {
+        var milliseconds = Math.floor(duration % 1000);
         var seconds = Math.floor((duration / 1000) % 60);
         var minutes = Math.floor((duration / (1000 * 60)) % 60);
         var hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
@@ -559,78 +654,15 @@
         }
         if (seconds) {
             parts.push(seconds + ' second' + (seconds > 1 ? 's' : ''));
+
+        }
+        if (milliseconds) {
+            parts.push(milliseconds + ' millisecond' + (milliseconds > 1 ? 's' : ''));
         }
         if (!parts.length) {
-            parts.push('0 seconds');
+            parts.push('0 milliseconds');
         }
         return parts.join(' ');
-    }
-
-
-    function calculateDecarbTime() {
-        const sampleSizeInput = document.getElementById("sampleSize");
-        const percentDecarboxylationInput = document.getElementById("percentDecarboxylation");
-        const temperatureInput = document.getElementById("temperature");
-        const thcaConcentrationInput = document.getElementById("thcaConcentration");
-        const tempUnitInput = document.getElementById("tempUnit");
-        const resultOutput = document.getElementById("decarbTimeResult");
-
-        const sampleSize = sampleSizeInput.value;
-        const thcaConcentration = thcaConcentrationInput.value;
-        const percentDecarboxylation = percentDecarboxylationInput.value;
-        const temperature = temperatureInput.value;
-        const tempUnit = tempUnitInput.value;
-
-        if (!sampleSize || sampleSize < 0 || !percentDecarboxylation || percentDecarboxylation < 1  || !temperature || temperature < 0) {
-            resultOutput.innerHTML = "<p>Please enter valid input values.</p>";
-        } else if (temperature < 80 && tempUnit === "C" || temperature < 176 && tempUnit === "F" || temperature < 353.15 && tempUnit === "K") {
-            resultOutput.innerHTML = "<p>Please enter input value higher than 80&#176;C, 176&#176;F, or 353.15K.<br>Note: THCa does not decarboxylate at an accurately or easily quantified rate below these temperatures.</p>";
-        } else {
-        const decarbTime = decarboxylationTime(temperature, tempUnit);
-        resultOutput.innerHTML = "<p>Estimated decarboxylation time: " + decarbTime + "</p>";
-        }
-    }
-
-    function decarboxylationTime(temperature, tempUnit) {
-        console.log(`temperature: ${temperature} \n tempUnit: ${tempUnit}`);
-
-        temperature = parseFloat(temperature);
-
-        // Convert temperature to Kelvin if it's not already in Kelvin
-        if (tempUnit === "C") {
-            temperature = temperature + 273.15; // Celsius to Kelvin conversion
-        } else if (tempUnit === "F") {
-            temperature = (temperature + 459.67) * (5 / 9); // Fahrenheit to Kelvin conversion
-        }
-
-        console.log(`temperature after conversion (in Kelvin): ${temperature}`);
-
-        // Calculate the rate constant k using the known rate constants and the input temperature
-        const temperaturesCelsius = [80, 100, 120, 140, 160];
-        const temperaturesKelvin = temperaturesCelsius.map(tempC => tempC + 273.15);
-        const rateConstants = [0.057, 0.376, 0.795, 1.410, 2.819]; // rate constants at different temperatures
-
-        if (temperature < 353.15) {
-            temperature = 353.15;
-        }
-
-        let k = null;
-        for (let i = 0; i < temperaturesKelvin.length - 1; i++) {
-            if (temperature >= temperaturesKelvin[i] && temperature < temperaturesKelvin[i+1]) {
-                const slope = (Math.log(rateConstants[i+1]) - Math.log(rateConstants[i])) / (1 / temperaturesKelvin[i+1] - 1 / temperaturesKelvin[i]);
-                k = Math.exp(Math.log(rateConstants[i]) + slope * (1 / temperature - 1 / temperaturesKelvin[i]));
-                break;
-            }
-        }
-        if (k === null) {
-            // If the input temperature is outside the range of known temperatures, then calculate k using the last known rate constant and the given formula
-            const slope = (Math.log(rateConstants[rateConstants.length - 1]) - Math.log(rateConstants[rateConstants.length - 2])) / (1 / temperaturesKelvin[temperaturesKelvin.length - 1] - 1 / temperaturesKelvin[temperaturesKelvin.length - 2]);
-            k = Math.exp(Math.log(rateConstants[rateConstants.length - 2]) + slope * (1 / temperature - 1 / temperaturesKelvin[temperaturesKelvin.length - 2]));
-        }
-
-        console.log(`k: ${k}`);
-
-        return k;
     }
 
 
@@ -643,32 +675,164 @@
             // PLOT JS
             const temperatures = Array.from(Array(84), (_, i) => 80 + i * 5);
 
-            const rateConstants = temperatures.map(temp => decarboxylationTime(temp, 'C'));
+            const rateConstants = temperatures.map(temp => calculateRateConstant(temp, 'C'));
 
             if (rateConstants.some(constant => constant === 0)) {
                 console.log('Warning: Rate constant is 0 for some temperatures outside the known range');
             }
 
+            const interpTemperatures = [];
+            const interpRateConstants = [];
+
+            for (let i = 0; i < temperatures.length - 1; i++) {
+                const temp1 = temperatures[i];
+                const temp2 = temperatures[i + 1];
+                const rateConst1 = rateConstants[i];
+                const rateConst2 = rateConstants[i + 1];
+                const numInterpPoints = 41;
+
+                for (let j = 0; j < numInterpPoints; j++) {
+                    const t = j / (numInterpPoints - 1);
+                    const temp = temp1 + t * (temp2 - temp1);
+                    const rateConst = rateConst1 + t * (rateConst2 - rateConst1);
+                    interpTemperatures.push(temp);
+                    interpRateConstants.push(rateConst);
+                }
+            }
+
+            const experimentalDataTemperatures = [80, 100, 120, 140, 160];
+            const experimentalDataConstants = [0.057, 0.376, 0.795, 1.410, 2.819];
+
+
             const plotData = [{
+                x: interpTemperatures,
+                y: interpRateConstants,
+                mode: 'lines',
+                line: { shape: 'spline', smoothing: 1.5},
+                hovertemplate: '<b>Temperature:</b> %{x}&#176;C<br><b>Rate Constant:</b> %{y:.3f} min^-1',
+                name: '<b>Interpolated Data</b>'
+            }, {
                 x: temperatures,
                 y: rateConstants,
-                mode: 'lines+markers',
-                line: { shape: 'spline', smoothing: 1.5},
-                marker: { size: 6 }
+                mode: 'markers',
+                marker: { size: 6 },
+                hovertemplate: '<b>Temperature:</b> %{x}&#176;C<br><b>Rate Constant:</b> %{y:.3f} min^-1',
+                name: '<b>Arrhenius Data</b>'
+            },
+                {
+                x: experimentalDataTemperatures,
+                y: experimentalDataConstants,
+                mode: 'markers',
+                marker: { size: 10, color: 'red' },
+                hovertemplate: '<b>Temperature:</b> %{x}&#176;C<br><b>Rate Constant:</b> %{y:.3f} min^-1',
+                name: '<b>Experimental Data</b>'
             }];
 
             const layout = {
                 title: 'Decarboxylation Rate Constants vs Temperature',
-                xaxis: { title: 'Temperature (&#176;C)', range: [80, 200]},
-                yaxis: { title: 'Rate Constant (min^-1)', type: 'log'}
+                xaxis: { title: 'Temperature (&#176;C)', range: [80, 200] },
+                yaxis: { title: 'Rate Constant (min^-1)', type: 'log' },
+                hovermode: 'closest',
+
             };
 
+            const config = {
+                modeBarButtonsToAdd: [{
+                    name: 'fullscreen',
+                    icon: Plotly.Icons.fullscreen,
+                    click: function(gd) {
+                        Plotly.update(gd, { width: window.screen.width, height: window.screen.height });
+                    }
+                }]
+            };
+
+            Plotly.newPlot('plot', plotData, layout, config);
 
 
-            Plotly.newPlot('plot', plotData, layout);
+
 
 
 </script>
+
+<div id="cartridgeIsolateCalculator">
+    <h2>Cartridge Isolate Calculator</h2>
+    <form id="calcForm">
+        <label for="cartCount">Number of Cartridges:</label>
+        <input type="number" pattern="[0-9]*" id="cartCount" name="cartCount" required>
+        <label for="cartCapacity">Capacity per Cartridge (grams):</label>
+        <input type="number" step="0.1" min="0" id="cartCapacity" name="cartWeight" required>
+        <label for="cbdPercentage">CBD Percentage:</label>
+        <input type="number" step="0.1" min="0" max="100" id="cbdPercentage" name="cbdPercentage" required>
+        <label for="thcaPercentage">THC Percentage:</label>
+        <input type="number" step="0.1" min="0" max="100" id="thcaPercentage" name="thcaPercentage" required>
+        <button type="button" onclick="calculateCartridgeIsolate()">Calculate</button>
+    </form>
+    <div id="calcResult"></div>
+</div>
+
+
+
+
+<script>
+
+    function calculateCartridgeIsolate() {
+        const cartCount = document.getElementById("cartCount").valueAsNumber;
+        const cartCapacity = document.getElementById("cartCapacity").valueAsNumber;
+        const cbdPercentage = document.getElementById("cbdPercentage").valueAsNumber;
+        const thcPercentage = document.getElementById("thcaPercentage").valueAsNumber;
+
+        // Validate CBD and THC percentages
+        const totalPercentage = cbdPercentage + thcPercentage;
+        if (totalPercentage !== 100) {
+            const result = document.getElementById("calcResult");
+            result.innerHTML = "Error: CBD and THC percentages must add up to 100%";
+            return;
+        }
+
+        // Validate cart count and capacity
+        if (cartCount <= 0 || cartCapacity <= 0) {
+            const result = document.getElementById("calcResult");
+            result.innerHTML = "Error: Invalid cart count or capacity";
+            return;
+        }
+
+        // Calculate total weight
+        const totalWeight = cartCount * cartCapacity;
+
+        // Calculate THC and THCa amounts based on percentages
+        const thcWeight = totalWeight * (thcPercentage / 100);
+        const thcaWeight = thcWeight / 0.877;
+        const co2Loss = thcaWeight - thcWeight;
+        const cbdWeight = totalWeight * (cbdPercentage / 100);
+
+        // Display the results
+        const result = document.getElementById("calcResult");
+        result.innerHTML =
+            "<br><b>THCa Required:</b> " +
+            thcaWeight.toFixed(2) +
+            " grams<br><b>THC Required:</b> " +
+            thcWeight.toFixed(2) +
+            " grams<br><b>Decarboxylation Loss (CO2):</b> " +
+            co2Loss.toFixed(2) +
+            " grams<br><b>CBD Required:</b> " +
+            cbdWeight.toFixed(2) +
+            " grams";
+    }
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
 
@@ -739,15 +903,15 @@
         <b>Use Limitation:</b> <em>1 user</em><br><br>
 
         <b>License Grant:</b><br> Licensor hereby grants to each recipient of the
-        Software ("you") a non-exclusive, non-transferable, royalty-free and
+        Software (&amp;quo&quot;&quot;you&quot;) a non-exclusive, non-transferable, royalty-free and
         fully-paid-up license, under all of the Licensor's copyright and
         patent rights, to use, copy, distribute, prepare derivative works of,
         publicly perform and display the Software, subject to the Use
         Limitation and the conditions set forth below.<br><br>
 
         <b>Use Limitation:</b><br> The license granted above allows use by up to the
-        number of users per entity set forth above (the "Use Limitation"). For
-        determining the number of users, "you" includes all affiliates,
+        number of users per entity set forth above (the &quot;Use Limit&quot;tion&quot;). For
+        determining the number of users, &amp;quo&quot;&quot;you&quot; includes all affiliates,
         meaning legal entities controlling, controlled by, or under common
         control with you. If you exceed the Use Limitation, your use is
         subject to payment of Licensor's then-current list price for licenses.<br><br>
@@ -760,7 +924,7 @@
         <b>Trademarks:</b><br> This license does not grant you any right in the
         trademarks, service marks, brand names or logos of Licensor.<br><br>
 
-        <b>DISCLAIMER:</b><br> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OR
+        <b>DISCLAIMER:</b><br> THE SOFTWARE IS PROVIDED &quot;&quot;S IS&quot;, WITHOUT WARRANTY OR
         CONDITION, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES
         OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
         NON INFRINGEMENT. LICENSORS HEREBY DISCLAIM ALL LIABILITY, WHETHER IN
