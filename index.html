@@ -306,9 +306,9 @@
         <h2>Decarboxylation Progress Tracker</h2>
         <form id="decarbProgressForm">
             <label for="thcaStartWeight">Input Weight of THCa (grams):</label>
-            <input type="number" pattern="[0-9]*" id="thcaStartWeight" name="thcaStartWeight" placeholder="114 grams" required oninput="calculateDecarbProgress()">
+            <input type="number" pattern="[0-9]*\.?[0-9]*" id="thcaStartWeight" name="thcaStartWeight" placeholder="114 grams" required oninput="calculateDecarbProgress()">
             <label for="thcDecarbedWeight">Current Weight of THCa (grams):</label>
-            <input type="number" pattern="[0-9]*" id="thcDecarbedWeight" name="thcDecarbedWeight" placeholder="100 grams" required oninput="calculateDecarbProgress()">
+            <input type="number" pattern="[0-9]*\.?[0-9]*" id="thcDecarbedWeight" name="thcDecarbedWeight" placeholder="100 grams" required oninput="calculateDecarbProgress()">
             <button type="button" onclick="calculateDecarbProgress()">Calculate</button>
         </form>
         <div id="decarbProgressResult"></div>
@@ -470,13 +470,13 @@
         <form id="decarbTimeForm">
 
             <label for="sampleSize">Sample Size (grams):</label>
-            <input type="number" pattern="[0-9]*" id="sampleSize" name="sampleSize" placeholder="10 grams" required>
+            <input type="number" pattern="[0-9]*\.?[0-9]*" id="sampleSize" name="sampleSize" placeholder="10 grams" required>
 
             <label for="thcaConcentration">THCa Concentration:</label>
-            <input type="number" pattern="[0-9]*" id="thcaConcentration" name="percentDecarboxylation" placeholder="67.43%" min="0.01" max="99.99">
+            <input type="number" pattern="[0-9]*\.?[0-9]*" id="thcaConcentration" name="percentDecarboxylation" placeholder="67.43%" min="0.01" max="99.99">
 
             <label for="percentDecarboxylation">Percent Decarboxylation:</label>
-            <input type="number" pattern="[0-9]*" id="percentDecarboxylation" name="percentDecarboxylation" placeholder="80" min="1" max="100" required>
+            <input type="number" pattern="[0-9]*\.?[0-9]*" id="percentDecarboxylation" name="percentDecarboxylation" placeholder="80" min="1" max="100" required>
 
             <label for="tempUnit">Temperature Unit:</label>
             <select id="tempUnit" name="tempUnit" required>
@@ -758,13 +758,13 @@
     <h2>Cartridge Isolate Calculator</h2>
     <form id="calcForm">
         <label for="cartCount">Number of Cartridges:</label>
-        <input type="number" pattern="[0-9]*" id="cartCount" name="cartCount" required>
+        <input type="number" pattern="[0-9]*\.?[0-9]*" id="cartCount" name="cartCount" required>
         <label for="cartCapacity">Capacity per Cartridge (grams):</label>
-        <input type="number" step="0.1" min="0" id="cartCapacity" name="cartWeight" required>
+        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" id="cartCapacity" name="cartWeight" required>
         <label for="cbdPercentage">CBD Percentage:</label>
-        <input type="number" step="0.1" min="0" max="100" id="cbdPercentage" name="cbdPercentage" required>
+        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="cbdPercentage" name="cbdPercentage" required>
         <label for="thcaPercentage">THC Percentage:</label>
-        <input type="number" step="0.1" min="0" max="100" id="thcaPercentage" name="thcaPercentage" required>
+        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="thcaPercentage" name="thcaPercentage" required>
         <button type="button" onclick="calculateCartridgeIsolate()">Calculate</button>
     </form>
     <div id="calcResult"></div>
