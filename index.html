@@ -49,34 +49,33 @@
     </div>
 
     <script>
+        window.addEventListener('load', function () {
+            var screenWidth = window.innerWidth;
+            var screenHeight = window.innerHeight;
+            var logo = document.getElementById('logo');
+            var logoWidth = logo.getBBox().width;
+            var logoHeight = logo.getBBox().height;
+            var logoRatio = logoWidth / logoHeight;
+            var container = document.getElementById('logo-container');
+            var containerWidth, containerHeight;
+            if (screenWidth / screenHeight > logoRatio) {
+                containerWidth = screenHeight * logoRatio;
+                containerHeight = screenHeight;
+            } else {
+                containerWidth = screenWidth;
+                containerHeight = screenWidth / logoRatio;
+            }
+            container.style.width = containerWidth + 'px';
+            container.style.height = containerHeight + 'px';
 
-        window.addEventListener('load', function() {
-        var screenWidth = window.innerWidth;
-        var screenHeight = window.innerHeight;
-        var logo = document.getElementById('logo');
-        var logoWidth = logo.getBBox().width;
-        var logoHeight = logo.getBBox().height;
-        var logoRatio = logoWidth / logoHeight;
-        var container = document.getElementById('logo-container');
-        var containerWidth, containerHeight;
-        if (screenWidth / screenHeight > logoRatio) {
-            containerWidth = screenHeight * logoRatio;
-            containerHeight = screenHeight;
-        } else {
-            containerWidth = screenWidth;
-            containerHeight = screenWidth / logoRatio;
-        }
-        container.style.width = containerWidth + 'px';
-        container.style.height = containerHeight + 'px';
+            const duration = Math.floor(Math.random() * (3220 - 140) + 140) / 1000;
 
-        const duration = Math.floor(Math.random() * (3220 - 140) + 140) / 1000;
-
-        document.getElementById('splash-screen').style.animationDuration = duration + 's';
+            document.getElementById('splash-screen').style.animationDuration = duration + 's';
             console.log('Splash screen duration: ' + duration.toFixed(2) + 's');
-    });
+        });
 
         var splashScreen = document.getElementById('splash-screen');
-        splashScreen.addEventListener('animationend', function() {
+        splashScreen.addEventListener('animationend', function () {
             splashScreen.remove();
         });
 
@@ -399,66 +398,31 @@
     </div>
 </div>
 
-<script>
-    function calculateDecarbProgress() {
-        const InputWeight = document.getElementById("thcaStartWeight").value;
-        const CurrentWeight = document.getElementById("thcDecarbedWeight").value;
-        const LossCalc = InputWeight * 0.877;
-        const DecarbedWeight = InputWeight - CurrentWeight;
-        const WeightLeft = (InputWeight - LossCalc) - DecarbedWeight;
-        const PercentDecarbed = (DecarbedWeight / (InputWeight - LossCalc)) * 100;
+<script src="calculatorJS/calculateDecarbProgress.js"></script>
 
 
-        const formatWeightLeft = WeightLeft.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
+<div id="cartridgeIsolateCalculator" class="tabcontent">
+    <h2>Cartridge Isolate Calculator</h2>
+    <form id="calcForm">
+        <label for="cartCount">Number of Cartridges:</label>
+        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.5" id="cartCount" name="cartCount" required oninput="calculateCartridgeIsolate()">
+        <label for="cartCapacity">Capacity per Cartridge (grams):</label>
+        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" id="cartCapacity" name="cartWeight" required oninput="calculateCartridgeIsolate()">
+        <label for="cbdPercentage">CBD Percentage:</label>
+        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="cbdPercentage" name="cbdPercentage" required oninput="calculateCartridgeIsolate()">
+        <label for="thcaPercentage">THC Percentage:</label>
+        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="thcaPercentage" name="thcaPercentage" required oninput="calculateCartridgeIsolate()">
+        <button type="button" onclick="calculateCartridgeIsolate()">Calculate</button>
+    </form>
+    <div id="calcResult"></div>
+</div>
 
-        const formatLossCalc = LossCalc.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
 
-
-        if (PercentDecarbed < -50 || PercentDecarbed > 150 || InputWeight === "" || CurrentWeight === "" || (InputWeight === "0" && CurrentWeight === "0")) {
-            document.getElementById("decarbProgressResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input values.</span><br>Note: Please enter realistic, positive values between 0.1 and 10 billion.</b><br>";
-        } else {
-            if (PercentDecarbed < -0.001 || PercentDecarbed > 100) {
-                document.getElementById("decarbProgressResult").innerHTML = "<br><br><span style='color: orange'><b>Warning: Possible Invalid input values<br>Note: This calculator is designed to pinpoint progress from on a scale of 0-100% completion. The following results are likely inaccurate or impossible.</span></b><br><br><b>Predicted Decarboxylated Weight: </b><br>" + formatLossCalc + " grams" +
-
-                    "<br><br><b>Estimated Decarboxylation Progress: </b><br>" + PercentDecarbed.toFixed(2) + "%" +
-
-                    "<br><br><b>Estimated Decarboxylation Progress Remaining: </b><br>" + (100 - PercentDecarbed).toFixed(2) + "%" +
-
-                    "<br><br><b>Estimated THCa Remaining: </b><br>" + formatWeightLeft + " grams" + "<br>";
-
-            } else {
-                if ((100 - PercentDecarbed) === 0 ) {
-                    document.getElementById("decarbProgressResult").innerHTML = "<br><br><span style='color: limegreen'><b>Complete: Input values indicate decarboxylation has completed.</span></b><br><br><b>Predicted Decarboxylated Weight: </b><br>" + formatLossCalc + " grams" +
-
-                        "<br><br><b>Estimated Decarboxylation Progress: </b><br>" + PercentDecarbed.toFixed(2) + "%" +
-
-                        "<br><br><b>Estimated Decarboxylation Progress Remaining: </b><br>" + (100 - PercentDecarbed).toFixed(2) + "%" +
-
-                        "<br><br><b>Estimated THCa Remaining: </b><br>" + formatWeightLeft + " grams" + "<br>";
-
-                } else {
-                document.getElementById("decarbProgressResult").innerHTML =
-                    "<br><br><b>Predicted Decarboxylated Weight: </b><br>" + formatLossCalc + " grams" +
-
-                    "<br><br><b>Estimated Decarboxylation Progress: </b><br>" + PercentDecarbed.toFixed(2) + "%" +
-
-                    "<br><br><b>Estimated Decarboxylation Progress Remaining: </b><br>" + (100 - PercentDecarbed).toFixed(2) + "%" +
-
-                    "<br><br><b>Estimated THCa Remaining: </b><br>" + formatWeightLeft + " grams" + "<br>";}
-            }
-        }
-    }
-</script>
+<script src="calculatorJS/calculateCartridgeIsolate.js"></script>
 
 
 
-
+<!--  DECARBOXYLATION TIME CALCULATOR -->
 
 
 
@@ -528,302 +492,12 @@
 </div>
 
 
-<script>
-
-    function calculateDecarbTime() {
-        const sampleSizeInput = document.getElementById("sampleSize");
-        const percentDecarboxylationInput = document.getElementById("percentDecarboxylation");
-        const temperatureInput = document.getElementById("temperature");
-        const thcaConcentrationInput = document.getElementById("thcaConcentration");
-        const tempUnitInput = document.getElementById("tempUnit");
-        const resultOutput = document.getElementById("decarbTimeResult");
-
-        const sampleSize = sampleSizeInput.value;
-
-
-        let thcaConcentration = thcaConcentrationInput.value;
-        if (thcaConcentration > 1) {
-            thcaConcentration = thcaConcentration / 100; // if value greater than 1, convert percent to decimal
-        }
-
-
-        let percentDecarboxylation = percentDecarboxylationInput.value;
-
-
-
-        if (percentDecarboxylation > 1) {
-            percentDecarboxylation = percentDecarboxylation / 100; // if value greater than 1, convert percent to decimal
-            if (percentDecarboxylation >= 0.99) {
-                percentDecarboxylation = 0.98;
-            }
-        }
-
-
-        const temperature = temperatureInput.value;
-        const tempUnit = tempUnitInput.value;
-
-        if (!sampleSize || sampleSize < 0 || !percentDecarboxylation  || !temperature) {
-            resultOutput.innerHTML = "<p>Please enter valid input values.</p>";
-        } else if (temperature < 80 && tempUnit === "C" || temperature < 176 && tempUnit === "F" || temperature < 353.15 && tempUnit === "K") {
-            resultOutput.innerHTML = "<p>Please enter input value higher than 80&#176;C, 176&#176;F, or 353.15K.<br>Note: THCa does not decarboxylate at an accurately or easily quantified rate below these temperatures.</p>";
-        } else {
-        const decarbTime = predictTime(sampleSize, thcaConcentration, percentDecarboxylation, temperature, tempUnit);
-        resultOutput.innerHTML = "<p>Estimated decarboxylation time: " + decarbTime + "</p>";
-        }
-    }
-
-    function predictTime(sampleSize, thcaConcentration, percentDecarboxylation, temperature, tempUnit) {
-
-        // Calculate Rate Constant
-        const rateConstant = calculateRateConstant(temperature,tempUnit);
-
-        // Calculate initial mass of THCA in grams
-        const initialMass = sampleSize * thcaConcentration / 1000;
-
-        // Calculate target fraction of THCA
-        const targetFraction = 1 - percentDecarboxylation;
-
-        // Calculate decarboxylation time in seconds using Equation 3
-        const timeSec = -Math.log(targetFraction) / rateConstant;
-
-        console.log(`It will take ${timeSec} seconds for ${percentDecarboxylation * 100}% decarboxylation of THCa.`);
-
-        return formatDuration(timeSec * 1000);
-    }
-
-
-
-    function calculateRateConstant(temperature, tempUnit) {
-        console.log(`temperature: ${temperature} \n tempUnit: ${tempUnit}`);
-
-        temperature = parseFloat(temperature);
-
-        // Convert temperature to Kelvin if it's not already in Kelvin
-        if (tempUnit === "C") {
-            temperature = temperature + 273.15; // Celsius to Kelvin conversion
-        } else if (tempUnit === "F") {
-            temperature = (temperature + 459.67) * (5 / 9); // Fahrenheit to Kelvin conversion
-        }
-
-        console.log(`temperature after conversion (in Kelvin): ${temperature}`);
-
-        // Constants for THCA decarboxylation
-        const A = 0.41 * Math.pow(10, 5); // Pre-exponential factor in s^-1
-        const Ea = 58.7 * 1000; // Activation energy in J/mol
-        const R = 8.3145; // Universal gas constant in J/mol*K
-
-        // Calculate the rate constant k using the Arrhenius equation
-        const k = A * Math.exp(-Ea / (R * temperature));
-
-        console.log(`k: ${k}`);
-
-        return k;
-    }
-
-
-
-
-    function formatDuration(duration) {
-        var milliseconds = Math.floor(duration % 1000);
-        var seconds = Math.floor((duration / 1000) % 60);
-        var minutes = Math.floor((duration / (1000 * 60)) % 60);
-        var hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
-        var days = Math.floor(duration / (1000 * 60 * 60 * 24));
-        var weeks = Math.floor(duration / (1000 * 60 * 60 * 24 * 7));
-        var months = Math.floor(duration / (1000 * 60 * 60 * 24 * 30));
-        var years = Math.floor(duration / (1000 * 60 * 60 * 24 * 365));
-
-        var parts = [];
-        if (years) {
-            parts.push(years + ' year' + (years > 1 ? 's' : ''));
-        }
-        if (months) {
-            parts.push(months + ' month' + (months > 1 ? 's' : ''));
-        }
-        if (weeks) {
-            parts.push(weeks + ' week' + (weeks > 1 ? 's' : ''));
-        }
-        if (days) {
-            parts.push(days + ' day' + (days > 1 ? 's' : ''));
-        }
-        if (hours) {
-            parts.push(hours + ' hour' + (hours > 1 ? 's' : ''));
-        }
-        if (minutes) {
-            parts.push(minutes + ' minute' + (minutes > 1 ? 's' : ''));
-        }
-        if (seconds) {
-            parts.push(seconds + ' second' + (seconds > 1 ? 's' : ''));
-
-        }
-        if (milliseconds) {
-            parts.push(milliseconds + ' millisecond' + (milliseconds > 1 ? 's' : ''));
-        }
-        if (!parts.length) {
-            parts.push('0 milliseconds');
-        }
-        return parts.join(' ');
-    }
-
-
-</script>
+<script src="calculatorJS/calculateDecarbTime.js"></script>
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-<script>
+<script src="calculatorJS/decarbTimePlot.js"></script>
 
-            // PLOT JS
-            const temperatures = Array.from(Array(84), (_, i) => 80 + i * 5);
-
-            const rateConstants = temperatures.map(temp => calculateRateConstant(temp, 'C'));
-
-            if (rateConstants.some(constant => constant === 0)) {
-                console.log('Warning: Rate constant is 0 for some temperatures outside the known range');
-            }
-
-            const interpTemperatures = [];
-            const interpRateConstants = [];
-
-            for (let i = 0; i < temperatures.length - 1; i++) {
-                const temp1 = temperatures[i];
-                const temp2 = temperatures[i + 1];
-                const rateConst1 = rateConstants[i];
-                const rateConst2 = rateConstants[i + 1];
-                const numInterpPoints = 41;
-
-                for (let j = 0; j < numInterpPoints; j++) {
-                    const t = j / (numInterpPoints - 1);
-                    const temp = temp1 + t * (temp2 - temp1);
-                    const rateConst = rateConst1 + t * (rateConst2 - rateConst1);
-                    interpTemperatures.push(temp);
-                    interpRateConstants.push(rateConst);
-                }
-            }
-
-            const experimentalDataTemperatures = [80, 100, 120, 140, 160];
-            const experimentalDataConstants = [0.057, 0.376, 0.795, 1.410, 2.819];
-
-
-            const plotData = [{
-                x: interpTemperatures,
-                y: interpRateConstants,
-                mode: 'lines',
-                line: { shape: 'spline', smoothing: 1.5},
-                hovertemplate: '<b>Temperature:</b> %{x}&#176;C<br><b>Rate Constant:</b> %{y:.3f} min^-1',
-                name: '<b>Interpolated Data</b>'
-            }, {
-                x: temperatures,
-                y: rateConstants,
-                mode: 'markers',
-                marker: { size: 6 },
-                hovertemplate: '<b>Temperature:</b> %{x}&#176;C<br><b>Rate Constant:</b> %{y:.3f} min^-1',
-                name: '<b>Arrhenius Data</b>'
-            },
-                {
-                x: experimentalDataTemperatures,
-                y: experimentalDataConstants,
-                mode: 'markers',
-                marker: { size: 10, color: 'red' },
-                hovertemplate: '<b>Temperature:</b> %{x}&#176;C<br><b>Rate Constant:</b> %{y:.3f} min^-1',
-                name: '<b>Experimental Data</b>'
-            }];
-
-            const layout = {
-                title: 'Decarboxylation Rate Constants vs Temperature',
-                xaxis: { title: 'Temperature (&#176;C)', range: [80, 200] },
-                yaxis: { title: 'Rate Constant (min^-1)', type: 'log' },
-                hovermode: 'closest',
-
-            };
-
-            const config = {
-                modeBarButtonsToAdd: [{
-                    name: 'fullscreen',
-                    icon: Plotly.Icons.fullscreen,
-                    click: function(gd) {
-                        Plotly.update(gd, { width: window.screen.width, height: window.screen.height });
-                    }
-                }]
-            };
-
-            Plotly.newPlot('plot', plotData, layout, config);
-
-
-
-
-
-</script>
-
-<div id="cartridgeIsolateCalculator">
-    <h2>Cartridge Isolate Calculator</h2>
-    <form id="calcForm">
-        <label for="cartCount">Number of Cartridges:</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" id="cartCount" name="cartCount" required>
-        <label for="cartCapacity">Capacity per Cartridge (grams):</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" id="cartCapacity" name="cartWeight" required>
-        <label for="cbdPercentage">CBD Percentage:</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="cbdPercentage" name="cbdPercentage" required>
-        <label for="thcaPercentage">THC Percentage:</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="thcaPercentage" name="thcaPercentage" required>
-        <button type="button" onclick="calculateCartridgeIsolate()">Calculate</button>
-    </form>
-    <div id="calcResult"></div>
-</div>
-
-
-
-
-<script>
-
-    function calculateCartridgeIsolate() {
-        const cartCount = document.getElementById("cartCount").valueAsNumber;
-        const cartCapacity = document.getElementById("cartCapacity").valueAsNumber;
-        const cbdPercentage = document.getElementById("cbdPercentage").valueAsNumber;
-        const thcPercentage = document.getElementById("thcaPercentage").valueAsNumber;
-
-        // Validate CBD and THC percentages
-        const totalPercentage = cbdPercentage + thcPercentage;
-        if (totalPercentage !== 100) {
-            const result = document.getElementById("calcResult");
-            result.innerHTML = "Error: CBD and THC percentages must add up to 100%";
-            return;
-        }
-
-        // Validate cart count and capacity
-        if (cartCount <= 0 || cartCapacity <= 0) {
-            const result = document.getElementById("calcResult");
-            result.innerHTML = "Error: Invalid cart count or capacity";
-            return;
-        }
-
-        // Calculate total weight
-        const totalWeight = cartCount * cartCapacity;
-
-        // Calculate THC and THCa amounts based on percentages
-        const thcWeight = totalWeight * (thcPercentage / 100);
-        const thcaWeight = thcWeight / 0.877;
-        const co2Loss = thcaWeight - thcWeight;
-        const cbdWeight = totalWeight * (cbdPercentage / 100);
-
-        // Display the results
-        const result = document.getElementById("calcResult");
-        result.innerHTML =
-            "<br><b>THCa Required:</b> " +
-            thcaWeight.toFixed(2) +
-            " grams<br><b>THC Required:</b> " +
-            thcWeight.toFixed(2) +
-            " grams<br><b>Decarboxylation Loss (CO2):</b> " +
-            co2Loss.toFixed(2) +
-            " grams<br><b>CBD Required:</b> " +
-            cbdWeight.toFixed(2) +
-            " grams";
-    }
-
-
-
-
-
-</script>
 
 
 
@@ -868,7 +542,7 @@
         tabcontent.not(`#${tabName}`).slideUp("fast");
 
         // toggle the selected tab
-        $(`#${tabName}`).slideToggle("fast", function() {
+        $(`#${tabName}`).slideToggle("fast", function () {
             // after the animation completes, remove "active" class from all tab links
             tablinks.removeClass("active");
         });
@@ -877,10 +551,9 @@
         $(evt.currentTarget).toggleClass("active");
     }
 
-
-
-
 </script>
+<script src="calculatorJS/DarkMode.es6"></script>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <div id="decarbProgressDisclaimer"><em><br>Note: The results produced by this calculator are an estimate based on the assumption of complete decarboxylation.
@@ -938,42 +611,7 @@
         Software from you.</p>
 </dialog>
 
-<script>
-    const licenseLink = document.querySelector('a[href="#license-modal"]');
-    const licenseModal = document.querySelector('#license-modal');
-    const closeBtn = licenseModal.querySelector('button');
-
-    if (!licenseLink) {
-        console.error('License link not found.');
-    }
-
-    if (!licenseModal) {
-        console.error('License modal not found.');
-    }
-
-
-    if (!closeBtn) {
-        console.error('Close button not found.');
-    }
-
-    licenseLink.addEventListener('click', () => {
-        console.log('Opening modal');
-        licenseModal.showModal();
-    });
-
-    closeBtn.addEventListener('click', () => {
-        console.log('Closing modal');
-        licenseModal.close();
-    });
-
-    licenseModal.addEventListener('click', (event) => {
-        if (event.target === licenseModal) {
-            console.log('Closing modal');
-            licenseModal.close();
-        }
-    });
-
-</script>
+<script src="ModalJS.js"></script>
 
 
 </body>
