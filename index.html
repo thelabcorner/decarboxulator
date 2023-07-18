@@ -278,16 +278,16 @@
     <h2>Cartridge Isolate Calculator</h2>
     <form id="calcForm">
         <label for="cartCount">Number of Cartridges:</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.5" id="cartCount" name="cartCount" required onblur="calculateCartridgeIsolate()" inputmode="numeric">
+        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.5" id="cartCount" name="cartCount" required onfocusout="calculateCartridgeIsolate()" inputmode="numeric">
 
         <label for="cartCapacity">Capacity per Cartridge (grams):</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" id="cartCapacity" name="cartWeight" required onblur="calculateCartridgeIsolate()" inputmode="decimal">
+        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" id="cartCapacity" name="cartWeight" required onfocusout="calculateCartridgeIsolate()" inputmode="decimal">
 
         <label for="cbdPercentage">CBD Percentage:</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="cbdPercentage" name="cbdPercentage" required onblur="calculateCartridgeIsolate()" inputmode="decimal">
+        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="cbdPercentage" name="cbdPercentage" required onfocusout="calculateCartridgeIsolate()" inputmode="decimal">
 
         <label for="thcaPercentage">THC Percentage:</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="thcaPercentage" name="thcaPercentage" required onblur="calculateCartridgeIsolate()" inputmode="decimal">
+        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="thcaPercentage" name="thcaPercentage" required onfocusout="calculateCartridgeIsolate()" inputmode="decimal">
 
         <label for="balanceCheckbox">Enable Balancing:</label>
         <input type="checkbox" id="balanceCheckbox" onchange="toggleBalancing()">
