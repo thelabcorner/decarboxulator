@@ -165,6 +165,7 @@ input[type="number"],
     background-color: #ffd75e;
 }
 
+
 #splash-screen {
     position: fixed;
     top: 0;
@@ -247,6 +248,10 @@ input[type="number"],
         background-color: #7a4aa8;
     }
 
+    #cartridgeIsolateCalculator {
+        background-color: #682d77;
+    }
+
     #decarbProgress {
         background-color: #a88c4a;
     }
@@ -260,6 +265,7 @@ input[type="number"],
 
     #thcaToThc h2,
     #thcToThca h2,
+    #cartridgeIsolateCalculator h2,
     #decarbProgress h2,
     #decarbTime h2 {
         color: #fff;

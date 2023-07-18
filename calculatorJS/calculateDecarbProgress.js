@@ -1,7 +1,7 @@
 function calculateDecarbProgress() {
     const InputWeight = document.getElementById("thcaStartWeight").value;
     const CurrentWeight = document.getElementById("thcDecarbedWeight").value;
-    const LossCalc = InputWeight * 0.877;
+    const LossCalc = InputWeight * (314.224580195 / 358.21440943);
     const DecarbedWeight = InputWeight - CurrentWeight;
     const WeightLeft = (InputWeight - LossCalc) - DecarbedWeight;
     const PercentDecarbed = (DecarbedWeight / (InputWeight - LossCalc)) * 100;

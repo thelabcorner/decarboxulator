@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en-US">
 <head>
     <title>Decarboxulator&#x2122; | TheLabCorner LLC</title>
@@ -28,17 +29,7 @@
     <link href="mobile.css" rel="stylesheet" type="text/css">
 
 
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('service-worker.js').then(function(registration) {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                }, function(err) {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
-            });
-        }
-    </script>
+    <script src="serviceWorker.js"></script>
 </head>
 
 <body>
@@ -48,39 +39,7 @@
         <img id="logo" src="icons/decarboxulator.svg" alt="Decarboxulator">
     </div>
 
-    <script>
-        window.addEventListener('load', function () {
-            var screenWidth = window.innerWidth;
-            var screenHeight = window.innerHeight;
-            var logo = document.getElementById('logo');
-            var logoWidth = logo.getBBox().width;
-            var logoHeight = logo.getBBox().height;
-            var logoRatio = logoWidth / logoHeight;
-            var container = document.getElementById('logo-container');
-            var containerWidth, containerHeight;
-            if (screenWidth / screenHeight > logoRatio) {
-                containerWidth = screenHeight * logoRatio;
-                containerHeight = screenHeight;
-            } else {
-                containerWidth = screenWidth;
-                containerHeight = screenWidth / logoRatio;
-            }
-            container.style.width = containerWidth + 'px';
-            container.style.height = containerHeight + 'px';
-
-            const duration = Math.floor(Math.random() * (3220 - 140) + 140) / 1000;
-
-            document.getElementById('splash-screen').style.animationDuration = duration + 's';
-            console.log('Splash screen duration: ' + duration.toFixed(2) + 's');
-        });
-
-        var splashScreen = document.getElementById('splash-screen');
-        splashScreen.addEventListener('animationend', function () {
-            splashScreen.remove();
-        });
-
-
-    </script>
+    <script src="calculatorJS/splashJS.js"></script>
 
 </div>
 
@@ -150,84 +109,13 @@
 
     </div>
 
-<script>
-    function toggleSpoiler(spoilerId) {
-        const spoilerContent = document.getElementById(spoilerId);
-        if (spoilerContent.style.maxHeight) {
-            spoilerContent.style.maxHeight = null;
-        } else {
-            spoilerContent.style.maxHeight = spoilerContent.scrollHeight + "px";
-        }
-    }
-</script>
+<script src="calculatorJS/spoilerJS.js"></script>
 
-<audio id="audio" src="egg.mp3"></audio>
+<audio id="audio" src="icons/egg.mp3"></audio>
 
-<script>
+<script src="calculatorJS/THCAtoTHC.js"></script>
 
-    function easterEgg() {
-        const audio = document.getElementById('audio');
-        audio.volume = 1; // Set volume to 50%
-        audio.play();
-        fadeOut();
-
-        // Define a function to gradually decrease the volume of the audio clip
-        function fadeOut() {
-            const fadeInterval = 50; // Time interval between volume changes (ms)
-            const clipDuration = audio.duration * 1000; // Duration of the clip in milliseconds
-            const fadeStart = clipDuration * 0.75; // Point at which the fade-out should start
-            const fadeDuration = clipDuration - fadeStart; // Duration of the fade-out (ms)
-            const fadeSteps = fadeDuration / fadeInterval; // Number of volume changes
-            const fadeAmount = audio.volume / fadeSteps; // Amount to decrease volume by each step
-            let step = 0;
-
-            const fadeIntervalId = setInterval(() => {
-                if (!audio.paused) {
-                    step++;
-                    audio.volume -= fadeAmount;
-                    if (audio.volume < 0) {
-                        audio.volume = 0;
-                    }
-                    if (step >= fadeSteps) {
-                        clearInterval(fadeIntervalId);
-                        audio.pause();
-                    }
-                } else {
-                    clearInterval(fadeIntervalId);
-                }
-            }, fadeInterval);
-        }
-    }
-
-
-
-    function calculateThcaToThc() {
-        const thcaWeight = document.getElementById("thcaWeight").valueAsNumber;
-        const thcWeight = thcaWeight * (314.47 / 358.48);
-        const lossCalc = (thcaWeight - thcWeight);
-
-        const formatTHCOut = thcWeight.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-
-        const formatLossOut = lossCalc.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-
-        if (isNaN(thcaWeight) || thcaWeight < 0.0000000000000000000000001 || thcaWeight > 9999999999.9999999999) {
-            document.getElementById("thcaToThcResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input value(s)<br>Note: Please enter a positive value between 0.1 and 10 billion.</b></span><br>";
-        } else {
-            if (thcaWeight === 69420 || thcaWeight === 42069 || thcaWeight === 420 || thcaWeight === 710) {
-                easterEgg()
-                document.getElementById("thcaToThcResult").innerHTML = "<br><b>Estimated CO2 Loss: </b><br>" + formatLossOut + " grams" + "<br><br><b>Estimated THC produced: </b><br>" + formatTHCOut + " grams";
-            } else {
-            document.getElementById("thcaToThcResult").innerHTML = "<br><b>Estimated CO2 Loss: </b><br>" + formatLossOut + " grams" + "<br><br><b>Estimated THC produced: </b><br>" + formatTHCOut + " grams";
-            }
-        }
-    }
-</script>
+<script src="icons/easterEgg.js"></script>
 
 
 <!-- THCA Input Finder - How much THCa to make X grams THC -->
@@ -283,22 +171,7 @@
     </div>
 </div>
 
-<script>
-    function calculateThcToThca() {
-        const thcWeight = document.getElementById("thcWeight").valueAsNumber;
-        const thcaWeight = thcWeight / (314.47 / 358.48);
-        const formattedOutput = thcaWeight.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-
-        if (isNaN(thcWeight) || thcWeight < 0.0000000000000000000000001 || thcWeight > 9999999999.9999999999) {
-            document.getElementById("thcToThcaResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input value(s)<br>Note: Please enter a positive value between 0.1 and 10 billion.</b></span><br>";
-        } else {
-            document.getElementById("thcToThcaResult").innerHTML = "<br><br><b>THCa required: </b><br>" + formattedOutput + " grams";
-        }
-    }
-</script>
+<script src="calculatorJS/THCToTHCA.js"></script>
 
 <div id="decarbProgress" class="tabcontent">
     <div id="decarbProgressCalc">
@@ -416,11 +289,100 @@
         <label for="thcaPercentage">THC Percentage:</label>
         <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="thcaPercentage" name="thcaPercentage" required onblur="calculateCartridgeIsolate()" inputmode="decimal">
 
+        <label for="balanceCheckbox">Enable Balancing:</label>
+        <input type="checkbox" id="balanceCheckbox" onchange="toggleBalancing()">
+
+        <div id="balancingOptions" style="display: none;">
+            <label for="balancingMethod">Balancing Method:</label>
+            <select id="balancingMethod" onchange="calculateCartridgeIsolate()">
+                <option value="original">Equalize</option>
+                <option value="proportional">Proportional Distribution</option>
+            </select>
+        </div>
+
+        <br>
         <button type="button" onclick="calculateCartridgeIsolate()">Calculate</button>
-        <button type="button" onclick="autoBalancePercentages()">Auto Balance</button>
+        <br><br>
+
+        <div id="inputDescription">
+            <button class="spoiler-btn" onclick="toggleSpoiler('inputInstructions')"><b>Instructions:</b></button>
+            <div id="inputInstructions" class="spoiler-content">
+                <p><em>Instructions:</em></p>
+                <ol>
+                    <li>Enter the number of cartridges you have in the &quot;Number of Cartr&quot;dges&quot; field.</li>
+                    <li>Specify the capacity of each cartridge in grams using the &quot;Capacity per Cart&quot;idge&quot; field.</li>
+                    <li>Enter the CBD percentage in the &quot;CBD Perce&quot;tage&quot; field.</li>
+                    <li>Enter the THC percentage in the &quot;THC Perce&quot;tage&quot; field.</li>
+                    <li>Check the &quot;Enable Bala&quot;cing&quot; checkbox if you want to adjust the CBD and THC percentages to reach a total of 100%.</li>
+                    <li>If balancing is enabled, select the desired balancing method from the &quot;Balancing M&quot;thod&quot; dropdown.</li>
+                    <li>Click the &quot;Calc&quot;late&quot; button to generate the results.</li>
+                </ol>
+            </div>
+            <br>
+            <button class="spoiler-btn" onclick="toggleSpoiler('inputFormulas')"><b>Formulas Used:</b></button>
+            <div id="inputFormulas" class="spoiler-content">
+                <br>
+                <p><em>THC Calculation:</em></p>
+                <math>
+                    <mrow>
+                        <mi>THC Weight</mi>
+                        <mo>=</mo>
+                        <mi>Total Weight</mi>
+                        <mo>&times;</mo>
+                        <mfrac>
+                            <mi>THC Percentage</mi>
+                            <mn>100</mn>
+                        </mfrac>
+                    </mrow>
+                </math>
+                <br>
+                <p><em>THCa Calculation:</em></p>
+                <math>
+                    <mrow>
+                        <mi>THCa Weight</mi>
+                        <mo>=</mo>
+                        <mi>THC Weight</mi>
+                        <mo>&divide;</mo>
+                        <mfrac>
+                            <mi>314.224580195</mi>
+                            <mn>358.21440943</mn>
+                        </mfrac>
+
+                    </mrow>
+                </math>
+                <br>
+                <p><em>CO2 Loss Calculation:</em></p>
+                <math>
+                    <mrow>
+                        <mi>CO2 Loss</mi>
+                        <mo>=</mo>
+                        <mi>THCa Weight</mi>
+                        <mo>-</mo>
+                        <mi>THC Weight</mi>
+                    </mrow>
+                </math>
+                <br>
+                <p><em>CBD Calculation:</em></p>
+                <math>
+                    <mrow>
+                        <mi>CBD Weight</mi>
+                        <mo>=</mo>
+                        <mi>Total Weight</mi>
+                        <mo>&times;</mo>
+                        <mfrac>
+                            <mi>CBD Percentage</mi>
+                            <mn>100</mn>
+                        </mfrac>
+                    </mrow>
+                </math>
+            </div>
+            <br>
+        </div>
+
     </form>
-    <div id="calcResult"></div>
+    <div id="cartridgeIsolateCalculatorResult"></div>
 </div>
+
 
 
 
@@ -517,48 +479,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
 
 
-<script>
+<script src="calculatorJS/DarkMode.js"></script>
 
-    // Tab Javascript & Dark Mode
-
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-        setTabContentDarkMode(true);
-    }
-
-    function setTabContentDarkMode(isDarkMode) {
-        const tabContents = document.getElementsByClassName('tabcontent');
-        const tabLinks = document.getElementsByClassName('tablinks');
-        for (let i = 0; i < tabContents.length; i++) {
-            if (isDarkMode) {
-                tabContents[i].classList.add('dark');
-                tabLinks[i].classList.add('dark');
-            } else {
-                tabContents[i].classList.remove('dark');
-                tabLinks[i].classList.remove('dark');
-            }
-        }
-    }
-
-    function openTab(evt, tabName) {
-        let tabcontent = $(".tabcontent");
-        let tablinks = $(".tablinks");
-
-        // close all tabs except for the selected tab
-        tabcontent.not(`#${tabName}`).slideUp("fast");
-
-        // toggle the selected tab
-        $(`#${tabName}`).slideToggle("fast", function () {
-            // after the animation completes, remove "active" class from all tab links
-            tablinks.removeClass("active");
-        });
-
-        // add "active" class to the selected tab link
-        $(evt.currentTarget).toggleClass("active");
-    }
-
-</script>
-<script src="calculatorJS/DarkMode.es6"></script>
+    <script src="tabJS.js"></script>
+<script src="calculatorJS/DarkMode.js"></script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
