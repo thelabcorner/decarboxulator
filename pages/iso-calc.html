@@ -1,10 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Decarboxulator™ | TheLabCorner LLC</title>
+
+    <!-- Apple Mobile Web App Capable -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="../resources/assets/favicon.ico" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="../resources/css/styles.css" rel="stylesheet" />
+    <!-- Dark-Mode CSS -->
+    <link href="../resources/css/dark-mode.css" rel="stylesheet" />
 </head>
 <body>
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar-->
+    <div class="border-end bg-white" id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom bg-light">Decarboxulator™</div>
+        <div class="list-group list-group-flush">
+
+            <!-- ../ makes it so the /thelabcorner/ alias is added-->
+            <a class="  list-group-item list-group-item-action list-group-item-light p-3" href="../index.html">Home</a>
+            <a class="  list-group-item list-group-item-action list-group-item-light p-3" href="../pages/dcx-yield.html">THCa Decarboxylation Yield Calculator</a>
+            <a class="  list-group-item list-group-item-action list-group-item-light p-3" href="../pages/input-finder.html">THCa Input Finder</a>
+            <a class="  list-group-item list-group-item-action list-group-item-light p-3" href="../pages/progress-tracker.html">Decarboxylation Progress Tracker</a>
+            <a class="  list-group-item list-group-item-action list-group-item-light p-3" href="../pages/time-predictor.html">Total Decarboxylation Time Predictor</a>
+            <a class=" active list-group-item list-group-item-action list-group-item-light p-3" href="../pages/iso-calc.html">Cartridge Isolate Calculator</a>
+        </div>
+    </div>
+    <!-- Page content wrapper-->
+    <div id="page-content-wrapper">
+        <!-- Top navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <button class="btn btn-primary" id="sidebarToggle">Menu</button>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <div class="dropdown-item">
+                                    <label class="switch">
+                                        <input type="checkbox" id="darkModeToggle">
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <span class="toggle-label">Dark Mode</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+
+
+
+        <!-- Page content-->
+        <div class="container-fluid">
+
+
+            <div id="cartridgeIsolateCalculator" class="tabcontent">
+                <h2>Cartridge Isolate Calculator</h2>
+                <form id="calcForm">
+                    <label for="cartCount">Number of Cartridges:</label>
+                    <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.5" id="cartCount" name="cartCount" required onfocusout="calculateCartridgeIsolate()" inputmode="numeric">
+
+                    <label for="cartCapacity">Capacity per Cartridge (grams):</label>
+                    <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" id="cartCapacity" name="cartWeight" required onfocusout="calculateCartridgeIsolate()" inputmode="decimal">
+
+                    <label for="cbdPercentage">CBD Percentage:</label>
+                    <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="cbdPercentage" name="cbdPercentage" required onfocusout="calculateCartridgeIsolate()" inputmode="decimal">
+
+                    <label for="thcaPercentage">THC Percentage:</label>
+                    <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="thcaPercentage" name="thcaPercentage" required onfocusout="calculateCartridgeIsolate()" inputmode="decimal">
+
+                    <label for="balanceCheckbox">Enable Balancing:</label>
+                    <input type="checkbox" id="balanceCheckbox" onchange="toggleBalancing()">
+
+                    <div id="balancingOptions" style="display: none;">
+                        <label for="balancingMethod">Balancing Method:</label>
+                        <select id="balancingMethod" onchange="calculateCartridgeIsolate()">
+                            <option value="original">Equalize</option>
+                            <option value="proportional">Proportional Distribution</option>
+                        </select>
+                    </div>
+
+                    <br>
+                    <button type="button" onclick="calculateCartridgeIsolate()">Calculate</button>
+                    <br><br>
+
+                    <div id="inputDescription">
+                        <button class="spoiler-btn" onclick="toggleSpoiler('inputInstructions')"><b>Instructions:</b></button>
+                        <div id="inputInstructions" class="spoiler-content">
+                            <p><em>Instructions:</em></p>
+                            <ol>
+                                <li>Enter the number of cartridges you have in the &quot;Number of Cartr&quot;dges&quot; field.</li>
+                                <li>Specify the capacity of each cartridge in grams using the &quot;Capacity per Cart&quot;idge&quot; field.</li>
+                                <li>Enter the CBD percentage in the &quot;CBD Perce&quot;tage&quot; field.</li>
+                                <li>Enter the THC percentage in the &quot;THC Perce&quot;tage&quot; field.</li>
+                                <li>Check the &quot;Enable Bala&quot;cing&quot; checkbox if you want to adjust the CBD and THC percentages to reach a total of 100%.</li>
+                                <li>If balancing is enabled, select the desired balancing method from the &quot;Balancing M&quot;thod&quot; dropdown.</li>
+                                <li>Click the &quot;Calc&quot;late&quot; button to generate the results.</li>
+                            </ol>
+                        </div>
+                        <br>
+                        <button class="spoiler-btn" onclick="toggleSpoiler('inputFormulas')"><b>Formulas Used:</b></button>
+                        <div id="inputFormulas" class="spoiler-content">
+                            <br>
+                            <p><em>THC Calculation:</em></p>
+                            <math>
+                                <mrow>
+                                    <mi>THC Weight</mi>
+                                    <mo>=</mo>
+                                    <mi>Total Weight</mi>
+                                    <mo>&times;</mo>
+                                    <mfrac>
+                                        <mi>THC Percentage</mi>
+                                        <mn>100</mn>
+                                    </mfrac>
+                                </mrow>
+                            </math>
+                            <br>
+                            <p><em>THCa Calculation:</em></p>
+                            <math>
+                                <mrow>
+                                    <mi>THCa Weight</mi>
+                                    <mo>=</mo>
+                                    <mi>THC Weight</mi>
+                                    <mo>&divide;</mo>
+                                    <mfrac>
+                                        <mi>314.224580195</mi>
+                                        <mn>358.21440943</mn>
+                                    </mfrac>
+
+                                </mrow>
+                            </math>
+                            <br>
+                            <p><em>CO2 Loss Calculation:</em></p>
+                            <math>
+                                <mrow>
+                                    <mi>CO2 Loss</mi>
+                                    <mo>=</mo>
+                                    <mi>THCa Weight</mi>
+                                    <mo>-</mo>
+                                    <mi>THC Weight</mi>
+                                </mrow>
+                            </math>
+                            <br>
+                            <p><em>CBD Calculation:</em></p>
+                            <math>
+                                <mrow>
+                                    <mi>CBD Weight</mi>
+                                    <mo>=</mo>
+                                    <mi>Total Weight</mi>
+                                    <mo>&times;</mo>
+                                    <mfrac>
+                                        <mi>CBD Percentage</mi>
+                                        <mn>100</mn>
+                                    </mfrac>
+                                </mrow>
+                            </math>
+                        </div>
+                        <br>
+                    </div>
+
+                </form>
+                <div id="cartridgeIsolateCalculatorResult"></div>
+            </div>
+
+
+
+
+            <script src="../resources/calculatorJS/calculateCartridgeIsolate.js"></script>
+
+
+        </div>
+
+
+    </div>
+</div>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="../resources/js/core-theme-scripts.js"></script>
+
+<!-- Footer -->
+<footer class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>About Decarboxulator™</h5>
+                <p>Decarboxulator™ is a powerful suite of tools designed to streamline and optimize your decarboxylation processes. Developed by TheLabCorner LLC, our mission is to provide cutting-edge solutions for the cannabis industry.</p>
+            </div>
+            <div class="col-md-3">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#!">Home</a></li>
+                    <li><a href="#!">Portfolio</a></li>
+                    <li><a href="#!">Consultation</a></li>
+                    <li><a href="#!">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <p>&copy; 2024 TheDabCorner&trade; LLC. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
 
 </body>
 </html>
