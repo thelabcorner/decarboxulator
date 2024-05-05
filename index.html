@@ -1,549 +1,100 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
-<html lang="en-US">
+<html lang="en">
 <head>
-    <title>Decarboxulator&#x2122; | TheLabCorner LLC</title>
-    <link rel="manifest" href="manifest.json">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Decarboxulator™ | TheLabCorner LLC</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@600&display=swap" rel="stylesheet">
+    <!-- Apple Mobile Web App Capable -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
 
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
-    <link rel="icon" type="image/x-icon" sizes="32x32 64x64 48x48 16x16 128x128 512x512" href="rewrite/assets/favicon.ico">
-
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Decarboxulator">
-    <meta name="apple-mobile-web-app-title" content="Decarboxulator">
-    <meta name="theme-color" content="#ffbd00">
-    <meta name="msapplication-navbutton-color" content="#ffbd00">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="msapplication-starturl" content="/">
-
-
-    <meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, shrink-to-fit=no">
-
-    <link href="mobile.css" rel="stylesheet" type="text/css">
-
-
-    <script src="serviceWorker.js"></script>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/styles.css" rel="stylesheet" />
+    <!-- Dark-Mode CSS -->
+    <link href="css/dark-mode.css" rel="stylesheet" />
 </head>
-
 <body>
-
-<div id="splash-screen">
-    <div id="logo-container">
-        <img id="logo" src="icons/decarboxulator.svg" alt="Decarboxulator">
-    </div>
-
-    <script src="calculatorJS/splashJS.js"></script>
-
-</div>
-
-<div class="tab">
-    <button class="tablinks" onclick="openTab(event, 'thcaToThc')">THCa Decarboxylation Yield Calculator</button>
-    <button class="tablinks" onclick="openTab(event, 'thcToThca')">THCa Input Finder</button>
-    <button class="tablinks" onclick="openTab(event, 'decarbProgress')">Decarboxylation Progress Tracker</button>
-    <button class="tablinks" onclick="openTab(event, 'decarbTime')">Total Decarboxylation Time Predictor</button>
-    <button class="tablinks" onclick="openTab(event, 'cartridgeIsolateCalculator')">Cartridge Isolate Calculator</button>
-</div>
-
-<div id="thcaToThc" class="tabcontent">
-    <h2>THCa to THC Decarboxylation Yield Calculator</h2>
-    <form id="thcaToThcForm">
-        <label for="thcaWeight">Weight of THCa (grams):</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" placeholder="34.2 grams" id="thcaWeight" name="thcaWeight" required oninput="calculateThcaToThc()">
-        <button type="button" onclick="calculateThcaToThc()">Calculate</button>
-    </form>
-
-    <div id="thcaToThcResult"></div>
-    <br><hr id="YieldSeparator">
-    <div id="decarbYieldDescription">
-        <button class="spoiler-btn" onclick="toggleSpoiler('dcYieldInstructions')"><b>Instructions:</b></button>
-        <div id="dcYieldInstructions" class="spoiler-content">
-            <p>To use the THCa to THC Decarboxylation Yield Calculator, follow these simple steps:</p>
-            <ol>
-                <li>Enter the weight of THCa in grams in the &quot;Weight of&quot;THCa&quot; field of the form.</li>
-                <li>Click on the &quot;Calc&quot;late&quot; button to generate the result.</li>
-                <li>The estimated yield of THC produced and the estimated CO2 loss will be displayed below the form.</li>
-            </ol>
-            <p>Please enter a positive value between 0.1 and 10 billion in the &quot;Weight of&quot;THCa&quot; field. Any value outside this range will result in an error message.</p>
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar-->
+    <div class="border-end bg-white" id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom bg-light">Decarboxulator™</div>
+        <div class="list-group list-group-flush">
+            <a class="active list-group-item list-group-item-action list-group-item-light p-3" href="#!">Home</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">THCa Decarboxylation Yield Calculator</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">THCa Input Finder</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Decarboxylation Progress Tracker</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Total Decarboxylation Time Predictor</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Cartridge Isolate Calculator</a>
         </div>
-        <br>
-        <button class="spoiler-btn" onclick="toggleSpoiler('dcYieldCalculations')"><b>Formula(s) Used:</b></button>
-        <div id="dcYieldCalculations" class="spoiler-content">
-            <p>
-                <math>
-                    <mi>THC weight</mi>
-                    <mo>=</mo>
-                    <mrow>
-                        <mi>THCa weight</mi>
-                        <mo>&times;</mo>
-                        <mfrac>
-                            <mrow>
-                                <mn>314.47</mn>
-                            </mrow>
-                            <mrow>
-                                <mn>358.48</mn>
-                            </mrow>
-                        </mfrac>
-                    </mrow>
-                </math>
-            </p>
-            <p>
-                <math>
-                    <mi>CO2 loss</mi>
-                    <mo>=</mo>
-                    <mrow>
-                        <mi>THCa weight</mi>
-                        <mo>-</mo>
-                        <mi>THC weight</mi>
-                    </mrow>
-                </math>
-            </p>
-        </div><br>
     </div>
-
-    </div>
-
-<script src="calculatorJS/spoilerJS.js"></script>
-
-<audio id="audio" src="icons/egg.mp3"></audio>
-
-<script src="calculatorJS/THCAtoTHC.js"></script>
-
-<script src="icons/easterEgg.js"></script>
-
-
-<!-- THCA Input Finder - How much THCa to make X grams THC -->
-<div id="thcToThca" class="tabcontent">
-    <h2>THCa Input Finder</h2>
-    <form id="thcToThcaForm">
-        <label for="thcWeight">Desired Weight of THC (grams):</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" placeholder="67 grams" id="thcWeight" name="thcWeight" max="9999999999" required oninput="calculateThcToThca()">
-        <button type="button" onclick="calculateThcToThca()">Calculate</button>
-    </form>
-    <div id="thcToThcaResult"></div>
-    <br>
-    <hr id="finderSeparator">
-    <div id="inputFinderDescription">
-        <button class="spoiler-btn" onclick="toggleSpoiler('inputFinderInstructions')"><b>Instructions:</b></button>
-        <div id="inputFinderInstructions" class="spoiler-content">
-            <p><em>Instructions:</em></p>
-            <ol>
-                <li>Input the weight of THC you want to produce in grams into the designated field.</li>
-                <li>Click on the &quot;Calc&quot;late&quot; button to generate the result.</li>
-                <li>The estimated weight of THCA required to produce the desired weight of THC will be displayed below the form.</li>
-            </ol>
-        </div>
-        <br>
-        <button class="spoiler-btn" onclick="toggleSpoiler('inputFinderCalculations')"><b>Formula(s) Used:</b></button>
-        <div id="inputFinderCalculations" class="spoiler-content">
-            <br>
-            <math>
-                <mrow>
-                    <mi>THCA Needed</mi>
-                    <mo>=</mo>
-                    <mfrac>
-                        <mrow>
-                            <mi>THC Desired</mi>
-                        </mrow>
-                        <mrow>
-                            <mo>(</mo>
-                            <mfrac>
-                                <mrow>
-                                    <mn>314.47</mn>
-                                </mrow>
-                                <mrow>
-                                    <mn>358.48</mn>
-                                </mrow>
-                            </mfrac>
-                            <mo>)</mo>
-                        </mrow>
-                    </mfrac>
-                </mrow>
-            </math>
-
-        </div><br>
-    </div>
-</div>
-
-<script src="calculatorJS/THCToTHCA.js"></script>
-
-<div id="decarbProgress" class="tabcontent">
-    <div id="decarbProgressCalc">
-        <h2>Decarboxylation Progress Tracker</h2>
-        <form id="decarbProgressForm">
-            <label for="thcaStartWeight">Input Weight of THCa (grams):</label>
-            <input type="number" pattern="[0-9]*\.?[0-9]*" id="thcaStartWeight" name="thcaStartWeight" placeholder="114 grams" required oninput="calculateDecarbProgress()">
-            <label for="thcDecarbedWeight">Current Weight of THCa (grams):</label>
-            <input type="number" pattern="[0-9]*\.?[0-9]*" id="thcDecarbedWeight" name="thcDecarbedWeight" placeholder="100 grams" required oninput="calculateDecarbProgress()">
-            <button type="button" onclick="calculateDecarbProgress()">Calculate</button>
-        </form>
-        <div id="decarbProgressResult"></div>
-
-
-        <br><hr id="progressSeparator">
-
-        <div id="progressDescription">
-            <button class="spoiler-btn" onclick="toggleSpoiler('progressInstructions')"><b>Instructions:</b></button>
-            <div id="progressInstructions" class="spoiler-content">
-                <p>To use the tool, follow these steps:</p>
-                <ol>
-                    <li>Enter the starting weight of THCA (in grams) in the &quot;Input Weight of&quot;THCa&quot; field.</li>
-                    <li>Enter the current weight of decarboxylated material (in grams) in the &quot;Current Weight of&quot;THCa&quot; field.</li>
-                    <li>Click the &quot;Calculate&quot; button to generate the results.</li>
-                </ol>
-                <p>The tool will utilize a specialized formula to estimate the predicted weight of decarboxylated material and the percentage of decarboxylation progress. The formula assumes complete decarboxylation and may be affected by factors such as temperature, time, and the starting material. As such, the estimates should be used as guidance rather than concrete values.</p>
-                <p>If there are any errors in the input values, such as negative values or empty fields, an error message will be displayed.</p>
+    <!-- Page content wrapper-->
+    <div id="page-content-wrapper">
+        <!-- Top navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <button class="btn btn-primary" id="sidebarToggle">Menu</button>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <div class="dropdown-item">
+                                    <label class="switch">
+                                        <input type="checkbox" id="darkModeToggle">
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <span class="toggle-label">Dark Mode</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <br>
-            <button class="spoiler-btn" onclick="toggleSpoiler('progressCalculations')"><b>Formula(s) Used:</b></button>
-            <div id="progressCalculations" class="spoiler-content">
-                <br>
-                <p><b><u>Main Formula:</u></b></p>
-                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mtext>Percent Decarboxylation Progress = </mtext>
-                    <mo>(</mo>
-                    <mo>(</mo>
-                    <mfrac>
-                        <mrow>
-                            <mi>Decarboxylated Weight</mi>
-                        </mrow>
-                        <mrow>
-                            <mrow>
-                                <mi>Input Weight</mi>
-                                <mo>-</mo>
-                                <mi>Loss Calculation</mi>
-                            </mrow>
-                        </mrow>
-                    </mfrac>
-                    <mo>)</mo>
-                    <mo>*</mo>
-                    <mn>100</mn>
-                    <mo>)</mo>
-                </math>
-                <hr>
-                <p><u><b>Decarboxylated Weight:</b></u></p>
-                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mi>Decarboxylated Weight</mi>
-                    <mo>= </mo>
-                    <mi>Input Weight</mi>
-                    <mo>-</mo>
-                    <mi>Current Weight</mi>
-                </math>
-                <hr>
-                <p><u><b>Loss Calculation:</b></u></p>
-                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mi>Loss Calculation</mi>
-                    <mo>=</mo>
-                    <mi>Input Weight</mi>
-                    <mo>*</mo>
-                    <mn>0.877</mn>
-                </math>
-                <hr>
-                <p><u><b>Predicted Decarboxylated Weight:</b></u></p>
-                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mtext>Predicted Decarboxylated Weight</mtext>
-                    <mo>=</mo>
-                    <mi>Input Weight</mi>
-                    <mo>*</mo>
-                    <mn>0.877</mn>
-                </math>
-                <hr>
-                <p><b><u>Estimated THCa Remaining:</u></b></p>
-                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mtext>Estimated THCa Remaining</mtext>
-                    <mo>=</mo>
-                    <mo>(</mo>
-                    <mi>Input Weight</mi>
-                    <mo>-</mo>
-                    <mi>Loss Calculation</mi>
-                    <mo>)</mo>
-                    <mo>-</mo>
-                    <mi>Decarboxylated Weight</mi>
-                </math>
-            </div><br>
+        </nav>
+        <!-- Page content-->
+        <div class="container-fluid">
+            <h1 class="mt-4">Decarboxulator™</h1>
+            <p>Welcome to Decarboxulator™, a powerful tool designed to assist you in various decarboxylation-related calculations.</p>
+            <p>Please select an option from the sidebar menu to get started.</p>
         </div>
     </div>
 </div>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="js/core-theme-scripts.js"></script>
 
-<script src="calculatorJS/calculateDecarbProgress.js"></script>
-
-
-<div id="cartridgeIsolateCalculator" class="tabcontent">
-    <h2>Cartridge Isolate Calculator</h2>
-    <form id="calcForm">
-        <label for="cartCount">Number of Cartridges:</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.5" id="cartCount" name="cartCount" required onfocusout="calculateCartridgeIsolate()" inputmode="numeric">
-
-        <label for="cartCapacity">Capacity per Cartridge (grams):</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" id="cartCapacity" name="cartWeight" required onfocusout="calculateCartridgeIsolate()" inputmode="decimal">
-
-        <label for="cbdPercentage">CBD Percentage:</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="cbdPercentage" name="cbdPercentage" required onfocusout="calculateCartridgeIsolate()" inputmode="decimal">
-
-        <label for="thcaPercentage">THC Percentage:</label>
-        <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="thcaPercentage" name="thcaPercentage" required onfocusout="calculateCartridgeIsolate()" inputmode="decimal">
-
-        <label for="balanceCheckbox">Enable Balancing:</label>
-        <input type="checkbox" id="balanceCheckbox" onchange="toggleBalancing()">
-
-        <div id="balancingOptions" style="display: none;">
-            <label for="balancingMethod">Balancing Method:</label>
-            <select id="balancingMethod" onchange="calculateCartridgeIsolate()">
-                <option value="original">Equalize</option>
-                <option value="proportional">Proportional Distribution</option>
-            </select>
-        </div>
-
-        <br>
-        <button type="button" onclick="calculateCartridgeIsolate()">Calculate</button>
-        <br><br>
-
-        <div id="inputDescription">
-            <button class="spoiler-btn" onclick="toggleSpoiler('inputInstructions')"><b>Instructions:</b></button>
-            <div id="inputInstructions" class="spoiler-content">
-                <p><em>Instructions:</em></p>
-                <ol>
-                    <li>Enter the number of cartridges you have in the &quot;Number of Cartr&quot;dges&quot; field.</li>
-                    <li>Specify the capacity of each cartridge in grams using the &quot;Capacity per Cart&quot;idge&quot; field.</li>
-                    <li>Enter the CBD percentage in the &quot;CBD Perce&quot;tage&quot; field.</li>
-                    <li>Enter the THC percentage in the &quot;THC Perce&quot;tage&quot; field.</li>
-                    <li>Check the &quot;Enable Bala&quot;cing&quot; checkbox if you want to adjust the CBD and THC percentages to reach a total of 100%.</li>
-                    <li>If balancing is enabled, select the desired balancing method from the &quot;Balancing M&quot;thod&quot; dropdown.</li>
-                    <li>Click the &quot;Calc&quot;late&quot; button to generate the results.</li>
-                </ol>
+<!-- Footer -->
+<footer class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>About Decarboxulator™</h5>
+                <p>Decarboxulator™ is a powerful suite of tools designed to streamline and optimize your decarboxylation processes. Developed by TheLabCorner LLC, our mission is to provide cutting-edge solutions for the cannabis industry.</p>
             </div>
-            <br>
-            <button class="spoiler-btn" onclick="toggleSpoiler('inputFormulas')"><b>Formulas Used:</b></button>
-            <div id="inputFormulas" class="spoiler-content">
-                <br>
-                <p><em>THC Calculation:</em></p>
-                <math>
-                    <mrow>
-                        <mi>THC Weight</mi>
-                        <mo>=</mo>
-                        <mi>Total Weight</mi>
-                        <mo>&times;</mo>
-                        <mfrac>
-                            <mi>THC Percentage</mi>
-                            <mn>100</mn>
-                        </mfrac>
-                    </mrow>
-                </math>
-                <br>
-                <p><em>THCa Calculation:</em></p>
-                <math>
-                    <mrow>
-                        <mi>THCa Weight</mi>
-                        <mo>=</mo>
-                        <mi>THC Weight</mi>
-                        <mo>&divide;</mo>
-                        <mfrac>
-                            <mi>314.224580195</mi>
-                            <mn>358.21440943</mn>
-                        </mfrac>
-
-                    </mrow>
-                </math>
-                <br>
-                <p><em>CO2 Loss Calculation:</em></p>
-                <math>
-                    <mrow>
-                        <mi>CO2 Loss</mi>
-                        <mo>=</mo>
-                        <mi>THCa Weight</mi>
-                        <mo>-</mo>
-                        <mi>THC Weight</mi>
-                    </mrow>
-                </math>
-                <br>
-                <p><em>CBD Calculation:</em></p>
-                <math>
-                    <mrow>
-                        <mi>CBD Weight</mi>
-                        <mo>=</mo>
-                        <mi>Total Weight</mi>
-                        <mo>&times;</mo>
-                        <mfrac>
-                            <mi>CBD Percentage</mi>
-                            <mn>100</mn>
-                        </mfrac>
-                    </mrow>
-                </math>
+            <div class="col-md-3">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#!">Home</a></li>
+                    <li><a href="#!">Portfolio</a></li>
+                    <li><a href="#!">Consultation</a></li>
+                    <li><a href="#!">Contact</a></li>
+                </ul>
             </div>
-            <br>
         </div>
-
-    </form>
-    <div id="cartridgeIsolateCalculatorResult"></div>
-</div>
-
-
-
-
-<script src="calculatorJS/calculateCartridgeIsolate.js"></script>
-
-
-
-<!--  DECARBOXYLATION TIME CALCULATOR -->
-
-
-
-<div id="decarbTime" class="tabcontent">
-    <div id="decarbTimeCalc">
-        <h2>THCa Decarboxylation Time Calculator</h2>
-
-        <h2 style="color:red">THIS CALCULATOR IS A WORK IN PROGRESS - IT IS CURRENTLY NONFUNCTIONAL</h2>
-        <form id="decarbTimeForm">
-
-            <label for="sampleSize">Sample Size (grams):</label>
-            <input type="number" pattern="[0-9]*\.?[0-9]*" id="sampleSize" name="sampleSize" placeholder="10 grams" required>
-
-            <label for="thcaConcentration">THCa Concentration:</label>
-            <input type="number" pattern="[0-9]*\.?[0-9]*" id="thcaConcentration" name="percentDecarboxylation" placeholder="67.43%" min="0.01" max="99.99">
-
-            <label for="percentDecarboxylation">Percent Decarboxylation:</label>
-            <input type="number" pattern="[0-9]*\.?[0-9]*" id="percentDecarboxylation" name="percentDecarboxylation" placeholder="80" min="1" max="100" required>
-
-            <label for="tempUnit">Temperature Unit:</label>
-            <select id="tempUnit" name="tempUnit" required>
-                <option value="C">Celsius (&#176;C)</option>
-                <option value="F">Fahrenheit (&#176;F)</option>
-                <option value="K">Kelvin (K)</option>
-            </select>
-
-            <label for="temperature">Temperature:</label>
-            <input type="number" pattern="[0-9]*" min="80" max="1000" step="any" id="temperature" name="temperature" placeholder="200&#176" required>
-
-            <br><br>
-
-            <button type="button" onclick="calculateDecarbTime()">Calculate</button>
-
-        </form>
-        <div id="decarbTimeResult"></div>
-        <br>
-        <div id="timeDescription">
-            <button class="spoiler-btn" onclick="toggleSpoiler('timeInstructions')"><b>Instructions:</b></button>
-            <div id="timeInstructions" class="spoiler-content">
-                <p>This tool estimates the time required to decarboxylate a sample of THCa (tetrahydrocannabinolic acid) to &#8710;9-THC (tetrahydrocannabinol) based on the sample size, desired percent decarboxylation, and decarboxylation temperature.</p>
-
-                <p>To use this tool, follow these steps:</p>
-                <ol>
-                    <li>Enter the sample size (in grams) in the &quot;Sample&quot;Size&quot; field.</li>
-                    <li>Enter the desired percent decarboxylation (up to 99.9%) in the &quot;Percent Decarboxyl&quot;tion&quot; field.</li>
-                    <li>Enter the decarboxylation temperature in the &quot;Temper&quot;ture&quot; field.</li>
-                    <li>Select the temperature unit (Celsius or Fahrenheit) in the &quot;Temperature&quot;Unit&quot; field.</li>
-                    <li>Click the &quot;Calc&quot;late&quot; button to generate the results.</li>
-                </ol>
-
-                <p>The tool uses the Arrhenius equation to calculate the rate constant (k) for the decarboxylation reaction, and estimates the time required for the sample to reach the desired percent decarboxylation based on the initial concentration of THCa, decarboxylation efficiency, and heating method.</p>
-
-                <p>Please note that the estimates should be used as guidance rather than concrete values, as the actual time required may be affected by factors such as sample purity, decarboxylation efficiency, and heating method.</p>
-
-                <p>If there are any errors in the input values, such as negative values or empty fields, an error message will be displayed.</p>
-
-            </div> <br>
-            <button class="spoiler-btn" onclick="toggleSpoiler('timeFormulas')"><b>Formulas:</b></button>
-            <div id="timeFormulas" class="spoiler-content">
-                <br>
-                <div id="plot"></div>
-                <br>
-            </div><br>
-
+        <hr>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <p>&copy; 2024 TheDabCorner&trade; LLC. All rights reserved.</p>
+            </div>
         </div>
     </div>
-</div>
-
-
-<script src="calculatorJS/calculateDecarbTime.js"></script>
-
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-<script src="calculatorJS/decarbTimePlot.js"></script>
-
-
-
-
-
-
-
-
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
-
-
-<script src="calculatorJS/DarkMode.js"></script>
-
-    <script src="tabJS.js"></script>
-<script src="calculatorJS/DarkMode.js"></script>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<div id="decarbProgressDisclaimer"><em><br>Note: The results produced by this calculator are an estimate based on the assumption of complete decarboxylation.
-    Other factors such as temperature, time, and the starting material may affect the actual result. Please use these estimates as guidance rather than concrete values.</em></div>
-
-<footer>
-    <a id="footerLisc" href="#license-modal">Decarboxulator &#169; 2023 &#8212; TheDabCorner LLC.</a>
 </footer>
 
-<dialog id="license-modal">
-    <button id="closeButton">X</button>
-    <h2 style="text-align: center">Fair Source License</h2>
-    <p><b>Fair Source License, version 0.9</b><br><br>
-        <b>Copyright:</b> &#169; 2023 Jackson Cummings - TheDabCorner LLC<br><br>
-
-        <b>Licensor:</b> <em>Jackson Cummings</em><br><br>
-
-        <b>Software:</b> <em>Decarboxulator - TheDabCorner LLC</em><br><br>
-
-        <b>Use Limitation:</b> <em>1 user</em><br><br>
-
-        <b>License Grant:</b><br> Licensor hereby grants to each recipient of the
-        Software (&amp;quo&quot;&quot;you&quot;) a non-exclusive, non-transferable, royalty-free and
-        fully-paid-up license, under all of the Licensor's copyright and
-        patent rights, to use, copy, distribute, prepare derivative works of,
-        publicly perform and display the Software, subject to the Use
-        Limitation and the conditions set forth below.<br><br>
-
-        <b>Use Limitation:</b><br> The license granted above allows use by up to the
-        number of users per entity set forth above (the &quot;Use Limit&quot;tion&quot;). For
-        determining the number of users, &amp;quo&quot;&quot;you&quot; includes all affiliates,
-        meaning legal entities controlling, controlled by, or under common
-        control with you. If you exceed the Use Limitation, your use is
-        subject to payment of Licensor's then-current list price for licenses.<br><br>
-
-        <b>Conditions:</b><br> Redistribution in source code or other forms must include
-        a copy of this license document to be provided in a reasonable
-        manner. Any redistribution of the Software is only allowed subject to
-        this license.<br><br>
-
-        <b>Trademarks:</b><br> This license does not grant you any right in the
-        trademarks, service marks, brand names or logos of Licensor.<br><br>
-
-        <b>DISCLAIMER:</b><br> THE SOFTWARE IS PROVIDED &quot;&quot;S IS&quot;, WITHOUT WARRANTY OR
-        CONDITION, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES
-        OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-        NON INFRINGEMENT. LICENSORS HEREBY DISCLAIM ALL LIABILITY, WHETHER IN
-        AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-        CONNECTION WITH THE SOFTWARE.<br><br>
-
-        <b>Termination:</b><br> If you violate the terms of this license, your rights
-        will terminate automatically and will not be reinstated without the
-        prior written consent of Licensor. Any such termination will not
-        affect the right of others who may have received copies of the
-        Software from you.</p>
-</dialog>
-
-<script src="ModalJS.js"></script>
-
-
 </body>
-
 </html>
