@@ -73,11 +73,17 @@ function balanceCannabinoids(currentField) {
 
 
 function displayResults(thcaWeight, thcWeight, co2Loss, cbdWeight) {
+    // Calculate total weights before and after decarboxylation
+    const totalWeightBeforeDecarb = thcaWeight + cbdWeight;
+    const totalWeightAfterDecarb = thcWeight + cbdWeight - co2Loss;
+
     const resultHtml = `
         <b>THCa Required:</b> ${thcaWeight.toFixed(2)} grams<br>
         <b>THC after Decarb:</b> ${thcWeight.toFixed(2)} grams<br>
         <b>Decarboxylation Loss (CO2):</b> ${co2Loss.toFixed(2)} grams<br>
-        <b>CBD Required:</b> ${cbdWeight.toFixed(2)} grams
+        <b>CBD Required:</b> ${cbdWeight.toFixed(2)} grams<br>
+        <b>Total Weight Before Decarb:</b> ${totalWeightBeforeDecarb.toFixed(2)} grams<br>
+        <b>Total Weight After Decarb:</b> ${totalWeightAfterDecarb.toFixed(2)} grams
     `;
     document.getElementById("cartridgeIsolateCalculatorResult").innerHTML = resultHtml;
 }
