@@ -1,0 +1,45 @@
+/* Dark mode styles */
+body {
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+body.dark-mode {
+    background-color: #222;
+    color: #ddd;
+}
+
+.dark-mode .bg-light {
+    background-color: #333 !important;
+}
+
+.dark-mode .list-group-item-light {
+    background-color: #444;
+    color: #ddd;
+}
+
+.dark-mode .navbar,
+.dark-mode .navbar-light {
+    background-color: #333 !important;
+    color: #ddd;
+}
+
+.dark-mode .navbar-light .navbar-nav .nav-link {
+    color: #ddd;
+}
+
+.dark-mode .dropdown-menu {
+    background-color: #444;
+}
+
+.dark-mode .dropdown-item {
+    color: #ddd;
+}
+
+.dark-mode .dropdown-divider {
+    border-top: 1px solid #555;
+}
+
+.dark-mode .bg-white {
+    --bs-bg-opacity: 1;
+    background-color: #222 !important;
+}
