@@ -7,8 +7,11 @@
     <meta name="author" content="" />
     <title>Decarboxulator™ | TheLabCorner LLC</title>
 
-    <!-- Apple Mobile Web App Capable -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <!-- Android -->
+    <meta name="mobile-web-app-capable" content="yes">
 
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="../resources/assets/favicon.ico" />
@@ -96,7 +99,7 @@
                     <div id="balancingOptions" class="mb-3" style="display: none;">
                         <label for="balancingMethod" class="form-label">Balancing Method:</label>
                         <select class="form-select" id="balancingMethod" onchange="balanceCannabinoids()">
-                            <option value="equal">Equalize</option>
+                            <option value="remainder">Remainder</option>
                             <option value="proportional">Proportional Distribution</option>
                         </select>
                         <br/>
@@ -104,7 +107,7 @@
                     </div>
 
 
-                    <button type="button" class="btn btn-primary" onclick="preventDefault(); calculateCartridgeIsolate()">Calculate</button>
+                    <button type="button" class="btn btn-primary" onclick="calculateCartridgeIsolate()">Calculate</button>
                 <div id="cartridgeIsolateCalculatorResult" class="mt-4"></div>
 
             <br><br>

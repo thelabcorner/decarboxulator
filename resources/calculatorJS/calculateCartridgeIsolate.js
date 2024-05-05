@@ -4,6 +4,12 @@ function calculateCartridgeIsolate() {
     let cbdPercentage = parseFloat(document.getElementById("cbdPercentage").value);
     let thcPercentage = parseFloat(document.getElementById("thcaPercentage").value);
 
+    // Check if the sum of percentages is exactly 100
+    if (cbdPercentage + thcPercentage !== 100) {
+        displayError('The sum of CBD and THC percentages must be exactly 100.');
+        return;
+    }
+
     // Check for NaN or non-positive values in essential fields
     if (isNaN(cartCount) || isNaN(cartCapacity) || isNaN(cbdPercentage) || isNaN(thcPercentage) ||
         cartCount <= 0 || cartCapacity <= 0 || cbdPercentage < 0 || thcPercentage < 0) {
@@ -26,15 +32,20 @@ function calculateCartridgeIsolate() {
 
 
 
-function balanceCannabinoids(currentField) {
+// Global variable to keep track of the last edited field
+let lastEditedField = null;
+
+// Add event listeners to the input fields
+document.getElementById("cbdPercentage").addEventListener('input', function() {
+    lastEditedField = "cbdPercentage";
+});
+document.getElementById("thcaPercentage").addEventListener('input', function() {
+    lastEditedField = "thcaPercentage";
+});
+
+function balanceCannabinoids() {
     let cbdPercentage = parseFloat(document.getElementById("cbdPercentage").value);
     let thcPercentage = parseFloat(document.getElementById("thcaPercentage").value);
-
-    // Validate the input values are numbers and within the acceptable range
-    if (isNaN(cbdPercentage) || isNaN(thcPercentage) || cbdPercentage < 0 || thcPercentage < 0) {
-        displayError('Please provide valid percentages for balancing.');
-        return;
-    }
 
     const balancingMethod = document.getElementById("balancingMethod").value;
     const totalPercentage = cbdPercentage + thcPercentage;
@@ -44,13 +55,12 @@ function balanceCannabinoids(currentField) {
         return;
     }
 
-    if (balancingMethod === "equal") {
-        if (currentField === "cbdPercentage") {
-            cbdPercentage = Math.min(100, 100 - cbdPercentage);
-            thcPercentage = 100 - cbdPercentage;
-        } else if (currentField === "thcPercentage") {
-            thcPercentage = Math.min(100, 100 - thcPercentage);
-            cbdPercentage = 100 - thcPercentage;
+    if (balancingMethod === "remainder") {
+        // Automatically balance the percentages to be equal based on which field was last edited
+        if (lastEditedField === "cbdPercentage") {
+            thcPercentage = 100 - cbdPercentage; // Subtract the CBD percentage from 100 for THC
+        } else if (lastEditedField === "thcaPercentage") {
+            cbdPercentage = 100 - thcPercentage; // Subtract the THC percentage from 100 for CBD
         }
     } else if (balancingMethod === "proportional") {
         // Distribute the remaining percentage proportionally
@@ -58,7 +68,6 @@ function balanceCannabinoids(currentField) {
         cbdPercentage *= adjustmentRatio;
         thcPercentage *= adjustmentRatio;
     }
-
 
     // Ensure that neither percentage exceeds 100 or drops below 0 due to floating point math
     cbdPercentage = Math.min(100, Math.max(0, cbdPercentage));
@@ -72,10 +81,11 @@ function balanceCannabinoids(currentField) {
 }
 
 
+
 function displayResults(thcaWeight, thcWeight, co2Loss, cbdWeight) {
     // Calculate total weights before and after decarboxylation
     const totalWeightBeforeDecarb = thcaWeight + cbdWeight;
-    const totalWeightAfterDecarb = thcWeight + cbdWeight - co2Loss;
+    const totalWeightAfterDecarb = thcWeight + cbdWeight;
 
     const resultHtml = `
         <b>THCa Required:</b> ${thcaWeight.toFixed(2)} grams<br>
