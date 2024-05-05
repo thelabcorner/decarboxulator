@@ -4,65 +4,88 @@ function calculateCartridgeIsolate() {
     let cbdPercentage = parseFloat(document.getElementById("cbdPercentage").value);
     let thcPercentage = parseFloat(document.getElementById("thcaPercentage").value);
 
-    // Validate cart count and capacity
-    if (isNaN(cartCount) || isNaN(cartCapacity) || cartCount <= 0 || cartCapacity <= 0) {
-        const result = document.getElementById("cartridgeIsolateCalculatorResult");
-        result.innerHTML = "<br><br><span style='color: red'><b>Error: Invalid cart count or capacity</b></span><br>";
+    // Check for NaN or non-positive values in essential fields
+    if (isNaN(cartCount) || isNaN(cartCapacity) || isNaN(cbdPercentage) || isNaN(thcPercentage) ||
+        cartCount <= 0 || cartCapacity <= 0 || cbdPercentage < 0 || thcPercentage < 0) {
+        displayError('Please provide valid inputs for all fields.');
         return;
     }
 
-    // Calculate total weight
+    // Calculate total weight of cartridges
     const totalWeight = cartCount * cartCapacity;
-    const totalPercentage = cbdPercentage + thcPercentage;
 
-    // Auto-balancing code
-    if (document.getElementById("balanceCheckbox").checked) {
-        const balancingMethod = document.getElementById("balancingMethod").value;
-        if (balancingMethod === "original") {
-            if (cbdPercentage < thcPercentage) {
-                cbdPercentage += 100 - totalPercentage;
-            } else {
-                thcPercentage += 100 - totalPercentage;
-            }
-        } else if (balancingMethod === "proportional") {
-            const adjustmentFactor = (100 - totalPercentage) / totalPercentage;
-            cbdPercentage *= 1 + adjustmentFactor;
-            thcPercentage *= 1 + adjustmentFactor;
-        }
-    }
-
-    // Update CBD and THC input values
-    const cbdInput = document.getElementById("cbdPercentage");
-    const thcInput = document.getElementById("thcaPercentage");
-    cbdInput.value = cbdPercentage.toFixed(1);
-    thcInput.value = thcPercentage.toFixed(1);
-
-    // Validate CBD and THC percentages
-    if (isNaN(totalPercentage) || totalPercentage !== 100) {
-        const result = document.getElementById("cartridgeIsolateCalculatorResult");
-        result.innerHTML = "<br><br><span style='color: red'><b>Error: CBD and THC percentages must add up to 100%</b></span><br>";
-        return;
-    }
-
-    // Calculate THC and THCa amounts based on percentages
+    // Calculate cannabinoid weights
     const thcWeight = totalWeight * (thcPercentage / 100);
-    const thcaWeight = thcWeight / (314.224580195 / 358.21440943);
-    const co2Loss = thcaWeight - thcWeight;
     const cbdWeight = totalWeight * (cbdPercentage / 100);
+    const thcaWeight = thcWeight * (358.21440943 / 314.224580195);
+    const co2Loss = thcaWeight - thcWeight;
 
     // Display the results
-    const result = document.getElementById("cartridgeIsolateCalculatorResult");
-    result.innerHTML =
-        "<br><b>THCa Required:</b> " +
-        thcaWeight.toFixed(2) +
-        " grams<br><b>THC after Decarb:</b> " +
-        thcWeight.toFixed(2) +
-        " grams<br><b>Decarboxylation Loss (CO2):</b> " +
-        co2Loss.toFixed(2) +
-        " grams<br><b>CBD Required:</b> " +
-        cbdWeight.toFixed(2) +
-        " grams";
+    displayResults(thcaWeight, thcWeight, co2Loss, cbdWeight);
 }
+
+
+
+function balanceCannabinoids(currentField) {
+    let cbdPercentage = parseFloat(document.getElementById("cbdPercentage").value);
+    let thcPercentage = parseFloat(document.getElementById("thcaPercentage").value);
+
+    // Validate the input values are numbers and within the acceptable range
+    if (isNaN(cbdPercentage) || isNaN(thcPercentage) || cbdPercentage < 0 || thcPercentage < 0) {
+        displayError('Please provide valid percentages for balancing.');
+        return;
+    }
+
+    const balancingMethod = document.getElementById("balancingMethod").value;
+    const totalPercentage = cbdPercentage + thcPercentage;
+
+    if (totalPercentage === 0) {
+        displayError('Total percentage cannot be zero.');
+        return;
+    }
+
+    if (balancingMethod === "equal") {
+        if (currentField === "cbdPercentage") {
+            cbdPercentage = Math.min(100, 100 - cbdPercentage);
+            thcPercentage = 100 - cbdPercentage;
+        } else if (currentField === "thcPercentage") {
+            thcPercentage = Math.min(100, 100 - thcPercentage);
+            cbdPercentage = 100 - thcPercentage;
+        }
+    } else if (balancingMethod === "proportional") {
+        // Distribute the remaining percentage proportionally
+        let adjustmentRatio = 100 / totalPercentage;
+        cbdPercentage *= adjustmentRatio;
+        thcPercentage *= adjustmentRatio;
+    }
+
+
+    // Ensure that neither percentage exceeds 100 or drops below 0 due to floating point math
+    cbdPercentage = Math.min(100, Math.max(0, cbdPercentage));
+    thcPercentage = Math.min(100, Math.max(0, thcPercentage));
+
+    // Update input fields with new balanced percentages
+    document.getElementById("cbdPercentage").value = cbdPercentage.toFixed(2);
+    document.getElementById("thcaPercentage").value = thcPercentage.toFixed(2);
+
+    calculateCartridgeIsolate(); // Recalculate after balancing
+}
+
+
+function displayResults(thcaWeight, thcWeight, co2Loss, cbdWeight) {
+    const resultHtml = `
+        <b>THCa Required:</b> ${thcaWeight.toFixed(2)} grams<br>
+        <b>THC after Decarb:</b> ${thcWeight.toFixed(2)} grams<br>
+        <b>Decarboxylation Loss (CO2):</b> ${co2Loss.toFixed(2)} grams<br>
+        <b>CBD Required:</b> ${cbdWeight.toFixed(2)} grams
+    `;
+    document.getElementById("cartridgeIsolateCalculatorResult").innerHTML = resultHtml;
+}
+
+function displayError(message) {
+    document.getElementById("cartridgeIsolateCalculatorResult").innerHTML = `<span style='color: red'><b>Error:</b> ${message}</span>`;
+}
+
 
 function toggleBalancing() {
     const balancingOptions = document.getElementById("balancingOptions");

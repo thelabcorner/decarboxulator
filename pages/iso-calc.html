@@ -66,115 +66,153 @@
         <div class="container-fluid">
 
 
-            <div id="cartridgeIsolateCalculator" class="tabcontent">
+            <div id="cartridgeIsolateCalculator" class="tab-content p-3">
                 <h2>Cartridge Isolate Calculator</h2>
-                <form id="calcForm">
-                    <label for="cartCount">Number of Cartridges:</label>
-                    <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.5" id="cartCount" name="cartCount" required onfocusout="calculateCartridgeIsolate()" inputmode="numeric">
+                    <div class="mb-3">
+                        <label for="cartCount" class="form-label">Number of Cartridges:</label>
+                        <input type="number" class="form-control" id="cartCount" name="cartCount" required onfocusout="calculateCartridgeIsolate()" inputmode="numeric">
+                    </div>
 
-                    <label for="cartCapacity">Capacity per Cartridge (grams):</label>
-                    <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" id="cartCapacity" name="cartWeight" required onfocusout="calculateCartridgeIsolate()" inputmode="decimal">
+                    <div class="mb-3">
+                        <label for="cartCapacity" class="form-label">Capacity per Cartridge (grams):</label>
+                        <input type="number" class="form-control" id="cartCapacity" name="cartWeight" required onfocusout="calculateCartridgeIsolate()" inputmode="decimal">
+                    </div>
 
-                    <label for="cbdPercentage">CBD Percentage:</label>
-                    <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="cbdPercentage" name="cbdPercentage" required onfocusout="calculateCartridgeIsolate()" inputmode="decimal">
+                    <div class="mb-3">
+                        <label for="cbdPercentage" class="form-label">CBD Percentage:</label>
+                        <input type="number" class="form-control" id="cbdPercentage" name="cbdPercentage" required onfocusout="calculateCartridgeIsolate()" step="0.1" min="0" max="100" inputmode="decimal">
+                    </div>
 
-                    <label for="thcaPercentage">THC Percentage:</label>
-                    <input type="number" pattern="[0-9]*\.?[0-9]*" step="0.1" min="0" max="100" id="thcaPercentage" name="thcaPercentage" required onfocusout="calculateCartridgeIsolate()" inputmode="decimal">
+                    <div class="mb-3">
+                        <label for="thcaPercentage" class="form-label">THC Percentage:</label>
+                        <input type="number" class="form-control" id="thcaPercentage" name="thcaPercentage" required onfocusout="calculateCartridgeIsolate()" step="0.1" min="0" max="100" inputmode="decimal">
+                    </div>
 
-                    <label for="balanceCheckbox">Enable Balancing:</label>
-                    <input type="checkbox" id="balanceCheckbox" onchange="toggleBalancing()">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="balanceCheckbox" onchange="toggleBalancing()">
+                        <label class="form-check-label" for="balanceCheckbox">Enable Balancing</label>
+                    </div>
 
-                    <div id="balancingOptions" style="display: none;">
-                        <label for="balancingMethod">Balancing Method:</label>
-                        <select id="balancingMethod" onchange="calculateCartridgeIsolate()">
-                            <option value="original">Equalize</option>
+                    <div id="balancingOptions" class="mb-3" style="display: none;">
+                        <label for="balancingMethod" class="form-label">Balancing Method:</label>
+                        <select class="form-select" id="balancingMethod" onchange="balanceCannabinoids()">
+                            <option value="equal">Equalize</option>
                             <option value="proportional">Proportional Distribution</option>
                         </select>
+                        <br/>
+                        <button class="btn btn-primary" onclick="balanceCannabinoids()">Balance</button>
                     </div>
 
-                    <br>
-                    <button type="button" onclick="calculateCartridgeIsolate()">Calculate</button>
-                    <br><br>
 
-                    <div id="inputDescription">
-                        <button class="spoiler-btn" onclick="toggleSpoiler('inputInstructions')"><b>Instructions:</b></button>
-                        <div id="inputInstructions" class="spoiler-content">
-                            <p><em>Instructions:</em></p>
-                            <ol>
-                                <li>Enter the number of cartridges you have in the &quot;Number of Cartr&quot;dges&quot; field.</li>
-                                <li>Specify the capacity of each cartridge in grams using the &quot;Capacity per Cart&quot;idge&quot; field.</li>
-                                <li>Enter the CBD percentage in the &quot;CBD Perce&quot;tage&quot; field.</li>
-                                <li>Enter the THC percentage in the &quot;THC Perce&quot;tage&quot; field.</li>
-                                <li>Check the &quot;Enable Bala&quot;cing&quot; checkbox if you want to adjust the CBD and THC percentages to reach a total of 100%.</li>
-                                <li>If balancing is enabled, select the desired balancing method from the &quot;Balancing M&quot;thod&quot; dropdown.</li>
-                                <li>Click the &quot;Calc&quot;late&quot; button to generate the results.</li>
-                            </ol>
-                        </div>
-                        <br>
-                        <button class="spoiler-btn" onclick="toggleSpoiler('inputFormulas')"><b>Formulas Used:</b></button>
-                        <div id="inputFormulas" class="spoiler-content">
-                            <br>
-                            <p><em>THC Calculation:</em></p>
-                            <math>
-                                <mrow>
-                                    <mi>THC Weight</mi>
-                                    <mo>=</mo>
-                                    <mi>Total Weight</mi>
-                                    <mo>&times;</mo>
-                                    <mfrac>
-                                        <mi>THC Percentage</mi>
-                                        <mn>100</mn>
-                                    </mfrac>
-                                </mrow>
-                            </math>
-                            <br>
-                            <p><em>THCa Calculation:</em></p>
-                            <math>
-                                <mrow>
-                                    <mi>THCa Weight</mi>
-                                    <mo>=</mo>
-                                    <mi>THC Weight</mi>
-                                    <mo>&divide;</mo>
-                                    <mfrac>
-                                        <mi>314.224580195</mi>
-                                        <mn>358.21440943</mn>
-                                    </mfrac>
+                    <button type="button" class="btn btn-primary" onclick="preventDefault(); calculateCartridgeIsolate()">Calculate</button>
+                <div id="cartridgeIsolateCalculatorResult" class="mt-4"></div>
 
-                                </mrow>
-                            </math>
-                            <br>
-                            <p><em>CO2 Loss Calculation:</em></p>
-                            <math>
-                                <mrow>
-                                    <mi>CO2 Loss</mi>
-                                    <mo>=</mo>
-                                    <mi>THCa Weight</mi>
-                                    <mo>-</mo>
-                                    <mi>THC Weight</mi>
-                                </mrow>
-                            </math>
-                            <br>
-                            <p><em>CBD Calculation:</em></p>
-                            <math>
-                                <mrow>
-                                    <mi>CBD Weight</mi>
-                                    <mo>=</mo>
-                                    <mi>Total Weight</mi>
-                                    <mo>&times;</mo>
-                                    <mfrac>
-                                        <mi>CBD Percentage</mi>
-                                        <mn>100</mn>
-                                    </mfrac>
-                                </mrow>
-                            </math>
+            <br><br>
+
+
+                    <div class="card-body">
+                        <div class="accordion" id="instructionsAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="instructionsHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#instructionsCollapse" aria-expanded="false" aria-controls="instructionsCollapse">
+                                        Instructions
+                                    </button>
+                                </h2>
+                                <div id="instructionsCollapse" class="accordion-collapse collapse" aria-labelledby="instructionsHeading">
+                                    <div class="accordion-body">
+                                        <ol>
+                                            <li>Enter the number of cartridges you have in the "Number of Cartridges" field.</li>
+                                            <li>Specify the capacity of each cartridge in grams using the "Capacity per Cartridge" field.</li>
+                                            <li>Enter the CBD percentage in the "CBD Percentage" field.</li>
+                                            <li>Enter the THC percentage in the "THC Percentage" field.</li>
+                                            <li>Check the "Enable Balancing" checkbox if you want to adjust the CBD and THC percentages to reach a total of 100%.</li>
+                                            <li>If balancing is enabled, select the desired balancing method from the "Balancing Method" dropdown.</li>
+                                            <li>Click the "Calculate" button to generate the results.</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <br>
                     </div>
+                    <br/>
 
-                </form>
-                <div id="cartridgeIsolateCalculatorResult"></div>
+                    <div class="card-body">
+                        <div class="accordion" id="formulasAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="formulasHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#formulasCollapse" aria-expanded="false" aria-controls="formulasCollapse">
+                                        Formulas
+                                    </button>
+                                </h2>
+                                <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
+                                    <div class="accordion-body">
+                                        <p><em>THC Calculation:</em></p>
+                                        <p class="mb-4">
+                                            <math>
+                                                <mrow>
+                                                    <mi>THC Weight</mi>
+                                                    <mo>=</mo>
+                                                    <mi>Total Weight</mi>
+                                                    <mo>&times;</mo>
+                                                    <mfrac>
+                                                        <mi>THC Percentage</mi>
+                                                        <mn>100</mn>
+                                                    </mfrac>
+                                                </mrow>
+                                            </math>
+                                        </p>
+
+                                        <p><em>THCa Calculation:</em></p>
+                                        <p class="mb-4">
+                                            <math>
+                                                <mrow>
+                                                    <mi>THCa Weight</mi>
+                                                    <mo>=</mo>
+                                                    <mi>THC Weight</mi>
+                                                    <mo>&divide;</mo>
+                                                    <mfrac>
+                                                        <mi>314.224580195</mi>
+                                                        <mn>358.21440943</mn>
+                                                    </mfrac>
+                                                </mrow>
+                                            </math>
+                                        </p>
+
+                                        <p><em>CO2 Loss Calculation:</em></p>
+                                        <p class="mb-4">
+                                            <math>
+                                                <mrow>
+                                                    <mi>CO2 Loss</mi>
+                                                    <mo>=</mo>
+                                                    <mi>THCa Weight</mi>
+                                                    <mo>-</mo>
+                                                    <mi>THC Weight</mi>
+                                                </mrow>
+                                            </math>
+                                        </p>
+
+                                        <p><em>CBD Calculation:</em></p>
+                                        <p>
+                                            <math>
+                                                <mrow>
+                                                    <mi>CBD Weight</mi>
+                                                    <mo>=</mo>
+                                                    <mi>Total Weight</mi>
+                                                    <mo>&times;</mo>
+                                                    <mfrac>
+                                                        <mi>CBD Percentage</mi>
+                                                        <mn>100</mn>
+                                                    </mfrac>
+                                                </mrow>
+                                            </math>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <br/>
             </div>
-
 
 
 
