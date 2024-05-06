@@ -1,7 +1,7 @@
 {
     "theme_color": "#a9fe02",
     "background_color": "#8cd301",
-    "display": "fullscreen",
+    "display": "standalone",
     "scope": "thelabcorner.github.io/decarboxulator/",
     "start_url": "thelabcorner.github.io/decarboxulator/index",
     "name": "Decarboxulator\u2122",
