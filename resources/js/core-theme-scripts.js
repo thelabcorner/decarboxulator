@@ -24,27 +24,3 @@ window.addEventListener('DOMContentLoaded', event => {
     }
 
 });
-
-// Dark Mode
-document.addEventListener('DOMContentLoaded', function() {
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const body = document.body;
-
-    // Check user's preferred color scheme on load
-    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    body.classList.toggle('dark-mode', isDarkMode);
-
-    // Update the checkbox state based on the initial mode
-    darkModeToggle.checked = isDarkMode;
-
-    // Listen for changes in the user's preferred color scheme
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
-        body.classList.toggle('dark-mode', event.matches);
-        darkModeToggle.checked = event.matches;
-    });
-
-    // Listen for manual toggle changes
-    darkModeToggle.addEventListener('change', function() {
-        body.classList.toggle('dark-mode', this.checked);
-    });
-});
