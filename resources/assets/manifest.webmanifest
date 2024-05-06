@@ -6,28 +6,27 @@
     "start_url": "/decarboxulator/index",
     "name": "Decarboxulator\u2122",
     "short_name": "Decarboxulator\u2122",
-    "description": "A collection of kinetic calculators to estimate and predict the decarboxylation of cannabinoids.",
+    "description": "Decarboxylation Calculator for Cannabinoid Processing",
     "icons": [
         {
-            "src": "decarboxulator-logo-192x192.png",
+            "src": "icon-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "decarboxulator-logo-256x256.png",
+            "src": "icon-256x256.png",
             "sizes": "256x256",
             "type": "image/png"
         },
         {
-            "src": "decarboxulator-logo-384x384.png",
+            "src": "icon-384x384.png",
             "sizes": "384x384",
             "type": "image/png"
         },
         {
-            "src": "decarboxulator-logo-512x512.png",
+            "src": "icon-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
         }
     ]
-
 }
