@@ -83,57 +83,74 @@
         <!-- Page content-->
         <div class="container-fluid">
 
-
-            <!-- THCA Input Finder - How much THCa to make X grams THC -->
-            <div id="thcToThca" class="tabcontent">
+            <div id="thcToThca" class="tab-content p-3">
                 <h2>THCa Input Finder</h2>
                 <form id="thcToThcaForm">
-                    <label for="thcWeight">Desired Weight of THC (grams):</label>
-                    <input type="number" pattern="[0-9]*\.?[0-9]*" placeholder="67 grams" id="thcWeight" name="thcWeight" max="9999999999" required oninput="calculateThcToThca()">
-                    <button type="button" onclick="calculateThcToThca()">Calculate</button>
+                    <div class="mb-3">
+                        <label for="thcWeight" class="form-label">Desired Weight of THC (grams):</label>
+                        <input type="number" pattern="[0-9]*\.?[0-9]*" class="form-control" id="thcWeight" name="thcWeight" placeholder="67 grams" max="9999999999" required oninput="calculateThcToThca()">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="calculateThcToThca()">Calculate</button>
                 </form>
-                <div id="thcToThcaResult"></div>
+                <div id="thcToThcaResult" class="mt-4"></div>
                 <br>
                 <hr id="finderSeparator">
                 <div id="inputFinderDescription">
-                    <button class="spoiler-btn" onclick="toggleSpoiler('inputFinderInstructions')"><b>Instructions:</b></button>
-                    <div id="inputFinderInstructions" class="spoiler-content">
-                        <p><em>Instructions:</em></p>
-                        <ol>
-                            <li>Input the weight of THC you want to produce in grams into the designated field.</li>
-                            <li>Click on the &quot;Calc&quot;late&quot; button to generate the result.</li>
-                            <li>The estimated weight of THCA required to produce the desired weight of THC will be displayed below the form.</li>
-                        </ol>
+                    <div class="accordion" id="instructionsAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="instructionsHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#instructionsCollapse" aria-expanded="false" aria-controls="instructionsCollapse">
+                                    Instructions
+                                </button>
+                            </h2>
+                            <div id="instructionsCollapse" class="accordion-collapse collapse" aria-labelledby="instructionsHeading">
+                                <div class="accordion-body">
+                                    <ol>
+                                        <li>Input the weight of THC you want to produce in grams into the designated field.</li>
+                                        <li>Click on the "Calculate" button to generate the result.</li>
+                                        <li>The estimated weight of THCA required to produce the desired weight of THC will be displayed below the form.</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <br>
-                    <button class="spoiler-btn" onclick="toggleSpoiler('inputFinderCalculations')"><b>Formula(s) Used:</b></button>
-                    <div id="inputFinderCalculations" class="spoiler-content">
-                        <br>
-                        <math>
-                            <mrow>
-                                <mi>THCA Needed</mi>
-                                <mo>=</mo>
-                                <mfrac>
-                                    <mrow>
-                                        <mi>THC Desired</mi>
-                                    </mrow>
-                                    <mrow>
-                                        <mo>(</mo>
-                                        <mfrac>
-                                            <mrow>
-                                                <mn>314.47</mn>
-                                            </mrow>
-                                            <mrow>
-                                                <mn>358.48</mn>
-                                            </mrow>
-                                        </mfrac>
-                                        <mo>)</mo>
-                                    </mrow>
-                                </mfrac>
-                            </mrow>
-                        </math>
-
-                    </div><br>
+                    <div class="accordion" id="formulasAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="formulasHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#formulasCollapse" aria-expanded="false" aria-controls="formulasCollapse">
+                                    Formula(s) Used
+                                </button>
+                            </h2>
+                            <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
+                                <div class="accordion-body">
+                                    <math>
+                                        <mrow>
+                                            <mi>THCA Needed</mi>
+                                            <mo>=</mo>
+                                            <mfrac>
+                                                <mrow>
+                                                    <mi>THC Desired</mi>
+                                                </mrow>
+                                                <mrow>
+                                                    <mo>(</mo>
+                                                    <mfrac>
+                                                        <mrow>
+                                                            <mn>314.47</mn>
+                                                        </mrow>
+                                                        <mrow>
+                                                            <mn>358.48</mn>
+                                                        </mrow>
+                                                    </mfrac>
+                                                    <mo>)</mo>
+                                                </mrow>
+                                            </mfrac>
+                                        </mrow>
+                                    </math>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
