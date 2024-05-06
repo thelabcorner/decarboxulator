@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+
+<url>
+  <loc>https://thelabcorner.github.io/decarboxulator/</loc>
+  <lastmod>2024-05-06T08:24:57+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://thelabcorner.github.io/decarboxulator/index</loc>
+  <lastmod>2024-05-06T08:24:57+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://thelabcorner.github.io/decarboxulator/pages/dcx-yield</loc>
+  <lastmod>2024-05-06T08:24:57+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://thelabcorner.github.io/decarboxulator/pages/input-finder</loc>
+  <lastmod>2024-05-06T08:24:57+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://thelabcorner.github.io/decarboxulator/pages/progress-tracker</loc>
+  <lastmod>2024-05-06T08:24:57+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://thelabcorner.github.io/decarboxulator/pages/time-predictor</loc>
+  <lastmod>2024-05-06T08:24:57+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://thelabcorner.github.io/decarboxulator/pages/iso-calc</loc>
+  <lastmod>2024-05-06T08:24:57+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://thelabcorner.github.io/decarboxulator/index.html</loc>
+  <lastmod>2024-05-06T08:24:57+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+
+
+</urlset>
