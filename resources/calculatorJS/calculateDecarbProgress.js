@@ -1,55 +1,72 @@
-function calculateDecarbProgress() {
-    const InputWeight = document.getElementById("thcaStartWeight").value;
-    const CurrentWeight = document.getElementById("thcDecarbedWeight").value;
-    const LossCalc = InputWeight * (314.224580195 / 358.21440943);
-    const DecarbedWeight = InputWeight - CurrentWeight;
-    const WeightLeft = (InputWeight - LossCalc) - DecarbedWeight;
-    const PercentDecarbed = (DecarbedWeight / (InputWeight - LossCalc)) * 100;
+// Global variables
+let chartData = [];
+let chart;
 
 
-    const formatWeightLeft = WeightLeft.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
 
-    const formatLossCalc = LossCalc.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
+// Function to start tracking
+function startTracking() {
+    const tareWeight = parseFloat(document.getElementById("tareWeight").value);
+    const thcaStartWeight = parseFloat(document.getElementById("thcaStartWeight").value);
+    const otherCannabinoidWeight = parseFloat(document.getElementById("otherCannabinoidWeight").value) || 0;
 
+    if (isNaN(tareWeight) || isNaN(thcaStartWeight) || tareWeight < 0 || thcaStartWeight < 0) {
+        alert("Please enter valid tare weight and THCa start weight.");
+        return;
+    }
 
-    if (PercentDecarbed < -50 || PercentDecarbed > 150 || InputWeight === "" || CurrentWeight === "" || (InputWeight === "0" && CurrentWeight === "0")) {
-        document.getElementById("decarbProgressResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input values.</span><br>Note: Please enter realistic, positive values between 0.1 and 10 billion.</b><br>";
-    } else {
-        if (PercentDecarbed < -0.001 || PercentDecarbed > 100) {
-            document.getElementById("decarbProgressResult").innerHTML = "<br><br><span style='color: orange'><b>Warning: Possible Invalid input values<br>Note: This calculator is designed to pinpoint progress from on a scale of 0-100% completion. The following results are likely inaccurate or impossible.</span></b><br><br><b>Predicted Decarboxylated Weight: </b><br>" + formatLossCalc + " grams" +
+    const totalStartWeight = tareWeight + thcaStartWeight + otherCannabinoidWeight;
+    chartData.push({ x: new Date(), y: thcaStartWeight });
+    chart.data.labels.push(""); // Add an empty label for the initial data point
+    chart.update();
 
-                "<br><br><b>Estimated Decarboxylation Progress: </b><br>" + PercentDecarbed.toFixed(2) + "%" +
+    document.getElementById("currentWeight").style.display = "block";
+    document.getElementById("currentWeight").addEventListener("input", function () {
+        const currentWeight = parseFloat(this.value);
+        if (!isNaN(currentWeight) && currentWeight >= totalStartWeight) {
+            const thcaRemainingWeight = currentWeight - tareWeight - otherCannabinoidWeight;
+            const thcDecarboxylatedWeight = thcaStartWeight - thcaRemainingWeight;
+            const thcDecarboxylatedPercent = (thcDecarboxylatedWeight / thcaStartWeight) * 100;
 
-                "<br><br><b>Estimated Decarboxylation Progress Remaining: </b><br>" + (100 - PercentDecarbed).toFixed(2) + "%" +
+            const formattedThcDecarboxylatedWeight = thcDecarboxylatedWeight.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
 
-                "<br><br><b>Estimated THCa Remaining: </b><br>" + formatWeightLeft + " grams" + "<br>";
+            const formattedThcaRemainingWeight = thcaRemainingWeight.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
 
-        } else {
-            if ((100 - PercentDecarbed) === 0) {
-                document.getElementById("decarbProgressResult").innerHTML = "<br><br><span style='color: limegreen'><b>Complete: Input values indicate decarboxylation has completed.</span></b><br><br><b>Predicted Decarboxylated Weight: </b><br>" + formatLossCalc + " grams" +
+            document.getElementById("decarbProgressResult").innerHTML = `
+                <br><b>Decarboxylated THC Weight:</b> ${formattedThcDecarboxylatedWeight} grams
+                <br><b>Decarboxylation Progress:</b> ${thcDecarboxylatedPercent.toFixed(2)}%
+                <br><b>THCa Remaining:</b> ${formattedThcaRemainingWeight} grams
+            `;
 
-                    "<br><br><b>Estimated Decarboxylation Progress: </b><br>" + PercentDecarbed.toFixed(2) + "%" +
-
-                    "<br><br><b>Estimated Decarboxylation Progress Remaining: </b><br>" + (100 - PercentDecarbed).toFixed(2) + "%" +
-
-                    "<br><br><b>Estimated THCa Remaining: </b><br>" + formatWeightLeft + " grams" + "<br>";
-
-            } else {
-                document.getElementById("decarbProgressResult").innerHTML =
-                    "<br><br><b>Predicted Decarboxylated Weight: </b><br>" + formatLossCalc + " grams" +
-
-                    "<br><br><b>Estimated Decarboxylation Progress: </b><br>" + PercentDecarbed.toFixed(2) + "%" +
-
-                    "<br><br><b>Estimated Decarboxylation Progress Remaining: </b><br>" + (100 - PercentDecarbed).toFixed(2) + "%" +
-
-                    "<br><br><b>Estimated THCa Remaining: </b><br>" + formatWeightLeft + " grams" + "<br>";
-            }
+            chartData.push({ x: new Date(), y: thcaRemainingWeight });
+            chart.data.labels.push(""); // Add an empty label for the new data point
+            chart.update();
         }
+    });
+}
+
+// Function to save the session
+function saveSession() {
+    // Implement the logic to save the session data
+    console.log("Save session functionality is not implemented yet.");
+}
+
+function toggleLabTestMode() {
+    const labTestModeCheckbox = document.getElementById('labTestMode');
+    const otherCannabinoidDiv = document.getElementById('otherCannabinoidWeightDiv');
+    const isolateModeSpan = document.getElementById('isolateModeSpan');
+
+    if (labTestModeCheckbox.checked) {
+        otherCannabinoidDiv.style.display = 'block';
+        isolateModeSpan.innerText = 'Lab Test Mode: ON - Enter Other Cannabinoid Weights Above';
+    } else {
+        otherCannabinoidDiv.style.display = 'none';
+        isolateModeSpan.innerText = 'Isolate Mode: ON - Assuming No Other Cannabinoids in Solution';
     }
 }
