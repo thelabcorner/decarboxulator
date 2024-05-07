@@ -111,7 +111,7 @@
                         <input type="checkbox" class="form-check-input" id="labTestMode" onchange="toggleLabTestMode()" checked>
                         <label id="isolateModeSpan" class="form-check-label" for="labTestMode">Isolate Mode: ON - Assuming No Other Cannabinoids in Solution</label>
                     </div>
-                    <button type="button" class="btn btn-primary" onclick="startTracking()">Start Tracking</button>
+                    <button id="startTrackingButton" type="button" class="btn btn-primary" onclick="startTracking()">Start Tracking</button>
 
                     <div class="mb-3">
                         <label for="currentWeight" class="form-label">Current Total Weight (grams, including tare):</label>
@@ -121,51 +121,7 @@
                 <canvas id="chartContainer" style="height: 370px; width: 100%;"></canvas>
 
                 <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        // Ensure this code runs after the DOM is fully loaded
-                        function initChart() {
-                            const ctx = document.getElementById('chartContainer').getContext('2d');
-                            const chart = new Chart(ctx, {
-                                type: 'line',
-                                data: {
-                                    datasets: [{
-                                        label: 'THCa Remaining',
-                                        data: chartData,
-                                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                        borderColor: 'rgba(75, 192, 192, 1)',
-                                        borderWidth: 1,
-                                    }]
-                                },
-                                options: {
-                                    scales: {
-                                        x: {
-                                            type: 'time',
-                                            time: {
-                                                unit: 'second'
-                                            },
-                                            title: {
-                                                display: true,
-                                                text: 'Time (s)'
-                                            }
-                                        },
-                                        y: {
-                                            title: {
-                                                display: true,
-                                                text: 'Weight (grams)'
-                                            }
-                                        }
-                                    },
-                                    plugins: {
-                                        legend: {
-                                            display: true
-                                        }
-                                    }
-                                }
-                            });
-                        }
 
-                        initChart(); // Call the function to initialize the chart
-                    });
                 </script>
 
                 <button type="button" class="btn btn-success" onclick="saveSession()">Save Session</button>
