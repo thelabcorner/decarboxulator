@@ -144,56 +144,54 @@ function addDataPoint() {
 
 
 function calculateDecarbProgress() {
-    // Constants: Molecular weights of tetrahydrocannabinolic acid (THCA) and delta-9-tetrahydrocannabinol (THC)
     const THCA_MW = 358.21440943; // g/mol
     const THC_MW = 314.224580195; // g/mol
-    const CO2_MW = 44.0095; // g/mol for CO2
+    const DECARB_CONSTANT = THC_MW / THCA_MW; // Ratio of THC MW to THCA MW
 
-    const DECARB_CONSTANT = 0.8771969298917993; // Ratio of THC MW to THCA MW
-
-    // Input retrieval with validation
-    const initialTHCAWeight = parseFloat(document.getElementById("thcaStartWeight").value); // Initial mass of THCA
-    const tareWeight = parseFloat(document.getElementById("tareWeight").value); // Mass of the container
-    const otherCannabinoidWeight = parseFloat(document.getElementById("otherCannabinoidWeight").value) || 0; // Mass of other cannabinoids
-
-    const currentTotalVesselWeight = parseFloat(document.getElementById("currentWeight").value); // Current total mass in container
-
-    const inputTotalVesselWeight = tareWeight + otherCannabinoidWeight + initialTHCAWeight; // Total weight of the vessel
+    const initialTHCAWeight = parseFloat(document.getElementById("thcaStartWeight").value);
+    const tareWeight = parseFloat(document.getElementById("tareWeight").value);
+    const otherCannabinoidWeight = parseFloat(document.getElementById("otherCannabinoidWeight").value) || 0;
+    const currentTotalVesselWeight = parseFloat(document.getElementById("currentWeight").value);
 
     if (isNaN(initialTHCAWeight) || isNaN(tareWeight) || isNaN(currentTotalVesselWeight)) {
         document.getElementById("decarbProgressResult").innerHTML = "Invalid input. Please enter valid weights.";
         return;
     }
 
-    const currentContentWeight = currentTotalVesselWeight - tareWeight - otherCannabinoidWeight; // Current mass of content in the container
-
-    const expectedFinalTHCWeight = initialTHCAWeight * DECARB_CONSTANT; // Expected final mass of THC after decarboxylation
-    const expectedCO2LossWeight = initialTHCAWeight - expectedFinalTHCWeight; // Expected mass of CO2 produced during decarboxylation
-
-    // Decarboxylation progress calculations
+    const currentContentWeight = currentTotalVesselWeight - tareWeight - otherCannabinoidWeight;
+    const expectedFinalTHCWeight = initialTHCAWeight * DECARB_CONSTANT;
+    const expectedCO2LossWeight = initialTHCAWeight - expectedFinalTHCWeight;
     const weightLossSoFar = initialTHCAWeight - currentContentWeight;
     const decarbCompletion = (weightLossSoFar / expectedCO2LossWeight) * 100;
 
-    // Display calculated values
-    document.getElementById("decarbProgressResult").innerHTML = `
-        <b>Initial Weight (Carboxylated):</b> ${initialTHCAWeight.toFixed(2)} grams
-        <br><b>Expected Final Weight (Decarboxylated):</b> ${expectedFinalTHCWeight.toFixed(2)} grams
-        <br><b>Current Content Weight:</b> ${currentContentWeight.toFixed(2)} grams
-        <br><b>Weight Loss So Far:</b> ${weightLossSoFar.toFixed(2)} grams
-        <br><b>Total Expected Weight Loss:</b> ${expectedCO2LossWeight.toFixed(2)} grams
-        <br><b>Decarboxylation Completion:</b> ${decarbCompletion.toFixed(2)}%
-    `;
+    const convertedTHCWeight = currentContentWeight * (decarbCompletion / 100);
+    const remainingTHCAWeight = currentContentWeight - convertedTHCWeight;
 
-    // Return structured data for potential further processing
+    document.getElementById("decarbProgressResult").innerHTML =
+        `<b>Input THC-A Weight:</b> ${initialTHCAWeight.toFixed(2)} grams 
+            <br><b>Fully Decarboxylated Weight:</b> ${expectedFinalTHCWeight.toFixed(2)} grams 
+            <br><b>Total Expected Weight Loss:</b> ${expectedCO2LossWeight.toFixed(2)} grams 
+            <hr>
+            <b>Current Slurry Weight:</b> ${currentContentWeight.toFixed(2)} grams 
+            <br><b>Weight Loss Seen:</b> ${weightLossSoFar.toFixed(2)} grams (${(100 - ((weightLossSoFar / initialTHCAWeight) * 100)).toFixed(3)}% loss ratio)
+            <br><b>Percent Decarboxylated:</b> ${decarbCompletion.toFixed(2)}% / 100% 
+            <br><b>Slurry THC-A Weight:</b> ${remainingTHCAWeight.toFixed(2)} grams (${((remainingTHCAWeight / currentContentWeight) * 100).toFixed(2)}%)
+            <br><b>Slurry THC Weight:</b> ${convertedTHCWeight.toFixed(2)} grams (${((convertedTHCWeight / currentContentWeight) * 100).toFixed(2)}%)
+        `;
+
     return {
         initialTHCAWeight,
         expectedFinalTHCWeight,
         currentContentWeight,
         weightLossSoFar,
         expectedCO2LossWeight,
-        decarbCompletion
+        decarbCompletion,
+        remainingTHCAWeight,
+        convertedTHCWeight
     };
 }
+
+
 
 
 
