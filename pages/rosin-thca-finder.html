@@ -40,9 +40,9 @@
         <div class="sidebar-heading border-bottom bg-light">Decarboxulator™</div>
         <div class="list-group list-group-flush">
 
-                                                                            <!-- ../ makes it so the /thelabcorner/ alias is added-->
+            <!-- ../ makes it so the /thelabcorner/ alias is added-->
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../index">Home</a>
-            <a class=" list-group-item list-group-item-action list-group-item-light p-3" href="../pages/rosin-thca-finder">*NEW* ROSIN THCa % CALCULATOR</a>
+            <a class=" active list-group-item list-group-item-action list-group-item-light p-3" href="../pages/rosin-thca-finder">*NEW* ROSIN THCa % CALCULATOR</a>
             <a class=" active list-group-item list-group-item-action list-group-item-light p-3" href="../pages/dcx-yield">THCa Decarboxylation Yield Calculator</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/input-finder">THCa Input Finder</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/progress-tracker">Decarboxylation Progress Tracker</a>
@@ -81,85 +81,8 @@
         <!-- Page content-->
         <div class="container-fluid">
 
-            <div id="thcaToThc" class="tab-content p-3">
-                <h2>THCa to THC Decarboxylation Yield Calculator</h2>
-                <form id="thcaToThcForm">
-                    <div class="mb-3">
-                        <label for="thcaWeight" class="form-label">Weight of THCa (grams):</label>
-                        <input type="number" pattern="[0-9]*\.?[0-9]*" class="form-control" id="thcaWeight" name="thcaWeight" placeholder="34.2 grams" required oninput="calculateThcaToThc()">
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="calculateThcaToThc()">Calculate</button>
-                </form>
+            <h1 class="mt-4">Rosin THCa Finder</h1>
 
-                <div id="thcaToThcResult" class="mt-4"></div>
-                <br><hr id="YieldSeparator">
-                <div id="decarbYieldDescription">
-                    <div class="accordion" id="instructionsAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="instructionsHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#instructionsCollapse" aria-expanded="false" aria-controls="instructionsCollapse">
-                                    Instructions
-                                </button>
-                            </h2>
-                            <div id="instructionsCollapse" class="accordion-collapse collapse" aria-labelledby="instructionsHeading">
-                                <div class="accordion-body">
-                                    <p>To use the THCa to THC Decarboxylation Yield Calculator, follow these simple steps:</p>
-                                    <ol>
-                                        <li>Enter the weight of THCa in grams in the "Weight of THCa" field of the form.</li>
-                                        <li>Click on the "Calculate" button to generate the result.</li>
-                                        <li>The estimated yield of THC produced and the estimated CO2 loss will be displayed below the form.</li>
-                                    </ol>
-                                    <p>Please enter a positive value between 0.1 and 10 billion in the "Weight of THCa" field. Any value outside this range will result in an error message.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="accordion" id="formulasAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="formulasHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#formulasCollapse" aria-expanded="false" aria-controls="formulasCollapse">
-                                    Formula(s) Used
-                                </button>
-                            </h2>
-                            <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
-                                <div class="accordion-body">
-                                    <p>
-                                        <math>
-                                            <mi>THC weight</mi>
-                                            <mo>=</mo>
-                                            <mrow>
-                                                <mi>THCa weight</mi>
-                                                <mo>&times;</mo>
-                                                <mfrac>
-                                                    <mrow>
-                                                        <mn>314.47</mn>
-                                                    </mrow>
-                                                    <mrow>
-                                                        <mn>358.48</mn>
-                                                    </mrow>
-                                                </mfrac>
-                                            </mrow>
-                                        </math>
-                                    </p>
-                                    <p>
-                                        <math>
-                                            <mi>CO2 loss</mi>
-                                            <mo>=</mo>
-                                            <mrow>
-                                                <mi>THCa weight</mi>
-                                                <mo>-</mo>
-                                                <mi>THC weight</mi>
-                                            </mrow>
-                                        </math>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
 
             <script src="../resources/calculatorJS/THCAtoTHC.js"></script>
         </div>
