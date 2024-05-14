@@ -89,7 +89,8 @@
 
         <!-- Page content-->
 
-        <!-- @todo: rewrite this to be a plot-point based functionality -->
+        <!-- @todo: rewriting this to be a plot-point based functionality -->
+        <!-- @todo: come up with linear estimation methodology, make broad assumption at decarboxylation rate based on each individual point added and add recalculate estimated end time -->
         <div class="container-fluid">
 
             <div id="decarbProgress" class="tab-content p-3">
@@ -113,7 +114,7 @@
                     </div>
                     <button id="startTrackingButton" type="button" class="btn btn-primary" onclick="startTracking()">Start Tracking</button>
 
-                    <div class="mb-3">
+                    <div class="mb-3" style="display: none;" id="currentWeightDiv">
                         <label for="currentWeight" class="form-label">Current Total Weight (grams, including tare):</label>
                         <input type="number" class="form-control" id="currentWeight" required>
                     </div>
