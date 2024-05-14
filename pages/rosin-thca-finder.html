@@ -43,7 +43,7 @@
             <!-- ../ makes it so the /thelabcorner/ alias is added-->
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../index">Home</a>
             <a class=" active list-group-item list-group-item-action list-group-item-light p-3" href="../pages/rosin-thca-finder">*NEW* ROSIN THCa % CALCULATOR</a>
-            <a class=" active list-group-item list-group-item-action list-group-item-light p-3" href="../pages/dcx-yield">THCa Decarboxylation Yield Calculator</a>
+            <a class=" list-group-item list-group-item-action list-group-item-light p-3" href="../pages/dcx-yield">THCa Decarboxylation Yield Calculator</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/input-finder">THCa Input Finder</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/progress-tracker">Decarboxylation Progress Tracker</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/time-predictor">Total Decarboxylation Time Predictor</a>
@@ -81,10 +81,95 @@
         <!-- Page content-->
         <div class="container-fluid">
 
-            <h1 class="mt-4">Rosin THCa Finder</h1>
+            <div id="rosinThcaFinder" class="tab-content p-3">
+                <h2>Rosin THCa and THC Calculator</h2>
+                <form id="rosinThcaForm">
+                    <div class="mb-3">
+                        <label for="initialWeight" class="form-label">Initial Weight of Rosin (grams):</label>
+                        <input type="number" pattern="[0-9]*\.?[0-9]*" class="form-control" id="initialWeight" name="initialWeight" placeholder="50 grams" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="finalWeight" class="form-label">Final Weight of Rosin (grams):</label>
+                        <input type="number" pattern="[0-9]*\.?[0-9]*" class="form-control" id="finalWeight" name="finalWeight" placeholder="45 grams" required>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="calculateRosinTHCA()">Calculate</button>
+                </form>
 
+                <div id="rosinThcaResult" class="mt-4"></div>
+                <br><hr id="YieldSeparator">
 
-            <script src="../resources/calculatorJS/THCAtoTHC.js"></script>
+                <div id="decarbYieldDescription">
+                    <div class="accordion" id="instructionsAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="instructionsHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#instructionsCollapse" aria-expanded="false" aria-controls="instructionsCollapse">
+                                    Instructions
+                                </button>
+                            </h2>
+                            <div id="instructionsCollapse" class="accordion-collapse collapse" aria-labelledby="instructionsHeading">
+                                <div class="accordion-body">
+                                    <p>To use the Rosin THCa and THC Calculator, follow these steps:</p>
+                                    <ol>
+                                        <li>Enter the initial (tared) weight of rosin in grams before decarboxylation.</li>
+                                        <li>Enter the final (tared) weight of rosin in grams after decarboxylation [a.k.a - when the bubbles stop"].</li>
+                                        <li>Click on the "Calculate" button to estimate THCa and THC amounts.</li>
+                                    </ol>
+                                    <p>
+                                    Results are based on molecular weight ratios and CO2 loss during decarboxylation.
+                                    <br>
+                                    Use precise + calibrated weighing scales and ensure complete decarboxylation occurs in a sealed vessel. Losing any weight besides CO2 will skew the result.
+                                    <br><br>
+                                    After decarboxylation, allow the vessel to cool and release ("burp") any trapped CO2 to avoid skewing the results.
+                                    <br><br>
+                                    CAUTION - TO PREVENT EXPLOSIONS: Ensure that the expected volume of CO2 to be produced by your input mass, relative to the vessel, does not exceed its capacity!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="accordion" id="formulasAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="formulasHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#formulasCollapse" aria-expanded="false" aria-controls="formulasCollapse">
+                                    Formula(s) Used
+                                </button>
+                            </h2>
+                            <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
+                                <div class="accordion-body">
+                                    <p>The THCa and THC weights are estimated using the following formulas:</p>
+                                    <p>
+                                        <math>
+                                            <mi>THCa weight</mi>
+                                            <mo>=</mo>
+                                            <mrow>
+                                                <mi>CO2 loss</mi>
+                                                <mo>&div;</mo>
+                                                <mn>44.01</mn>
+                                                <mo>&times;</mo>
+                                                <mn>358.48</mn>
+                                            </mrow>
+                                        </math>
+                                    </p>
+                                    <p>
+                                        <math>
+                                            <mi>THC weight</mi>
+                                            <mo>=</mo>
+                                            <mrow>
+                                                <mi>THCa weight</mi>
+                                                <mo>&times;</mo>
+                                                <mn>0.877</mn>
+                                            </mrow>
+                                        </math>
+                                    </p>
+                                    <p>These formulas account for the molecular weights and ratios of CO2, THCa, and THC, providing relatively accurate estimates.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <script src="../resources/calculatorJS/calculateRosinTHCA.js"></script>
         </div>
 
 
