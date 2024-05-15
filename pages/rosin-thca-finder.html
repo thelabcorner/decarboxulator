@@ -108,26 +108,24 @@
                             </h2>
                             <div id="instructionsCollapse" class="accordion-collapse collapse" aria-labelledby="instructionsHeading">
                                 <div class="accordion-body">
-                                    <p>To use the Rosin THCa and THC Calculator, follow these steps:</p>
+                                    <p>Ever wanted to know how much THCa or THC was in an product? Whether it may be flower, hash, rosin, BHO, or even THCa isolate, but didn’t have access to mass spectrometry or submission for lab testing? Well, here is an answer for you!</p>
+                                    <p>This method of analysis can vary in accuracy based on how well you manage the reaction and minimize non-decarboxylative related losses. If you are sloppy, your results will be sloppy.</p>
+                                    <p>Using 5 grams is an absolute minimum for most people's scales.</p>
                                     <ol>
                                         <li>Enter the initial (tared) weight of rosin in grams before decarboxylation.</li>
-                                        <li>Enter the final (tared) weight of rosin in grams after decarboxylation [a.k.a - when the bubbles stop"].</li>
+                                        <li>Enter the final (tared) weight of rosin in grams after decarboxylation (i.e., when the bubbles stop).</li>
                                         <li>Click on the "Calculate" button to estimate THCa and THC amounts.</li>
                                     </ol>
-                                    <p>
-                                        Results are based on stoichiometric ratios and expected CO2 loss after decarboxylation.
-                                        <br>
-                                        Use precise + calibrated weighing scales and ensure complete decarboxylation occurs in a sealed vessel. Losing any weight besides CO2 will skew the result.
+                                    <p>Results are based on stoichiometric ratios and expected CO2 loss after decarboxylation.</p>
+                                    <hr>
+                                    <div class="alert alert-danger" role="alert">
+                                        !! Use precise and calibrated weighing scales and ensure complete decarboxylation occurs in a sealed vessel. Losing any weight besides CO2 will skew the result.
                                         <br><br>
-                                        Note: Most scales are accurate to 0.XX decimals. If you have a scale that measures to 0.XXX decimals, use it for increased accuracy. Given this, the minimum input sample weight you should use is approximately 5 grams.
+                                        !! After decarboxylation, allow the vessel to cool and release ("burp") any trapped CO2 to avoid skewing the results.
                                         <br><br>
-                                        After decarboxylation, allow the vessel to cool and release ("burp") any trapped CO2 to avoid skewing the results.
-                                        <br><br>
-                                        CAUTION - TO PREVENT EXPLOSIONS: Ensure that the expected volume of CO2 to be produced by your input mass, relative to the vessel, does not exceed its capacity!
-                                    </p>
+                                        !! CAUTION - TO PREVENT EXPLOSIONS: Ensure that the expected volume of CO2 to be produced by your input mass, relative to the vessel, does not exceed its capacity!
+                                    </div>
                                 </div>
-                            </div>
-
                             </div>
                         </div>
                     </div>
@@ -141,41 +139,62 @@
                             </h2>
                             <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
                                 <div class="accordion-body">
-                                    <p>The estimations for THCa and THC weights are derived through the following sophisticated formulas:</p>
+                                    <p>The THCa and THC weights are estimated using the following formulas:</p>
+                                    <p>The underlying math is based on the known weight loss and stoichiometric ratios constants of THCa → THC. For every mole of THCa, you get one mole of THC and one mole of CO2 as a yield.</p>
+                                    <p>The process can be represented by the reaction:</p>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <span style="font-family: 'Times New Roman'; color:#d63384; font-size: 0.875em;">1 mol THCa → 1 mol THC + 1 mol CO<sub>2</sub></span>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <p>This formula below calculates the weight of THCa by using the molecular weights of CO2 (44.01 g/mol) and THCa (358.48 g/mol) and the weight loss observed during decarboxylation.</p>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <code>
+                                                <math>
+                                                    <mi>THCa weight</mi>
+                                                    <mo>=</mo>
+                                                    <mrow>
+                                                        <mi>CO2 loss</mi>
+                                                        <mo>&div;</mo>
+                                                        <mn>44.01</mn>
+                                                        <mo>&times;</mo>
+                                                        <mn>358.48</mn>
+                                                    </mrow>
+                                                </math>
+                                            </code>
+                                        </div>
+                                    </div>
                                     <p>
-                                        <math>
-                                            <mi>THCa weight</mi>
-                                            <mo>=</mo>
-                                            <mrow>
-                                                <mi>CO2 loss</mi>
-                                                <mo>&div;</mo>
-                                                <mn>44.01</mn>
-                                                <mo>&times;</mo>
-                                                <mn>358.48</mn>
-                                            </mrow>
-                                        </math>
+                                        By measuring the CO2 produced (CO2 loss in formula), we can work backward to estimate the amount of THCa that was present in the solution to generate that CO2.
                                     </p>
-                                    <p>
-                                        <math>
-                                            <mi>THC weight</mi>
-                                            <mo>=</mo>
-                                            <mrow>
-                                                <mi>THCa weight</mi>
-                                                <mo>&times;</mo>
-                                                <mn>0.877</mn>
-                                            </mrow>
-                                        </math>
-                                    </p>
-                                    <p>
-                                        These calculations meticulously consider the molecular weights and proportions of CO2, THCa, and THC, delivering highly precise estimations.
-                                    </p>
+
+                                    <hr>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <code>
+                                                <math>
+                                                    <mi>THC weight</mi>
+                                                    <mo>=</mo>
+                                                    <mrow>
+                                                        <mi>THCa weight</mi>
+                                                        <mo>&times;</mo>
+                                                        <mn>0.877</mn>
+                                                    </mrow>
+                                                </math>
+                                            </code>
+                                            </div>
+                                    </div>
+                                    <p>This formula converts the THCa weight to THC weight by accounting for the decarboxylation process, where the molecular weight of THC is approximately 87.7% of the molecular weight of THCa.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-            <script src="../resources/calculatorJS/calculateRosinTHCA.js"></script>
+
+                <script src="../resources/calculatorJS/calculateRosinTHCA.js"></script>
         </div>
         </div>
 
