@@ -2,44 +2,49 @@ The Open-Natural License
 
 Copyright (C) 2020-2024 Jackson Cummings - TheDabCorner LLC.
 
-It is acknowledged that mathematics and logic are fundamental building blocks of nature, and as such, 
+It is acknowledged that mathematics and logic are fundamental building blocks of nature, and as such,
 cannot be exclusively owned. However, this software represents the author's
 intuitive expression and implementation of mathematical concepts and logical reasoning.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-and associated documentation files (the "Software"), to deal in the Software without restriction, 
-including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
 and/or sell copies of the Software, subject to the following conditions:
 
-1. For non-commercial use, the above copyright notice and this permission notice shall be included 
-   in all copies or substantial portions of the Software.
+1. For non-commercial use, the above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
 
 2. For commercial use, you must choose one of the following options:
-  a. Open Source Option:
-     i. If you use, copy, modify, merge, publish, distribute, sublicense, or sell copies 
-        of the Software in a commercial product or service, you must make the source code of that entire product or 
-        service publicly available under this license; or a permissive open source license approved by the Open Source Initiative (OSI).
-    ii. You must include the above copyright notice, this permission notice, and the 
-        approved open source license in all copies or substantial portions of the Software.
+a. Open Source Option:
+  i. If you use, copy, modify, merge, publish, distribute, sublicense, or sell copies
+     of the Software in a commercial product or service, you must make the source code of that entire product or
+     service publicly available under this license; or a permissive open source license approved by the Open Source Initiative (OSI).
+  ii. You must include the above copyright notice, this permission notice, and the
+      approved open source license in all copies or substantial portions of the Software.
+  iii. If you use the Open Source License Option, you must include a prominent notation
+       in your product or service indicating that it is "Powered by Decarboxulator™".
+   
 
-  b. Commercial License Option:
-     i. If you wish to use the Software in a commercial product or service without releasing your
-        source code, you must obtain a commercial license from the Licensor.
-     ii. Contact the Licensor at admin@thedabcorner.site to inquire
-         about commercial licensing options and fees.
-     iii. Redistribution of the Software, or any derivative works, in source or binary form,
-          is not permitted without the prior written consent of the Licensor.
-     iv. This license does not grant you any right in the trademarks, service marks, 
-         brand names, or logos of the Licensor.
+b. Commercial License Option:
+  i. If you wish to use the Software in a commercial product or service without releasing your
+     source code, you must obtain a commercial license from the Licensor.
+  ii. Contact the Licensor at admin@thedabcorner.site to inquire
+      about commercial licensing options and fees.
+  iii. Redistribution of the Software, or any derivative works, in source or binary form,
+       is not permitted without the prior written consent of the Licensor.
+  iv. This license does not grant you any right in the trademarks, service marks,
+      brand names, or logos of the Licensor.
+  v. If you use the Commercial License Option, you must include a prominent notation
+     in your product or service indicating that it is "Powered by Decarboxulator™".
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Termination. 
-If you violate the terms of this license, your rights will terminate automatically and 
-will not be reinstated without the prior written consent of the Licensor. 
-Any such termination will not affect the right of others who may have received copies 
+Termination.
+If you violate the terms of this license, your rights will terminate automatically and
+will not be reinstated without the prior written consent of the Licensor.
+Any such termination will not affect the right of others who may have received copies
 of the Software from you.
