@@ -139,19 +139,19 @@
 
             <br><hr id="progressSeparator">
 
-            <div id="progressDescription">
-                <div class="accordion" id="instructionsAccordion">
+            <div id="calculatorDescription">
+                <div class="accordion" id="descriptionAccordion">
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="instructionsHeading">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#instructionsCollapse" aria-expanded="false" aria-controls="instructionsCollapse">
+                        <h2 class="accordion-header" id="descriptionHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#descriptionCollapse" aria-expanded="false" aria-controls="descriptionCollapse">
                                 Instructions
                             </button>
                         </h2>
-                        <div id="instructionsCollapse" class="accordion-collapse collapse" aria-labelledby="instructionsHeading">
+                        <div id="descriptionCollapse" class="accordion-collapse collapse" aria-labelledby="descriptionHeading">
                             <div class="accordion-body">
                                 <p>To use the tool, follow these steps:</p>
                                 <ol>
-                                    <li>Enter the starting weight of THCA (in grams) in the "Input Weight of THCa" field.</li>
+                                    <li>Enter the starting weight of THCa (in grams) in the "Input Weight of THCa" field.</li>
                                     <li>Enter the current weight of decarboxylated material (in grams) in the "Current Weight of THCa" field.</li>
                                     <li>Click the "Calculate" button to generate the results.</li>
                                 </ol>
@@ -171,74 +171,99 @@
                         </h2>
                         <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
                             <div class="accordion-body">
-                                <p><b><u>Main Formula:</u></b></p>
-                                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                                    <mtext>Percent Decarboxylation Progress = </mtext>
-                                    <mo>(</mo>
-                                    <mo>(</mo>
-                                    <mfrac>
-                                        <mrow>
-                                            <mi>Decarboxylated Weight</mi>
-                                        </mrow>
-                                        <mrow>
-                                            <mrow>
+                                <p>The percentage of decarboxylation progress is calculated using the following formula:</p>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <code>
+                                            <math>
+                                                <mtext>Percent Decarboxylation Progress = </mtext>
+                                                <mo>(</mo>
+                                                <mo>(</mo>
+                                                <mfrac>
+                                                    <mrow>
+                                                        <mi>Decarboxylated Weight</mi>
+                                                    </mrow>
+                                                    <mrow>
+                                                        <mrow>
+                                                            <mi>Input Weight</mi>
+                                                            <mo>-</mo>
+                                                            <mi>Loss Calculation</mi>
+                                                        </mrow>
+                                                    </mrow>
+                                                </mfrac>
+                                                <mo>)</mo>
+                                                <mo>*</mo>
+                                                <mn>100</mn>
+                                                <mo>)</mo>
+                                            </math>
+                                        </code>
+                                    </div>
+                                </div>
+                                <p>The decarboxylated weight is calculated using:</p>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <code>
+                                            <math>
+                                                <mi>Decarboxylated Weight</mi>
+                                                <mo>=</mo>
+                                                <mi>Input Weight</mi>
+                                                <mo>-</mo>
+                                                <mi>Current Weight</mi>
+                                            </math>
+                                        </code>
+                                    </div>
+                                </div>
+                                <p>The loss calculation is given by:</p>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <code>
+                                            <math>
+                                                <mi>Loss Calculation</mi>
+                                                <mo>=</mo>
+                                                <mi>Input Weight</mi>
+                                                <mo>*</mo>
+                                                <mn>0.877</mn>
+                                            </math>
+                                        </code>
+                                    </div>
+                                </div>
+                                <p>The predicted decarboxylated weight is estimated as:</p>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <code>
+                                            <math>
+                                                <mtext>Predicted Decarboxylated Weight</mtext>
+                                                <mo>=</mo>
+                                                <mi>Input Weight</mi>
+                                                <mo>*</mo>
+                                                <mn>0.877</mn>
+                                            </math>
+                                        </code>
+                                    </div>
+                                </div>
+                                <p>The estimated THCa remaining is calculated as:</p>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <code>
+                                            <math>
+                                                <mtext>Estimated THCa Remaining</mtext>
+                                                <mo>=</mo>
+                                                <mo>(</mo>
                                                 <mi>Input Weight</mi>
                                                 <mo>-</mo>
                                                 <mi>Loss Calculation</mi>
-                                            </mrow>
-                                        </mrow>
-                                    </mfrac>
-                                    <mo>)</mo>
-                                    <mo>*</mo>
-                                    <mn>100</mn>
-                                    <mo>)</mo>
-                                </math>
-                                <hr>
-                                <p><u><b>Decarboxylated Weight:</b></u></p>
-                                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                                    <mi>Decarboxylated Weight</mi>
-                                    <mo>= </mo>
-                                    <mi>Input Weight</mi>
-                                    <mo>-</mo>
-                                    <mi>Current Weight</mi>
-                                </math>
-                                <hr>
-                                <p><u><b>Loss Calculation:</b></u></p>
-                                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                                    <mi>Loss Calculation</mi>
-                                    <mo>=</mo>
-                                    <mi>Input Weight</mi>
-                                    <mo>*</mo>
-                                    <mn>0.877</mn>
-                                </math>
-                                <hr>
-                                <p><u><b>Predicted Decarboxylated Weight:</b></u></p>
-                                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                                    <mtext>Predicted Decarboxylated Weight</mtext>
-                                    <mo>=</mo>
-                                    <mi>Input Weight</mi>
-                                    <mo>*</mo>
-                                    <mn>0.877</mn>
-                                </math>
-                                <hr>
-                                <p><b><u>Estimated THCa Remaining:</u></b></p>
-                                <math xmlns="http://www.w3.org/1998/Math/MathML">
-                                    <mtext>Estimated THCa Remaining</mtext>
-                                    <mo>=</mo>
-                                    <mo>(</mo>
-                                    <mi>Input Weight</mi>
-                                    <mo>-</mo>
-                                    <mi>Loss Calculation</mi>
-                                    <mo>)</mo>
-                                    <mo>-</mo>
-                                    <mi>Decarboxylated Weight</mi>
-                                </math>
+                                                <mo>)</mo>
+                                                <mo>-</mo>
+                                                <mi>Decarboxylated Weight</mi>
+                                            </math>
+                                        </code>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
         <script src="../resources/calculatorJS/calculateDecarbProgress.js"></script>
 

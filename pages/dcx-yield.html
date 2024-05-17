@@ -82,87 +82,98 @@
 
         <!-- Page content-->
         <div class="container-fluid">
-
-            <div id="thcaToThc" class="tab-content p-3">
+            <div class="tab-content p-3">
                 <h1>THCa to THC Decarboxylation Yield Calculator <span class="w3-tag w3-green">v1.0</span></h1>
-                <p>Use this calculator to estimate the yield of THC produced from THCa during the decarboxylation process. Simply enter the weight of THCa in grams, and the calculator will provide you with the estimated yield of THC and the estimated CO2 loss.</p>
+                <p>Use this calculator to estimate the yield of THC produced from THCa during the decarboxylation process.</p>
                 <form id="thcaToThcForm">
                     <div class="mb-3">
-                        <label for="thcaWeight" class="form-label">Weight of THCa (grams):</label>
+                        <label for="thcaWeight" class="form-label">Weight of THCa (grams)</label>
                         <input type="number" pattern="[0-9]*\.?[0-9]*" class="form-control" id="thcaWeight" name="thcaWeight" placeholder="34.2 grams" required oninput="calculateThcaToThc()">
                     </div>
                     <button type="button" class="btn btn-primary" onclick="calculateThcaToThc()">Calculate</button>
                 </form>
-
                 <div id="thcaToThcResult" class="mt-4"></div>
-                <br><hr id="YieldSeparator">
-                <div id="decarbYieldDescription">
-                    <div class="accordion" id="instructionsAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="instructionsHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#instructionsCollapse" aria-expanded="false" aria-controls="instructionsCollapse">
-                                    Instructions
-                                </button>
-                            </h2>
-                            <div id="instructionsCollapse" class="accordion-collapse collapse" aria-labelledby="instructionsHeading">
-                                <div class="accordion-body">
-                                    <p>To use the THCa to THC Decarboxylation Yield Calculator, follow these simple steps:</p>
-                                    <ol>
-                                        <li>Enter the weight of THCa in grams in the "Weight of THCa" field of the form.</li>
-                                        <li>Click on the "Calculate" button to generate the result.</li>
-                                        <li>The estimated yield of THC produced and the estimated CO2 loss will be displayed below the form.</li>
-                                    </ol>
-                                    <p>Please enter a positive value between 0.1 and 10 billion in the "Weight of THCa" field. Any value outside this range will result in an error message.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="accordion" id="formulasAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="formulasHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#formulasCollapse" aria-expanded="false" aria-controls="formulasCollapse">
-                                    Formula(s) Used
-                                </button>
-                            </h2>
-                            <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
-                                <div class="accordion-body">
-                                    <p>
-                                        <math>
-                                            <mi>THC weight</mi>
-                                            <mo>=</mo>
-                                            <mrow>
-                                                <mi>THCa weight</mi>
-                                                <mo>&times;</mo>
-                                                <mfrac>
-                                                    <mrow>
-                                                        <mn>314.47</mn>
-                                                    </mrow>
-                                                    <mrow>
-                                                        <mn>358.48</mn>
-                                                    </mrow>
-                                                </mfrac>
-                                            </mrow>
-                                        </math>
-                                    </p>
-                                    <p>
-                                        <math>
-                                            <mi>CO2 loss</mi>
-                                            <mo>=</mo>
-                                            <mrow>
-                                                <mi>THCa weight</mi>
-                                                <mo>-</mo>
-                                                <mi>THC weight</mi>
-                                            </mrow>
-                                        </math>
-                                    </p>
-                                </div>
+                <br/><br/>
+            </div>
+
+            <div id="calculatorDescription">
+                <div class="accordion" id="descriptionAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="descriptionHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#descriptionCollapse" aria-expanded="false" aria-controls="descriptionCollapse">
+                                Instructions
+                            </button>
+                        </h2>
+                        <div id="descriptionCollapse" class="accordion-collapse collapse" aria-labelledby="descriptionHeading">
+                            <div class="accordion-body">
+                                <p>Use this calculator to estimate the yield of THC produced from THCa during the decarboxylation process.</p>
+                                <p>To use this calculator:</p>
+                                <ol>
+                                    <li>Enter the weight of THCa in grams in the "Weight of THCa" field of the form.</li>
+                                    <li>Click on the "Calculate" button to generate the result.</li>
+                                    <li>The estimated yield of THC produced and the estimated CO2 loss will be displayed below the form.</li>
+                                </ol>
+                                <p>Please enter a positive value between 0.1 and 10 billion in the "Weight of THCa" field. Any value outside this range will result in an error message.</p>
                             </div>
                         </div>
                     </div>
                 </div>
-
+                <br>
+                <div class="accordion" id="formulasAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="formulasHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#formulasCollapse" aria-expanded="false" aria-controls="formulasCollapse">
+                                Formula(s) Used
+                            </button>
+                        </h2>
+                        <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
+                            <div class="accordion-body">
+                                <p>The THC yield is calculated using the following formula:</p>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <code>
+                                            <math>
+                                                <mi>THC weight</mi>
+                                                <mo>=</mo>
+                                                <mrow>
+                                                    <mi>THCa weight</mi>
+                                                    <mo>&times;</mo>
+                                                    <mfrac>
+                                                        <mrow>
+                                                            <mn>314.47</mn>
+                                                        </mrow>
+                                                        <mrow>
+                                                            <mn>358.48</mn>
+                                                        </mrow>
+                                                    </mfrac>
+                                                </mrow>
+                                            </math>
+                                        </code>
+                                    </div>
+                                </div>
+                                <p>The CO2 loss is calculated using the following formula:</p>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <code>
+                                            <math>
+                                                <mi>CO2 loss</mi>
+                                                <mo>=</mo>
+                                                <mrow>
+                                                    <mi>THCa weight</mi>
+                                                    <mo>-</mo>
+                                                    <mi>THC weight</mi>
+                                                </mrow>
+                                            </math>
+                                        </code>
+                                    </div>
+                                </div>
+                                <p>These formulas take into account the molecular weights of THCa (358.48 g/mol) and THC (314.47 g/mol).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
 
             <script src="../resources/calculatorJS/THCAtoTHC.js"></script>
         </div>

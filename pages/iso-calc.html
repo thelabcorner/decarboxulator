@@ -133,107 +133,140 @@
             <br><br>
 
 
-                    <div class="card-body">
-                        <div class="accordion" id="instructionsAccordion">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="instructionsHeading">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#instructionsCollapse" aria-expanded="false" aria-controls="instructionsCollapse">
-                                        Instructions
-                                    </button>
-                                </h2>
-                                <div id="instructionsCollapse" class="accordion-collapse collapse" aria-labelledby="instructionsHeading">
-                                    <div class="accordion-body">
-                                        <ol>
-                                            <li>Enter the number of cartridges you have in the "Number of Cartridges" field.</li>
-                                            <li>Specify the capacity of each cartridge in grams using the "Capacity per Cartridge" field.</li>
-                                            <li>Enter the CBN percentage in the "CBN Percentage" field.</li>
-                                            <li>Enter the THC percentage in the "THC Percentage" field.</li>
-                                            <li>Check the "Enable Balancing" checkbox if you want to adjust the CBN and THC percentages to reach a total of 100%.</li>
-                                            <li>If balancing is enabled, select the desired balancing method from the "Balancing Method" dropdown.</li>
-                                            <li>Click the "Calculate" button to generate the results.</li>
-                                        </ol>
-                                    </div>
+                <div id="calculatorDescription">
+                    <div class="accordion" id="descriptionAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="descriptionHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#descriptionCollapse" aria-expanded="false" aria-controls="descriptionCollapse">
+                                    Instructions
+                                </button>
+                            </h2>
+                            <div id="descriptionCollapse" class="accordion-collapse collapse" aria-labelledby="descriptionHeading">
+                                <div class="accordion-body">
+                                    <ol>
+                                        <li>Enter the number of cartridges you have in the "Number of Cartridges" field.</li>
+                                        <li>Specify the capacity of each cartridge in grams using the "Capacity per Cartridge" field.</li>
+                                        <li>Enter the CBN percentage in the "CBN Percentage" field.</li>
+                                        <li>Enter the THC percentage in the "THC Percentage" field.</li>
+                                        <li>Check the "Enable Balancing" checkbox if you want to adjust the CBN and THC percentages to reach a total of 100%.</li>
+                                        <li>If balancing is enabled, select the desired balancing method from the "Balancing Method" dropdown.</li>
+                                        <li>Click the "Calculate" button to generate the results.</li>
+                                    </ol>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <br/>
+                    <br>
+                    <div class="accordion" id="formulasAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="formulasHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#formulasCollapse" aria-expanded="false" aria-controls="formulasCollapse">
+                                    Formula(s) Used
+                                </button>
+                            </h2>
+                            <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
+                                <div class="accordion-body">
+                                    <p>Follow these steps to understand the formulas used in the calculations:</p>
 
-                    <div class="card-body">
-                        <div class="accordion" id="formulasAccordion">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="formulasHeading">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#formulasCollapse" aria-expanded="false" aria-controls="formulasCollapse">
-                                        Formulas
-                                    </button>
-                                </h2>
-                                <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
-                                    <div class="accordion-body">
-                                        <p><em>THC Calculation:</em></p>
-                                        <p class="mb-4">
-                                            <math>
-                                                <mrow>
-                                                    <mi>THC Weight</mi>
-                                                    <mo>=</mo>
-                                                    <mi>Total Weight</mi>
-                                                    <mo>&times;</mo>
-                                                    <mfrac>
-                                                        <mi>THC Percentage</mi>
-                                                        <mn>100</mn>
-                                                    </mfrac>
-                                                </mrow>
-                                            </math>
-                                        </p>
-
-                                        <p><em>THCa Calculation:</em></p>
-                                        <p class="mb-4">
-                                            <math>
-                                                <mrow>
-                                                    <mi>THCa Weight</mi>
-                                                    <mo>=</mo>
-                                                    <mi>THC Weight</mi>
-                                                    <mo>&divide;</mo>
-                                                    <mfrac>
-                                                        <mi>314.224580195</mi>
-                                                        <mn>358.21440943</mn>
-                                                    </mfrac>
-                                                </mrow>
-                                            </math>
-                                        </p>
-
-                                        <p><em>CO2 Loss Calculation:</em></p>
-                                        <p class="mb-4">
-                                            <math>
-                                                <mrow>
-                                                    <mi>CO2 Loss</mi>
-                                                    <mo>=</mo>
-                                                    <mi>THCa Weight</mi>
-                                                    <mo>-</mo>
-                                                    <mi>THC Weight</mi>
-                                                </mrow>
-                                            </math>
-                                        </p>
-
-                                        <p><em>CBN Calculation:</em></p>
-                                        <p>
-                                            <math>
-                                                <mrow>
-                                                    <mi>CBN Weight</mi>
-                                                    <mo>=</mo>
-                                                    <mi>Total Weight</mi>
-                                                    <mo>&times;</mo>
-                                                    <mfrac>
-                                                        <mi>CBN Percentage</mi>
-                                                        <mn>100</mn>
-                                                    </mfrac>
-                                                </mrow>
-                                            </math>
-                                        </p>
+                                    <p><strong>Calculate Total Weight</strong></p>
+                                    <p>The total weight is calculated by multiplying the number of cartridges by the capacity per cartridge:</p>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <code>Total Weight = Number of Cartridges × Capacity per Cartridge</code>
+                                        </div>
                                     </div>
+                                    <br/>
+                                    <p><strong>Calculate THC Weight</strong></p>
+                                    <p>The THC weight is calculated using the total weight and the THC percentage:</p>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <code>
+                                                <math>
+                                                    <mrow>
+                                                        <mi>THC Weight</mi>
+                                                        <mo>=</mo>
+                                                        <mi>Total Weight</mi>
+                                                        <mo>&times;</mo>
+                                                        <mfrac>
+                                                            <mi>THC Percentage</mi>
+                                                            <mn>100</mn>
+                                                        </mfrac>
+                                                    </mrow>
+                                                </math>
+                                            </code>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <p><strong>Calculate THCa Weight</strong></p>
+                                    <p>The THCa weight is calculated by dividing the THC weight by the conversion factor from THC to THCa:</p>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <code>
+                                                <math>
+                                                    <mrow>
+                                                        <mi>THCa Weight</mi>
+                                                        <mo>=</mo>
+                                                        <mi>THC Weight</mi>
+                                                        <mo>&divide;</mo>
+                                                        <mfrac>
+                                                            <mrow>
+                                                                <mn>314.47</mn>
+                                                            </mrow>
+                                                            <mrow>
+                                                                <mn>358.48</mn>
+                                                            </mrow>
+                                                        </mfrac>
+                                                    </mrow>
+                                                </math>
+                                            </code>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <p><strong>Calculate CO2 Loss</strong></p>
+                                    <p>The CO2 loss is calculated by subtracting the THC weight from the THCa weight:</p>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <code>
+                                                <math>
+                                                    <mrow>
+                                                        <mi>CO2 Loss</mi>
+                                                        <mo>=</mo>
+                                                        <mi>THCa Weight</mi>
+                                                        <mo>-</mo>
+                                                        <mi>THC Weight</mi>
+                                                    </mrow>
+                                                </math>
+                                            </code>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <p><strong>Calculate CBN Weight</strong></p>
+                                    <p>The CBN weight is calculated using the total weight and the CBN percentage:</p>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <code>
+                                                <math>
+                                                    <mrow>
+                                                        <mi>CBN Weight</mi>
+                                                        <mo>=</mo>
+                                                        <mi>Total Weight</mi>
+                                                        <mo>&times;</mo>
+                                                        <mfrac>
+                                                            <mi>CBN Percentage</mi>
+                                                            <mn>100</mn>
+                                                        </mfrac>
+                                                    </mrow>
+                                                </math>
+                                            </code>
+                                        </div>
+                                    </div>
+                                    <br/>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+
                 <br/>
             </div>
 

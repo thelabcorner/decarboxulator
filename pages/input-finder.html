@@ -100,19 +100,21 @@
                 <br>
                 <hr id="finderSeparator">
                 <div id="inputFinderDescription">
-                    <div class="accordion" id="instructionsAccordion">
+                    <div class="accordion" id="descriptionAccordion">
                         <div class="accordion-item">
-                            <h2 class="accordion-header" id="instructionsHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#instructionsCollapse" aria-expanded="false" aria-controls="instructionsCollapse">
+                            <h2 class="accordion-header" id="descriptionHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#descriptionCollapse" aria-expanded="false" aria-controls="descriptionCollapse">
                                     Instructions
                                 </button>
                             </h2>
-                            <div id="instructionsCollapse" class="accordion-collapse collapse" aria-labelledby="instructionsHeading">
+                            <div id="descriptionCollapse" class="accordion-collapse collapse" aria-labelledby="descriptionHeading">
                                 <div class="accordion-body">
+                                    <p>This tool is designed to help you determine the amount of THCa required to produce a desired weight of THC. THCa is the acidic form of THC, and it is converted to THC through the process of decarboxylation. By inputting the desired weight of THC, you can calculate the amount of THCa needed to produce that weight.</p>
+                                    <p>To use this calculator:</p>
                                     <ol>
                                         <li>Input the weight of THC you want to produce in grams into the designated field.</li>
                                         <li>Click on the "Calculate" button to generate the result.</li>
-                                        <li>The estimated weight of THCA required to produce the desired weight of THC will be displayed below the form.</li>
+                                        <li>The estimated weight of THCa required to produce the desired weight of THC will be displayed below the form.</li>
                                     </ol>
                                 </div>
                             </div>
@@ -128,29 +130,37 @@
                             </h2>
                             <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
                                 <div class="accordion-body">
-                                    <math>
-                                        <mrow>
-                                            <mi>THCA Needed</mi>
-                                            <mo>=</mo>
-                                            <mfrac>
-                                                <mrow>
-                                                    <mi>THC Desired</mi>
-                                                </mrow>
-                                                <mrow>
-                                                    <mo>(</mo>
-                                                    <mfrac>
-                                                        <mrow>
-                                                            <mn>314.47</mn>
-                                                        </mrow>
-                                                        <mrow>
-                                                            <mn>358.48</mn>
-                                                        </mrow>
-                                                    </mfrac>
-                                                    <mo>)</mo>
-                                                </mrow>
-                                            </mfrac>
-                                        </mrow>
-                                    </math>
+                                    <p>The weight of THCa needed is calculated using the following formula:</p>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <code>
+                                                <math>
+                                                    <mrow>
+                                                        <mi>THCa Needed</mi>
+                                                        <mo>=</mo>
+                                                        <mfrac>
+                                                            <mrow>
+                                                                <mi>THC Desired</mi>
+                                                            </mrow>
+                                                            <mrow>
+                                                                <mo>(</mo>
+                                                                <mfrac>
+                                                                    <mrow>
+                                                                        <mn>314.47</mn>
+                                                                    </mrow>
+                                                                    <mrow>
+                                                                        <mn>358.48</mn>
+                                                                    </mrow>
+                                                                </mfrac>
+                                                                <mo>)</mo>
+                                                            </mrow>
+                                                        </mfrac>
+                                                    </mrow>
+                                                </math>
+                                            </code>
+                                        </div>
+                                    </div>
+                                    <p>This formula accounts for the molecular weights of THCa (358.48 g/mol) and THC (314.47 g/mol).</p>
                                 </div>
                             </div>
                         </div>
