@@ -103,9 +103,9 @@
 
         <!-- Page content-->
         <div class="container-fluid">
-
-            <div class="container">
+            <div class="tab-content p-3">
                 <h1>THCa Decarboxylation PSI Calculator</h1>
+                <p>This calculator estimates the pressure build-up (PSI) during the decarboxylation of THCa in a closed vessel. Decarboxylation is a chemical reaction that removes a carboxyl group and releases carbon dioxide (CO2). Understanding the pressure generated can help ensure safety and efficiency in the process.</p>
                 <form id="psiCalculatorForm">
                     <div class="mb-3">
                         <label for="inputWeight" class="form-label">Input Weight (grams)</label>
@@ -125,7 +125,106 @@
                 <br/><br/>
             </div>
 
+            <div id="calculatorDescription">
+                <div class="accordion" id="descriptionAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="descriptionHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#descriptionCollapse" aria-expanded="false" aria-controls="descriptionCollapse">
+                                Description
+                            </button>
+                        </h2>
+                        <div id="descriptionCollapse" class="accordion-collapse collapse" aria-labelledby="descriptionHeading">
+                            <div class="accordion-body">
+                                <p>Ever wondered how much pressure builds up during the decarboxylation of THCa? This calculator helps you estimate that pressure based on the weight of your material, its THCa concentration, and the temperature at which you are decarboxylating.</p>
+                                <p>To use this calculator:</p>
+                                <ol>
+                                    <li>Enter the input weight of your material in grams.</li>
+                                    <li>Enter the THCa concentration as a percentage.</li>
+                                    <li>Enter the temperature in degrees Fahrenheit at which you are decarboxylating.</li>
+                                    <li>Click the "Calculate" button to generate the pressure heatmap.</li>
+                                </ol>
+                                <p>The results are based on the ideal gas law and the stoichiometric ratios of the decarboxylation reaction.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="accordion" id="formulasAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="formulasHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#formulasCollapse" aria-expanded="false" aria-controls="formulasCollapse">
+                                Formula(s) Used
+                            </button>
+                        </h2>
+                        <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
+                            <div class="accordion-body">
+                                <p>The pressure (PSI) is estimated using the following formulas:</p>
+                                <p>The underlying math is based on the ideal gas law and the stoichiometric ratios of the decarboxylation reaction. The ideal gas law is given by:</p>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <code>
+                                            PV = nRT
+                                        </code>
+                                    </div>
+                                </div>
+                                <p>Where:</p>
+                                <ul>
+                                    <li>P is the pressure in atmospheres (atm)</li>
+                                    <li>V is the volume of the vessel in liters (L)</li>
+                                    <li>n is the number of moles of gas</li>
+                                    <li>R is the ideal gas constant (0.0821 L·atm/(mol·K))</li>
+                                    <li>T is the temperature in Kelvin (K)</li>
+                                </ul>
+                                <p>The decarboxylation reaction can be represented as:</p>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <span style="font-family: 'Times New Roman'; color:#d63384; font-size: 0.875em;">1 mol THCa → 1 mol THC + 1 mol CO<sub>2</sub></span>
+                                    </div>
+                                </div>
+                                <p>Using the molecular weights of THCa (358.48 g/mol) and CO2 (44.01 g/mol), we can determine the number of moles of CO2 produced:</p>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <code>
+                                            <math>
+                                                <mi>n</mi>
+                                                <mo>=</mo>
+                                                <mrow>
+                                                    <mi>(Input weight * THCa concentration / 100)</mi>
+                                                    <mo>&div;</mo>
+                                                    <mn>358.48</mn>
+                                                    <mo>&times;</mo>
+                                                    <mn>1</mn>
+                                                </mrow>
+                                            </math>
+                                        </code>
+                                    </div>
+                                </div>
+                                <p>Finally, using the ideal gas law, we can calculate the pressure:</p>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <code>
+                                            <math>
+                                                <mi>P</mi>
+                                                <mo>=</mo>
+                                                <mrow>
+                                                    <mi>nRT</mi>
+                                                    <mo>&div;</mo>
+                                                    <mi>V</mi>
+                                                </mrow>
+                                            </math>
+                                        </code>
+                                    </div>
+                                </div>
+                                <p>By measuring the input parameters, we can estimate the pressure build-up during the decarboxylation process.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <script src="../resources/calculatorJS/calculatePressure.js"></script>
+        </div>
+
 
 
 
