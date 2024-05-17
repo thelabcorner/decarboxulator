@@ -25,7 +25,6 @@ a. Open Source Option:
   iii. If you use the Open Source License Option, you must include a prominent notation
        in your product or service indicating that it is "Powered by Decarboxulator™".
    
-
 b. Commercial License Option:
   i. If you wish to use the Software in a commercial product or service without releasing your
      source code, you must obtain a commercial license from the Licensor.
@@ -38,14 +37,24 @@ b. Commercial License Option:
   v. If you use the Commercial License Option, you must include a prominent notation
      in your product or service indicating that it is "Powered by Decarboxulator™".
 
+
+-----------
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+-----------
+
 Termination.
-If you violate the terms of this license, your rights will terminate automatically and
-will not be reinstated without the prior written consent of the Licensor.
-Under any such termination, we further reserves the right to affect the terms of others
-who may have received copies of the Software from you.
+If you violate the terms of this license, your rights under this license will automatically terminate 
+without notice from the Licensor. Once terminated, you may not obtain a new license for the Software 
+without the Licensor's express written consent.
+
+In the event of termination, the Licensor reserves the right, at its sole discretion, to modify or
+revoke the license rights granted to any third parties who have received copies or derivative works 
+of the Software from you, so as to protect the Licensor's interests in the Software.
+The Licensor shall not be liable to you or any third parties for any claims or damages 
+arising from the modification or revocation of such rights.
