@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
     <title>Decarboxulator™ | TheLabCorner LLC</title>
@@ -13,7 +13,6 @@
 
     <!-- Sitemap Link -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/resources/assets/sitemap.xml">
-
 
     <link rel="apple-touch-icon" sizes="180x180" href="../resources/assets/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../resources/assets/favicon-32x32.png">
@@ -27,6 +26,27 @@
     <meta name="msapplication-config" content="../resources/assets/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
 
+    <!-- Heatmap CSS -->
+    <style>
+        .heatmap-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .heatmap-row {
+            display: flex;
+        }
+        .heatmap-cell {
+            width: 80px;
+            flex: 1 0 0;
+            padding: 10px;
+            margin: 1px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            border: 1px solid #ccc;
+        }
+    </style>
 
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="../resources/assets/favicon.ico" />
@@ -49,7 +69,7 @@
             <a class=" list-group-item list-group-item-action list-group-item-light p-3" href="../pages/dcx-yield">THCa Decarboxylation Yield Calculator</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/input-finder">THC From THCa Input Finder</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/progress-tracker">Decarboxylation Progress Tracker</a>
-            <!--            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/time-predictor">Total Decarboxylation Time Predictor</a>-->
+<!--            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/time-predictor">Total Decarboxylation Time Predictor</a>-->
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/iso-calc">Cartridge Isolate Calculator</a>
         </div>
     </div>
@@ -84,78 +104,30 @@
         <!-- Page content-->
         <div class="container-fluid">
 
-            <div id="thcToThca" class="tab-content p-3">
-                <h2>THCa Input Finder</h2>
-                <form id="thcToThcaForm">
+            <div class="container">
+                <h1>THCa Decarboxylation PSI Calculator</h1>
+                <form id="psiCalculatorForm">
                     <div class="mb-3">
-                        <label for="thcWeight" class="form-label">Desired Weight of THC (grams):</label>
-                        <input type="number" pattern="[0-9]*\.?[0-9]*" class="form-control" id="thcWeight" name="thcWeight" placeholder="67 grams" max="9999999999" required oninput="calculateThcToThca()">
+                        <label for="inputWeight" class="form-label">Input Weight (grams)</label>
+                        <input type="number" class="form-control" id="inputWeight" required>
                     </div>
-                    <button type="button" class="btn btn-primary" onclick="calculateThcToThca()">Calculate</button>
+                    <div class="mb-3">
+                        <label for="thcaConc" class="form-label">THCa Concentration (%)</label>
+                        <input type="number" class="form-control" id="thcaConc" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputTemperature" class="form-label">Temperature (°F)</label>
+                        <input type="number" class="form-control" id="inputTemperature" required>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="generateHeatmap()">Calculate</button>
                 </form>
-                <div id="thcToThcaResult" class="mt-4"></div>
-                <br>
-                <hr id="finderSeparator">
-                <div id="inputFinderDescription">
-                    <div class="accordion" id="instructionsAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="instructionsHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#instructionsCollapse" aria-expanded="false" aria-controls="instructionsCollapse">
-                                    Instructions
-                                </button>
-                            </h2>
-                            <div id="instructionsCollapse" class="accordion-collapse collapse" aria-labelledby="instructionsHeading">
-                                <div class="accordion-body">
-                                    <ol>
-                                        <li>Input the weight of THC you want to produce in grams into the designated field.</li>
-                                        <li>Click on the "Calculate" button to generate the result.</li>
-                                        <li>The estimated weight of THCA required to produce the desired weight of THC will be displayed below the form.</li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="accordion" id="formulasAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="formulasHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#formulasCollapse" aria-expanded="false" aria-controls="formulasCollapse">
-                                    Formula(s) Used
-                                </button>
-                            </h2>
-                            <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
-                                <div class="accordion-body">
-                                    <math>
-                                        <mrow>
-                                            <mi>THCA Needed</mi>
-                                            <mo>=</mo>
-                                            <mfrac>
-                                                <mrow>
-                                                    <mi>THC Desired</mi>
-                                                </mrow>
-                                                <mrow>
-                                                    <mo>(</mo>
-                                                    <mfrac>
-                                                        <mrow>
-                                                            <mn>314.47</mn>
-                                                        </mrow>
-                                                        <mrow>
-                                                            <mn>358.48</mn>
-                                                        </mrow>
-                                                    </mfrac>
-                                                    <mo>)</mo>
-                                                </mrow>
-                                            </mfrac>
-                                        </mrow>
-                                    </math>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div id="heatmap" class="heatmap-container mt-5"></div>
+                <br/><br/>
             </div>
 
-            <script src="../resources/calculatorJS/THCtoTHCA.js"></script>
+            <script src="../resources/calculatorJS/calculatePressure.js"></script>
+
+
 
         </div>
 
@@ -168,6 +140,7 @@
 <script src="../resources/js/core-theme-scripts.js"></script>
 <!-- Dark Mode JS -->
 <script src="../resources/js/dark-mode.js"></script>
+
 
 <!-- Footer -->
 <footer class="bg-light py-5">
