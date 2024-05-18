@@ -65,3 +65,17 @@ function evaluateExpression(formulaInput, originalInput, inputType) {
     // Replace back the formula input with the original input
     formulaInput.replaceWith(originalInput);
 }
+
+
+// Prevent form submission on Enter key
+window.addEventListener('DOMContentLoaded', (event) => {
+    const forms = document.getElementsByTagName('form');
+    for(let i = 0; i < forms.length; i++){
+        forms[i].addEventListener('keydown', (event) => {
+            if(event.keyCode === 13 && event.target.nodeName === 'INPUT'){
+                event.preventDefault();
+                return false;
+            }
+        });
+    }
+});
