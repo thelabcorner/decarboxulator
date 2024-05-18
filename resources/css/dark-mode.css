@@ -43,3 +43,18 @@ body.dark-mode {
     --bs-bg-opacity: 1;
     background-color: #222 !important;
 }
+
+/* Modal dark mode styles */
+.dark-mode .modal-content {
+    background-color: #333;
+    color: #ddd;
+}
+
+.dark-mode .modal-header,
+.dark-mode .modal-footer {
+    border-color: #555;
+}
+
+.dark-mode .btn-close {
+    filter: invert(1);
+}
