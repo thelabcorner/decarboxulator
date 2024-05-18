@@ -1,3 +1,10 @@
+let chartInstance = null; // Variable to hold the chart instance
+let previousValues = {
+    thcaConcentration: null,
+    rosinWeight: null,
+    temperature: null
+};
+
 // Hardcoded jar sizes in fluid ounces
 const jarSizesFLOz = [0.5, 1, 2, 4, 6, 8, 12, 16, 24, 32, 64, 128];
 
@@ -34,78 +41,136 @@ function calculatePressure(temperature, rosinWeight, jarSizeML, thcaConcentratio
     return results;
 }
 
-// Function to display the heatmap matrix
-function displayHeatmapMatrix(rosinWeight, temperature, thcaConcentration) {
-    const heatmap = document.getElementById('heatmap');
-    heatmap.innerHTML = ''; // Clear existing heatmap
-
-    // Create header row for jar sizes
-    const headerRow = document.createElement('div');
-    headerRow.className = 'heatmap-row';
-    const emptyCell = document.createElement('div');
-    emptyCell.className = 'heatmap-cell';
-    emptyCell.textContent = 'Decarb % / Jar Size (fl oz)';
-    headerRow.appendChild(emptyCell);
-    jarSizesML.forEach(jarSizeML => {
-        const jarSizeFLOz = jarSizeML / 29.5735; // Convert mL back to fluid ounces
-
-        const headerCell = document.createElement('div');
-        headerCell.className = 'heatmap-cell';
-        headerCell.textContent = jarSizeFLOz.toFixed(2);
-        headerRow.appendChild(headerCell);
-    });
-    heatmap.appendChild(headerRow);
-
-    // Generate heatmap matrix
-    const percents = [5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
-    percents.forEach(percent => {
-        const row = document.createElement('div');
-        row.className = 'heatmap-row';
-        const rowHeaderCell = document.createElement('div');
-        rowHeaderCell.className = 'heatmap-cell';
-        rowHeaderCell.textContent = `${percent}%`;
-        row.appendChild(rowHeaderCell);
-
-        jarSizesML.forEach(jarSizeML => {
-            const results = calculatePressure(temperature, rosinWeight, jarSizeML, thcaConcentration);
-            
-            const result = results.find(r => r.percent === percent);
-
-            const cell = document.createElement('div');
-            cell.className = 'heatmap-cell';
-
-            if (result) {
-                // Set background color based on PSI value
-                if (result.pressurePsi < 14) {
-                    cell.style.backgroundColor = 'green';
-                } else if (result.pressurePsi >= 14 && result.pressurePsi < 15) {
-                    cell.style.backgroundColor = '#ffb800';
-                } else {
-                    cell.style.backgroundColor = 'red';
-                }
-
-                cell.textContent = result.pressurePsi.toFixed(2);
-            } else {
-                cell.textContent = 'N/A';
-                cell.style.backgroundColor = 'gray';
-            }
-
-            row.appendChild(cell);
-        });
-
-        heatmap.appendChild(row);
-    });
-}
-
-
-
-
-
 // Function to handle form submission and generate the heatmap matrix
 function generateHeatmap() {
+    adjustCanvasHeight();
+
     const thcaConcentration = parseFloat(document.getElementById('thcaConc').value);
     const rosinWeight = parseFloat(document.getElementById('inputWeight').value);
     const temperature = parseFloat(document.getElementById('inputTemperature').value);
 
-    displayHeatmapMatrix(rosinWeight, temperature, thcaConcentration);
+    // Check if values have actually changed
+    if (thcaConcentration === previousValues.thcaConcentration &&
+        rosinWeight === previousValues.rosinWeight &&
+        temperature === previousValues.temperature) {
+        return; // No changes, do nothing
+    }
+
+    // Update previous values
+    previousValues = { thcaConcentration, rosinWeight, temperature };
+
+    const data = [];
+
+    [5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].reverse().forEach((percent, yIndex) => {
+        jarSizesML.forEach((jarSizeML, xIndex) => {
+            const results = calculatePressure(temperature, rosinWeight, jarSizeML, thcaConcentration);
+            const result = results.find(r => r.percent === percent);
+            const pressurePsi = result ? result.pressurePsi : 0;
+
+            data.push({
+                x: xIndex + 1,
+                y: yIndex + 1,
+                v: pressurePsi.toFixed(2)
+            });
+        });
+    });
+
+    const ctx = document.getElementById('heatmapCanvas').getContext('2d');
+
+    // If a chart instance already exists, destroy it
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+
+    chartInstance = new Chart(ctx, {
+        type: 'matrix',
+        data: {
+            datasets: [{
+                label: 'Pressure Heatmap',
+                data: data,
+                borderWidth: 1,
+                borderColor: 'rgba(0,0,0,0.5)',
+                backgroundColor: function (context) {
+                    const value = context.dataset.data[context.dataIndex].v;
+                    if (value <= 0) {
+                        return 'gray';
+                    } else if (value < 14) {
+                        return 'green';
+                    } else if (value >= 14 && value < 15) {
+                        return '#ffb800';
+                    } else {
+                        return 'red';
+                    }
+                },
+                width: ({ chart }) => (chart.chartArea || {}).width / jarSizesFLOz.length - 1,
+                height: ({ chart }) => (chart.chartArea || {}).height / 11 - 1,
+            }],
+        },
+        options: {
+            scales: {
+                x: {
+                    display: true,
+                    ticks: {
+                        autoSkip: false,
+                        callback: function (value) {
+                            return jarSizesFLOz[value - 1] + ' fl oz';
+                        }
+                    },
+                    min: 0.5,
+                    max: jarSizesFLOz.length + 0.5,
+                    offset: false
+                },
+                y: {
+                    display: true,
+                    ticks: {
+                        autoSkip: false,
+                        callback: function (value) {
+                            return [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 5][11 - value] + '%';
+                        }
+                    },
+                    min: 0.5,
+                    max: 11.5
+                }
+            },
+            plugins: {
+                datalabels: {
+                    display: true,
+                    align: 'center',
+                    anchor: 'center',
+                    color: 'black',
+                    formatter: function (value, context) {
+                        return value.v <= 0 ? 'N/A' : value.v + ' PSI';
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => {
+                            const jarSize = jarSizesFLOz[context.dataIndex % jarSizesFLOz.length];
+                            const percent = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 5][Math.floor(context.dataIndex / jarSizesFLOz.length)];
+                            const thcPercent = 100 - percent;
+                            const pressure = context.raw.v <= 0 ? 'N/A' : context.raw.v + ' PSI';
+                            return [`${jarSize} fl oz`, `${thcPercent}% THCa | ${percent}% THC`, `PSI Generated: ${pressure}`];
+                        }
+                    },
+                },
+            },
+            responsive: true
+        },
+        plugins: [ChartDataLabels]
+    });
 }
+
+function adjustCanvasHeight() {
+    const canvas = document.getElementById('heatmapCanvas');
+    const isMobile = window.innerWidth <= 768; // Adjust the breakpoint as needed
+
+    if (isMobile) {
+        canvas.height = 500; // Set the canvas height to 500 pixels for mobile
+        Chart.defaults.font.size = 10; // Smaller font size for mobile
+    } else {
+        canvas.height = ''; // Reset the height to its default value for larger screens
+        Chart.defaults.font.size = 12; // Default font size for larger screens
+    }
+}
+
+window.addEventListener('resize', adjustCanvasHeight);

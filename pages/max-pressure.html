@@ -36,37 +36,25 @@
     <meta name="msapplication-config" content="../resources/assets/browserconfig.xml">
     <meta name="theme-color" content="#333">
 
-    <!-- Heatmap CSS -->
-    <style>
-        .heatmap-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .heatmap-row {
-            display: flex;
-        }
-        .heatmap-cell {
-            width: 80px;
-            flex: 1 0 0;
-            padding: 10px;
-            margin: 1px;
-            text-align: center;
-            color: white;
-            font-weight: bold;
-            border: 1px solid #ccc;
-        }
-    </style>
-
-    <!-- Favicon-->
-    <link rel="icon" type="image/x-icon" href="../resources/assets/favicon.ico" />
     <!-- Core theme CSS (includes Bootstrap)-->
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/css/bootstrap.min.css">
     <link href="../resources/css/styles.css" rel="stylesheet" />
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <!-- Dark-Mode CSS -->
     <link href="../resources/css/dark-mode.css" rel="stylesheet" />
+
+
+    <style>
+        @media (max-width: 768px) {
+            #heatmapCanvas {
+                max-height: 80vh;
+                max-width: 100vw;
+            }
+        }
+    </style>
+
+
 </head>
 <body>
 <div class="d-flex" id="wrapper">
@@ -74,7 +62,6 @@
     <div class="border-end bg-white" id="sidebar-wrapper">
         <div class="sidebar-heading border-bottom bg-light">Decarboxulator™</div>
         <div class="list-group list-group-flush">
-
             <!-- ../ makes it so the /thelabcorner/ alias is added-->
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../index">Home</a>
             <a class=" list-group-item list-group-item-action list-group-item-light p-3" href="../pages/rosin-thca-finder"><span class="w3-tag w3-blue">New!</span> Rosin THCa % Analyzer</a>
@@ -82,7 +69,7 @@
             <a class=" list-group-item list-group-item-action list-group-item-light p-3" href="../pages/dcx-yield">THCa Decarboxylation Yield Calculator</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/input-finder">THC From THCa Input Finder</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/progress-tracker">Decarboxylation Progress Tracker</a>
-<!--            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/time-predictor">Total Decarboxylation Time Predictor</a>-->
+            <!--            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/time-predictor">Total Decarboxylation Time Predictor</a>-->
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="../pages/iso-calc">Cartridge Isolate Calculator</a>
         </div>
     </div>
@@ -111,9 +98,6 @@
             </div>
         </nav>
 
-
-
-
         <!-- Page content-->
         <div class="container-fluid">
             <div class="tab-content p-3">
@@ -134,7 +118,9 @@
                     </div>
                     <button type="button" class="btn btn-primary" onclick="generateHeatmap()">Calculate</button>
                 </form>
-                <div id="heatmap" class="heatmap-container mt-5"></div>
+                <div class="table-responsive">
+                    <canvas id="heatmapCanvas"></canvas>
+                </div>
                 <br/><br/>
             </div>
 
@@ -237,17 +223,14 @@
 
             <script src="../resources/calculatorJS/calculatePressure.js"></script>
         </div>
-
-
-
-
-        </div>
-
-
     </div>
 </div>
 <!-- Bootstrap core JS-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 <!-- Core theme JS-->
 <script src="../resources/js/core-theme/core-theme-scripts.js"></script>
 <!-- Dark Mode JS -->
