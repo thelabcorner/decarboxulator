@@ -10932,3 +10932,33 @@ input:checked + .slider:before {
 .toggle-label {
   margin-left: 10px;
 }
+
+
+/* core theme css */
+.fade-out {
+  transition: opacity 7s ease-out;
+  opacity: 0;
+}
+.input-success {
+  position: relative;
+  padding-right: 30px; /* Adjust to ensure space for the countdown wheel */
+}
+.countdown-wheel {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: conic-gradient(lightcoral 0%, lightcoral 0%, transparent 0%);
+  animation: countdown 7s linear forwards;
+}
+@keyframes countdown {
+  from {
+    background: conic-gradient(lightcoral 0%, lightcoral 0%, transparent 0%);
+  }
+  to {
+    background: conic-gradient(lightcoral 0%, lightcoral 100%, transparent 0%);
+  }
+}
