@@ -50,18 +50,18 @@
 
 
     <style>
-        @media (max-width: 768px) {
-            #heatmapCanvas {
-                max-height: 80vh;
-                max-width: 100vw;
-            }
-        }
-
         #heatmapContainer {
             display: grid;
             gap: 0px;
-            overflow: scroll;
+            overflow: auto;
         }
+
+        @media (max-width: 680px) {
+            .heatmap-cell {
+                width: 160px;
+            }
+        }
+
         .heatmap-cell {
             text-align: center;
             border: 1px solid #000;
@@ -121,7 +121,7 @@
         <!-- Page content-->
         <div class="container-fluid">
             <div class="tab-content p-3">
-                <h1>THCa Decarboxylation PSI Calculator <span class="w3-tag w3-green">v1.1</span></h1>
+                <h1>THCa Decarboxylation PSI Calculator <span class="w3-tag w3-green">v1.2</span></h1>
                 <p>This calculator estimates the pressure build-up (PSI) during the decarboxylation of THCa in a closed vessel.</p>
                 <form id="psiCalculatorForm">
                     <div class="mb-3">
