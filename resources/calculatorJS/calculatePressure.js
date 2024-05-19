@@ -52,7 +52,7 @@ function generateHeatmap() {
     container.appendChild(createCell(' ')); // Empty corner cell
     jarSizes.forEach((size, index) => {
         const adjustedVolume = (jarSizesMLAdjusted[index] - (extractWeight / rosinDensity)).toFixed(2);
-        container.appendChild(createCell(`${size} fl oz (${adjustedVolume} ml)`));
+        container.appendChild(createCell(`${size} fl oz Jar (${adjustedVolume} ml)`));
     });
 
     [5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].reverse().forEach(percent => {
