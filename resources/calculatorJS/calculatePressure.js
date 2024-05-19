@@ -1,7 +1,7 @@
 
 const jarSizesFLOz = [0.5, 1, 2, 4, 6, 8, 12, 16, 24, 32, 64, 128];
 const jarSizesML = jarSizesFLOz.map(size => size * 29.5735);
-const rosinDensity = 0.9; // g/mL
+const rosinDensity = 1.1; // g/mL
 
 function calculatePressure(temperature, rosinWeight, jarSizeML, thcaConcentration) {
     const thcaWeight = rosinWeight * thcaConcentration / 100;
@@ -17,19 +17,19 @@ function calculatePressure(temperature, rosinWeight, jarSizeML, thcaConcentratio
 
     const percents = [5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
     percents.forEach(percent => {
-
-        if (rosinVolume > jarSizeML || availableVolumeLiters <= 0) {
+        if (rosinVolume > jarSizeML) {
+            console.log(rosinVolume > jarSizeML)
             console.log ('Rosin volume is greater than jar size');
             console.log('Rosin Volume: ' + rosinVolume);
             console.log('Jar Size: ' + jarSizeML);
-            pressurePsi = 69420
-
-            return results.push({ percent, pressurePsi });
+            let pressurePsi = 6942000
+            results.push({ percent, pressurePsi });
+            return results;
         }
 
         const molesCO2 = (percent / 100) * (thcaWeight / 358.48);
         const pressureAtm = (molesCO2 * R * T) / availableVolumeLiters;
-        pressurePsi = pressureAtm * 14.696;
+        let pressurePsi = pressureAtm * 14.696;
         results.push({ percent, pressurePsi });
     });
 
@@ -126,13 +126,13 @@ function createCell(content) {
 }
 
 function createHeatmapCell(pressure) {
-    const cell = createCell(pressure = 69420 ? 'N/A' : `${pressure}<br/>PSI`);
+    const cell = createCell(pressure == 6942000 ? 'N/A' : `${pressure}<br/>PSI`);
 
     if (pressure < 14) {
         cell.classList.add('green');
     } else if (pressure >= 14 && pressure < 15) {
         cell.classList.add('yellow');
-    } else if (pressure = 69420) { // USE ONE = SIGN, NOT TWO, NOT THREE...
+    } else if (pressure >= 6942000) { // USE ONE = SIGN, NOT TWO, NOT THREE...
         cell.classList.add('gray');
 
     } else {
