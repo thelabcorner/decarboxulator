@@ -91,7 +91,7 @@ function displayResults(thcaWeight, thcWeight, co2Loss, cbnWeight) {
         <b>THCa Required:</b> ${thcaWeight.toFixed(2)} grams<br>
         <b>THC after Decarb:</b> ${thcWeight.toFixed(2)} grams<br>
         <b>Decarboxylation Loss (CO2):</b> ${co2Loss.toFixed(2)} grams<br>
-        <b>cbn Required:</b> ${cbnWeight.toFixed(2)} grams<br>
+        <b>CBN Required:</b> ${cbnWeight.toFixed(2)} grams<br>
         <b>Total Weight Before Decarb:</b> ${totalWeightBeforeDecarb.toFixed(2)} grams<br>
         <b>Total Weight After Decarb:</b> ${totalWeightAfterDecarb.toFixed(2)} grams
     `;
