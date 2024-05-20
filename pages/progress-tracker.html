@@ -40,6 +40,9 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="../resources/assets/favicon.ico" />
     <!-- Core theme CSS (includes Bootstrap)-->
@@ -56,6 +59,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+    <style>
+        .progress-bar-error {
+            background-color: #ff616f;
+        }
+    </style>
 
 
 </head>
@@ -111,11 +120,9 @@
         <div class="container-fluid">
 
             <div id="decarbProgress" class="tab-content p-3">
-                <h1>&#916;9-THCa Decarboxylation Progress Tracker <span class="w3-tag w3-green">v1.3</span></h1>
+                <h1>&#916;9-THCa Decarboxylation Progress Tracker <span class="w3-tag w3-green">v1.4a</span></h1>
                 <p>This calculator is designed to help you track the progress of your THCa decarboxylation process. By entering the initial weight of THCa and the current weight of the decarboxylated material, you can estimate the percentage of decarboxylation progress based on the predicted weight of the decarboxylated material.</p>
-
-
-                <h2> GRAPH IS A WORK IN PROGRESS!!! </h2>
+                <p>For more accurate results, it is recommended to use a scale that measures to at least 0.01 grams and to record the weights at regular intervals during the decarboxylation process.</p>
                 <form id="decarbProgressForm">
                     <div class="mb-3">
                         <label for="tareWeight" class="form-label">Tare Weight of Vessel (grams):</label>
@@ -141,12 +148,18 @@
                     </div>
                 </form>
                 <canvas id="chartContainer" style="height: 370px; width: 100%;"></canvas>
-
+                <br/>
+                <p><strong>Decarboxylation Progress:</strong></p>
+                <div class="progress" id="decarbProgressBarContainer" style="height: 30px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" id="decarbProgressBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                </div>
+                <br/>
                 <script>
 
                 </script>
 
-                <button type="button" class="btn btn-success" onclick="saveSession()">Save Session</button>
+                <button id="saveSessionButton" type="button" class="btn btn-success" onclick="saveSessionData()">Save Session</button>
+                <button id="clearSessionButton" type="button" class="btn btn-danger" style="display: none" onclick="clearSessionData()">Clear Session</button>
                 <div id="decarbProgressResult" class="mt-4"></div>
             </div>
 
