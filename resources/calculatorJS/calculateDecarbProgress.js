@@ -237,7 +237,7 @@ function calculateDecarbProgress() {
         return;
     }
 
-    if (isNaN(tareWeight) || tareWeight <= 0) {
+    if (isNaN(tareWeight) || tareWeight <= -0.00000001) {
         Swal.fire({
             toast: true,
             position: 'top-end',
@@ -249,7 +249,7 @@ function calculateDecarbProgress() {
         return;
     }
 
-    if (isNaN(currentTotalVesselWeight) || currentTotalVesselWeight <= 0) {
+    if (isNaN(currentTotalVesselWeight) || currentTotalVesselWeight <= -0.00000001) {
         Swal.fire({
             toast: true,
             position: 'top-end',
