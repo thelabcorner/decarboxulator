@@ -1,12 +1,12 @@
 function calculateCartridgeIsolate() {
     const cartCount = parseFloat(document.getElementById("cartCount").value);
     const cartCapacity = parseFloat(document.getElementById("cartCapacity").value);
-    let cbnPercentage = parseFloat(document.getElementById("cbnPercentage").value);
+    let cbnPercentage = parseFloat(document.getElementById("cbdPercentage").value);
     let thcPercentage = parseFloat(document.getElementById("thcaPercentage").value);
 
     // Check if the sum of percentages is exactly 100
     if (cbnPercentage + thcPercentage !== 100) {
-        displayError('The sum of cbn and THC percentages must be exactly 100.');
+        displayError('The sum of CBN and THC percentages must be exactly 100.');
         return;
     }
 
@@ -22,12 +22,12 @@ function calculateCartridgeIsolate() {
 
     // Calculate cannabinoid weights
     const thcWeight = totalWeight * (thcPercentage / 100);
-    const cbnWeight = totalWeight * (cbnPercentage / 100);
+    const cbdWeight = totalWeight * (cbnPercentage / 100);
     const thcaWeight = thcWeight * (358.21440943 / 314.224580195);
     const co2Loss = thcaWeight - thcWeight;
 
     // Display the results
-    displayResults(thcaWeight, thcWeight, co2Loss, cbnWeight);
+    displayResults(thcaWeight, thcWeight, co2Loss, cbdWeight);
 }
 
 
@@ -44,11 +44,11 @@ document.getElementById("thcaPercentage").addEventListener('input', function() {
 });
 
 function balanceCannabinoids() {
-    let cbnPercentage = parseFloat(document.getElementById("cbnPercentage").value);
+    let cbdPercentage = parseFloat(document.getElementById("cbnPercentage").value);
     let thcPercentage = parseFloat(document.getElementById("thcaPercentage").value);
 
     const balancingMethod = document.getElementById("balancingMethod").value;
-    const totalPercentage = cbnPercentage + thcPercentage;
+    const totalPercentage = cbdPercentage + thcPercentage;
 
     if (totalPercentage === 0) {
         displayError('Total percentage cannot be zero.');
@@ -57,24 +57,24 @@ function balanceCannabinoids() {
 
     if (balancingMethod === "remainder") {
         // Automatically balance the percentages to be equal based on which field was last edited
-        if (lastEditedField === "cbnPercentage") {
-            thcPercentage = 100 - cbnPercentage; // Subtract the cbn percentage from 100 for THC
+        if (lastEditedField === "cbdPercentage") {
+            thcPercentage = 100 - cbdPercentage; // Subtract the CBD percentage from 100 for THC
         } else if (lastEditedField === "thcaPercentage") {
-            cbnPercentage = 100 - thcPercentage; // Subtract the THC percentage from 100 for cbn
+            cbdPercentage = 100 - thcPercentage; // Subtract the THC percentage from 100 for CBD
         }
     } else if (balancingMethod === "proportional") {
         // Distribute the remaining percentage proportionally
         let adjustmentRatio = 100 / totalPercentage;
-        cbnPercentage *= adjustmentRatio;
+        cbdPercentage *= adjustmentRatio;
         thcPercentage *= adjustmentRatio;
     }
 
     // Ensure that neither percentage exceeds 100 or drops below 0 due to floating point math
-    cbnPercentage = Math.min(100, Math.max(0, cbnPercentage));
+    cbdPercentage = Math.min(100, Math.max(0, cbdPercentage));
     thcPercentage = Math.min(100, Math.max(0, thcPercentage));
 
     // Update input fields with new balanced percentages
-    document.getElementById("cbnPercentage").value = cbnPercentage.toFixed(2);
+    document.getElementById("cbdPercentage").value = cbdPercentage.toFixed(2);
     document.getElementById("thcaPercentage").value = thcPercentage.toFixed(2);
 
     calculateCartridgeIsolate(); // Recalculate after balancing
@@ -82,20 +82,19 @@ function balanceCannabinoids() {
 
 
 
-function displayResults(thcaWeight, thcWeight, co2Loss, cbnWeight) {
+function displayResults(thcaWeight, thcWeight, co2Loss, cbdWeight) {
     // Calculate total weights before and after decarboxylation
-    const totalWeightBeforeDecarb = thcaWeight + cbnWeight;
-    const totalWeightAfterDecarb = thcWeight + cbnWeight;
+    const totalWeightBeforeDecarb = thcaWeight + cbdWeight;
+    const totalWeightAfterDecarb = thcWeight + cbdWeight;
 
-    const resultHtml = `
+    document.getElementById("cartridgeIsolateCalculatorResult").innerHTML = `
         <b>THCa Required:</b> ${thcaWeight.toFixed(2)} grams<br>
         <b>THC after Decarb:</b> ${thcWeight.toFixed(2)} grams<br>
         <b>Decarboxylation Loss (CO2):</b> ${co2Loss.toFixed(2)} grams<br>
-        <b>cbn Required:</b> ${cbnWeight.toFixed(2)} grams<br>
+        <b>CBD Required:</b> ${cbdWeight.toFixed(2)} grams<br>
         <b>Total Weight Before Decarb:</b> ${totalWeightBeforeDecarb.toFixed(2)} grams<br>
         <b>Total Weight After Decarb:</b> ${totalWeightAfterDecarb.toFixed(2)} grams
     `;
-    document.getElementById("cartridgeIsolateCalculatorResult").innerHTML = resultHtml;
 }
 
 function displayError(message) {
