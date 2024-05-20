@@ -1,3 +1,6 @@
+
+// @todo: make this based on Stoichiometry
+
 function calculateThcaToThc() {
     const thcaWeight = document.getElementById("thcaWeight").valueAsNumber;
     const thcWeight = thcaWeight * (314.224580195 / 358.21440943);
