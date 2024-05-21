@@ -55,8 +55,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 y1: {
                     type: 'linear',
                     position: 'right',
+                    display: false,
                     title: {
-                        display: true,
+                        display: false,
                         text: 'Weight (grams)'
                     },
                     grid: {
