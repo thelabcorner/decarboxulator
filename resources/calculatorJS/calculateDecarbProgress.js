@@ -281,7 +281,8 @@ function calculateDecarbProgress() {
     // Calculating percentages based on the current slurry weight
     const slurryTHCAPercent = (remainingTHCAWeight / currentContentWeight) * 100;
     const slurryTHCPercent = (convertedTHCWeight / currentContentWeight) * 100;
-    const otherCannabinoidPercent = (otherCannabinoidWeight / totalInitialWeight) * 100;
+    const otherCannabinoidPercent = (otherCannabinoidWeight / currentContentWeight) * 100;
+
 
     document.getElementById("decarbProgressResult").innerHTML = `
       <b>Input THC-A Weight:</b> ${initialTHCAWeight.toFixed(2)} grams
