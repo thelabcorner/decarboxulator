@@ -56,6 +56,10 @@
     <!-- MathJax -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
@@ -120,7 +124,7 @@
         <div class="container-fluid">
 
             <div id="decarbProgress" class="tab-content p-3">
-                <h1>&#916;9-THCa Decarboxylation Progress Tracker <span class="w3-tag w3-green">v1.4b</span></h1>
+                <h1>&#916;9-THCa Decarboxylation Progress Tracker <span class="w3-tag w3-green">v1.4c</span></h1>
                 <p>This calculator is designed to help you track the progress of your THCa decarboxylation process. By entering the initial weight of THCa and the current weight of the decarboxylated material, you can estimate the percentage of decarboxylation progress based on the predicted weight of the decarboxylated material.</p>
                 <p>For more accurate results, it is recommended to use a scale that measures to at least 0.01 grams and to record the weights at regular intervals during the decarboxylation process.</p>
                 <form id="decarbProgressForm">
@@ -159,7 +163,20 @@
                 </script>
 
                 <button id="saveSessionButton" type="button" class="btn btn-success" onclick="saveSessionData()">Save Session</button>
-                <button id="clearSessionButton" type="button" class="btn btn-danger" style="display: none" onclick="clearSessionData()">Clear Session</button>
+                <div class="btn-group" id="exportDataButton" style="display: none">
+                  <button type="button" class="btn btn-primary" onclick="exportSessionData()">Export</button>
+                  <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" style="margin-left: -4px" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" onclick="exportSessionData('PNG')">Export Chart as .PNG</a></li>
+                    <li><a class="dropdown-item" onclick="exportSessionData('JPEG')">Export Chart as .JPEG</a></li>
+                    <li><a class="dropdown-item" onclick="exportSessionData('CSV')">Export Data as .CSV</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" onclick="exportSessionData('ZIP')">Export All as .ZIP</a></li>
+                  </ul>
+                </div>
+                <button id="clearSessionButton" type="button" class="btn btn-danger" style="display: none" onclick="clearSessionData()">Reset Data</button>
                 <div id="decarbProgressResult" class="mt-4"></div>
             </div>
 
