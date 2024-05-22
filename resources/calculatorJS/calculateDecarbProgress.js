@@ -222,16 +222,16 @@ function updateDecarbProgressBar(decarbCompletion) {
 
 
 function calculateDecarbProgress() {
-    const THCA_MW = 358.21440943; // g/mol
-    const THC_MW = 314.224580195; // g/mol
-    const DECARB_CONSTANT = THC_MW / THCA_MW; // Ratio of THC MW to THCA MW
+    const THCA_MW = math.bignumber(358.21440943); // g/mol
+    const THC_MW = math.bignumber(314.224580195); // g/mol
+    const DECARB_CONSTANT = THC_MW.div(THCA_MW); // Ratio of THC MW to THCA MW
 
-    const initialTHCAWeight = parseFloat(document.getElementById("thcaStartWeight").value);
-    const tareWeight = parseFloat(document.getElementById("tareWeight").value);
-    const otherCannabinoidWeight = parseFloat(document.getElementById("otherCannabinoidWeight").value) || 0;
-    const currentTotalVesselWeight = parseFloat(document.getElementById("currentWeight").value);
+    const initialTHCAWeight = math.bignumber(document.getElementById("thcaStartWeight").value);
+    const tareWeight = math.bignumber(document.getElementById("tareWeight").value);
+    const otherCannabinoidWeight = math.bignumber(document.getElementById("otherCannabinoidWeight").value) || math.bignumber(0);
+    const currentTotalVesselWeight = math.bignumber(document.getElementById("currentWeight").value);
 
-    if (isNaN(initialTHCAWeight) || initialTHCAWeight <= 0) {
+    if (initialTHCAWeight.isNaN() || initialTHCAWeight.lte(0)) {
         Swal.fire({
             toast: true,
             position: 'top-end',
@@ -243,7 +243,7 @@ function calculateDecarbProgress() {
         return;
     }
 
-    if (isNaN(tareWeight) || tareWeight <= -0.00000001) {
+    if (tareWeight.isNaN() || tareWeight.lt(-0.00000001)) {
         Swal.fire({
             toast: true,
             position: 'top-end',
@@ -255,7 +255,7 @@ function calculateDecarbProgress() {
         return;
     }
 
-    if (isNaN(currentTotalVesselWeight) || currentTotalVesselWeight <= -0.00000001) {
+    if (currentTotalVesselWeight.isNaN() || currentTotalVesselWeight.lt(-0.00000001)) {
         Swal.fire({
             toast: true,
             position: 'top-end',
@@ -267,22 +267,21 @@ function calculateDecarbProgress() {
         return;
     }
 
-    const currentContentWeight = currentTotalVesselWeight - tareWeight;
-    const totalInitialWeight = initialTHCAWeight + otherCannabinoidWeight;
-    const expectedFinalTHCWeight = initialTHCAWeight * DECARB_CONSTANT;
-    const expectedCO2LossWeight = initialTHCAWeight - expectedFinalTHCWeight;
-    const expectedFinalContentWeight = totalInitialWeight - expectedCO2LossWeight;
-    const expectedFinalVesselWeight = expectedFinalContentWeight + tareWeight;
-    const weightLossSoFar = initialTHCAWeight - (currentContentWeight - otherCannabinoidWeight);
-    const decarbCompletion = (weightLossSoFar / expectedCO2LossWeight) * 100;
-    const convertedTHCWeight = (currentContentWeight - otherCannabinoidWeight) * (decarbCompletion / 100);
-    const remainingTHCAWeight = (currentContentWeight - otherCannabinoidWeight) - convertedTHCWeight;
+    const currentContentWeight = currentTotalVesselWeight.minus(tareWeight);
+    const totalInitialWeight = initialTHCAWeight.plus(otherCannabinoidWeight);
+    const expectedFinalTHCWeight = initialTHCAWeight.mul(DECARB_CONSTANT);
+    const expectedCO2LossWeight = initialTHCAWeight.minus(expectedFinalTHCWeight);
+    const expectedFinalContentWeight = totalInitialWeight.minus(expectedCO2LossWeight);
+    const expectedFinalVesselWeight = expectedFinalContentWeight.plus(tareWeight);
+    const weightLossSoFar = initialTHCAWeight.minus(currentContentWeight.minus(otherCannabinoidWeight));
+    const decarbCompletion = weightLossSoFar.div(expectedCO2LossWeight).mul(100);
+    const convertedTHCWeight = currentContentWeight.minus(otherCannabinoidWeight).mul(decarbCompletion.div(100));
+    const remainingTHCAWeight = currentContentWeight.minus(otherCannabinoidWeight).minus(convertedTHCWeight);
 
     // Calculating percentages based on the current slurry weight
-    const slurryTHCAPercent = (remainingTHCAWeight / currentContentWeight) * 100;
-    const slurryTHCPercent = (convertedTHCWeight / currentContentWeight) * 100;
-    const otherCannabinoidPercent = (otherCannabinoidWeight / currentContentWeight) * 100;
-
+    const slurryTHCAPercent = remainingTHCAWeight.div(currentContentWeight).mul(100);
+    const slurryTHCPercent = convertedTHCWeight.div(currentContentWeight).mul(100);
+    const otherCannabinoidPercent = otherCannabinoidWeight.div(currentContentWeight).mul(100);
 
     document.getElementById("decarbProgressResult").innerHTML = `
       <b>Input THC-A Weight:</b> ${initialTHCAWeight.toFixed(2)} grams
@@ -292,26 +291,25 @@ function calculateDecarbProgress() {
       ${tareWeight !== 0 ? `<br><b>Expected Final Vessel Weight:</b> ${expectedFinalVesselWeight.toFixed(2)} grams` : ''}
       <hr>
       <b>Current Slurry Weight:</b> ${currentContentWeight.toFixed(2)} grams
-      <br><b>Weight Loss Seen:</b> ${weightLossSoFar.toFixed(2)} grams (${(100 - ((weightLossSoFar / initialTHCAWeight) * 100)).toFixed(3)}% loss ratio)
+      <br><b>Weight Loss Seen:</b> ${weightLossSoFar.toFixed(2)} grams (${math.round((100 - ((weightLossSoFar.div(initialTHCAWeight)).mul(100))), 3)}% loss ratio)
       <br><b>Percent Decarboxylated:</b> ${decarbCompletion.toFixed(2)}% / 100%
       <br><b>Slurry THC-A Weight:</b> ${remainingTHCAWeight.toFixed(2)} grams (${slurryTHCAPercent.toFixed(2)}%)
       <br><b>Slurry THC Weight:</b> ${convertedTHCWeight.toFixed(2)} grams (${slurryTHCPercent.toFixed(2)}%)
       <br><b>Other Cannabinoid Weight:</b> ${otherCannabinoidWeight.toFixed(2)} grams (${otherCannabinoidPercent.toFixed(2)}%)
     `;
 
-
     return {
-        initialTHCAWeight,
-        expectedFinalTHCWeight,
-        currentContentWeight,
-        weightLossSoFar,
-        expectedCO2LossWeight,
-        decarbCompletion,
-        remainingTHCAWeight,
-        convertedTHCWeight,
-        slurryTHCAPercent,
-        slurryTHCPercent,
-        otherCannabinoidPercent
+        initialTHCAWeight: initialTHCAWeight.toNumber(),
+        expectedFinalTHCWeight: expectedFinalTHCWeight.toNumber(),
+        currentContentWeight: currentContentWeight.toNumber(),
+        weightLossSoFar: weightLossSoFar.toNumber(),
+        expectedCO2LossWeight: expectedCO2LossWeight.toNumber(),
+        decarbCompletion: decarbCompletion.toNumber(),
+        remainingTHCAWeight: remainingTHCAWeight.toNumber(),
+        convertedTHCWeight: convertedTHCWeight.toNumber(),
+        slurryTHCAPercent: slurryTHCAPercent.toNumber(),
+        slurryTHCPercent: slurryTHCPercent.toNumber(),
+        otherCannabinoidPercent: otherCannabinoidPercent.toNumber()
     };
 }
 
