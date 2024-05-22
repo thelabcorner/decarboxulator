@@ -102,7 +102,6 @@ let stopTrackingButton = null; // Initialize stopTrackingButton
 function startTracking() {
     const startTrackingButton = document.getElementById("startTrackingButton");
     const clearSessionButton = document.getElementById("clearSessionButton");
-    const exportDataButton = document.getElementById("exportDataButton");
     const tareWeightInput = document.getElementById("tareWeight");
     const thcaStartWeightInput = document.getElementById("thcaStartWeight");
 
@@ -112,7 +111,6 @@ function startTracking() {
         document.getElementById("currentWeightDiv").style.display = "block";
 
         startTrackingButton.innerText = "Add Point";
-        startTrackingButton.style.display = "inline";
         startTrackingButton.classList.remove("btn-primary");
         startTrackingButton.classList.add("btn-success");
         startTrackingButton.removeEventListener("click", startTracking);
@@ -126,14 +124,11 @@ function startTracking() {
         if (!stopTrackingButton) {
             stopTrackingButton = document.createElement("button");
             stopTrackingButton.innerText = "Stop Tracking";
-            startTrackingButton.style.marginRight = "5px";
             stopTrackingButton.className = "btn btn-danger ml-2";
             stopTrackingButton.id = "stopTrackingButton";
             startTrackingButton.parentNode.insertBefore(stopTrackingButton, startTrackingButton.nextSibling);
 
-            clearSessionButton.style.display = "inline"; // Show the clear session button
-            exportDataButton.style.display = "inline";
-
+            clearSessionButton.style.display = "inline"; // Hide the clear session button
 
             stopTrackingButton.addEventListener("click", function() {
                 TRACKING = false;
@@ -271,33 +266,27 @@ function calculateDecarbProgress() {
     const totalInitialWeight = initialTHCAWeight + otherCannabinoidWeight;
     const expectedFinalTHCWeight = initialTHCAWeight * DECARB_CONSTANT;
     const expectedCO2LossWeight = initialTHCAWeight - expectedFinalTHCWeight;
-    const expectedFinalContentWeight = totalInitialWeight - expectedCO2LossWeight;
-    const expectedFinalVesselWeight = expectedFinalContentWeight + tareWeight;
     const weightLossSoFar = initialTHCAWeight - (currentContentWeight - otherCannabinoidWeight);
     const decarbCompletion = (weightLossSoFar / expectedCO2LossWeight) * 100;
     const convertedTHCWeight = (currentContentWeight - otherCannabinoidWeight) * (decarbCompletion / 100);
     const remainingTHCAWeight = (currentContentWeight - otherCannabinoidWeight) - convertedTHCWeight;
 
-    // Calculating percentages based on the current slurry weight
-    const slurryTHCAPercent = (remainingTHCAWeight / currentContentWeight) * 100;
-    const slurryTHCPercent = (convertedTHCWeight / currentContentWeight) * 100;
+    const slurryTHCAPercent = (remainingTHCAWeight / totalInitialWeight) * 100;
+    const slurryTHCPercent = (convertedTHCWeight / totalInitialWeight) * 100;
     const otherCannabinoidPercent = (otherCannabinoidWeight / totalInitialWeight) * 100;
 
     document.getElementById("decarbProgressResult").innerHTML = `
-      <b>Input THC-A Weight:</b> ${initialTHCAWeight.toFixed(2)} grams
-      <br><b>Fully Decarboxylated THCa Weight:</b> ${expectedFinalTHCWeight.toFixed(2)} grams
-      <br><b>Total Expected Weight Loss:</b> ${expectedCO2LossWeight.toFixed(2)} grams
-      <br><b>Expected Final Content Weight:</b> ${expectedFinalContentWeight.toFixed(2)} grams
-      ${tareWeight !== 0 ? `<br><b>Expected Final Vessel Weight:</b> ${expectedFinalVesselWeight.toFixed(2)} grams` : ''}
-      <hr>
-      <b>Current Slurry Weight:</b> ${currentContentWeight.toFixed(2)} grams
-      <br><b>Weight Loss Seen:</b> ${weightLossSoFar.toFixed(2)} grams (${(100 - ((weightLossSoFar / initialTHCAWeight) * 100)).toFixed(3)}% loss ratio)
-      <br><b>Percent Decarboxylated:</b> ${decarbCompletion.toFixed(2)}% / 100%
-      <br><b>Slurry THC-A Weight:</b> ${remainingTHCAWeight.toFixed(2)} grams (${slurryTHCAPercent.toFixed(2)}%)
-      <br><b>Slurry THC Weight:</b> ${convertedTHCWeight.toFixed(2)} grams (${slurryTHCPercent.toFixed(2)}%)
-      <br><b>Other Cannabinoid Weight:</b> ${otherCannabinoidWeight.toFixed(2)} grams (${otherCannabinoidPercent.toFixed(2)}%)
-    `;
-
+    <b>Input THC-A Weight:</b> ${initialTHCAWeight.toFixed(2)} grams
+    <br><b>Fully Decarboxylated Weight:</b> ${expectedFinalTHCWeight.toFixed(2)} grams
+    <br><b>Total Expected Weight Loss:</b> ${expectedCO2LossWeight.toFixed(2)} grams
+    <hr>
+    <b>Current Slurry Weight:</b> ${currentContentWeight.toFixed(2)} grams
+    <br><b>Weight Loss Seen:</b> ${weightLossSoFar.toFixed(2)} grams (${(100 - ((weightLossSoFar / initialTHCAWeight) * 100)).toFixed(3)}% loss ratio)
+    <br><b>Percent Decarboxylated:</b> ${decarbCompletion.toFixed(2)}% / 100%
+    <br><b>Slurry THC-A Weight:</b> ${remainingTHCAWeight.toFixed(2)} grams (${slurryTHCAPercent.toFixed(2)}%)
+    <br><b>Slurry THC Weight:</b> ${convertedTHCWeight.toFixed(2)} grams (${slurryTHCPercent.toFixed(2)}%)
+    <br><b>Other Cannabinoid Weight:</b> ${otherCannabinoidWeight.toFixed(2)} grams (${otherCannabinoidPercent.toFixed(2)}%)
+  `;
 
     return {
         initialTHCAWeight,
@@ -313,7 +302,6 @@ function calculateDecarbProgress() {
         otherCannabinoidPercent
     };
 }
-
 
 function toggleLabTestMode() {
     const labTestModeCheckbox = document.getElementById('labTestMode');
@@ -354,160 +342,6 @@ function clearSessionData() {
     document.getElementById("thcaStartWeight").value = '';
     document.getElementById("otherCannabinoidWeight").value = '';
 }
-
-
-function exportSessionData(filetype) {
-    const cookies = document.cookie.split(';');
-    let sessionData = null;
-
-    for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.startsWith('sessionData=')) {
-            sessionData = JSON.parse(decodeURIComponent(cookie.substring('sessionData='.length)));
-            break;
-        }
-    }
-
-    if (sessionData) {
-        const csvData = [];
-        csvData.push('Time,initialTHCAWeight,expectedFinalTHCWeight,currentContentWeight,weightLossSoFar,expectedCO2LossWeight,decarbCompletion,remainingTHCAWeight,convertedTHCWeight,slurryTHCAPercent,slurryTHCPercent,otherCannabinoidPercent');
-
-        for (let i = 0; i < sessionData.chartData[0].length; i++) {
-            const timeStamp = new Date(sessionData.chartData[0][i].x);
-            let startWeightTHCA = parseFloat(document.getElementById("thcaStartWeight").value) || sessionData.thcaStartWeight;
-            let tareWeight = parseFloat(document.getElementById("tareWeight").value) || sessionData.tareWeight;
-            let otherNoidWeight = sessionData.otherCannabinoidWeight ? parseFloat(document.getElementById("otherCannabinoidWeight").value) : 0;
-
-            console.log("Start Weight THCA: ", startWeightTHCA);
-            console.log("Tare Weight: ", tareWeight);
-            console.log("Other Cannabinoid Weight: ", otherNoidWeight);
-
-            let yValue = parseFloat(sessionData.chartData[0][i].y) || 0;
-            let y1Value = parseFloat(sessionData.chartData[1][i].y1) || 0;
-
-            // Correct calculation for currentWeight
-            let currentWeight = yValue + y1Value + tareWeight + otherNoidWeight;
-
-            document.getElementById("currentWeight").value = currentWeight;
-
-            console.log(sessionData.chartData[0][i].y, sessionData.chartData[1][i].y, currentWeight);
-
-            const progressData = calculateDecarbProgress();
-
-            if (!progressData) {
-                console.error("calculateDecarbProgress returned undefined");
-                continue;
-            }
-
-            csvData.push(`${timeStamp},${progressData.initialTHCAWeight},${progressData.expectedFinalTHCWeight},${progressData.currentContentWeight},${progressData.weightLossSoFar},${progressData.expectedCO2LossWeight},${progressData.decarbCompletion},${progressData.remainingTHCAWeight},${progressData.convertedTHCWeight},${progressData.slurryTHCAPercent},${progressData.slurryTHCPercent},${progressData.otherCannabinoidPercent}`);
-        }
-
-
-
-        const csvContent = csvData.join('\n');
-        const csvBlob = new Blob([csvContent], { type: 'text/csv' });
-
-        const exportCSV = () => {
-            const csvURL = URL.createObjectURL(csvBlob);
-            const csvLink = document.createElement('a');
-            csvLink.href = csvURL;
-            csvLink.download = 'decarb_progress_data.csv';
-            csvLink.click();
-        };
-
-        const exportPNG = () => {
-            const canvas = document.getElementById('chartContainer');
-            canvas.toBlob((blob) => {
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = 'decarb_progress_chart.png';
-                link.click();
-                if (filetype === 'ZIP') {
-                    addToZip(blob, 'decarb_progress_chart.png');
-                }
-            }, 'image/png');
-        };
-
-        const exportJPEG = () => {
-            const canvas = document.getElementById('chartContainer');
-            canvas.toBlob((blob) => {
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = 'decarb_progress_chart.jpeg';
-                link.click();
-                if (filetype === 'ZIP') {
-                    addToZip(blob, 'decarb_progress_chart.jpeg');
-                }
-            }, 'image/jpeg');
-        }
-
-        const exportZIP = () => {
-            const zip = new JSZip();
-            zip.file('decarb_progress_data.csv', csvBlob);
-
-            const canvas = document.getElementById('chartContainer');
-            canvas.toBlob((pngBlob) => {
-                zip.file('decarb_progress_chart.png', pngBlob);
-                const svgCtx = new C2S(800, 600); // Set the dimensions for the SVG
-                new Chart(svgCtx, {
-                    type: chart.config.type,
-                    data: chart.data,
-                    options: chart.options
-                });
-                const svgData = svgCtx.getSerializedSvg(true); // Serialize the SVG
-                const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-                zip.file('decarb_progress_chart.svg', svgBlob);
-
-                zip.generateAsync({ type: 'blob' }).then((content) => {
-                    const zipURL = URL.createObjectURL(content);
-                    const zipLink = document.createElement('a');
-                    zipLink.href = zipURL;
-                    zipLink.download = 'decarb_progress_data.zip';
-                    zipLink.click();
-                });
-            }, 'image/png');
-        };
-
-        switch (filetype) {
-            case 'CSV':
-                exportCSV();
-                break;
-            case 'PNG':
-                exportPNG();
-                break;
-            case 'JPEG':
-                exportJPEG();
-                break;
-            case 'ZIP':
-                exportZIP();
-                break;
-        }
-    }
-
-    function addToZip(blob, filename) {
-        const zip = new JSZip();
-        zip.file(filename, blob);
-        zip.generateAsync({ type: 'blob' }).then((content) => {
-            const zipURL = URL.createObjectURL(content);
-            const zipLink = document.createElement('a');
-            zipLink.href = zipURL;
-            zipLink.download = 'decarb_progress_data.zip';
-            zipLink.click();
-        });
-    }
-}
-
-
-
-
-
-
-
-
-
-
 
 // Function to load the session data
 function loadSessionData() {
