@@ -75,19 +75,25 @@
 
 function calculateThcToThca() {
     const thcWeight = document.getElementById("thcWeight").valueAsNumber;
-    const thcaWeight = thcWeight / (314.224580195 / 358.21440943);
-    const lossCalc = thcaWeight - thcWeight;
 
-    const formattedThcaOutput = thcaWeight.toLocaleString(undefined, {
+    // Using math.js for more precise calculations
+    const thcMolecularWeight = math.bignumber(314.224580195);
+    const thcaMolecularWeight = math.bignumber(358.21440943);
+    const thcaWeight = math.multiply(math.divide(thcaMolecularWeight, thcMolecularWeight), thcWeight);
+    const lossCalc = math.subtract(thcaWeight, thcWeight);
+
+    // Formatting the output using math.js to handle precision
+    const formattedThcaOutput = parseFloat(math.format(thcaWeight, {notation: 'fixed', precision: 2})).toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
 
-    const formattedLossOutput = lossCalc.toLocaleString(undefined, {
+    const formattedLossOutput = parseFloat(math.format(lossCalc, {notation: 'fixed', precision: 2})).toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
 
+    // Validation and display logic remains the same
     if (isNaN(thcWeight) || thcWeight < 0.0000000000000000000000001 || thcWeight > 9999999999.9999999999) {
         document.getElementById("thcToThcaResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input value(s)<br>Note: Please enter a positive value between 0.1 and 10 billion.</b></span><br>";
     } else {
