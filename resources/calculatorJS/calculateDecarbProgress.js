@@ -125,16 +125,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     title: {
                         display: true,
                         text: 'Weight (grams)'
-                    }
+                    },
+                    suggestedMin: 0, // Dynamic minimum
+                    suggestedMax: 100 // Dynamic maximum
                 },
                 y1: {
                     type: 'linear',
                     position: 'right',
-                    display: false,
-                    title: {
-                        display: false,
-                        text: 'Weight (grams)'
-                    },
+                    display: false, // Keep hidden
+                    suggestedMin: 0, // Synced with y
+                    suggestedMax: 100, // Synced with y
                     grid: {
                         drawOnChartArea: false
                     }
@@ -241,7 +241,14 @@ function addDataPoint() {
     const currentWeight = parseFloat(document.getElementById("currentWeight").value);
     const tareWeight = parseFloat(document.getElementById("tareWeight").value);
     const initialTHCAWeight = parseFloat(document.getElementById("thcaStartWeight").value);
-    const otherCannabinoidWeight = parseFloat(document.getElementById("otherCannabinoidWeight").value) || 0;
+
+    const otherCannabinoidWeightInput = document.getElementById("otherCannabinoidWeight");
+    let otherCannabinoidWeight = 0;
+
+    if (otherCannabinoidWeightInput.value.trim() !== '') {
+        otherCannabinoidWeight = parseFloat(otherCannabinoidWeightInput.value);
+    }
+
 
 
     if (isNaN(currentWeight) || currentWeight <= 0) {
@@ -258,17 +265,21 @@ function addDataPoint() {
 
     const dataPoint = calculateDecarbProgress();
 
-    updateDecarbProgressBar(dataPoint.decarbCompletion)
-
     if (dataPoint) {
+
+        // Update the progress bar
+        updateDecarbProgressBar(dataPoint.decarbCompletion)
+
+        // Add the data point to the chart rounding to 2 decimal places
         const timeStamp = new Date();
+
         chart.data.datasets[0].data.push({ x: timeStamp, y: dataPoint.remainingTHCAWeight });
         chart.data.datasets[1].data.push({ x: timeStamp, y: dataPoint.convertedTHCWeight });
         chart.data.datasets[2].data.push({ x: timeStamp, y: dataPoint.decarbCompletion });
         chart.update();
 
         // Save the updated chart data to session storage
-        saveSessionData();
+        saveSessionData(timeStamp, dataPoint);
     }
 }
 
@@ -286,6 +297,14 @@ function updateDecarbProgressBar(decarbCompletion) {
     progressBar.textContent = `${decarbRounded}%`;
 
     // Change color based on percentage
+    if (decarbCompletion === 69 || decarbCompletion === 69.69) {
+        progressBar.style.backgroundColor = '#c156ff';
+        progressBar.textContent = `${decarbRounded}% - 🅽🅸🅲🅴!`;
+    } else {
+        progressBar.style.backgroundColor = ''; // Reset to default
+    }
+
+    // Handle error class for invalid percentages
     if (decarbCompletion > 100 || decarbCompletion < -0.0000000000000000000000001) {
         progressBar.classList.remove("progress-bar-animated");
         progressBar.classList.add("progress-bar-error");
@@ -296,6 +315,7 @@ function updateDecarbProgressBar(decarbCompletion) {
 }
 
 
+
 function calculateDecarbProgress() {
     const THCA_MW = math.bignumber(358.21440943); // g/mol
     const THC_MW = math.bignumber(314.224580195); // g/mol
@@ -303,7 +323,14 @@ function calculateDecarbProgress() {
 
     const initialTHCAWeight = math.bignumber(document.getElementById("thcaStartWeight").value);
     const tareWeight = math.bignumber(document.getElementById("tareWeight").value);
-    const otherCannabinoidWeight = math.bignumber(document.getElementById("otherCannabinoidWeight").value) || math.bignumber(0);
+
+    const otherCannabinoidWeightInput = document.getElementById("otherCannabinoidWeight");
+    let otherCannabinoidWeight = math.bignumber(0);
+
+    if (otherCannabinoidWeightInput.value.trim() !== '' && !isNaN(otherCannabinoidWeightInput.value)) {
+        otherCannabinoidWeight = math.bignumber(otherCannabinoidWeightInput.value);
+    }
+
     const currentTotalVesselWeight = math.bignumber(document.getElementById("currentWeight").value);
 
     if (initialTHCAWeight.isNaN() || initialTHCAWeight.lte(0)) {
@@ -403,19 +430,65 @@ function toggleLabTestMode() {
     }
 }
 
-// Function to save the session data
-function saveSessionData() {
-    const sessionData = {
-        chartData: chart.data.datasets.map(dataset => dataset.data),
-        tareWeight: document.getElementById("tareWeight").value,
-        thcaStartWeight: document.getElementById("thcaStartWeight").value,
-        otherCannabinoidWeight: document.getElementById("otherCannabinoidWeight").value
-    };
+// Function to save the session data (my addition is to pass it dataPoint)
+function saveSessionData(timeStamp, dataPoint) {
+    let sessionData = null;
+    const cookies = document.cookie.split(';');
+
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith('sessionData=')) {
+            sessionData = JSON.parse(decodeURIComponent(cookie.substring('sessionData='.length)));
+            break;
+        }
+    }
+
+    if (!sessionData) {
+        sessionData = {
+            chartData: chart.data.datasets.map(dataset => dataset.data),
+            tareWeight: document.getElementById("tareWeight").value,
+            thcaStartWeight: document.getElementById("thcaStartWeight").value,
+            otherCannabinoidWeight: document.getElementById("otherCannabinoidWeight").value,
+            dataPoints: []
+        };
+    }
+
+    // Check for existing data point with the same timestamp
+    const existingDataPointIndex = sessionData.dataPoints.findIndex(dp => new Date(dp.timeStamp).toISOString() === new Date(timeStamp).toISOString());
+
+    if (existingDataPointIndex !== -1) {
+        // Update existing data point
+        sessionData.dataPoints[existingDataPointIndex] = {
+            timeStamp: timeStamp,
+            currentContentWeight: dataPoint.currentContentWeight,
+            weightLossSoFar: dataPoint.weightLossSoFar,
+            expectedCO2LossWeight: dataPoint.expectedCO2LossWeight,
+            slurryTHCAPercent: dataPoint.slurryTHCAPercent,
+            slurryTHCPercent: dataPoint.slurryTHCPercent,
+            otherCannabinoidPercent: dataPoint.otherCannabinoidPercent
+        };
+    } else {
+        // Add new data point
+        sessionData.dataPoints.push({
+            timeStamp: timeStamp,
+            currentContentWeight: dataPoint.currentContentWeight,
+            weightLossSoFar: dataPoint.weightLossSoFar,
+            expectedCO2LossWeight: dataPoint.expectedCO2LossWeight,
+            slurryTHCAPercent: dataPoint.slurryTHCAPercent,
+            slurryTHCPercent: dataPoint.slurryTHCPercent,
+            otherCannabinoidPercent: dataPoint.otherCannabinoidPercent
+        });
+    }
+
+    // Update chartData in sessionData
+    sessionData.chartData = chart.data.datasets.map(dataset => dataset.data);
+
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + 30); // Set the expiration date to 30 days from now
     const cookie = `sessionData=${encodeURIComponent(JSON.stringify(sessionData))};expires=${expirationDate.toUTCString()};path=/`;
     document.cookie = cookie;
 }
+
 
 // Function to clear the session data
 function clearSessionData() {
@@ -444,39 +517,40 @@ function exportSessionData(filetype) {
 
     if (sessionData) {
         const csvData = [];
-        csvData.push('Time,initialTHCAWeight,expectedFinalTHCWeight,currentContentWeight,weightLossSoFar,expectedCO2LossWeight,decarbCompletion,remainingTHCAWeight,convertedTHCWeight,slurryTHCAPercent,slurryTHCPercent,otherCannabinoidPercent');
+
+        // Add heading section
+        csvData.push(`thcaStartWeight,${sessionData.thcaStartWeight}`);
+        csvData.push(`tareWeight,${sessionData.tareWeight}`);
+        csvData.push(`otherCannabinoidWeight,${sessionData.otherCannabinoidWeight || 0}`);
+        csvData.push(''); // Add an empty line for separation
+
+        // Add column headers
+        csvData.push('Timestamp,remainingTHCAWeight,convertedTHCWeight,decarbCompletion,currentContentWeight,weightLossSoFar,expectedCO2LossWeight,slurryTHCAPercent,slurryTHCPercent,otherCannabinoidPercent');
+
+        const uniqueTimestamps = new Set();
 
         for (let i = 0; i < sessionData.chartData[0].length; i++) {
-            const timeStamp = new Date(sessionData.chartData[0][i].x);
-            let startWeightTHCA = parseFloat(document.getElementById("thcaStartWeight").value) || sessionData.thcaStartWeight;
-            let tareWeight = parseFloat(document.getElementById("tareWeight").value) || sessionData.tareWeight;
-            let otherNoidWeight = sessionData.otherCannabinoidWeight ? parseFloat(document.getElementById("otherCannabinoidWeight").value) : 0;
+            const chartTimestamp = new Date(sessionData.chartData[0][i].x).toISOString();
+            const remainingTHCAWeight = sessionData.chartData[0][i].y;
+            const convertedTHCWeight = sessionData.chartData[1][i].y;
+            const decarbCompletion = sessionData.chartData[2][i].y;
 
-            console.log("Start Weight THCA: ", startWeightTHCA);
-            console.log("Tare Weight: ", tareWeight);
-            console.log("Other Cannabinoid Weight: ", otherNoidWeight);
+            // Skip if this timestamp is already processed
+            if (uniqueTimestamps.has(chartTimestamp)) {
+                continue;
+            }
+            uniqueTimestamps.add(chartTimestamp);
 
-            let yValue = parseFloat(sessionData.chartData[0][i].y) || 0;
-            let y1Value = parseFloat(sessionData.chartData[1][i].y1) || 0;
+            // Find matching data point in sessionData.dataPoints
+            const dataPoint = sessionData.dataPoints.find(dp => new Date(dp.timeStamp).toISOString() === chartTimestamp);
 
-            // Correct calculation for currentWeight
-            let currentWeight = yValue + y1Value + tareWeight + otherNoidWeight;
-
-            document.getElementById("currentWeight").value = currentWeight;
-
-            console.log(sessionData.chartData[0][i].y, sessionData.chartData[1][i].y, currentWeight);
-
-            const progressData = calculateDecarbProgress();
-
-            if (!progressData) {
-                console.error("calculateDecarbProgress returned undefined");
+            if (!dataPoint) {
+                console.error(`No matching data point found for timestamp: ${chartTimestamp}`);
                 continue;
             }
 
-            csvData.push(`${timeStamp},${progressData.initialTHCAWeight},${progressData.expectedFinalTHCWeight},${progressData.currentContentWeight},${progressData.weightLossSoFar},${progressData.expectedCO2LossWeight},${progressData.decarbCompletion},${progressData.remainingTHCAWeight},${progressData.convertedTHCWeight},${progressData.slurryTHCAPercent},${progressData.slurryTHCPercent},${progressData.otherCannabinoidPercent}`);
+            csvData.push(`${chartTimestamp},${remainingTHCAWeight},${convertedTHCWeight},${decarbCompletion},${dataPoint.currentContentWeight},${dataPoint.weightLossSoFar},${dataPoint.expectedCO2LossWeight},${dataPoint.slurryTHCAPercent},${dataPoint.slurryTHCPercent},${dataPoint.otherCannabinoidPercent}`);
         }
-
-
 
         const csvContent = csvData.join('\n');
         const csvBlob = new Blob([csvContent], { type: 'text/csv' });
@@ -515,7 +589,7 @@ function exportSessionData(filetype) {
                     addToZip(blob, 'decarb_progress_chart.jpeg');
                 }
             }, 'image/jpeg');
-        }
+        };
 
         const exportZIP = () => {
             const zip = new JSZip();
@@ -524,15 +598,6 @@ function exportSessionData(filetype) {
             const canvas = document.getElementById('chartContainer');
             canvas.toBlob((pngBlob) => {
                 zip.file('decarb_progress_chart.png', pngBlob);
-                const svgCtx = new C2S(800, 600); // Set the dimensions for the SVG
-                new Chart(svgCtx, {
-                    type: chart.config.type,
-                    data: chart.data,
-                    options: chart.options
-                });
-                const svgData = svgCtx.getSerializedSvg(true); // Serialize the SVG
-                const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-                zip.file('decarb_progress_chart.svg', svgBlob);
 
                 zip.generateAsync({ type: 'blob' }).then((content) => {
                     const zipURL = URL.createObjectURL(content);
@@ -572,6 +637,10 @@ function exportSessionData(filetype) {
         });
     }
 }
+
+
+
+
 
 
 
