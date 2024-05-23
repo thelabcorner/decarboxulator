@@ -108,15 +108,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 x: {
                     type: 'time',
                     time: {
+                        tooltipFormat: 'M/d/yyyy | hh:mm:ss a',
                         unit: 'minute',
-                        stepSize: 10,
+                        stepSize: 1,
+                        minUnit: 'minute',  // Minimum unit of time
                         displayFormats: {
-                            minute: 'hh:mm a'
+                            minute: 'hh:mm a',
+                            hour: 'MMM D, hA', // Format for hours
+                            day: 'MMM D',     // Format for days
+                            week: 'MMM D'     // Format for weeks
                         }
                     },
                     title: {
                         display: true,
                         text: 'Time'
+                    },
+                    ticks: {
+                        source: 'auto', // Use 'auto' to determine intervals based on data and scale size
+                        autoSkip: true,
+                        maxTicksLimit: 20 // Adjust to control the maximum number of ticks displayed
                     }
                 },
                 y: {
@@ -126,15 +136,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         display: true,
                         text: 'Weight (grams)'
                     },
-                    suggestedMin: 0, // Dynamic minimum
-                    suggestedMax: 100 // Dynamic maximum
+                    suggestedMin: 0,
+                    suggestedMax: 100
                 },
                 y1: {
                     type: 'linear',
                     position: 'right',
-                    display: false, // Keep hidden
-                    suggestedMin: 0, // Synced with y
-                    suggestedMax: 100, // Synced with y
+                    display: false,
+                    suggestedMin: 0,
+                    suggestedMax: 100,
                     grid: {
                         drawOnChartArea: false
                     }
@@ -170,6 +180,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById("startTrackingButton").addEventListener("click", startTracking);
 });
+
+
 
 let TRACKING = false; // Initialize TRACKING boolean
 let stopTrackingButton = null; // Initialize stopTrackingButton
@@ -463,6 +475,7 @@ function saveSessionData(timeStamp, dataPoint) {
             currentContentWeight: dataPoint.currentContentWeight,
             weightLossSoFar: dataPoint.weightLossSoFar,
             expectedCO2LossWeight: dataPoint.expectedCO2LossWeight,
+            expectedFinalTHCWeight: dataPoint.expectedFinalTHCWeight,
             slurryTHCAPercent: dataPoint.slurryTHCAPercent,
             slurryTHCPercent: dataPoint.slurryTHCPercent,
             otherCannabinoidPercent: dataPoint.otherCannabinoidPercent
@@ -474,6 +487,7 @@ function saveSessionData(timeStamp, dataPoint) {
             currentContentWeight: dataPoint.currentContentWeight,
             weightLossSoFar: dataPoint.weightLossSoFar,
             expectedCO2LossWeight: dataPoint.expectedCO2LossWeight,
+            expectedFinalTHCWeight: dataPoint.expectedFinalTHCWeight,
             slurryTHCAPercent: dataPoint.slurryTHCAPercent,
             slurryTHCPercent: dataPoint.slurryTHCPercent,
             otherCannabinoidPercent: dataPoint.otherCannabinoidPercent
@@ -518,125 +532,112 @@ function exportSessionData(filetype) {
     if (sessionData) {
         const csvData = [];
 
-        // Add heading section
+// Add heading section
+        csvData.push(`startTimestamp,${new Date(sessionData.chartData[0][0].x).toLocaleString().replace(/,/g, ' |')}`);
         csvData.push(`thcaStartWeight,${sessionData.thcaStartWeight}`);
         csvData.push(`tareWeight,${sessionData.tareWeight}`);
         csvData.push(`otherCannabinoidWeight,${sessionData.otherCannabinoidWeight || 0}`);
+
+        csvData.push(`totalStartWeight,${math.add(sessionData.thcaStartWeight, sessionData.tareWeight || 0, sessionData.otherCannabinoidWeight || 0)}`);
+        csvData.push(''); // Add an empty line for separation
+        csvData.push(`expectedCO2LossWeight,${sessionData.dataPoints[0].expectedCO2LossWeight}`);
+        csvData.push(`expectedFinalTHCWeight,${sessionData.dataPoints[0].expectedFinalTHCWeight}`);
+
+        if (sessionData.otherCannabinoidWeight > 0) {
+            csvData.push(`expectedFinalContentWeight,${math.add(sessionData.dataPoints[0].expectedFinalTHCWeight, sessionData.otherCannabinoidWeight || 0)}`);
+        }
+        if (sessionData.tareWeight > 0) {
+            csvData.push(`expectedFinalVesselWeight,${math.add(sessionData.dataPoints[0].expectedFinalTHCWeight, sessionData.tareWeight || 0, sessionData.otherCannabinoidWeight || 0)}`);
+        }
         csvData.push(''); // Add an empty line for separation
 
-        // Add column headers
-        csvData.push('Timestamp,remainingTHCAWeight,convertedTHCWeight,decarbCompletion,currentContentWeight,weightLossSoFar,expectedCO2LossWeight,slurryTHCAPercent,slurryTHCPercent,otherCannabinoidPercent');
 
-        const uniqueTimestamps = new Set();
+        // Add column headers
+        csvData.push('Timestamp,currentContentWeight, remainingTHCAWeight,convertedTHCWeight,decarbCompletion,weightLossSoFar,slurryTHCAPercent,slurryTHCPercent,otherCannabinoidPercent');
+
+        const uniqueDataPoints = new Set();
 
         for (let i = 0; i < sessionData.chartData[0].length; i++) {
-            const chartTimestamp = new Date(sessionData.chartData[0][i].x).toISOString();
+            const chartTimestamp = new Date(sessionData.chartData[0][i].x);
+            let chartTimestampLocale = chartTimestamp.toLocaleString().replace(/,/g, ' |');
             const remainingTHCAWeight = sessionData.chartData[0][i].y;
             const convertedTHCWeight = sessionData.chartData[1][i].y;
             const decarbCompletion = sessionData.chartData[2][i].y;
 
-            // Skip if this timestamp is already processed
-            if (uniqueTimestamps.has(chartTimestamp)) {
-                continue;
-            }
-            uniqueTimestamps.add(chartTimestamp);
-
             // Find matching data point in sessionData.dataPoints
-            const dataPoint = sessionData.dataPoints.find(dp => new Date(dp.timeStamp).toISOString() === chartTimestamp);
-
+            const dataPoint = sessionData.dataPoints.find(dp => new Date(dp.timeStamp).toISOString() === chartTimestamp.toISOString());
             if (!dataPoint) {
-                console.error(`No matching data point found for timestamp: ${chartTimestamp}`);
+                console.error(`No matching data point found for timestamp: ${chartTimestampLocale}`);
                 continue;
             }
 
-            csvData.push(`${chartTimestamp},${remainingTHCAWeight},${convertedTHCWeight},${decarbCompletion},${dataPoint.currentContentWeight},${dataPoint.weightLossSoFar},${dataPoint.expectedCO2LossWeight},${dataPoint.slurryTHCAPercent},${dataPoint.slurryTHCPercent},${dataPoint.otherCannabinoidPercent}`);
+            // Construct a more detailed composite key
+            const compositeKey = `${chartTimestampLocale}-${dataPoint.currentContentWeight}-${remainingTHCAWeight}-${convertedTHCWeight}-${decarbCompletion}-${dataPoint.weightLossSoFar}-${dataPoint.slurryTHCAPercent}-${dataPoint.slurryTHCPercent}-${dataPoint.otherCannabinoidPercent}`;
+
+            // Check and skip duplicates
+            if (uniqueDataPoints.has(compositeKey)) {
+                continue;
+            }
+
+            uniqueDataPoints.add(compositeKey);
+            csvData.push(compositeKey.split('-').join(','));
         }
 
-        const csvContent = csvData.join('\n');
-        const csvBlob = new Blob([csvContent], { type: 'text/csv' });
-
-        const exportCSV = () => {
-            const csvURL = URL.createObjectURL(csvBlob);
-            const csvLink = document.createElement('a');
-            csvLink.href = csvURL;
-            csvLink.download = 'decarb_progress_data.csv';
-            csvLink.click();
-        };
-
-        const exportPNG = () => {
-            const canvas = document.getElementById('chartContainer');
-            canvas.toBlob((blob) => {
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = 'decarb_progress_chart.png';
-                link.click();
-                if (filetype === 'ZIP') {
-                    addToZip(blob, 'decarb_progress_chart.png');
-                }
-            }, 'image/png');
-        };
-
-        const exportJPEG = () => {
-            const canvas = document.getElementById('chartContainer');
-            canvas.toBlob((blob) => {
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = 'decarb_progress_chart.jpeg';
-                link.click();
-                if (filetype === 'ZIP') {
-                    addToZip(blob, 'decarb_progress_chart.jpeg');
-                }
-            }, 'image/jpeg');
-        };
-
-        const exportZIP = () => {
-            const zip = new JSZip();
-            zip.file('decarb_progress_data.csv', csvBlob);
-
-            const canvas = document.getElementById('chartContainer');
-            canvas.toBlob((pngBlob) => {
-                zip.file('decarb_progress_chart.png', pngBlob);
-
-                zip.generateAsync({ type: 'blob' }).then((content) => {
-                    const zipURL = URL.createObjectURL(content);
-                    const zipLink = document.createElement('a');
-                    zipLink.href = zipURL;
-                    zipLink.download = 'decarb_progress_data.zip';
-                    zipLink.click();
-                });
-            }, 'image/png');
+        // Function to handle file exports
+        const handleExport = (data, filename, type) => {
+            const blob = new Blob([data], { type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
         };
 
         switch (filetype) {
             case 'CSV':
-                exportCSV();
+                handleExport(csvData.join('\n'), 'decarb_progress_data.csv', 'text/csv');
                 break;
             case 'PNG':
-                exportPNG();
+                exportChartAsImage('image/png', 'decarb_progress_chart.png');
                 break;
             case 'JPEG':
-                exportJPEG();
+                exportChartAsImage('image/jpeg', 'decarb_progress_chart.jpeg');
                 break;
             case 'ZIP':
-                exportZIP();
+                exportAllDataAsZip();
                 break;
         }
-    }
 
-    function addToZip(blob, filename) {
-        const zip = new JSZip();
-        zip.file(filename, blob);
-        zip.generateAsync({ type: 'blob' }).then((content) => {
-            const zipURL = URL.createObjectURL(content);
-            const zipLink = document.createElement('a');
-            zipLink.href = zipURL;
-            zipLink.download = 'decarb_progress_data.zip';
-            zipLink.click();
-        });
+        // Function to export the chart as an image (PNG or JPEG)
+        function exportChartAsImage(imageType, filename) {
+            const canvas = document.getElementById('chartContainer'); // Ensure your HTML has a canvas element with this ID
+            if (canvas) {
+                canvas.toBlob(blob => {
+                    handleExport(blob, filename, imageType);
+                }, imageType);
+            }
+        }
+
+        // Function to export all data as a ZIP file containing both CSV and chart image
+        function exportAllDataAsZip() {
+            const zip = new JSZip();
+            // Add CSV data
+            zip.file('decarb_progress_data.csv', csvData.join('\n'));
+
+            // Add image from canvas
+            const canvas = document.getElementById('chartContainer'); // Ensure your HTML has a canvas element with this ID
+            canvas.toBlob(blob => {
+                zip.file('decarb_progress_chart.png', blob);
+
+                // Generate ZIP file
+                zip.generateAsync({ type: 'blob' }).then(content => {
+                    handleExport(content, 'decarb_progress_data.zip', 'application/zip');
+                });
+            }, 'image/png');
+        }
     }
 }
+
 
 
 
