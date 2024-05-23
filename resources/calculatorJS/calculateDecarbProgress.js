@@ -498,7 +498,7 @@ function saveSessionData(timeStamp, dataPoint) {
     sessionData.chartData = chart.data.datasets.map(dataset => dataset.data);
 
     const expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + 30); // Set the expiration date to 30 days from now
+    expirationDate.setDate(expirationDate.getDate() + 120); // Set the expiration date to 120 days from now
     const cookie = `sessionData=${encodeURIComponent(JSON.stringify(sessionData))};expires=${expirationDate.toUTCString()};path=/`;
     document.cookie = cookie;
 }
