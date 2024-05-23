@@ -73,29 +73,36 @@
  * interests.
  */
 
+
 function calculateThcaToThc() {
     const thcaWeight = document.getElementById("thcaWeight").valueAsNumber;
-    const thcWeight = thcaWeight * (314.224580195 / 358.21440943);
-    const lossCalc = (thcaWeight - thcWeight);
 
-    const formatTHCOut = thcWeight.toLocaleString(undefined, {
+    // Using math.js for more precise calculations
+    const thcMolecularWeight = math.bignumber(314.224580195);
+    const thcaMolecularWeight = math.bignumber(358.21440943);
+    const thcWeight = math.multiply(math.divide(thcMolecularWeight, thcaMolecularWeight), thcaWeight);
+    const lossCalc = math.subtract(thcaWeight, thcWeight);
+
+    // Formatting the output
+    const formatTHCOut = parseFloat(math.format(thcWeight, {notation: 'fixed', precision: 2})).toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
 
-    const formatLossOut = lossCalc.toLocaleString(undefined, {
+    const formatLossOut = parseFloat(math.format(lossCalc, {notation: 'fixed', precision: 2})).toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
 
+    // Validation and display logic
     if (isNaN(thcaWeight) || thcaWeight < 0.0000000000000000000000001 || thcaWeight > 9999999999.9999999999) {
         document.getElementById("thcaToThcResult").innerHTML = "<br><br><span style='color: red'><b>Error: Invalid input value(s)<br>Note: Please enter a positive value between 0.1 and 10 billion.</b></span><br>";
     } else {
+        let resultHtml = "<br><b>Estimated CO2 Loss: </b><br>" + formatLossOut + " grams" + "<br><br><b>Estimated THC produced: </b><br>" + formatTHCOut + " grams";
         if (thcaWeight === 69420 || thcaWeight === 42069 || thcaWeight === 420 || thcaWeight === 710) {
-            easterEgg()
-            document.getElementById("thcaToThcResult").innerHTML = "<br><b>Estimated CO2 Loss: </b><br>" + formatLossOut + " grams" + "<br><br><b>Estimated THC produced: </b><br>" + formatTHCOut + " grams";
-        } else {
-            document.getElementById("thcaToThcResult").innerHTML = "<br><b>Estimated CO2 Loss: </b><br>" + formatLossOut + " grams" + "<br><br><b>Estimated THC produced: </b><br>" + formatTHCOut + " grams";
+            easterEgg();
         }
+        document.getElementById("thcaToThcResult").innerHTML = resultHtml;
     }
 }
+
