@@ -514,6 +514,9 @@ function clearSessionData() {
     document.getElementById("tareWeight").value = '';
     document.getElementById("thcaStartWeight").value = '';
     document.getElementById("otherCannabinoidWeight").value = '';
+
+    // Reset the progress bar
+    updateDecarbProgressBar(0);
 }
 
 
