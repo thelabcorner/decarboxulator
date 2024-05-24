@@ -1,75 +1,86 @@
-// Open-Natural License
-//
-// Copyright (C) 2020-2024 Jackson Cummings - TheDabCorner™ LLC.
-//
-// Preamble
-// This license recognizes that mathematics and logic, as fundamental
-// components of nature, are beyond exclusive ownership. The software
-// covered by this license is a creative and intuitive expression by
-// the author, Jackson Cummings, implementing principles of
-// stoichiometry, mathematics, and logical reasoning. This document
-// establishes the terms under which this software may be used, copied,
-// and distributed.
-//
-// Grant of License
-// Permission is hereby granted, free of charge, to any person obtaining
-// a copy of this software and associated documentation files (the
-// "Software"), to deal with the Software without restriction,
-// including without limitation the rights to use, copy, modify, merge,
-// publish, distribute, sublicense, and/or sell copies of the Software,
-// all subject to the following conditions:
-//
-// I. Non-Commercial Use:
-//    A. The above copyright notice and this permission notice must be
-//    included in all copies or substantial portions of the Software.
-//    B. If the Software is redistributed in a non-commercial context,
-//    the phrase "Powered by Decarboxulator™" must be prominently
-//    displayed in the product or service.
-//
-// II. Commercial Use:
-//    A. Open Source Option:
-//       1. If the Software is used in a commercial product or service,
-//       the complete source code of that product or service must be made
-//       available to the public under this license or another permissive
-//       open source license approved by the Open Source Initiative (OSI).
-//       2. A notation "Powered by Decarboxulator™" must be prominently
-//       displayed in the product or service.
-//
-//    B. Commercial License Option:
-//       1. Use of the Software in commercial products or services without
-//       disclosure of source code requires a commercial license obtained
-//       from the Licensor.
-//       2. Contact the Licensor at admin@thedabcorner.site for licensing
-//       options and fees.
-//       3. Redistribution of the Software, or any derivative works, in
-//       source or binary form, requires prior written consent from the
-//       Licensor.
-//       4. A notation "Powered by Decarboxulator™" must be prominently
-//       displayed in the product or service.
-//
-// Warranty Disclaimer
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
-// BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN
-// ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
-// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-//
-// Trademark Notice
-// This license does not grant any rights in the trademarks, service
-// marks, brand names, or logos of TheDabCorner™ LLC or Decarboxulator™.
-//
-// Termination
-// This license is subject to termination if its terms are violated.
-// Upon termination, all rights granted under this license will cease
-// immediately without notice from the Licensor. Following termination,
-// re-acquisition of licensing rights requires express written consent
-// from the Licensor. The Licensor reserves the right to modify or
-// revoke the licenses of any third parties who have received copies or
-// derivative works of the Software from you, to protect the Licensor's
-// interests.
+/**
+ * Open-Natural License
+ *
+ * Copyright (C) 2020-2024 Jackson Cummings - TheDabCorner™ LLC.
+ *
+ *     Preamble
+ * This license recognizes that mathematics and logic, as fundamental
+ * components of nature, are beyond exclusive ownership. The software
+ * covered by this license is a creative and intuitive expression by
+ * the author, Jackson Cummings, implementing principles of
+ * stoichiometry, mathematics, and logical reasoning. This document
+ * establishes the terms under which this software may be used, copied,
+ *     and distributed.
+ *
+ *     Grant of License
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal with the Software without restriction,
+ *     including without limitation the rights to use, copy, modify, merge,
+ *     publish, distribute, sublicense, and/or sell copies of the Software,
+ *     all subject to the following conditions:
+ *
+ *     I. Non-Commercial Use:
+ *     A. The above copyright notice and this permission notice must be
+ * included in all copies or substantial portions of the Software.
+ *     B. If the Software is redistributed in a non-commercial context,
+ *     the phrase "Powered by Decarboxulator™" must be prominently
+ * displayed in the product or service.
+ *
+ *     II. Commercial Use:
+ *     A. Open Source Option:
+ *     1. If the Software is used in a commercial product or service,
+ *     the complete source code of that product or service must be made
+ * available to the public under this license or another permissive
+ * open source license approved by the Open Source Initiative (OSI).
+ * 2. A notation "Powered by Decarboxulator™" must be prominently
+ * displayed in the product or service.
+ *
+ *     B. Commercial License Option:
+ *     1. Use of the Software in commercial products or services without
+ * disclosure of source code requires a commercial license obtained
+ * from the Licensor.
+ * 2. Contact the Licensor at admin@thedabcorner.site for licensing
+ *     options and fees.
+ * 3. Redistribution of the Software, or any derivative works, in
+ * source or binary form, requires prior written consent from the
+ * Licensor.
+ * 4. A notation "Powered by Decarboxulator™" must be prominently
+ * displayed in the product or service.
+ *
+ *     III. Research and Academic Use:
+ *     A. The Software may be used for research and academic purposes
+ * without obtaining a commercial license, provided that:
+ *     1. The above copyright notice and this permission notice are
+ * included in all copies or substantial portions of the Software.
+ * 2. Proper attribution is given to the authors and the Software
+ * in any publications or presentations resulting from the use of
+ * the Software.
+ *
+ *     Warranty Disclaimer
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ *     Trademark Notice
+ * This license does not grant any rights in the trademarks, service
+ * marks, brand names, or logos of TheDabCorner™ LLC or Decarboxulator™.
+ *
+ * Termination
+ * This license is subject to termination if its terms are violated.
+ *     Upon termination, all rights granted under this license will cease
+ * immediately without notice from the Licensor. Following termination,
+ * re-acquisition of licensing rights requires express written consent
+ * from the Licensor. The Licensor reserves the right to modify or
+ * revoke the licenses of any third parties who have received copies or
+ * derivative works of the Software from you, to protect the Licensor's
+ * interests.
+ */
 
 
 
@@ -558,6 +569,11 @@ function clearSessionData() {
 }
 
 
+//////////////////////
+// EXPORT FUNCTIONS //
+//////////////////////
+
+// Function to export session data based on selected file type
 function exportSessionData(filetype) {
     const cookies = document.cookie.split(';');
     let sessionData = null;
@@ -571,72 +587,42 @@ function exportSessionData(filetype) {
     }
 
     if (sessionData) {
-        const csvData = [];
+        let csvData = '';
 
-// Add heading section
-        csvData.push(`startTimestamp,${new Date(sessionData.chartData[0][0].x).toLocaleString().replace(/,/g, ' |')}`);
-        csvData.push(`thcaStartWeight,${sessionData.thcaStartWeight}`);
-        csvData.push(`tareWeight,${sessionData.tareWeight}`);
-        csvData.push(`otherCannabinoidWeight,${sessionData.otherCannabinoidWeight || 0}`);
-
-        csvData.push(`totalStartWeight,${math.add(sessionData.thcaStartWeight, sessionData.tareWeight || 0, sessionData.otherCannabinoidWeight || 0)}`);
-        csvData.push(''); // Add an empty line for separation
-        csvData.push(`expectedCO2LossWeight,${sessionData.dataPoints[0].expectedCO2LossWeight}`);
-        csvData.push(`expectedFinalTHCWeight,${sessionData.dataPoints[0].expectedFinalTHCWeight}`);
+        // Add heading section
+        csvData += `startTimestamp,${new Date(sessionData.chartData[0][0].x).toLocaleString().replace(/,/g, ' |')}\n`;
+        csvData += `thcaStartWeight,${sessionData.thcaStartWeight}\n`;
+        csvData += `tareWeight,${sessionData.tareWeight}\n`;
+        csvData += `otherCannabinoidWeight,${sessionData.otherCannabinoidWeight || 0}\n`;
+        csvData += `totalStartWeight,${sessionData.thcaStartWeight + (sessionData.tareWeight || 0) + (sessionData.otherCannabinoidWeight || 0)}\n\n`;
+        csvData += `expectedCO2LossWeight,${sessionData.dataPoints[0].expectedCO2LossWeight}\n`;
+        csvData += `expectedFinalTHCWeight,${sessionData.dataPoints[0].expectedFinalTHCWeight}\n`;
 
         if (sessionData.otherCannabinoidWeight > 0) {
-            csvData.push(`expectedFinalContentWeight,${math.add(sessionData.dataPoints[0].expectedFinalTHCWeight, sessionData.otherCannabinoidWeight || 0)}`);
+            csvData += `expectedFinalContentWeight,${sessionData.dataPoints[0].expectedFinalTHCWeight + (sessionData.otherCannabinoidWeight || 0)}\n`;
         }
         if (sessionData.tareWeight > 0) {
-            csvData.push(`expectedFinalVesselWeight,${math.add(sessionData.dataPoints[0].expectedFinalTHCWeight, sessionData.tareWeight || 0, sessionData.otherCannabinoidWeight || 0)}`);
+            csvData += `expectedFinalVesselWeight,${sessionData.dataPoints[0].expectedFinalTHCWeight + (sessionData.tareWeight || 0) + (sessionData.otherCannabinoidWeight || 0)}\n`;
         }
-        csvData.push(''); // Add an empty line for separation
-
+        csvData += '\n';
 
         // Add column headers
-        csvData.push('Timestamp,currentContentWeight, remainingTHCAWeight,convertedTHCWeight,decarbCompletion,weightLossSoFar,slurryTHCAPercent,slurryTHCPercent,otherCannabinoidPercent');
+        csvData += 'Timestamp,currentContentWeight,remainingTHCAWeight,convertedTHCWeight,decarbCompletion,weightLossSoFar,slurryTHCAPercent,slurryTHCPercent,otherCannabinoidPercent\n';
 
-        const uniqueDataPoints = new Set();
+        sessionData.chartData[0].forEach((point, index) => {
+            const chartTimestamp = new Date(point.x);
+            const chartTimestampLocale = chartTimestamp.toLocaleString().replace(/,/g, ' |');
+            const dataPoint = sessionData.dataPoints[index];
 
-        for (let i = 0; i < sessionData.chartData[0].length; i++) {
-            const chartTimestamp = new Date(sessionData.chartData[0][i].x);
-            let chartTimestampLocale = chartTimestamp.toLocaleString().replace(/,/g, ' |');
-            const remainingTHCAWeight = sessionData.chartData[0][i].y;
-            const convertedTHCWeight = sessionData.chartData[1][i].y;
-            const decarbCompletion = sessionData.chartData[2][i].y;
-
-            // Find matching data point in sessionData.dataPoints
-            const dataPoint = sessionData.dataPoints.find(dp => new Date(dp.timeStamp).toISOString() === chartTimestamp.toISOString());
-            if (!dataPoint) {
-                console.error(`No matching data point found for timestamp: ${chartTimestampLocale}`);
-                continue;
+            if (dataPoint) {
+                csvData += `${chartTimestampLocale},${dataPoint.currentContentWeight},${point.y},${sessionData.chartData[1][index].y},${sessionData.chartData[2][index].y},${dataPoint.weightLossSoFar},${dataPoint.slurryTHCAPercent},${dataPoint.slurryTHCPercent},${dataPoint.otherCannabinoidPercent}\n`;
             }
+        });
 
-            // Construct a more detailed composite key
-            const compositeKey = `${chartTimestampLocale}-${dataPoint.currentContentWeight}-${remainingTHCAWeight}-${convertedTHCWeight}-${decarbCompletion}-${dataPoint.weightLossSoFar}-${dataPoint.slurryTHCAPercent}-${dataPoint.slurryTHCPercent}-${dataPoint.otherCannabinoidPercent}`;
-
-            // Check and skip duplicates
-            if (uniqueDataPoints.has(compositeKey)) {
-                continue;
-            }
-
-            uniqueDataPoints.add(compositeKey);
-            csvData.push(compositeKey.split('-').join(','));
-        }
-
-        // Function to handle file exports
-        const handleExport = (data, filename, type) => {
-            const blob = new Blob([data], { type });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = filename;
-            link.click();
-        };
-
+        // Check file type and handle accordingly
         switch (filetype) {
             case 'CSV':
-                handleExport(csvData.join('\n'), 'decarb_progress_data.csv', 'text/csv');
+                appendLicenseToCsv(csvData);
                 break;
             case 'PNG':
                 exportChartAsImage('image/png', 'decarb_progress_chart.png');
@@ -645,40 +631,77 @@ function exportSessionData(filetype) {
                 exportChartAsImage('image/jpeg', 'decarb_progress_chart.jpeg');
                 break;
             case 'ZIP':
-                exportAllDataAsZip();
+                exportAllDataAsZip(csvData);
                 break;
-        }
-
-        // Function to export the chart as an image (PNG or JPEG)
-        function exportChartAsImage(imageType, filename) {
-            const canvas = document.getElementById('chartContainer'); // Ensure your HTML has a canvas element with this ID
-            if (canvas) {
-                canvas.toBlob(blob => {
-                    handleExport(blob, filename, imageType);
-                }, imageType);
-            }
-        }
-
-        // Function to export all data as a ZIP file containing both CSV and chart image
-        function exportAllDataAsZip() {
-            const zip = new JSZip();
-            // Add CSV data
-            zip.file('decarb_progress_data.csv', csvData.join('\n'));
-
-            // Add image from canvas
-            const canvas = document.getElementById('chartContainer'); // Ensure your HTML has a canvas element with this ID
-            canvas.toBlob(blob => {
-                zip.file('decarb_progress_chart.png', blob);
-
-                // Generate ZIP file
-                zip.generateAsync({ type: 'blob' }).then(content => {
-                    handleExport(content, 'decarb_progress_data.zip', 'application/zip');
-                });
-            }, 'image/png');
         }
     }
 }
 
+// Helper function to trigger CSV download
+function downloadCsv(csvContent, fileName) {
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+
+// Helper function to trigger file download
+function handleExport(data, filename, type) {
+    const blob = new Blob([data], { type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Function to fetch and append the license to the CSV
+function appendLicenseToCsv(csvData) {
+    const licenseUrl = 'https://raw.githubusercontent.com/thelabcorner/decarboxulator/main/LICENSE';
+    fetch(licenseUrl)
+        .then(response => response.text())
+        .then(licenseText => {
+            csvData += '\nLicense:\n' + licenseText.replace(/,/g, ';').replace(/\n/g, ' '); // Replacing commas and newlines
+            downloadCsv(csvData, 'output.csv');
+        })
+        .catch(error => {
+            console.error('Failed to fetch license:', error);
+            // Handle errors or fallback scenario
+        });
+}
+
+
+// Function to export the chart as an image (PNG or JPEG)
+function exportChartAsImage(imageType, filename) {
+    const canvas = document.getElementById('chartContainer');
+    if (canvas) {
+        canvas.toBlob(blob => {
+            handleExport(blob, filename, imageType);
+        }, imageType);
+    }
+}
+
+// Function to export all data as a ZIP file containing both CSV and chart image
+function exportAllDataAsZip(csvData) {
+    const zip = new JSZip();
+    zip.file('decarb_progress_data.csv', csvData);
+
+    const canvas = document.getElementById('chartContainer');
+    canvas.toBlob(blob => {
+        zip.file('decarb_progress_chart.png', blob);
+        zip.generateAsync({ type: 'blob' }).then(content => {
+            handleExport(content, 'decarb_progress_data.zip', 'application/zip');
+        });
+    }, 'image/png');
+}
 
 
 

@@ -48,6 +48,15 @@
  *       4. A notation "Powered by Decarboxulator™" must be prominently
  *       displayed in the product or service.
  *
+ * III. Research and Academic Use:
+ *    A. The Software may be used for research and academic purposes
+ *    without obtaining a commercial license, provided that:
+ *       1. The above copyright notice and this permission notice are
+ *       included in all copies or substantial portions of the Software.
+ *       2. Proper attribution is given to the authors and the Software
+ *       in any publications or presentations resulting from the use of
+ *       the Software.
+ *
  * Warranty Disclaimer
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
@@ -71,7 +80,6 @@
  * revoke the licenses of any third parties who have received copies or
  * derivative works of the Software from you, to protect the Licensor's
  * interests.
- *
  */
 
 
