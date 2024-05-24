@@ -192,33 +192,34 @@ interests.
         </nav>
 
         <!-- Page content-->
-        <div class="container-fluid">
-            <div class="tab-content p-3">
-                <h1>THCa Decarboxylation PSI Calculator <span class="w3-tag w3-green">v1.3b</span></h1>
-                <p>This calculator estimates the pressure build-up (PSI) during the decarboxylation of THCa in a closed vessel.</p>
-                <form id="psiCalculatorForm">
-                    <div class="mb-3">
-                        <label for="inputWeight" class="form-label">Input Weight (grams)</label>
-                        <input type="number" class="form-control" id="inputWeight" required>
+            <div class="container-fluid">
+                <div class="tab-content p-3">
+                    <h1>THCa Decarboxylation PSI Calculator <span class="w3-tag w3-green">v1.3b</span></h1>
+                    <p>This calculator estimates the pressure build-up (PSI) during the decarboxylation of THCa in a closed vessel.</p>
+                    <form id="psiCalculatorForm">
+                        <div class="mb-3">
+                            <label for="inputWeight" class="form-label">Extract Input Weight (grams)</label>
+                            <input type="number" class="form-control" id="inputWeight" placeholder="100 grams" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="thcaConc" class="form-label">THCa Concentration (%)</label>
+                            <input type="number" class="form-control" id="thcaConc" placeholder="20 percent" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputTemperature" class="form-label">Temperature (°F)</label>
+                            <input type="number" class="form-control" id="inputTemperature" placeholder="170°F" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customVesselVolume" class="form-label">[Optional] Custom Vessel Volume (fl oz)</label>
+                            <input type="number" class="form-control" id="customVesselVolume" placeholder="16 fl oz" required>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="generateHeatmap()">Calculate</button>
+                    </form>
+                    <div class="table-responsive">
+                        <div id="heatmapContainer"></div>
                     </div>
-                    <div class="mb-3">
-                        <label for="thcaConc" class="form-label">THCa Concentration (%)</label>
-                        <input type="number" class="form-control" id="thcaConc" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="inputTemperature" class="form-label">Temperature (°F)</label>
-                        <input type="number" class="form-control" id="inputTemperature" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="inputTemperature" class="form-label">[Optional] Custom Vessel Volume (fl oz)</label>
-                        <input type="number" class="form-control" id="customVesselVolume" required>
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="generateHeatmap()">Calculate</button>
-                </form>
-                <div class="table-responsive">
-                    <div id="heatmapContainer"></div>
+                    <br/><br/>
                 </div>
-                <br/><br/>
             </div>
 
             <div id="calculatorDescription">

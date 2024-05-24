@@ -199,21 +199,21 @@ interests.
         <div class="container-fluid">
 
             <div id="decarbProgress" class="tab-content p-3">
-                <h1>&#916;9-THCa Decarboxylation Progress Tracker <span class="w3-tag w3-green">v1.5c</span></h1>
+                <h1>&#916;9-THCa Decarboxylation Progress Tracker <span class="w3-tag w3-green">v1.6a</span></h1>
                 <p>This calculator is designed to help you track the progress of your THCa decarboxylation process. By entering the initial weight of THCa and the current weight of the decarboxylated material, you can estimate the percentage of decarboxylation progress based on the predicted weight of the decarboxylated material.</p>
                 <p>For more accurate results, it is recommended to use a scale that measures to at least 0.01 grams and to record the weights at regular intervals during the decarboxylation process.</p>
                 <form id="decarbProgressForm">
                     <div class="mb-3">
                         <label for="tareWeight" class="form-label">Tare Weight of Vessel (grams):</label>
-                        <input type="number" class="form-control" id="tareWeight" required>
+                        <input type="number" class="form-control" id="tareWeight" placeholder="50 grams" required>
                     </div>
                     <div class="mb-3">
                         <label for="thcaStartWeight" class="form-label">Initial Weight of THCa (grams, excluding tare):</label>
-                        <input type="number" class="form-control" id="thcaStartWeight" required>
+                        <input type="number" class="form-control" id="thcaStartWeight" placeholder="50 grams" required>
                     </div>
                     <div class="mb-3" id="otherCannabinoidWeightDiv" style="display: none;">
                         <label for="otherCannabinoidWeight" class="form-label">Other Cannabinoid Weight (grams, excluding tare):</label>
-                        <input type="number" class="form-control" id="otherCannabinoidWeight">
+                        <input type="number" class="form-control" id="otherCannabinoidWeight" placeholder="50 grams">
                     </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="labTestMode" onchange="toggleLabTestMode()" checked>
@@ -223,7 +223,7 @@ interests.
 
                     <div class="mb-3" style="display: none;" id="currentWeightDiv">
                         <label for="currentWeight" class="form-label">Current Total Weight (grams, including tare):</label>
-                        <input type="number" class="form-control" id="currentWeight" required>
+                        <input type="number" class="form-control" id="currentWeight" placeholder="146.87 grams" required>
                     </div>
                 </form>
                 <canvas id="chartContainer" style="height: 370px; width: 100%;"></canvas>
@@ -251,7 +251,7 @@ interests.
                       <li><a class="dropdown-item" onclick="exportSessionData('ZIP')">Export All as .ZIP</a></li>
                   </ul>
                 </div>
-                <button id="clearSessionButton" type="button" class="btn btn-danger" style="display: none" onclick="clearSessionData()">Reset Data</button>
+                <button id="clearSessionButton" type="button" class="btn btn-danger" style="display: none" onclick="clearSessionPopup()">Reset Data</button>
                 <div id="decarbProgressResult" class="mt-4"></div>
             </div>
 
@@ -262,119 +262,151 @@ interests.
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="descriptionHeading">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#descriptionCollapse" aria-expanded="false" aria-controls="descriptionCollapse">
-                                Instructions
+                                Usage Instructions
                             </button>
                         </h2>
                         <div id="descriptionCollapse" class="accordion-collapse collapse" aria-labelledby="descriptionHeading">
                             <div class="accordion-body">
-                                <p>To use the tool, follow these steps:</p>
+                                <p>Welcome to the Δ9-THCa Decarboxylation Progress Tracker, your essential tool for monitoring the conversion of THCa to THC. This intuitive tool not only calculates the percentage of decarboxylation in real-time but also visually displays the progress through dynamic charts and progress bars. With features to save sessions, export data in multiple formats, and reset data for new batches, this tracker enhances your control and efficiency during the decarboxylation process.</p>
                                 <ol>
-                                    <li>Enter the starting weight of THCa (in grams) in the "Input Weight of THCa" field.</li>
-                                    <li>Enter the current weight of decarboxylated material (in grams) in the "Current Weight of THCa" field.</li>
-                                    <li>Click the "Calculate" button to generate the results.</li>
+                                    <li>
+                                        <strong>Enter Tare Weight:</strong> Tare weight is the weight of the vessel without any contents. It is optional, but recommended for accuracy. If you choose not to use tare weight, enter '0' in this field and ensure to manually subtract the vessel weight from the total weight during each measurement to prevent inaccuracies.
+                                        <!-- Button trigger for collapsible -->
+                                        <a href="#scaleEfficiencyNote" class="btn btn-link p-0 m-0 align-baseline" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="scaleEfficiencyNote"><em>Why is it like this?</em></a>
+
+                                        <!-- Collapsible element -->
+                                        <div class="collapse" id="scaleEfficiencyNote">
+                                            <br/>
+                                            <p><em>Note on Scale Efficiency:</em> This calculator is specifically designed to streamline measurements in conditions where scales might reset or not retain tare settings, particularly in high-temperature applications. Removing adjustment of tare weight ensures quick, accurate entries and minimizes the risk of prolonged exposure to heat/cold, enhancing both user safety and procedural efficiency. This flexibility is crucial for maintaining consistent data quality during decarboxylation monitoring, especially when working under conditions where speed and safety are paramount.</p>
+                                        </div>
+                                    </li>
+                                    <li><strong>Input Initial THCa Weight:</strong> Input the starting weight of your THCa, ensuring it does not include the tare weight.</li>
+                                    <li><strong>Enable Lab Test Mode (Optional):</strong> If you're working with additional cannabinoids in solution, enable 'Lab Test Mode' by clicking the corresponding checkbox. This allows you to input the total weight of other cannabinoids based on lab test results or based on a <a href="../pages/rosin-thca-finder">Decarboxulator&trade; | THCa Analyzer</a> Test Result. If additional cannabinoids are not being used, this step can be skipped.</li>
+                                    <li><strong>Start Tracking:</strong> Initiate the tracking process by clicking 'Start Tracking.' This locks the initial input fields to prevent changes during tracking. The 'Current Weight' field will become visible for ongoing data entry, and the 'Start Tracking' button will turn into an 'Add Point' button.</li>
+                                    <li><strong>Enter Current Total Weight:</strong> Periodically, input the total weight of the vessel including all contents. Ensure your scale displays '0.00' without any tare weight adjustment. This is crucial, especially under high heat conditions where scales may not retain tare settings.</li>
+                                    <li><strong>Add Data Point:</strong> After starting the tracking, use the 'Add Point' button to submit new weight data as you measure. Each entry updates the decarboxylation progress chart and calculations in real-time.</li>
+                                    <li><strong>Stop Tracking:</strong> To pause or complete your session, use the 'Stop Tracking' button. This action stops data recording and re-enables the input fields for a new session or adjustments.</li>
                                 </ol>
-                                <p>The tool will utilize a specialized formula to estimate the predicted weight of decarboxylated material and the percentage of decarboxylation progress. The formula assumes complete decarboxylation and may be affected by factors such as temperature, time, and the starting material. As such, the estimates should be used as guidance rather than concrete values.</p>
-                                <p>If there are any errors in the input values, such as negative values or empty fields, an error message will be displayed.</p>
+                                <p>Additional functionalities:</p>
+                                <ul>
+                                    <li><strong>Save Session:</strong> Click 'Save Session' to store the current session data as a cookie, allowing for later retrieval or continuation of the session after closing the page.</li>
+                                    <li><strong>Export Data:</strong> Use the export options to download your data or chart in various formats (PNG, JPEG, CSV, ZIP) for reporting or analysis purposes.</li>
+                                    <li><strong>Clear Session:</strong> If you need to start over or clear the current data, click 'Reset Data.' This clears all inputs and data from the session & cookie, resetting the progress bar and charts.</li>
+                                </ul>
+                                <p>Note: Consistent and accurate weight entry is vital for reliable results. Use a precise scale and maintain regular measurement intervals for best outcomes.</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <br>
                 <div class="accordion" id="formulasAccordion">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="formulasHeading">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#formulasCollapse" aria-expanded="false" aria-controls="formulasCollapse">
-                                Formula(s) Used
+                                Decarboxylation Calculations
                             </button>
                         </h2>
                         <div id="formulasCollapse" class="accordion-collapse collapse" aria-labelledby="formulasHeading">
                             <div class="accordion-body">
-                                <p>The percentage of decarboxylation progress is calculated using the following formula:</p>
+                                <p>This section outlines the key mathematical formulas used by the decarboxylation tracker:</p>
+
                                 <div class="card">
                                     <div class="card-body">
-                                        <code>
-                                            <math>
-                                                <mtext>Percent Decarboxylation Progress = </mtext>
-                                                <mo>(</mo>
-                                                <mo>(</mo>
-                                                <mfrac>
-                                                    <mrow>
-                                                        <mi>Decarboxylated Weight</mi>
-                                                    </mrow>
-                                                    <mrow>
-                                                        <mrow>
-                                                            <mi>Input Weight</mi>
-                                                            <mo>-</mo>
-                                                            <mi>Loss Calculation</mi>
-                                                        </mrow>
-                                                    </mrow>
-                                                </mfrac>
-                                                <mo>)</mo>
-                                                <mo>*</mo>
-                                                <mn>100</mn>
-                                                <mo>)</mo>
-                                            </math>
-                                        </code>
+                                        <p><strong>Initial THCA Weight:</strong></p>
+                                        <code>initialTHCAWeight = input</code>
+                                        <hr/>
+                                        <p>The starting weight of THCA provided by the user.</p>
                                     </div>
                                 </div>
-                                <p>The decarboxylated weight is calculated using:</p>
+
                                 <div class="card">
                                     <div class="card-body">
-                                        <code>
-                                            <math>
-                                                <mi>Decarboxylated Weight</mi>
-                                                <mo>=</mo>
-                                                <mi>Input Weight</mi>
-                                                <mo>-</mo>
-                                                <mi>Current Weight</mi>
-                                            </math>
-                                        </code>
+                                        <p><strong>Expected Final THC Weight:</strong></p>
+                                        <code>expectedFinalTHCWeight = initialTHCAWeight * (THC_MW / THCA_MW)</code>
+                                        <hr/>
+                                        <p>Calculated by converting the initial THCA to THC, considering molecular weight changes due to CO2 loss.</p>
                                     </div>
                                 </div>
-                                <p>The loss calculation is given by:</p>
+
                                 <div class="card">
                                     <div class="card-body">
-                                        <code>
-                                            <math>
-                                                <mi>Loss Calculation</mi>
-                                                <mo>=</mo>
-                                                <mi>Input Weight</mi>
-                                                <mo>*</mo>
-                                                <mn>0.877</mn>
-                                            </math>
-                                        </code>
+                                        <p><strong>Current Content Weight:</strong></p>
+                                        <code>currentContentWeight = currentTotalWeight - tareWeight</code>
+                                        <hr/>
+                                        <p>Represents the current weight of all materials in the vessel minus the vessel's weight.</p>
                                     </div>
                                 </div>
-                                <p>The predicted decarboxylated weight is estimated as:</p>
+
                                 <div class="card">
                                     <div class="card-body">
-                                        <code>
-                                            <math>
-                                                <mtext>Predicted Decarboxylated Weight</mtext>
-                                                <mo>=</mo>
-                                                <mi>Input Weight</mi>
-                                                <mo>*</mo>
-                                                <mn>0.877</mn>
-                                            </math>
-                                        </code>
+                                        <p><strong>Weight Loss So Far:</strong></p>
+                                        <code>weightLossSoFar = initialTotalWeight - currentContentWeight</code>
+                                        <hr/>
+                                        <p>The total weight lost during the process, mainly as CO2 from THCA conversion.</p>
                                     </div>
                                 </div>
-                                <p>The estimated THCa remaining is calculated as:</p>
+
                                 <div class="card">
                                     <div class="card-body">
-                                        <code>
-                                            <math>
-                                                <mtext>Estimated THCa Remaining</mtext>
-                                                <mo>=</mo>
-                                                <mo>(</mo>
-                                                <mi>Input Weight</mi>
-                                                <mo>-</mo>
-                                                <mi>Loss Calculation</mi>
-                                                <mo>)</mo>
-                                                <mo>-</mo>
-                                                <mi>Decarboxylated Weight</mi>
-                                            </math>
-                                        </code>
+                                        <p><strong>Expected CO2 Loss Weight:</strong></p>
+                                        <code>expectedCO2LossWeight = initialTHCAWeight - expectedFinalTHCWeight</code>
+                                        <hr/>
+                                        <p>Estimates the total weight of CO2 expected to be lost when all THCA is converted to THC.</p>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p><strong>Decarb Completion:</strong></p>
+                                        <code>decarbCompletion = (weightLossSoFar / expectedCO2LossWeight) * 100</code>
+                                        <hr/>
+                                        <p>Percentage indicating the progress of the decarboxylation process based on the ratio of CO2 lost.</p>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p><strong>Remaining THCA Weight:</strong></p>
+                                        <code>remainingTHCAWeight = initialTHCAWeight - (decarbCompletion / 100) * initialTHCAWeight</code>
+                                        <hr/>
+                                        <p>The estimated weight of THCA that has not yet converted to THC.</p>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p><strong>Converted THC Weight:</strong></p>
+                                        <code>convertedTHCWeight = (decarbCompletion / 100) * initialTHCAWeight</code>
+                                        <hr/>
+                                        <p>The weight of THC formed from the decarboxylation of THCA as the process progresses.</p>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p><strong>Slurry THCA Percent:</strong></p>
+                                        <code>slurryTHCAPercent = (remainingTHCAWeight / currentContentWeight) * 100</code>
+                                        <hr/>
+                                        <p>The percentage of remaining THCA relative to the total current content weight.</p>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p><strong>Slurry THC Percent:</strong></p>
+                                        <code>slurryTHCPercent = (convertedTHCWeight / currentContentWeight) * 100</code>
+                                        <hr/>
+                                        <p>The percentage of converted THC relative to the total current content weight.</p>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p><strong>Other Cannabinoid Percent:</strong></p>
+                                        <code>otherCannabinoidPercent = (otherCannabinoidWeight / currentContentWeight) * 100</code>
+                                        <hr/>
+                                        <p>The percentage of other cannabinoids present relative to the total current content weight, if applicable.</p>
                                     </div>
                                 </div>
                             </div>
@@ -382,8 +414,9 @@ interests.
                     </div>
                 </div>
             </div>
+        </div>
 
-        <script src="../resources/calculatorJS/calculateDecarbProgress.js"></script>
+            <script src="../resources/calculatorJS/calculateDecarbProgress.js"></script>
 
     </div>
 

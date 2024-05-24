@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Load saved session data
     if (checkForSessionCookie()) {
         loadSessionData();
+
         startTracking();
         updateDecarbProgressBar(getMostRecentDecarbProgressData());
     }
@@ -185,6 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 let TRACKING = false; // Initialize TRACKING boolean
 let stopTrackingButton = null; // Initialize stopTrackingButton
+
 
 function startTracking() {
     const startTrackingButton = document.getElementById("startTrackingButton");
@@ -222,23 +224,15 @@ function startTracking() {
             exportDataButton.style.display = "inline";
 
 
-            stopTrackingButton.addEventListener("click", function() {
-                TRACKING = false;
-                startTrackingButton.textContent = "Start Tracking";
-                startTrackingButton.classList.remove("btn-success");
-                startTrackingButton.classList.add("btn-primary");
-                startTrackingButton.removeEventListener("click", addDataPoint);
-                startTrackingButton.addEventListener("click", startTracking);
-                document.getElementById("currentWeightDiv").style.display = "none"; // Hide the current weight input
-
-                // Enable tareWeight and THCAWeight inputs
-                tareWeightInput.disabled = false;
-                thcaStartWeightInput.disabled = false;
-
-                // Remove the stopTrackingButton from the DOM
-                stopTrackingButton.parentNode.removeChild(stopTrackingButton);
-                // Set stopTrackingButton to null so it can be recreated if needed
-                stopTrackingButton = null;
+            stopTrackingButton.addEventListener("click", function () {
+                event.preventDefault();
+                // Display a confirmation popup using Sweet Alert before stopping the tracking
+                stopTrackingPopup().then((confirmed) => {
+                    if (confirmed) {
+                       stopTracking();
+                    }
+                    // No else block needed; if user cancels, no action is taken
+                });
             });
         }
 
@@ -248,6 +242,41 @@ function startTracking() {
         addDataPoint();
     }
 }
+
+function stopTracking() {
+    const startTrackingButton = document.getElementById("startTrackingButton");
+    const clearSessionButton = document.getElementById("clearSessionButton");
+    const exportDataButton = document.getElementById("exportDataButton");
+    const tareWeightInput = document.getElementById("tareWeight");
+    const thcaStartWeightInput = document.getElementById("thcaStartWeight");
+
+    // If user confirms, proceed to stop tracking
+    TRACKING = false;
+
+    // Update the startTrackingButton to reflect its new state
+    startTrackingButton.textContent = "Start Tracking";
+    startTrackingButton.classList.replace("btn-success", "btn-primary");
+
+    // Switch the event listeners from stop to start tracking
+    startTrackingButton.removeEventListener("click", addDataPoint);
+    startTrackingButton.addEventListener("click", startTracking);
+
+    // Hide the current weight input element
+    document.getElementById("currentWeightDiv").style.display = "none";
+
+    // Enable inputs for tare and initial THCA weight
+    tareWeightInput.disabled = false;
+    thcaStartWeightInput.disabled = false;
+
+    clearSessionButton.style.display = "none"; // Hide the clear session button
+    exportDataButton.style.display = "none"; // Hide the export session button
+
+    // Remove the stopTrackingButton from the DOM and clear its variable
+    stopTrackingButton.parentNode.removeChild(stopTrackingButton);
+    stopTrackingButton = null;
+}
+
+
 
 function addDataPoint() {
     const currentWeight = parseFloat(document.getElementById("currentWeight").value);
@@ -429,8 +458,11 @@ function calculateDecarbProgress() {
 
 
 function toggleLabTestMode() {
+    console.log("Toggling Lab Test Mode")
+
     const labTestModeCheckbox = document.getElementById('labTestMode');
     const otherCannabinoidDiv = document.getElementById('otherCannabinoidWeightDiv');
+    const otherCannabinoidInput = document.getElementById('otherCannabinoidWeight');
     const isolateModeSpan = document.getElementById('isolateModeSpan');
 
     if (labTestModeCheckbox.checked) {
@@ -438,6 +470,7 @@ function toggleLabTestMode() {
         isolateModeSpan.innerText = 'Lab Test Mode: ON - Enter Other Cannabinoid Weights Above';
     } else {
         otherCannabinoidDiv.style.display = 'none';
+        otherCannabinoidInput.value = 0;
         isolateModeSpan.innerText = 'Isolate Mode: ON - Assuming No Other Cannabinoids in Solution';
     }
 }
@@ -517,6 +550,11 @@ function clearSessionData() {
 
     // Reset the progress bar
     updateDecarbProgressBar(0);
+
+    // Stop tracking if it is currently active
+    if (TRACKING) {
+        stopTracking()
+    }
 }
 
 
@@ -675,6 +713,10 @@ function loadSessionData() {
         document.getElementById("tareWeight").value = sessionData.tareWeight || '';
         document.getElementById("thcaStartWeight").value = sessionData.thcaStartWeight || '';
         document.getElementById("otherCannabinoidWeight").value = sessionData.otherCannabinoidWeight || '';
+
+        if (sessionData.otherCannabinoidWeight >= 0.01) {
+            toggleLabTestMode();
+        }
     }
 }
 
@@ -707,4 +749,38 @@ function checkForSessionCookie() {
         }
     }
     return false;
+}
+
+
+
+// Function to handle sweet alert popups for are you sure you want to clear session data
+function clearSessionPopup() {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "This will clear all session data and reset the chart!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, clear it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            clearSessionData();
+        }
+    });
+}
+
+// function to return a Promise that resolves to a boolean, handles sweet alert popups for "are you sure you want to stop tracking"
+function stopTrackingPopup() {
+    return Swal.fire({
+        title: 'Are you sure?',
+        text: "This will stop tracking and reset the chart!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, stop tracking!'
+    }).then((result) => {
+        return result.isConfirmed;
+    });
 }
