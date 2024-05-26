@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Load saved session data
-    if (checkForSessionCookie()) {
+    if (checkForSessionData()) {
         loadSessionData();
 
         startTracking();
@@ -323,7 +323,7 @@ function addDataPoint() {
         updateDecarbProgressBar(dataPoint.decarbCompletion)
 
         // Add the data point to the chart rounding to 2 decimal places
-        const timeStamp = new Date();
+        const timeStamp = dataPoint.timestamp
 
         chart.data.datasets[0].data.push({ x: timeStamp, y: dataPoint.remainingTHCAWeight });
         chart.data.datasets[1].data.push({ x: timeStamp, y: dataPoint.convertedTHCWeight });
@@ -421,23 +421,43 @@ function calculateDecarbProgress() {
         return;
     }
 
+    const timestamp = new Date();
+
     const currentContentWeight = currentTotalVesselWeight.minus(tareWeight);
     const totalInitialWeight = initialTHCAWeight.plus(otherCannabinoidWeight);
     const expectedFinalTHCWeight = initialTHCAWeight.mul(DECARB_CONSTANT);
     const expectedCO2LossWeight = initialTHCAWeight.minus(expectedFinalTHCWeight);
     const expectedFinalContentWeight = totalInitialWeight.minus(expectedCO2LossWeight);
     const expectedFinalVesselWeight = expectedFinalContentWeight.plus(tareWeight);
+
+    let startTime;
+    if (chart && chart.data && chart.data.datasets[0] && chart.data.datasets[0].data[0]) {
+        startTime = new Date(chart.data.datasets[0].data[0].x);
+    } else {
+        startTime = timestamp;
+    }
+
+    const elapsedTime = new Date() - startTime;
+
     const weightLossSoFar = initialTHCAWeight.minus(currentContentWeight.minus(otherCannabinoidWeight));
     const decarbCompletion = weightLossSoFar.div(expectedCO2LossWeight).mul(100);
     const convertedTHCWeight = currentContentWeight.minus(otherCannabinoidWeight).mul(decarbCompletion.div(100));
     const remainingTHCAWeight = currentContentWeight.minus(otherCannabinoidWeight).minus(convertedTHCWeight);
+
+    // Calculate the decarboxylation rate based on the current weight loss with dynamic units
+    const { rate, unit } = calculateDecarbRate(convertedTHCWeight, elapsedTime);
 
     // Calculating percentages based on the current slurry weight
     const slurryTHCAPercent = remainingTHCAWeight.div(currentContentWeight).mul(100);
     const slurryTHCPercent = convertedTHCWeight.div(currentContentWeight).mul(100);
     const otherCannabinoidPercent = otherCannabinoidWeight.div(currentContentWeight).mul(100);
 
-    document.getElementById("decarbProgressResult").innerHTML = `
+    document.getElementById("decarbProgressResult").innerHTML = ` 
+      <b>Start Time:</b> ${startTime.toLocaleString()}
+      <br><b>Current Timestamp:</b> ${timestamp.toLocaleString()}
+      <br><b>Elapsed Time:</b> ${formatTime(elapsedTime)}
+      <br><b>Decarboxylation Rate:</b> ${rate.toFixed(2)} ${unit} <i>[work in progress]</i>
+      <hr>
       <b>Input THC-A Weight:</b> ${initialTHCAWeight.toFixed(2)} grams
       <br><b>Fully Decarboxylated THCa Weight:</b> ${expectedFinalTHCWeight.toFixed(2)} grams
       <br><b>Total Expected Weight Loss:</b> ${expectedCO2LossWeight.toFixed(2)} grams
@@ -453,6 +473,7 @@ function calculateDecarbProgress() {
     `;
 
     return {
+        timestamp: timestamp,
         initialTHCAWeight: initialTHCAWeight.toNumber(),
         expectedFinalTHCWeight: expectedFinalTHCWeight.toNumber(),
         currentContentWeight: currentContentWeight.toNumber(),
@@ -463,9 +484,49 @@ function calculateDecarbProgress() {
         convertedTHCWeight: convertedTHCWeight.toNumber(),
         slurryTHCAPercent: slurryTHCAPercent.toNumber(),
         slurryTHCPercent: slurryTHCPercent.toNumber(),
-        otherCannabinoidPercent: otherCannabinoidPercent.toNumber()
+        otherCannabinoidPercent: otherCannabinoidPercent.toNumber(),
+        elapsedTime: elapsedTime,
+        decarbRate: rate + ' ' + unit,
     };
 }
+
+function calculateDecarbRate(convertedTHCWeight, elapsedTime) {
+    const ratesPerSecond = convertedTHCWeight / elapsedTime;
+    const timeUnits = [
+        { divisor: 1, unit: 'g/s' },
+        { divisor: 1 / 30, unit: 'g/30s' },
+        { divisor: 1 / 60, unit: 'g/min' },
+        { divisor: 1 / 300, unit: 'g/5min' },
+        { divisor: 1 / 1800, unit: 'g/30min' },
+        { divisor: 1 / 3600, unit: 'g/hr' }
+    ];
+
+    let chosenRate = ratesPerSecond;
+    let chosenUnit = 'g/s';
+    let minDifference = Number.MAX_VALUE;
+
+    for (let i = 0; i < timeUnits.length; i++) {
+        const rate = ratesPerSecond * (1 / timeUnits[i].divisor);
+        const rateRounded = Math.round(rate * 1000) / 1000;  // Round to 3 decimal places
+
+        if (rateRounded >= 1) {
+            const difference = Math.abs(1 - rateRounded);
+            if (difference < minDifference) {
+                minDifference = difference;
+                chosenRate = rateRounded;
+                chosenUnit = timeUnits[i].unit;
+
+                // Break early if it's a perfect fit
+                if (difference === 0) break;
+            }
+        }
+    }
+
+    console.log(`Decarboxylation rate (THC production): ${chosenRate} ${chosenUnit}`);
+    return { rate: chosenRate, unit: chosenUnit };
+}
+
+
 
 
 function toggleLabTestMode() {
@@ -486,18 +547,15 @@ function toggleLabTestMode() {
     }
 }
 
-// Function to save the session data (my addition is to pass it dataPoint)
-function saveSessionData(timeStamp, dataPoint) {
-    let sessionData = null;
-    const cookies = document.cookie.split(';');
 
-    for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.startsWith('sessionData=')) {
-            sessionData = JSON.parse(decodeURIComponent(cookie.substring('sessionData='.length)));
-            break;
-        }
-    }
+//////////////////////
+// SAVE FUNCTIONS   //
+//////////////////////
+
+function saveSessionData(timeStamp, dataPoint) {
+    let sessionData = localStorage.getItem('sessionData');
+    sessionData = sessionData ? pako.inflate(sessionData, { to: 'string' }) : null;
+    sessionData = sessionData ? JSON.parse(sessionData) : null;
 
     if (!sessionData) {
         sessionData = {
@@ -505,52 +563,39 @@ function saveSessionData(timeStamp, dataPoint) {
             tareWeight: document.getElementById("tareWeight").value,
             thcaStartWeight: document.getElementById("thcaStartWeight").value,
             otherCannabinoidWeight: document.getElementById("otherCannabinoidWeight").value,
-            dataPoints: []
+            dataPoints: {}
         };
     }
 
-    // Check for existing data point with the same timestamp
-    const existingDataPointIndex = sessionData.dataPoints.findIndex(dp => new Date(dp.timeStamp).toISOString() === new Date(timeStamp).toISOString());
+    // Generate a composite key
+    const compositeKey = timeStamp + "_" + dataPoint.currentContentWeight;
 
-    if (existingDataPointIndex !== -1) {
-        // Update existing data point
-        sessionData.dataPoints[existingDataPointIndex] = {
-            timeStamp: timeStamp,
-            currentContentWeight: dataPoint.currentContentWeight,
-            weightLossSoFar: dataPoint.weightLossSoFar,
-            expectedCO2LossWeight: dataPoint.expectedCO2LossWeight,
-            expectedFinalTHCWeight: dataPoint.expectedFinalTHCWeight,
-            slurryTHCAPercent: dataPoint.slurryTHCAPercent,
-            slurryTHCPercent: dataPoint.slurryTHCPercent,
-            otherCannabinoidPercent: dataPoint.otherCannabinoidPercent
-        };
-    } else {
-        // Add new data point
-        sessionData.dataPoints.push({
-            timeStamp: timeStamp,
-            currentContentWeight: dataPoint.currentContentWeight,
-            weightLossSoFar: dataPoint.weightLossSoFar,
-            expectedCO2LossWeight: dataPoint.expectedCO2LossWeight,
-            expectedFinalTHCWeight: dataPoint.expectedFinalTHCWeight,
-            slurryTHCAPercent: dataPoint.slurryTHCAPercent,
-            slurryTHCPercent: dataPoint.slurryTHCPercent,
-            otherCannabinoidPercent: dataPoint.otherCannabinoidPercent
-        });
-    }
+    // Update or add new data point
+    sessionData.dataPoints[compositeKey] = {
+        timeStamp: timeStamp,
+        currentContentWeight: dataPoint.currentContentWeight,
+        weightLossSoFar: dataPoint.weightLossSoFar,
+        expectedCO2LossWeight: dataPoint.expectedCO2LossWeight,
+        expectedFinalTHCWeight: dataPoint.expectedFinalTHCWeight,
+        slurryTHCAPercent: dataPoint.slurryTHCAPercent,
+        slurryTHCPercent: dataPoint.slurryTHCPercent,
+        otherCannabinoidPercent: dataPoint.otherCannabinoidPercent
+    };
 
-    // Update chartData in sessionData
+    // Update chartData
     sessionData.chartData = chart.data.datasets.map(dataset => dataset.data);
 
-    const expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + 120); // Set the expiration date to 120 days from now
-    const cookie = `sessionData=${encodeURIComponent(JSON.stringify(sessionData))};expires=${expirationDate.toUTCString()};path=/`;
-    document.cookie = cookie;
+    const sessionDataString = JSON.stringify(sessionData);
+    // Compress and save the sessionData
+    const compressedData = pako.deflate(sessionDataString, { to: 'string' });
+    localStorage.setItem('sessionData', compressedData);
 }
+
 
 
 // Function to clear the session data
 function clearSessionData() {
-    document.cookie = "sessionData=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+    localStorage.removeItem('sessionData');
     chart.data.datasets[0].data = [];
     chart.data.datasets[1].data = [];
     chart.data.datasets[2].data = [];
@@ -564,9 +609,58 @@ function clearSessionData() {
 
     // Stop tracking if it is currently active
     if (TRACKING) {
-        stopTracking()
+        stopTracking();
     }
 }
+
+//////////////////////
+// LOAD FUNCTIONS //
+//////////////////////
+
+
+// Function to load the session data
+function loadSessionData() {
+    let compressedData = localStorage.getItem('sessionData');
+    let sessionData = compressedData ? pako.inflate(compressedData, { to: 'string' }) : null;
+    sessionData = sessionData ? JSON.parse(sessionData) : null;
+
+    if (sessionData) {
+        chart.data.datasets[0].data = sessionData.chartData[0] || [];
+        chart.data.datasets[1].data = sessionData.chartData[1] || [];
+        chart.data.datasets[2].data = sessionData.chartData[2] || [];
+        chart.update();
+        document.getElementById("tareWeight").value = sessionData.tareWeight || '';
+        document.getElementById("thcaStartWeight").value = sessionData.thcaStartWeight || '';
+        document.getElementById("otherCannabinoidWeight").value = sessionData.otherCannabinoidWeight || '';
+
+        if (parseFloat(sessionData.otherCannabinoidWeight) >= 0.01) {
+            toggleLabTestMode();
+        }
+    }
+}
+
+
+// Function to grab the most recent decarb progress datapoint from the sessionData
+function getMostRecentDecarbProgressData() {
+    let compressedData = localStorage.getItem('sessionData');
+    let sessionData = compressedData ? pako.inflate(compressedData, { to: 'string' }) : null;
+    sessionData = sessionData ? JSON.parse(sessionData) : null;
+
+    if (sessionData && sessionData.chartData[2].length > 0) {
+        const mostRecentProgress = sessionData.chartData[2][sessionData.chartData[2].length - 1];
+        console.log("Most Recent Progress Point");
+        console.log(mostRecentProgress);
+        return mostRecentProgress.y; // Return only the y value
+    }
+    return null;
+}
+
+
+// Boolean function to detect if there is session data available in local storage
+function checkForSessionData() {
+    return localStorage.getItem('sessionData') !== null;
+}
+
 
 
 //////////////////////
@@ -575,16 +669,9 @@ function clearSessionData() {
 
 // Function to export session data based on selected file type
 function exportSessionData(filetype) {
-    const cookies = document.cookie.split(';');
-    let sessionData = null;
-
-    for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.startsWith('sessionData=')) {
-            sessionData = JSON.parse(decodeURIComponent(cookie.substring('sessionData='.length)));
-            break;
-        }
-    }
+    let compressedData = localStorage.getItem('sessionData');
+    let sessionData = compressedData ? pako.inflate(compressedData, { to: 'string' }) : null;
+    sessionData = sessionData ? JSON.parse(sessionData) : null;
 
     if (sessionData) {
         let csvData = '';
@@ -594,15 +681,15 @@ function exportSessionData(filetype) {
         csvData += `thcaStartWeight,${sessionData.thcaStartWeight}\n`;
         csvData += `tareWeight,${sessionData.tareWeight}\n`;
         csvData += `otherCannabinoidWeight,${sessionData.otherCannabinoidWeight || 0}\n`;
-        csvData += `totalStartWeight,${sessionData.thcaStartWeight + (sessionData.tareWeight || 0) + (sessionData.otherCannabinoidWeight || 0)}\n\n`;
-        csvData += `expectedCO2LossWeight,${sessionData.dataPoints[0].expectedCO2LossWeight}\n`;
-        csvData += `expectedFinalTHCWeight,${sessionData.dataPoints[0].expectedFinalTHCWeight}\n`;
+        csvData += `totalStartWeight,${parseFloat(sessionData.thcaStartWeight) + parseFloat(sessionData.tareWeight || 0) + parseFloat(sessionData.otherCannabinoidWeight || 0)}\n\n`;
+        csvData += `expectedCO2LossWeight,${sessionData.dataPoints[Object.keys(sessionData.dataPoints)[0]].expectedCO2LossWeight}\n`;
+        csvData += `expectedFinalTHCWeight,${sessionData.dataPoints[Object.keys(sessionData.dataPoints)[0]].expectedFinalTHCWeight}\n`;
 
-        if (sessionData.otherCannabinoidWeight > 0) {
-            csvData += `expectedFinalContentWeight,${sessionData.dataPoints[0].expectedFinalTHCWeight + (sessionData.otherCannabinoidWeight || 0)}\n`;
+        if (parseFloat(sessionData.otherCannabinoidWeight) > 0) {
+            csvData += `expectedFinalContentWeight,${parseFloat(sessionData.dataPoints[Object.keys(sessionData.dataPoints)[0]].expectedFinalTHCWeight) + parseFloat(sessionData.otherCannabinoidWeight || 0)}\n`;
         }
-        if (sessionData.tareWeight > 0) {
-            csvData += `expectedFinalVesselWeight,${sessionData.dataPoints[0].expectedFinalTHCWeight + (sessionData.tareWeight || 0) + (sessionData.otherCannabinoidWeight || 0)}\n`;
+        if (parseFloat(sessionData.tareWeight) > 0) {
+            csvData += `expectedFinalVesselWeight,${parseFloat(sessionData.dataPoints[Object.keys(sessionData.dataPoints)[0]].expectedFinalTHCWeight) + parseFloat(sessionData.tareWeight || 0) + parseFloat(sessionData.otherCannabinoidWeight || 0)}\n`;
         }
         csvData += '\n';
 
@@ -612,23 +699,27 @@ function exportSessionData(filetype) {
         sessionData.chartData[0].forEach((point, index) => {
             const chartTimestamp = new Date(point.x);
             const chartTimestampLocale = chartTimestamp.toLocaleString().replace(/,/g, ' |');
-            const dataPoint = sessionData.dataPoints[index];
+            const key = Object.keys(sessionData.dataPoints)[index];
+            const dataPoint = sessionData.dataPoints[key];
 
             if (dataPoint) {
                 csvData += `${chartTimestampLocale},${dataPoint.currentContentWeight},${point.y},${sessionData.chartData[1][index].y},${sessionData.chartData[2][index].y},${dataPoint.weightLossSoFar},${dataPoint.slurryTHCAPercent},${dataPoint.slurryTHCPercent},${dataPoint.otherCannabinoidPercent}\n`;
             }
         });
 
+        // Generate a filename based on the start timestamp
+        const filename = `decarb_progress_data_${new Date(sessionData.chartData[0][0].x).toISOString().replace(/:/g, '-')}`;
+
         // Check file type and handle accordingly
         switch (filetype) {
             case 'CSV':
-                appendLicenseToCsv(csvData);
+                appendLicenseToCsv(csvData, filename);
                 break;
             case 'PNG':
-                exportChartAsImage('image/png', 'decarb_progress_chart.png');
+                exportChartAsImage('image/png', `${filename}_chart.png`);
                 break;
             case 'JPEG':
-                exportChartAsImage('image/jpeg', 'decarb_progress_chart.jpeg');
+                exportChartAsImage('image/jpeg', `${filename}_chart.jpeg`);
                 break;
             case 'ZIP':
                 exportAllDataAsZip(csvData);
@@ -636,6 +727,7 @@ function exportSessionData(filetype) {
         }
     }
 }
+
 
 // Helper function to trigger CSV download
 function downloadCsv(csvContent, fileName) {
@@ -663,19 +755,11 @@ function handleExport(data, filename, type) {
     document.body.removeChild(link);
 }
 
-// Function to fetch and append the license to the CSV
-function appendLicenseToCsv(csvData) {
-    const licenseUrl = 'https://raw.githubusercontent.com/thelabcorner/decarboxulator/main/LICENSE';
-    fetch(licenseUrl)
-        .then(response => response.text())
-        .then(licenseText => {
-            csvData += '\nLicense:\n' + licenseText.replace(/,/g, ';').replace(/\n/g, ' '); // Replacing commas and newlines
-            downloadCsv(csvData, 'output.csv');
-        })
-        .catch(error => {
-            console.error('Failed to fetch license:', error);
-            // Handle errors or fallback scenario
-        });
+// Function to append the license URL to the CSV
+function appendLicenseToCsv(csvData, filename) {
+    const licenseUrl = 'https://tinyurl.com/DecarboxulatorLICENSE';
+    csvData += '\n[READ ME] License & Terms of Use:\n' + licenseUrl;
+    downloadCsv(csvData, `${filename}.csv`);
 }
 
 
@@ -704,75 +788,22 @@ function exportAllDataAsZip(csvData) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Function to load the session data
-function loadSessionData() {
-    const cookies = document.cookie.split(';');
-    let sessionData = null;
-    for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.startsWith('sessionData=')) {
-            sessionData = JSON.parse(decodeURIComponent(cookie.substring('sessionData='.length)));
-            break;
-        }
-    }
-    if (sessionData) {
-        chart.data.datasets[0].data = sessionData.chartData[0] || [];
-        chart.data.datasets[1].data = sessionData.chartData[1] || [];
-        chart.data.datasets[2].data = sessionData.chartData[2] || [];
-        chart.update();
-        document.getElementById("tareWeight").value = sessionData.tareWeight || '';
-        document.getElementById("thcaStartWeight").value = sessionData.thcaStartWeight || '';
-        document.getElementById("otherCannabinoidWeight").value = sessionData.otherCannabinoidWeight || '';
-
-        if (sessionData.otherCannabinoidWeight >= 0.01) {
-            toggleLabTestMode();
-        }
-    }
+// Format time for elapsed Time
+function formatTime(time) {
+    const hours = Math.floor(time / 3600000);
+    const minutes = Math.floor((time % 3600000) / 60000);
+    const seconds = Math.floor((time % 60000) / 1000);
+    return `${hours}h ${minutes}m ${seconds}s`;
 }
 
-// Function to grab the most recent decarb progress datapoint from the sessionData
-function getMostRecentDecarbProgressData() {
-    const cookies = document.cookie.split(';');
-    let sessionData = null;
-    for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.startsWith('sessionData=')) {
-            sessionData = JSON.parse(decodeURIComponent(cookie.substring('sessionData='.length)));
-            break;
-        }
-    }
-    if (sessionData) {
-        const mostRecentProgress = sessionData.chartData[2][sessionData.chartData[2].length - 1];
-        console.log("Most Recent Progress Point" );
-        console.log(mostRecentProgress);
-        return mostRecentProgress.y; // Return only the y value
-    }
-    return null;
-}
 
-// Boolean function to detect if there is a session cookie available
-function checkForSessionCookie() {
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-        if (cookies[i].trim().startsWith('sessionData=')) {
-            return true;
-        }
-    }
-    return false;
-}
+
+
+
+
+
+
+
 
 
 

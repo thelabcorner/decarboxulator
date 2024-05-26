@@ -142,6 +142,9 @@ interests.
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/pako@1.0.11/dist/pako.min.js"></script>
+
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -208,7 +211,7 @@ interests.
         <div class="container-fluid">
 
             <div id="decarbProgress" class="tab-content p-3">
-                <h1>&#916;9-THCa Decarboxylation Progress Tracker <span class="w3-tag w3-green">v1.6a</span></h1>
+                <h1>&#916;9-THCa Decarboxylation Progress Tracker <span class="w3-tag w3-green">v1.7a</span></h1>
                 <p>This calculator is designed to help you track the progress of your THCa decarboxylation process. By entering the initial weight of THCa and the current weight of the decarboxylated material, you can estimate the percentage of decarboxylation progress based on the predicted weight of the decarboxylated material.</p>
                 <p>For more accurate results, it is recommended to use a scale that measures to at least 0.01 grams and to record the weights at regular intervals during the decarboxylation process.</p>
                 <form id="decarbProgressForm">
@@ -246,7 +249,7 @@ interests.
 
                 </script>
 
-                <button id="saveSessionButton" type="button" class="btn btn-success" onclick="saveSessionData()">Save Session</button>
+
                 <div class="btn-group" id="exportDataButton" style="display: none">
                   <button type="button" class="btn btn-primary" onclick="exportSessionData()">Export</button>
                   <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" style="margin-left: -4px" data-bs-toggle="dropdown" aria-expanded="false">
