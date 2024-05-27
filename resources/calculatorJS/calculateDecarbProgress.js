@@ -115,6 +115,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }]
         },
         options: {
+            interaction: {
+                mode: "interpolate",
+                intersect: false,
+                axis: "x"
+            },
             scales: {
                 x: {
                     type: 'time',
@@ -177,12 +182,36 @@ document.addEventListener('DOMContentLoaded', function () {
             plugins: {
                 legend: {
                     display: true
+                },
+                tooltip: {
+                    displayColors: false
                 }
             }
         }
     });
 
-    // Load saved session data
+    Chart.register({
+        id: 'indicators',
+        afterDraw(chart) {
+            const metas = chart.getSortedVisibleDatasetMetas();
+            for (let i = 0; i < metas.length; i++) {
+                const meta = metas[i];
+                if (meta._pt) {
+                    meta._pt.draw(chart.ctx);
+                }
+            }
+        },
+        afterEvent(chart, args) {
+            if (args.event.type === 'mouseout') {
+                const metas = chart.getSortedVisibleDatasetMetas();
+                for (let i = 0; i < metas.length; i++) {
+                    metas[i]._pt = null;
+                }
+                chart.update('none');
+            }
+        }
+    });
+
     if (checkForSessionData()) {
         loadSessionData();
 
@@ -190,6 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
         updateDecarbProgressBar(getMostRecentDecarbProgressData());
     }
 });
+
 
 
 
