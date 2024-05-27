@@ -58,3 +58,30 @@ body.dark-mode {
 .dark-mode .btn-close {
     filter: invert(1);
 }
+
+
+/* Dark mode styles for accordion */
+.dark-mode .accordion-button {
+    background-color: #333;
+    color: #ddd;
+}
+
+.dark-mode .accordion-button:not(.collapsed) {
+    background-color: #444;
+    color: #ddd;
+}
+
+.dark-mode .accordion-body {
+    background-color: #333;
+    color: #ddd;
+}
+
+.dark-mode .accordion-item {
+    border-color: #555;
+}
+
+/* Dark mode styles for card body */
+.dark-mode .card-body {
+    background-color: #333;
+    color: #ddd;
+}
