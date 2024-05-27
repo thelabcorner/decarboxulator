@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 x: {
                     type: 'time',
                     time: {
-                        tooltipFormat: 'M/d/yyyy | hh:mm:ss a',
+                        tooltipFormat: 'M/d/yyyy | hh:mm:ss.SSS a',
                         unit: 'minute',
                         stepSize: 1,
                         minUnit: 'minute',  // Minimum unit of time
@@ -189,8 +189,6 @@ document.addEventListener('DOMContentLoaded', function () {
         startTracking(firstPoint = false);
         updateDecarbProgressBar(getMostRecentDecarbProgressData());
     }
-
-    document.getElementById("startTrackingButton").addEventListener("click", startTracking);
 });
 
 
@@ -228,7 +226,6 @@ function startTracking(firstPoint) {
 
         // Ensure event listener is properly managed
         startTrackingButton.removeEventListener("click", startTracking);
-        startTrackingButton.addEventListener("click", function () { addDataPoint(); });
 
         tareWeightInput.disabled = true;
         thcaStartWeightInput.disabled = true;
@@ -299,9 +296,8 @@ function stopTracking() {
 
 function addDataPoint(firstPoint = false) {
     let currentWeight;
-    let tareWeight
+    let tareWeight;
     const initialTHCAWeight = parseFloat(document.getElementById("thcaStartWeight").value);
-
     const otherCannabinoidWeightInput = document.getElementById("otherCannabinoidWeight");
     let otherCannabinoidWeight = 0;
 
@@ -317,8 +313,6 @@ function addDataPoint(firstPoint = false) {
         currentWeight = parseFloat(document.getElementById("currentWeight").value);
     }
 
-
-
     if (isNaN(currentWeight) || currentWeight <= 0) {
         Swal.fire({
             toast: true,
@@ -332,24 +326,33 @@ function addDataPoint(firstPoint = false) {
     }
 
     const dataPoint = calculateDecarbProgress(currentWeight);
-
     if (dataPoint) {
+        const chartTimeStamp = new Date(dataPoint.timestamp);
 
-        // Update the progress bar
-        updateDecarbProgressBar(dataPoint.decarbCompletion)
-
-        // Add the data point to the chart rounding to 2 decimal places
-        const timeStamp = dataPoint.timestamp
-
-        chart.data.datasets[0].data.push({ x: timeStamp, y: dataPoint.remainingTHCAWeight });
-        chart.data.datasets[1].data.push({ x: timeStamp, y: dataPoint.convertedTHCWeight });
-        chart.data.datasets[2].data.push({ x: timeStamp, y: dataPoint.decarbCompletion });
-        chart.update();
-
-        // Save the updated chart data to session storage
-        saveSessionData(timeStamp, dataPoint);
+        // Check for duplicate entries based on precise timestamp (millisecond precision)
+        if (!isDuplicate(chartTimeStamp)) {
+            updateDecarbProgressBar(dataPoint.decarbCompletion);
+            chart.data.datasets[0].data.push({ x: chartTimeStamp.toISOString(), y: dataPoint.remainingTHCAWeight });
+            chart.data.datasets[1].data.push({ x: chartTimeStamp.toISOString(), y: dataPoint.convertedTHCWeight });
+            chart.data.datasets[2].data.push({ x: chartTimeStamp.toISOString(), y: dataPoint.decarbCompletion });
+            chart.update();
+            saveSessionData(dataPoint.timestamp, dataPoint);
+        }
     }
 }
+
+function isDuplicate(timestamp) {
+    const timestampMilliseconds = timestamp.getTime();
+    return chart.data.datasets.some(dataset => {
+        return dataset.data.some(point => {
+            const existingTimeStampMilliseconds = new Date(point.x).getTime();
+            return existingTimeStampMilliseconds === timestampMilliseconds;
+        });
+    });
+}
+
+
+
 
 // Update progress bar
 function updateDecarbProgressBar(decarbCompletion) {
@@ -438,7 +441,7 @@ function calculateDecarbProgress(currentWeight) {
         return;
     }
 
-    const timestamp = new Date();
+    const timestamp = new Date().getTime();
 
     const currentContentWeight = currentTotalVesselWeight.minus(tareWeight);
     const totalInitialWeight = initialTHCAWeight.plus(otherCannabinoidWeight);
@@ -451,10 +454,12 @@ function calculateDecarbProgress(currentWeight) {
     if (chart && chart.data && chart.data.datasets[0] && chart.data.datasets[0].data[0]) {
         startTime = new Date(chart.data.datasets[0].data[0].x);
     } else {
-        startTime = timestamp;
+        startTime = new Date(timestamp);
     }
 
     const elapsedTime = new Date() - startTime;
+
+
 
     const weightLossSoFar = initialTHCAWeight.minus(currentContentWeight.minus(otherCannabinoidWeight));
     const decarbCompletion = weightLossSoFar.div(expectedCO2LossWeight).mul(100);
@@ -469,9 +474,19 @@ function calculateDecarbProgress(currentWeight) {
     const slurryTHCPercent = convertedTHCWeight.div(currentContentWeight).mul(100);
     const otherCannabinoidPercent = otherCannabinoidWeight.div(currentContentWeight).mul(100);
 
+    let date = new Date(timestamp);
+    let timeString = date.toLocaleTimeString();
+    let milliseconds = date.getMilliseconds();
+
+// Pad milliseconds with leading zeros if necessary
+    milliseconds = ("00" + milliseconds).slice(-3);
+
+// Use a regular expression to insert milliseconds after seconds and before AM/PM
+    let modifiedTimeString = timeString.replace(/(\d+:\d+:\d+)(\s)(AM|PM)/, `$1.${milliseconds} $3`);
+
     document.getElementById("decarbProgressResult").innerHTML = ` 
       <b>Start Time:</b> ${startTime.toLocaleString()}
-      <br><b>Current Timestamp:</b> ${timestamp.toLocaleString()}
+      <br><b>Current Timestamp:</b> ${date.toLocaleDateString()} | ${modifiedTimeString}
       <br><b>Elapsed Time:</b> ${formatTime(elapsedTime)}
       <br><b>Decarboxylation Rate:</b> ${rate.toFixed(2)} ${unit} <i>[work in progress]</i>
       <hr>
@@ -622,6 +637,8 @@ function saveSessionData(timeStamp, dataPoint) {
     // Update chartData
     sessionData.chartData = chart.data.datasets.map(dataset => dataset.data);
 
+    console.log(sessionData)
+
     const sessionDataString = JSON.stringify(sessionData);
     // Compress and save the sessionData
     const compressedData = pako.deflate(sessionDataString, { to: 'string' });
@@ -735,13 +752,18 @@ function exportSessionData(filetype) {
         csvData += 'Timestamp,elapsedTime,decarbRate,currentContentWeight,remainingTHCAWeight,convertedTHCWeight,decarbCompletion,weightLossSoFar,slurryTHCAPercent,slurryTHCPercent,otherCannabinoidPercent\n';
 
         sessionData.chartData[0].forEach((point, index) => {
-            const chartTimestamp = new Date(point.x);
-            const chartTimestampLocale = chartTimestamp.toLocaleString().replace(/,/g, ' |');
             const key = Object.keys(sessionData.dataPoints)[index];
             const dataPoint = sessionData.dataPoints[key];
 
             if (dataPoint) {
-                csvData += `${chartTimestampLocale},${formatTime(dataPoint.elapsedTime)},${dataPoint.decarbRate},${dataPoint.currentContentWeight},${point.y},${sessionData.chartData[1][index].y},${sessionData.chartData[2][index].y},${dataPoint.weightLossSoFar},${dataPoint.slurryTHCAPercent},${dataPoint.slurryTHCPercent},${dataPoint.otherCannabinoidPercent}\n`;
+                let chartTimestampMillis = new Date(dataPoint.timeStamp)
+                let timeString = chartTimestampMillis.toLocaleString();
+                let milliseconds = chartTimestampMillis.getMilliseconds();
+                // Pad milliseconds with leading zeros if necessary
+                milliseconds = ("00" + milliseconds).slice(-3);
+                // Use a regular expression to insert milliseconds after seconds and before AM/PM
+                let modifiedTimestampString = timeString.replace(/(\d+:\d+:\d+)(\s)(AM|PM)/, `$1.${milliseconds} $3`).replace(/,/g, ' |');
+                csvData += `${modifiedTimestampString},${formatTime(dataPoint.elapsedTime)},${dataPoint.decarbRate},${dataPoint.currentContentWeight},${point.y},${sessionData.chartData[1][index].y},${sessionData.chartData[2][index].y},${dataPoint.weightLossSoFar},${dataPoint.slurryTHCAPercent},${dataPoint.slurryTHCPercent},${dataPoint.otherCannabinoidPercent}\n`;
             }
         });
 
@@ -765,6 +787,8 @@ function exportSessionData(filetype) {
         }
     }
 }
+
+// @todo: write function to load session data from a CSV file
 
 
 // Helper function to trigger CSV download
