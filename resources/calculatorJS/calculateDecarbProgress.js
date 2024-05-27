@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (checkForSessionData()) {
         loadSessionData();
 
-        startTracking();
+        startTracking(firstPoint = false);
         updateDecarbProgressBar(getMostRecentDecarbProgressData());
     }
 
@@ -199,7 +199,7 @@ let TRACKING = false; // Initialize TRACKING boolean
 let stopTrackingButton = null; // Initialize stopTrackingButton
 
 
-function startTracking() {
+function startTracking(firstPoint) {
     const startTrackingButton = document.getElementById("startTrackingButton");
     const clearSessionButton = document.getElementById("clearSessionButton");
     const exportDataButton = document.getElementById("exportDataButton");
@@ -207,52 +207,60 @@ function startTracking() {
     const thcaStartWeightInput = document.getElementById("thcaStartWeight");
 
     if (!TRACKING) {
-        // If not currently tracking, start tracking
+
+        if (thcaStartWeightInput.value.trim() === '') {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'error',
+                title: 'THCA Start Weight Required',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            return;
+        }
+
         TRACKING = true;
         document.getElementById("currentWeightDiv").style.display = "block";
-
         startTrackingButton.innerText = "Add Point";
-        startTrackingButton.style.display = "inline";
         startTrackingButton.classList.remove("btn-primary");
         startTrackingButton.classList.add("btn-success");
-        startTrackingButton.removeEventListener("click", startTracking);
-        startTrackingButton.addEventListener("click", addDataPoint);
 
-        // Disable tareWeight and THCAWeight inputs
+        // Ensure event listener is properly managed
+        startTrackingButton.removeEventListener("click", startTracking);
+        startTrackingButton.addEventListener("click", function () { addDataPoint(); });
+
         tareWeightInput.disabled = true;
         thcaStartWeightInput.disabled = true;
 
-        // Only create stopTrackingButton if it doesn't exist
+        if (firstPoint) {
+            addDataPoint(true); // Add the initial data point
+        }
+
         if (!stopTrackingButton) {
             stopTrackingButton = document.createElement("button");
             stopTrackingButton.innerText = "Stop Tracking";
-            startTrackingButton.style.marginRight = "5px";
             stopTrackingButton.className = "btn btn-danger ml-2";
             stopTrackingButton.id = "stopTrackingButton";
             startTrackingButton.parentNode.insertBefore(stopTrackingButton, startTrackingButton.nextSibling);
 
-            clearSessionButton.style.display = "inline"; // Show the clear session button
+            clearSessionButton.style.display = "inline";
             exportDataButton.style.display = "inline";
 
-
-            stopTrackingButton.addEventListener("click", function () {
+            stopTrackingButton.addEventListener("click", function (event) {
                 event.preventDefault();
-                // Display a confirmation popup using Sweet Alert before stopping the tracking
                 stopTrackingPopup().then((confirmed) => {
                     if (confirmed) {
-                       stopTracking();
+                        stopTracking();
                     }
-                    // No else block needed; if user cancels, no action is taken
                 });
             });
         }
-
-        document.getElementById("currentWeight").style.display = "block"; // Show the current weight input
     } else {
-        // If currently tracking, add data point
         addDataPoint();
     }
 }
+
 
 function stopTracking() {
     const startTrackingButton = document.getElementById("startTrackingButton");
@@ -289,9 +297,9 @@ function stopTracking() {
 
 
 
-function addDataPoint() {
-    const currentWeight = parseFloat(document.getElementById("currentWeight").value);
-    const tareWeight = parseFloat(document.getElementById("tareWeight").value);
+function addDataPoint(firstPoint = false) {
+    let currentWeight;
+    let tareWeight
     const initialTHCAWeight = parseFloat(document.getElementById("thcaStartWeight").value);
 
     const otherCannabinoidWeightInput = document.getElementById("otherCannabinoidWeight");
@@ -299,6 +307,14 @@ function addDataPoint() {
 
     if (otherCannabinoidWeightInput.value.trim() !== '') {
         otherCannabinoidWeight = parseFloat(otherCannabinoidWeightInput.value);
+    }
+
+    tareWeight = parseFloat(document.getElementById("tareWeight").value) || 0;
+
+    if (firstPoint) {
+        currentWeight = math.add(math.add(initialTHCAWeight, tareWeight), otherCannabinoidWeight);
+    } else {
+        currentWeight = parseFloat(document.getElementById("currentWeight").value);
     }
 
 
@@ -315,7 +331,7 @@ function addDataPoint() {
         return;
     }
 
-    const dataPoint = calculateDecarbProgress();
+    const dataPoint = calculateDecarbProgress(currentWeight);
 
     if (dataPoint) {
 
@@ -368,13 +384,14 @@ function updateDecarbProgressBar(decarbCompletion) {
 
 
 
-function calculateDecarbProgress() {
+function calculateDecarbProgress(currentWeight) {
     const THCA_MW = math.bignumber(358.21440943); // g/mol
     const THC_MW = math.bignumber(314.224580195); // g/mol
     const DECARB_CONSTANT = THC_MW.div(THCA_MW); // Ratio of THC MW to THCA MW
 
     const initialTHCAWeight = math.bignumber(document.getElementById("thcaStartWeight").value);
-    const tareWeight = math.bignumber(document.getElementById("tareWeight").value);
+    const tareWeightInputValue = document.getElementById("tareWeight").value;
+    const tareWeight = math.bignumber(tareWeightInputValue || 0);
 
     const otherCannabinoidWeightInput = document.getElementById("otherCannabinoidWeight");
     let otherCannabinoidWeight = math.bignumber(0);
@@ -383,7 +400,7 @@ function calculateDecarbProgress() {
         otherCannabinoidWeight = math.bignumber(otherCannabinoidWeightInput.value);
     }
 
-    const currentTotalVesselWeight = math.bignumber(document.getElementById("currentWeight").value);
+    const currentTotalVesselWeight = math.bignumber(currentWeight);
 
     if (initialTHCAWeight.isNaN() || initialTHCAWeight.lte(0)) {
         Swal.fire({
@@ -490,41 +507,58 @@ function calculateDecarbProgress() {
     };
 }
 
+
+
+
+
 function calculateDecarbRate(convertedTHCWeight, elapsedTime) {
+    // Determine weight unit and adjust values if necessary
+    let weightUnit = 'g';
+    if (convertedTHCWeight < 1) {
+        convertedTHCWeight *= 1000;  // Convert grams to milligrams
+        weightUnit = 'mg';
+    }
+
+    // Calculate rates per second
     const ratesPerSecond = convertedTHCWeight / elapsedTime;
+
+    // Define time units and conversion factors
     const timeUnits = [
-        { divisor: 1, unit: 'g/s' },
-        { divisor: 1 / 30, unit: 'g/30s' },
-        { divisor: 1 / 60, unit: 'g/min' },
-        { divisor: 1 / 300, unit: 'g/5min' },
-        { divisor: 1 / 1800, unit: 'g/30min' },
-        { divisor: 1 / 3600, unit: 'g/hr' }
+        { divisor: 1, unit: 's' },
+        { divisor: 30, unit: '30s' },
+        { divisor: 60, unit: 'min' },
+        { divisor: 300, unit: '5min' },
+        { divisor: 1800, unit: '30min' },
+        { divisor: 3600, unit: 'hr' }
     ];
 
+    // Initialize chosen rate and unit with values most likely to be changed
     let chosenRate = ratesPerSecond;
-    let chosenUnit = 'g/s';
+    let chosenUnit = weightUnit + '/s';
     let minDifference = Number.MAX_VALUE;
 
+    // Calculate the most appropriate rate and unit
     for (let i = 0; i < timeUnits.length; i++) {
-        const rate = ratesPerSecond * (1 / timeUnits[i].divisor);
+        const rate = ratesPerSecond * timeUnits[i].divisor;
         const rateRounded = Math.round(rate * 1000) / 1000;  // Round to 3 decimal places
 
-        if (rateRounded >= 1) {
-            const difference = Math.abs(1 - rateRounded);
-            if (difference < minDifference) {
-                minDifference = difference;
-                chosenRate = rateRounded;
-                chosenUnit = timeUnits[i].unit;
+        // Choose the unit that gives a number close to 1 or a whole number
+        const difference = Math.abs(1 - rateRounded);
+        if (difference < minDifference && rateRounded >= 0.001) {
+            minDifference = difference;
+            chosenRate = rateRounded;
+            chosenUnit = weightUnit + '/' + timeUnits[i].unit;
 
-                // Break early if it's a perfect fit
-                if (difference === 0) break;
-            }
+            // Break early if it's a perfect fit
+            if (difference === 0) break;
         }
     }
 
+    // Log the chosen rate and unit
     console.log(`Decarboxylation rate (THC production): ${chosenRate} ${chosenUnit}`);
     return { rate: chosenRate, unit: chosenUnit };
 }
+
 
 
 
@@ -573,6 +607,9 @@ function saveSessionData(timeStamp, dataPoint) {
     // Update or add new data point
     sessionData.dataPoints[compositeKey] = {
         timeStamp: timeStamp,
+        elapsedTime: dataPoint.elapsedTime,
+        decarbRate: dataPoint.decarbRate,
+
         currentContentWeight: dataPoint.currentContentWeight,
         weightLossSoFar: dataPoint.weightLossSoFar,
         expectedCO2LossWeight: dataPoint.expectedCO2LossWeight,
@@ -603,6 +640,7 @@ function clearSessionData() {
     document.getElementById("tareWeight").value = '';
     document.getElementById("thcaStartWeight").value = '';
     document.getElementById("otherCannabinoidWeight").value = '';
+    document.getElementById("currentWeight").value = '';
 
     // Reset the progress bar
     updateDecarbProgressBar(0);
@@ -694,7 +732,7 @@ function exportSessionData(filetype) {
         csvData += '\n';
 
         // Add column headers
-        csvData += 'Timestamp,currentContentWeight,remainingTHCAWeight,convertedTHCWeight,decarbCompletion,weightLossSoFar,slurryTHCAPercent,slurryTHCPercent,otherCannabinoidPercent\n';
+        csvData += 'Timestamp,elapsedTime,decarbRate,currentContentWeight,remainingTHCAWeight,convertedTHCWeight,decarbCompletion,weightLossSoFar,slurryTHCAPercent,slurryTHCPercent,otherCannabinoidPercent\n';
 
         sessionData.chartData[0].forEach((point, index) => {
             const chartTimestamp = new Date(point.x);
@@ -703,7 +741,7 @@ function exportSessionData(filetype) {
             const dataPoint = sessionData.dataPoints[key];
 
             if (dataPoint) {
-                csvData += `${chartTimestampLocale},${dataPoint.currentContentWeight},${point.y},${sessionData.chartData[1][index].y},${sessionData.chartData[2][index].y},${dataPoint.weightLossSoFar},${dataPoint.slurryTHCAPercent},${dataPoint.slurryTHCPercent},${dataPoint.otherCannabinoidPercent}\n`;
+                csvData += `${chartTimestampLocale},${formatTime(dataPoint.elapsedTime)},${dataPoint.decarbRate},${dataPoint.currentContentWeight},${point.y},${sessionData.chartData[1][index].y},${sessionData.chartData[2][index].y},${dataPoint.weightLossSoFar},${dataPoint.slurryTHCAPercent},${dataPoint.slurryTHCPercent},${dataPoint.otherCannabinoidPercent}\n`;
             }
         });
 
@@ -788,14 +826,38 @@ function exportAllDataAsZip(csvData) {
 }
 
 
-// Format time for elapsed Time
+// Function to format time from millis in a human-readable format
 function formatTime(time) {
-    const hours = Math.floor(time / 3600000);
-    const minutes = Math.floor((time % 3600000) / 60000);
-    const seconds = Math.floor((time % 60000) / 1000);
-    return `${hours}h ${minutes}m ${seconds}s`;
-}
+    const years = Math.floor(time / 31536000000); // 1 year = 31536000000 milliseconds
+    const days = Math.floor((time % 31536000000) / 86400000); // 1 day = 86400000 milliseconds
+    const hours = Math.floor((time % 86400000) / 3600000); // 1 hour = 3600000 milliseconds
+    const minutes = Math.floor((time % 3600000) / 60000); // 1 minute = 60000 milliseconds
+    const seconds = Math.floor((time % 60000) / 1000); // 1 second = 1000 milliseconds
 
+    let formattedTime = '';
+
+    if (years > 0) {
+        formattedTime += `${years}y `;
+    }
+
+    if (days > 0) {
+        formattedTime += `${days}d `;
+    }
+
+    if (hours > 0) {
+        formattedTime += `${hours}h `;
+    }
+
+    if (minutes > 0) {
+        formattedTime += `${minutes}m `;
+    }
+
+    if (seconds > 0 || formattedTime === '') {
+        formattedTime += `${seconds}s`;
+    }
+
+    return formattedTime.trim();
+}
 
 
 

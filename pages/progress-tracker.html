@@ -211,7 +211,7 @@ interests.
         <div class="container-fluid">
 
             <div id="decarbProgress" class="tab-content p-3">
-                <h1>&#916;9-THCa Decarboxylation Progress Tracker <span class="w3-tag w3-green">v1.7a</span></h1>
+                <h1>&#916;9-THCa Decarboxylation Progress Tracker <span class="w3-tag w3-green">v1.7b</span></h1>
                 <p>This calculator is designed to help you track the progress of your THCa decarboxylation process. By entering the initial weight of THCa and the current weight of the decarboxylated material, you can estimate the percentage of decarboxylation progress based on the predicted weight of the decarboxylated material.</p>
                 <p>For more accurate results, it is recommended to use a scale that measures to at least 0.01 grams and to record the weights at regular intervals during the decarboxylation process.</p>
                 <form id="decarbProgressForm">
@@ -231,7 +231,7 @@ interests.
                         <input type="checkbox" class="form-check-input" id="labTestMode" onchange="toggleLabTestMode()" checked>
                         <label id="isolateModeSpan" class="form-check-label" for="labTestMode">Isolate Mode: ON - Assuming No Other Cannabinoids in Solution</label>
                     </div>
-                    <button id="startTrackingButton" type="button" class="btn btn-primary" onclick="startTracking()">Start Tracking</button>
+                    <button id="startTrackingButton" type="button" class="btn btn-primary" onclick="startTracking(true)">Start Tracking</button>
 
                     <div class="mb-3" style="display: none;" id="currentWeightDiv">
                         <label for="currentWeight" class="form-label">Current Total Weight (grams, including tare):</label>
@@ -289,7 +289,7 @@ interests.
                                         <!-- Collapsible element -->
                                         <div class="collapse" id="scaleEfficiencyNote">
                                             <br/>
-                                            <p><em>Note on Scale Efficiency:</em> This calculator is specifically designed to streamline measurements in conditions where scales might reset or not retain tare settings, particularly in high-temperature applications. Removing adjustment of tare weight ensures quick, accurate entries and minimizes the risk of prolonged exposure to heat/cold, enhancing both user safety and procedural efficiency. This flexibility is crucial for maintaining consistent data quality during decarboxylation monitoring, especially when working under conditions where speed and safety are paramount.</p>
+                                            <p>This calculator is specifically designed to streamline measurements in conditions where scales might reset or not retain tare settings, particularly in high-temperature applications. Removing adjustment of tare weight ensures quick, accurate entries and minimizes the risk of prolonged exposure to heat/cold, enhancing both user safety and procedural efficiency. This flexibility is crucial for maintaining consistent data quality during decarboxylation monitoring, especially when working under conditions where speed and safety are paramount.</p>
                                         </div>
                                     </li>
                                     <li><strong>Input Initial THCa Weight:</strong> Input the starting weight of your THCa, ensuring it does not include the tare weight.</li>
@@ -425,6 +425,7 @@ interests.
                         </div>
                     </div>
                 </div>
+                <br/>
             </div>
         </div>
 
