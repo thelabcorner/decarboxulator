@@ -215,6 +215,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (checkForSessionData()) {
         loadSessionData();
 
+        backUpLastPoint(document.getElementById("tareWeight").value || 0, true);
         startTracking(firstPoint = false);
         updateDecarbProgressBar(getMostRecentDecarbProgressData());
     }
@@ -225,6 +226,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 let TRACKING = false; // Initialize TRACKING boolean
 let stopTrackingButton = null; // Initialize stopTrackingButton
+
+let removePointButton = null; // Initialize removePointButton
 
 
 function startTracking(firstPoint) {
@@ -260,16 +263,25 @@ function startTracking(firstPoint) {
         tareWeightInput.disabled = true;
         thcaStartWeightInput.disabled = true;
 
-        if (firstPoint) {
+        if (firstPoint && localStorage.getItem('sessionData') === null) {
             addDataPoint(true); // Add the initial data point
         }
 
         if (!stopTrackingButton) {
             stopTrackingButton = document.createElement("button");
-            stopTrackingButton.innerText = "Stop Tracking";
+            stopTrackingButton.innerText = "Edit Inputs";
             stopTrackingButton.className = "btn btn-danger ml-2";
+            stopTrackingButton.style.display = "inline";
+            stopTrackingButton.style.marginLeft = "5px";
+            stopTrackingButton.style.marginRight = "5px";
             stopTrackingButton.id = "stopTrackingButton";
             startTrackingButton.parentNode.insertBefore(stopTrackingButton, startTrackingButton.nextSibling);
+
+            removePointButton = document.createElement("button");
+            removePointButton.innerText = "Remove Point";
+            removePointButton.className = "btn btn-warning ml-2";
+            removePointButton.id = "removePointButton";
+            startTrackingButton.parentNode.insertBefore(removePointButton, stopTrackingButton.nextSibling);
 
             clearSessionButton.style.display = "inline";
             exportDataButton.style.display = "inline";
@@ -279,6 +291,15 @@ function startTracking(firstPoint) {
                 stopTrackingPopup().then((confirmed) => {
                     if (confirmed) {
                         stopTracking();
+                    }
+                });
+            });
+
+            removePointButton.addEventListener("click", function (event) {
+                event.preventDefault();
+                removeLastPointPopup().then((confirmed) => {
+                    if (confirmed) {
+                        removeLastPoint();
                     }
                 });
             });
@@ -320,9 +341,14 @@ function stopTracking() {
     // Remove the stopTrackingButton from the DOM and clear its variable
     stopTrackingButton.parentNode.removeChild(stopTrackingButton);
     stopTrackingButton = null;
+
+    // Remove the removePointButton from the DOM and clear its variable
+    removePointButton.parentNode.removeChild(removePointButton);
+    removePointButton = null;
 }
 
 
+let lastPointBackup = null;
 
 function addDataPoint(firstPoint = false) {
     let currentWeight;
@@ -336,6 +362,8 @@ function addDataPoint(firstPoint = false) {
     }
 
     tareWeight = parseFloat(document.getElementById("tareWeight").value) || 0;
+
+    let totalInitialWeight = initialTHCAWeight + otherCannabinoidWeight + tareWeight;
 
     if (firstPoint) {
         currentWeight = math.add(math.add(initialTHCAWeight, tareWeight), otherCannabinoidWeight);
@@ -355,12 +383,43 @@ function addDataPoint(firstPoint = false) {
         return;
     }
 
+    if (currentWeight > totalInitialWeight) {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: 'Current Weight exceeds initial weight',
+            showConfirmButton: false,
+            timer: 3000
+        });
+        return;
+    }
+
+    let condition = currentWeight < (totalInitialWeight - (initialTHCAWeight -(initialTHCAWeight * 0.877)));
+    console.log("Condition result: ", condition);
+
+    if (condition) {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'warning',
+            title: 'WARNING: Non-Decarboxylative Loss Detected!',
+            text: 'Results may be incorrect. Please ensure the vessel is sealed and no loss of material has occurred.',
+            showConfirmButton: false,
+            timer: 8000
+        });
+    }
+
+
     const dataPoint = calculateDecarbProgress(currentWeight);
     if (dataPoint) {
         const chartTimeStamp = new Date(dataPoint.timestamp);
 
         // Check for duplicate entries based on precise timestamp (millisecond precision)
         if (!isDuplicate(chartTimeStamp)) {
+            backUpLastPoint(tareWeight);
+            console.log(lastPointBackup);
+
             updateDecarbProgressBar(dataPoint.decarbCompletion);
             chart.data.datasets[0].data.push({ x: chartTimeStamp.toISOString(), y: dataPoint.remainingTHCAWeight });
             chart.data.datasets[1].data.push({ x: chartTimeStamp.toISOString(), y: dataPoint.convertedTHCWeight });
@@ -379,6 +438,105 @@ function isDuplicate(timestamp) {
             return existingTimeStampMilliseconds === timestampMilliseconds;
         });
     });
+}
+
+
+function backUpLastPoint(tareWeight, isInitial = false) {
+    let sessionData = localStorage.getItem('sessionData');
+    sessionData = sessionData ? pako.inflate(sessionData, { to: 'string' }) : null;
+    sessionData = sessionData ? JSON.parse(sessionData) : null;
+
+    if (sessionData) {
+        // Get the keys of the dataPoints object
+        const dataPointKeys = Object.keys(sessionData.dataPoints);
+
+        let key = 0;
+
+        if (!isInitial) {
+            key = 1;
+        } else {
+            key = 2;
+        }
+
+        // Get the last key
+        const lastKey = dataPointKeys[dataPointKeys.length - key];
+
+        // Get the last data point
+        const lastDataPoint = sessionData.dataPoints[lastKey];
+
+        // Get the currentContentWeight from the last data point
+        const lastCurrentContentWeight = lastDataPoint.currentContentWeight;
+
+        // Update lastPointBackup
+        lastPointBackup = lastCurrentContentWeight + tareWeight;
+        console.log(lastPointBackup)
+    }
+}
+
+
+function removeLastPoint() {
+    let sessionData = localStorage.getItem('sessionData');
+    sessionData = sessionData ? pako.inflate(sessionData, { to: 'string' }) : null;
+    sessionData = sessionData ? JSON.parse(sessionData) : null;
+
+    if (sessionData && sessionData.dataPoints) {
+        const dataPointKeys = Object.keys(sessionData.dataPoints);
+
+        if (dataPointKeys.length > 1) {
+            const lastKey = dataPointKeys[dataPointKeys.length - 1];
+            delete sessionData.dataPoints[lastKey]; // Remove the last data point
+
+            if (chart && chart.data && chart.data.datasets) {
+                chart.data.datasets.forEach((dataset, index) => {
+                    if (dataset.data.length > 0) {
+                        dataset.data.pop(); // Remove the last data point from each dataset
+                    }
+                    // Also update sessionData.chartData
+                    if (sessionData.chartData && sessionData.chartData[index] && sessionData.chartData[index].length > 0) {
+                        sessionData.chartData[index].pop();
+                    }
+                });
+                chart.update(); // Update the chart to reflect the removal
+
+                // Update the decarb progress bar if applicable
+                if (chart.data.datasets[2].data.length > 0) {
+                    const lastDataY = chart.data.datasets[2].data[chart.data.datasets[2].data.length - 1].y;
+                    updateDecarbProgressBar(lastDataY);
+                } else {
+                    updateDecarbProgressBar(0); // Reset or update as needed
+                }
+            }
+
+            // Retrieve the timestamp of the new last data point after removal
+            let lastPointTimestamp = 0;
+            if (dataPointKeys.length > 1) { // Check there's still at least one data point
+                const newLastKey = dataPointKeys[dataPointKeys.length - 2]; // Access the new last key
+                lastPointTimestamp = sessionData.dataPoints[newLastKey].timeStamp;
+            }
+
+            const sessionDataString = JSON.stringify(sessionData);
+            const compressedData = pako.deflate(sessionDataString, { to: 'string' });
+            localStorage.setItem('sessionData', compressedData);
+
+            // Recalculate the decarb progress with the last point timestamp
+            console.log(lastPointBackup);
+            calculateDecarbProgress(lastPointBackup, lastPointTimestamp); // Pass the last timestamp to the recalculation function
+        } else {
+            // Sweet alert
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'warning',
+                title: 'No data points to remove!',
+                text: 'You cannot remove the initial data point.',
+                showConfirmButton: false,
+                timer: 3000
+            });
+
+        }
+    } else {
+        console.warn("Session data is not available or has no data points.");
+    }
 }
 
 
@@ -417,7 +575,7 @@ function updateDecarbProgressBar(decarbCompletion) {
 
 
 
-function calculateDecarbProgress(currentWeight) {
+function calculateDecarbProgress(currentWeight, timeStamp = null) {
     const THCA_MW = math.bignumber(358.21440943); // g/mol
     const THC_MW = math.bignumber(314.224580195); // g/mol
     const DECARB_CONSTANT = THC_MW.div(THCA_MW); // Ratio of THC MW to THCA MW
@@ -471,7 +629,12 @@ function calculateDecarbProgress(currentWeight) {
         return;
     }
 
-    const timestamp = new Date().getTime();
+    let timeStampMillis
+    if (timeStamp === null) {
+        timeStampMillis = new Date().getTime();
+    } else {
+        timeStampMillis = new Date(timeStamp).getTime();
+    }
 
     const currentContentWeight = currentTotalVesselWeight.minus(tareWeight);
     const totalInitialWeight = initialTHCAWeight.plus(otherCannabinoidWeight);
@@ -484,7 +647,7 @@ function calculateDecarbProgress(currentWeight) {
     if (chart && chart.data && chart.data.datasets[0] && chart.data.datasets[0].data[0]) {
         startTime = new Date(chart.data.datasets[0].data[0].x);
     } else {
-        startTime = new Date(timestamp);
+        startTime = new Date(timeStampMillis);
     }
 
     const elapsedTime = new Date() - startTime;
@@ -504,7 +667,7 @@ function calculateDecarbProgress(currentWeight) {
     const slurryTHCPercent = convertedTHCWeight.div(currentContentWeight).mul(100);
     const otherCannabinoidPercent = otherCannabinoidWeight.div(currentContentWeight).mul(100);
 
-    let date = new Date(timestamp);
+    let date = new Date(timeStampMillis);
     let timeString = date.toLocaleTimeString();
     let milliseconds = date.getMilliseconds();
 
@@ -527,7 +690,7 @@ function calculateDecarbProgress(currentWeight) {
       ${tareWeight.toNumber() !== 0 ? `<br><b>Expected Final Vessel Weight:</b> ${expectedFinalVesselWeight.toFixed(2)} grams` : ''}
       <hr>
       <b>Current Slurry Weight:</b> ${currentContentWeight.toFixed(2)} grams
-      <br><b>Weight Loss Seen:</b> ${weightLossSoFar.toFixed(2)} grams (${math.round((100 - ((weightLossSoFar.div(initialTHCAWeight)).mul(100))), 3)}% loss ratio)
+      <br><b>Weight Loss Seen:</b> ${weightLossSoFar.toFixed(2)} grams (${math.round((100 - ((weightLossSoFar.div(initialTHCAWeight)).mul(100))), 3)}% mol ratio)
       <br><b>Percent Decarboxylated:</b> ${decarbCompletion.toFixed(2)}% / 100%
       <br><b>Slurry THC-A Weight:</b> ${remainingTHCAWeight.toFixed(2)} grams (${slurryTHCAPercent.toFixed(2)}%)
       <br><b>Slurry THC Weight:</b> ${convertedTHCWeight.toFixed(2)} grams (${slurryTHCPercent.toFixed(2)}%)
@@ -535,7 +698,7 @@ function calculateDecarbProgress(currentWeight) {
     `;
 
     return {
-        timestamp: timestamp,
+        timestamp: timeStampMillis,
         initialTHCAWeight: initialTHCAWeight.toNumber(),
         expectedFinalTHCWeight: expectedFinalTHCWeight.toNumber(),
         currentContentWeight: currentContentWeight.toNumber(),
@@ -703,7 +866,6 @@ function clearSessionData() {
 //////////////////////
 
 
-// Function to load the session data
 function loadSessionData() {
     let compressedData = localStorage.getItem('sessionData');
     let sessionData = compressedData ? pako.inflate(compressedData, { to: 'string' }) : null;
@@ -720,6 +882,20 @@ function loadSessionData() {
 
         if (parseFloat(sessionData.otherCannabinoidWeight) >= 0.01) {
             toggleLabTestMode();
+        }
+
+        // Ensure the correct timestamp and total vessel weight are calculated
+        if (sessionData.dataPoints && Object.keys(sessionData.dataPoints).length > 0) {
+            // Get the timestamp and current content weight of the latest data point
+            const lastDataPointKey = Object.keys(sessionData.dataPoints).pop();
+            const lastDataPoint = sessionData.dataPoints[lastDataPointKey];
+            const tareWeight = parseFloat(document.getElementById("tareWeight").value || 0);
+            const currentContentWeight = parseFloat(lastDataPoint.currentContentWeight);
+
+            // Calculate the most recent total vessel weight
+            const mostRecentTotalVesselWeight = tareWeight + currentContentWeight;
+
+            calculateDecarbProgress(mostRecentTotalVesselWeight, lastDataPoint.timeStamp);
         }
     }
 }
@@ -940,16 +1116,32 @@ function clearSessionPopup() {
     });
 }
 
+
 // function to return a Promise that resolves to a boolean, handles sweet alert popups for "are you sure you want to stop tracking"
 function stopTrackingPopup() {
     return Swal.fire({
         title: 'Are you sure?',
-        text: "This will stop tracking and reset the chart!",
+        html: `This will pause tracking for editing! <br> (You can resume later)`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, stop tracking!'
+        confirmButtonText: 'Yes, pause tracking!'
+    }).then((result) => {
+        return result.isConfirmed;
+    });
+}
+
+// function to return a Promise that resolves to a boolean, handles sweet alert popups for "are you sure you want to stop tracking"
+function removeLastPointPopup() {
+    return Swal.fire({
+        title: 'Are you sure?',
+        text: "This will remove the most recent point from the chart!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, remove!'
     }).then((result) => {
         return result.isConfirmed;
     });
