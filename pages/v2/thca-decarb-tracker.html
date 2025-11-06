@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THCa Decarboxylation Progress Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #151515;
+            --bg-tertiary: #1a1a1a;
+            --border-color: #ffffff26;
+            --accent-blue: #0d6efd;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--bg-secondary) !important;
+            border-bottom: 2px solid var(--border-color);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            color: var(--text-primary) !important;
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+
+        .navbar-brand i {
+            color: var(--accent-blue);
+            margin-right: 0.5rem;
+        }
+
+        .container-main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .card-modern {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title i {
+            color: var(--accent-blue);
+        }
+
+        .form-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-tertiary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+
+        .form-control:disabled {
+            color: #ffffff59;
+            background: #0018475e !important;
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background-color: transparent;
+            border: 2px solid #dc3545;
+            color: #dc3545;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: transparent;
+            border: 2px solid #ffc107;
+            color: #ffc107;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .btn-warning:hover {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-secondary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .btn-icon-only {
+            padding: 0.75rem;
+            min-width: 48px;
+            flex: 0 0 auto;
+        }
+
+        .progress-container {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress {
+            height: 40px;
+            background-color: var(--bg-primary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background-color: var(--accent-blue);
+            font-weight: 600;
+            font-size: 1rem;
+            line-height: 40px;
+            transition: width 0.3s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .stat-value {
+            color: var(--accent-blue);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .stat-unit {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-left: 0.25rem;
+        }
+
+        .plot-container {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.5rem;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        /* Analytics Specific Styles */
+        .analytics-toolbar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .toolbar-stat {
+            text-align: center;
+            padding: 0.75rem;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .toolbar-stat:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .toolbar-stat-icon {
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .toolbar-stat-label {
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .toolbar-stat-value {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .toolbar-stat-unit {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-left: 0.25rem;
+        }
+
+        .analytics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .analytics-card {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .analytics-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .analytics-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .analytics-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-blue), #0b5ed7);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .analytics-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .analytics-value {
+            color: var(--text-primary);
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .analytics-subtext {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .stopwatch-card {
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            border: 2px solid var(--accent-blue);
+        }
+
+        .stopwatch-display {
+            font-size: 2.5rem;
+            font-family: 'Courier New', monospace;
+            color: var(--accent-blue);
+            text-align: center;
+            margin: 1rem 0;
+            text-shadow: 0 0 10px rgba(13, 110, 253, 0.3);
+        }
+
+        .form-check-input {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            width: 1.2rem;
+            height: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .form-check-input:focus {
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+
+        .form-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .form-check-label {
+            color: var(--text-secondary);
+            margin-left: 0;
+            line-height: 1.4;
+        }
+
+        .alert-info {
+            background-color: rgba(13, 110, 253, 0.1);
+            border: 2px solid rgba(13, 110, 253, 0.3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-group-modern {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        /* Custom Tab Styling */
+        .nav-tabs {
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 0;
+        }
+
+        .nav-tabs .nav-link {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-bottom: none;
+            color: var(--text-secondary);
+            border-radius: 8px 8px 0 0;
+            margin-right: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+            color: var(--accent-blue);
+            border-bottom: 2px solid var(--bg-secondary);
+            margin-bottom: -2px;
+        }
+
+        .tab-content {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            padding: 1rem;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1rem;
+            }
+
+            .navbar-brand i {
+                font-size: 0.9rem;
+            }
+
+            .container-main {
+                padding: 0.75rem;
+            }
+
+            .card-modern {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .card-title {
+                font-size: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .stat-card {
+                padding: 0.5rem;
+            }
+
+            .stat-label {
+                font-size: 0.7rem;
+            }
+
+            .stat-value {
+                font-size: 1.1rem;
+            }
+
+            .stat-unit {
+                font-size: 0.75rem;
+            }
+
+            .analytics-toolbar {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+                padding: 0.75rem;
+            }
+
+            .toolbar-stat {
+                padding: 0.5rem;
+            }
+
+            .toolbar-stat-icon {
+                font-size: 1.2rem;
+            }
+
+            .toolbar-stat-label {
+                font-size: 0.65rem;
+            }
+
+            .toolbar-stat-value {
+                font-size: 0.95rem;
+            }
+
+            .analytics-row {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .analytics-card {
+                padding: 1rem;
+            }
+
+            .analytics-value {
+                font-size: 1.5rem;
+            }
+
+            .stopwatch-display {
+                font-size: 1.8rem;
+            }
+
+            .alert-info {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+
+            .btn-group-modern {
+                gap: 0.5rem;
+            }
+
+            .btn-secondary,
+            .btn-warning,
+            .btn-danger {
+                padding: 0.65rem 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .btn-secondary i,
+            .btn-warning i,
+            .btn-danger i {
+                font-size: 0.85rem;
+            }
+
+            .btn-icon-mobile {
+                padding: 0.75rem;
+                min-width: 48px;
+            }
+
+            .btn-icon-mobile .btn-text {
+                display: none;
+            }
+
+            .plot-container {
+                padding: 0.25rem;
+                margin-bottom: 1rem;
+            }
+
+            .tab-content {
+                padding: 0.5rem;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 0.65rem 0.75rem;
+                font-size: 0.85rem;
+                margin-right: 0.25rem;
+            }
+
+            .nav-tabs .nav-link i {
+                display: none;
+            }
+
+            .progress-container {
+                padding: 0.75rem;
+                margin-bottom: 1rem;
+            }
+
+            .progress {
+                height: 32px;
+                line-height: 32px;
+            }
+
+            .progress-bar {
+                font-size: 0.9rem;
+                line-height: 32px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) and (orientation: landscape) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-3">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-flask"></i>
+            THCa Decarboxylation Tracker
+        </a>
+    </div>
+</nav>
+
+<div class="container-main">
+    <div class="alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Scientific Tracking:</strong> Monitor the conversion of THCa (358.47 g/mol) to THC (314.46 g/mol) through CO₂ loss measurement. Enter precise weights at regular intervals for accurate decarboxylation progress analysis.
+    </div>
+
+    <div class="card-modern">
+        <div class="card-title">
+            <i class="fas fa-cog"></i>
+            Configuration
+        </div>
+        <div class="row g-3">
+            <div class="col-12 col-md-4">
+                <label class="form-label">Tare Weight (g)</label>
+                <input type="number" class="form-control" id="tareWeight" placeholder="0.00" step="0.01" value="0">
+            </div>
+            <div class="col-12 col-md-4">
+                <label class="form-label">Initial THCa Weight (g)</label>
+                <input type="number" class="form-control" id="thcaWeight" placeholder="50.00" step="0.01">
+            </div>
+            <div class="col-12 col-md-4">
+                <label class="form-label">Other Cannabinoids (g)</label>
+                <input type="number" class="form-control" id="otherCannabinoids" placeholder="0.00" step="0.01" value="0" disabled>
+            </div>
+        </div>
+        <div class="form-check my-3">
+            <input class="form-check-input" type="checkbox" id="isolateMode" checked>
+            <label class="form-check-label" for="isolateMode">
+                Isolate Mode (Pure THCa - No Other Cannabinoids)
+            </label>
+        </div>
+        <button class="btn btn-primary" id="startBtn" onclick="startTracking()">
+            <i class="fas fa-play me-2"></i>Start Tracking
+        </button>
+    </div>
+
+    <div id="trackingSection" style="display: none;">
+        <div class="card-modern">
+            <div class="card-title">
+                <i class="fas fa-weight"></i>
+                Current Measurement
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Current Total Weight (g, including tare)</label>
+                <input type="number" class="form-control" id="currentWeight" placeholder="146.87" step="0.01">
+            </div>
+            <div class="button-row">
+                <button class="btn btn-primary" style="flex: 3;" onclick="addDataPoint()">
+                    <i class="fas fa-plus me-2"></i><span>Add Point</span>
+                </button>
+                <button class="btn btn-danger btn-icon-only" onclick="stopTracking()" title="Stop Tracking">
+                    <i class="fas fa-stop"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="stat-label mb-2">Decarboxylation Progress</div>
+            <div class="progress">
+                <div class="progress-bar" id="progressBar" style="width: 0%">0%</div>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <div class="plot-container" style="border-radius: 12px 12px 0 0; border-bottom: none; padding: 0; margin-bottom: 0;">
+            <ul class="nav nav-tabs" id="chartTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="composition-tab" data-bs-toggle="tab" data-bs-target="#composition" type="button" role="tab" aria-controls="composition" aria-selected="true">
+                        <i class="fas fa-chart-pie me-2"></i><span>Composition</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab" aria-controls="analytics" aria-selected="false">
+                        <i class="fas fa-chart-bar me-2"></i><span>Analytics</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="rate-tab" data-bs-toggle="tab" data-bs-target="#rate" type="button" role="tab" aria-controls="rate" aria-selected="false">
+                        <i class="fas fa-tachometer-alt me-2"></i><span>Rate</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="weightloss-tab" data-bs-toggle="tab" data-bs-target="#weightloss" type="button" role="tab" aria-controls="weightloss" aria-selected="false">
+                        <i class="fas fa-chart-line me-2"></i><span>Weight Loss</span>
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="chartTabContent">
+                <div class="tab-pane fade show active" id="composition" role="tabpanel" aria-labelledby="composition-tab">
+                    <div id="compositionPlot"></div>
+                </div>
+                <div class="tab-pane fade" id="analytics" role="tabpanel" aria-labelledby="analytics-tab">
+                    <div class="analytics-toolbar" id="analyticsToolbar"></div>
+                    <div id="analyticsContent"></div>
+                </div>
+                <div class="tab-pane fade" id="rate" role="tabpanel" aria-labelledby="rate-tab">
+                    <div id="ratePlot"></div>
+                </div>
+                <div class="tab-pane fade" id="weightloss" role="tabpanel" aria-labelledby="weightloss-tab">
+                    <div id="weightLossPlot"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group-modern" style="margin-top: 1.5rem;">
+            <button class="btn btn-secondary btn-icon-mobile" onclick="exportData('csv')" title="Export CSV">
+                <i class="fas fa-download me-1"></i><span class="btn-text">CSV</span>
+            </button>
+            <button class="btn btn-secondary btn-icon-mobile" onclick="exportData('png')" title="Export Chart">
+                <i class="fas fa-image me-1"></i><span class="btn-text">Chart</span>
+            </button>
+            <button class="btn btn-warning btn-icon-mobile" id="undoBtn" onclick="removeLastDataPoint()" style="display: none;" title="Remove Last Point">
+                <i class="fas fa-undo me-1"></i><span class="btn-text">Undo</span>
+            </button>
+            <button class="btn btn-danger btn-icon-mobile" onclick="resetData()" title="Reset All">
+                <i class="fas fa-trash me-1"></i><span class="btn-text">Reset</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Constants
+    const THCA_MW = 358.47;
+    const THC_MW = 314.46;
+    const CONVERSION_RATIO = THC_MW / THCA_MW;
+    const DB_NAME = 'THCATrackerDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'sessions';
+
+    // State
+    let isTracking = false;
+    let dataPoints = [];
+    let config = {};
+    let startTime = null;
+    let lastDataPointTime = null;
+    let stopwatchInterval = null;
+    let db = null;
+
+    // IndexedDB Setup
+    function initDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                db = request.result;
+                resolve(db);
+            };
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    const objectStore = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                    objectStore.createIndex('timestamp', 'timestamp', { unique: false });
+                }
+            };
+        });
+    }
+
+    function saveSession() {
+        if (!db) return;
+
+        const transaction = db.transaction([STORE_NAME], 'readwrite');
+        const objectStore = transaction.objectStore(STORE_NAME);
+
+        const session = {
+            timestamp: new Date().toISOString(),
+            config: config,
+            dataPoints: dataPoints,
+            startTime: startTime ? startTime.toISOString() : null,
+            lastDataPointTime: lastDataPointTime ? lastDataPointTime.toISOString() : null,
+            isTracking: isTracking
+        };
+
+        // Clear old session and save new one
+        objectStore.clear();
+        const request = objectStore.add(session);
+
+        request.onsuccess = () => console.log('Session saved to IndexedDB');
+        request.onerror = () => console.error('Error saving session:', request.error);
+    }
+
+    function loadSession() {
+        if (!db) return Promise.resolve(null);
+
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([STORE_NAME], 'readonly');
+            const objectStore = transaction.objectStore(STORE_NAME);
+            const request = objectStore.getAll();
+
+            request.onsuccess = () => {
+                const sessions = request.result;
+                if (sessions.length > 0) {
+                    const session = sessions[sessions.length - 1];
+                    resolve(session);
+                } else {
+                    resolve(null);
+                }
+            };
+
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    function restoreSession(session) {
+        if (!session) return;
+
+        config = session.config;
+        dataPoints = session.dataPoints.map(dp => ({
+            ...dp,
+            timestamp: new Date(dp.timestamp)
+        }));
+        startTime = session.startTime ? new Date(session.startTime) : null;
+        lastDataPointTime = session.lastDataPointTime ? new Date(session.lastDataPointTime) : null;
+        isTracking = session.isTracking;
+
+        if (isTracking) {
+            document.getElementById('tareWeight').value = config.tareWeight;
+            document.getElementById('thcaWeight').value = config.thcaWeight;
+            document.getElementById('otherCannabinoids').value = config.otherCannabinoids;
+
+            document.getElementById('tareWeight').disabled = true;
+            document.getElementById('thcaWeight').disabled = true;
+            document.getElementById('otherCannabinoids').disabled = true;
+            document.getElementById('isolateMode').disabled = true;
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('trackingSection').style.display = 'block';
+
+            updateDisplay();
+            updateUndoButton();
+            startStopwatch();
+        }
+    }
+
+    // Stopwatch functions
+    function startStopwatch() {
+        if (stopwatchInterval) clearInterval(stopwatchInterval);
+
+        stopwatchInterval = setInterval(() => {
+            updateAnalytics();
+        }, 1000);
+    }
+
+    function stopStopwatch() {
+        if (stopwatchInterval) {
+            clearInterval(stopwatchInterval);
+            stopwatchInterval = null;
+        }
+    }
+
+    function formatStopwatchTime(ms) {
+        const totalSeconds = Math.floor(ms / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    // Detect if mobile
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+
+    // Initialize
+    document.getElementById('isolateMode').addEventListener('change', function() {
+        document.getElementById('otherCannabinoids').disabled = this.checked;
+        if (this.checked) {
+            document.getElementById('otherCannabinoids').value = '0';
+        }
+    });
+
+    // Initialize DB and load session on page load
+    window.addEventListener('DOMContentLoaded', async () => {
+        try {
+            await initDB();
+            const session = await loadSession();
+            if (session) {
+                restoreSession(session);
+            }
+        } catch (error) {
+            console.error('Error initializing database:', error);
+        }
+    });
+
+    function startTracking() {
+        const tareWeight = parseFloat(document.getElementById('tareWeight').value) || 0;
+        const thcaWeight = parseFloat(document.getElementById('thcaWeight').value);
+        const otherCannabinoids = parseFloat(document.getElementById('otherCannabinoids').value) || 0;
+
+        if (!thcaWeight || thcaWeight <= 0) {
+            alert('Please enter a valid THCa weight');
+            return;
+        }
+
+        config = {
+            tareWeight,
+            thcaWeight,
+            otherCannabinoids,
+            initialTotalWeight: tareWeight + thcaWeight + otherCannabinoids,
+            expectedFinalTHC: thcaWeight * CONVERSION_RATIO,
+            expectedCO2Loss: thcaWeight * (1 - CONVERSION_RATIO),
+            expectedFinalContentWeight: (thcaWeight * CONVERSION_RATIO) + otherCannabinoids,
+            expectedFinalVesselWeight: tareWeight + (thcaWeight * CONVERSION_RATIO) + otherCannabinoids
+        };
+
+        isTracking = true;
+        dataPoints = [];
+        startTime = new Date();
+        lastDataPointTime = null;
+
+        document.getElementById('tareWeight').disabled = true;
+        document.getElementById('thcaWeight').disabled = true;
+        document.getElementById('otherCannabinoids').disabled = true;
+        document.getElementById('isolateMode').disabled = true;
+        document.getElementById('startBtn').style.display = 'none';
+        document.getElementById('trackingSection').style.display = 'block';
+
+        startStopwatch();
+        updateDisplay();
+        saveSession();
+    }
+
+    function addDataPoint() {
+        const currentWeight = parseFloat(document.getElementById('currentWeight').value);
+
+        if (!currentWeight || currentWeight <= 0) {
+            alert('Please enter a valid current weight');
+            return;
+        }
+
+        const timestamp = new Date();
+        const currentContentWeight = currentWeight - config.tareWeight;
+        const weightLoss = config.initialTotalWeight - currentWeight;
+        const completion = Math.min(100, Math.max(0, (weightLoss / config.expectedCO2Loss) * 100));
+
+        const remainingTHCA = config.thcaWeight * (1 - completion / 100);
+        const convertedTHC = config.thcaWeight * CONVERSION_RATIO * (completion / 100);
+
+        const thcaPercent = (remainingTHCA / currentContentWeight) * 100;
+        const thcPercent = (convertedTHC / currentContentWeight) * 100;
+        const otherPercent = (config.otherCannabinoids / currentContentWeight) * 100;
+
+        dataPoints.push({
+            timestamp,
+            currentWeight,
+            weightLoss,
+            completion,
+            remainingTHCA,
+            convertedTHC,
+            thcaPercent,
+            thcPercent,
+            otherPercent,
+            currentContentWeight
+        });
+
+        lastDataPointTime = timestamp;
+
+        updateDisplay();
+        updateUndoButton();
+        saveSession();
+    }
+
+    function removeLastDataPoint() {
+        if (dataPoints.length === 0) {
+            alert('No data points to remove');
+            return;
+        }
+
+        if (confirm('Remove the last data point?')) {
+            dataPoints.pop();
+
+            if (dataPoints.length > 0) {
+                lastDataPointTime = dataPoints[dataPoints.length - 1].timestamp;
+            } else {
+                lastDataPointTime = null;
+            }
+
+            updateDisplay();
+            updateUndoButton();
+            saveSession();
+        }
+    }
+
+    function updateUndoButton() {
+        const undoBtn = document.getElementById('undoBtn');
+        if (dataPoints.length > 0) {
+            undoBtn.style.display = 'block';
+        } else {
+            undoBtn.style.display = 'none';
+        }
+    }
+
+    function updateDisplay() {
+        if (dataPoints.length === 0) {
+            updateStats(0, 0, config.thcaWeight, 0, 100, 0, 0);
+            updateProgressBar(0);
+            updateAnalytics();
+            return;
+        }
+
+        const latest = dataPoints[dataPoints.length - 1];
+
+        updateStats(
+            latest.completion,
+            latest.weightLoss,
+            latest.remainingTHCA,
+            latest.convertedTHC,
+            latest.thcaPercent,
+            latest.thcPercent,
+            latest.otherPercent
+        );
+
+        updateProgressBar(latest.completion);
+        updatePlots();
+        updateAnalytics();
+    }
+
+    function updateStats(completion, weightLoss, remainingTHCA, convertedTHC, thcaPercent, thcPercent, otherPercent) {
+        const statsHTML = `
+                <div class="stat-card">
+                    <div class="stat-label">Completion</div>
+                    <div class="stat-value">${completion.toFixed(2)}<span class="stat-unit">%</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Weight Loss (CO₂)</div>
+                    <div class="stat-value">${weightLoss.toFixed(3)}<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Remaining THCa</div>
+                    <div class="stat-value">${remainingTHCA.toFixed(3)}<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Converted THC</div>
+                    <div class="stat-value">${convertedTHC.toFixed(3)}<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">THCa Content</div>
+                    <div class="stat-value">${thcaPercent.toFixed(2)}<span class="stat-unit">%</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">THC Content</div>
+                    <div class="stat-value">${thcPercent.toFixed(2)}<span class="stat-unit">%</span></div>
+                </div>
+            `;
+        document.getElementById('statsGrid').innerHTML = statsHTML;
+    }
+
+    function updateProgressBar(completion) {
+        const progressBar = document.getElementById('progressBar');
+        progressBar.style.width = completion + '%';
+        progressBar.textContent = completion.toFixed(1) + '%';
+    }
+
+    function updateAnalytics() {
+        if (!startTime) return;
+
+        const numDataPoints = dataPoints.length;
+        const currentTime = new Date();
+        const elapsedMs = currentTime - startTime;
+        const elapsedHours = elapsedMs / (1000 * 60 * 60);
+
+        // Calculate time since last data point
+        const timeSinceLastPoint = lastDataPointTime ? currentTime - lastDataPointTime : 0;
+        const stopwatchDisplay = formatStopwatchTime(timeSinceLastPoint);
+
+        let avgConversionRate = 0;
+        let estimatedCompletion = 'N/A';
+        let currentRate = 0;
+        let timeRemaining = 'N/A';
+
+        if (dataPoints.length > 0) {
+            const latestPoint = dataPoints[dataPoints.length - 1];
+            avgConversionRate = latestPoint.convertedTHC / elapsedHours;
+
+            if (dataPoints.length >= 2) {
+                const lastPoint = dataPoints[dataPoints.length - 1];
+                const prevPoint = dataPoints[dataPoints.length - 2];
+                const timeDiff = (lastPoint.timestamp - prevPoint.timestamp) / (1000 * 60 * 60);
+                currentRate = (lastPoint.convertedTHC - prevPoint.convertedTHC) / timeDiff;
+            }
+
+            if (latestPoint.completion < 100 && avgConversionRate > 0) {
+                const remainingTHC = config.expectedFinalTHC - latestPoint.convertedTHC;
+                const hoursRemaining = remainingTHC / avgConversionRate;
+                const completionTime = new Date(currentTime.getTime() + hoursRemaining * 60 * 60 * 1000);
+                estimatedCompletion = completionTime.toLocaleTimeString();
+
+                const hoursLeft = Math.floor(hoursRemaining);
+                const minutesLeft = Math.round((hoursRemaining - hoursLeft) * 60);
+                timeRemaining = `${hoursLeft}h ${minutesLeft}m`;
+            }
+        }
+
+        // Toolbar with static configuration values
+        const toolbarHTML = `
+                <div class="toolbar-stat">
+                    <div class="toolbar-stat-icon"><i class="fas fa-cannabis"></i></div>
+                    <div class="toolbar-stat-label">Input THCa</div>
+                    <div class="toolbar-stat-value">${config.thcaWeight.toFixed(3)}<span class="toolbar-stat-unit">g</span></div>
+                </div>
+                <div class="toolbar-stat">
+                    <div class="toolbar-stat-icon"><i class="fas fa-balance-scale"></i></div>
+                    <div class="toolbar-stat-label">Tare Weight</div>
+                    <div class="toolbar-stat-value">${config.tareWeight.toFixed(3)}<span class="toolbar-stat-unit">g</span></div>
+                </div>
+                <div class="toolbar-stat">
+                    <div class="toolbar-stat-icon"><i class="fas fa-cloud"></i></div>
+                    <div class="toolbar-stat-label">Expected CO₂ Loss</div>
+                    <div class="toolbar-stat-value">${config.expectedCO2Loss.toFixed(3)}<span class="toolbar-stat-unit">g</span></div>
+                </div>
+                <div class="toolbar-stat">
+                    <div class="toolbar-stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="toolbar-stat-label">Fully Decarbed THC</div>
+                    <div class="toolbar-stat-value">${config.expectedFinalTHC.toFixed(3)}<span class="toolbar-stat-unit">g</span></div>
+                </div>
+                <div class="toolbar-stat">
+                    <div class="toolbar-stat-icon"><i class="fas fa-box"></i></div>
+                    <div class="toolbar-stat-label">Final Content Weight</div>
+                    <div class="toolbar-stat-value">${config.expectedFinalContentWeight.toFixed(3)}<span class="toolbar-stat-unit">g</span></div>
+                </div>
+                <div class="toolbar-stat">
+                    <div class="toolbar-stat-icon"><i class="fas fa-weight"></i></div>
+                    <div class="toolbar-stat-label">Final Vessel Weight</div>
+                    <div class="toolbar-stat-value">${config.expectedFinalVesselWeight.toFixed(3)}<span class="toolbar-stat-unit">g</span></div>
+                </div>
+            `;
+
+        // Main analytics cards with dynamic values
+        const analyticsHTML = `
+                <div class="analytics-row">
+                    <div class="analytics-card stopwatch-card">
+                        <div class="analytics-header">
+                            <div class="analytics-icon">
+                                <i class="fas fa-stopwatch"></i>
+                            </div>
+                            <div class="analytics-label">Time Since Last Point</div>
+                        </div>
+                        <div class="stopwatch-display">${stopwatchDisplay}</div>
+                        <div class="analytics-subtext">Stopwatch resets after each measurement</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-header">
+                            <div class="analytics-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="analytics-label">Session Started</div>
+                        </div>
+                        <div class="analytics-value" style="font-size: 1.5rem;">${startTime.toLocaleTimeString()}</div>
+                        <div class="analytics-subtext">${startTime.toLocaleDateString()}</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-header">
+                            <div class="analytics-icon">
+                                <i class="fas fa-flag-checkered"></i>
+                            </div>
+                            <div class="analytics-label">Est. Completion Time</div>
+                        </div>
+                        <div class="analytics-value" style="font-size: 1.5rem;">${timeRemaining}</div>
+                        <div class="analytics-subtext">${estimatedCompletion}</div>
+                    </div>
+                </div>
+                <div class="analytics-row">
+                    <div class="analytics-card">
+                        <div class="analytics-header">
+                            <div class="analytics-icon">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <div class="analytics-label">Average Conversion Rate</div>
+                        </div>
+                        <div class="analytics-value">${avgConversionRate.toFixed(3)}</div>
+                        <div class="analytics-subtext">grams of THC produced per hour</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-header">
+                            <div class="analytics-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="analytics-label">Current Rate (Last Interval)</div>
+                        </div>
+                        <div class="analytics-value">${currentRate.toFixed(3)}</div>
+                        <div class="analytics-subtext">grams of THC per hour between last two points</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-header">
+                            <div class="analytics-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="analytics-label">Total Measurements</div>
+                        </div>
+                        <div class="analytics-value">${numDataPoints}</div>
+                        <div class="analytics-subtext">data points recorded in this session</div>
+                    </div>
+                </div>
+            `;
+
+        document.getElementById('analyticsToolbar').innerHTML = toolbarHTML;
+        document.getElementById('analyticsContent').innerHTML = analyticsHTML;
+    }
+
+    function updatePlots() {
+        const timestamps = dataPoints.map(d => d.timestamp);
+        const weightLossData = dataPoints.map(d => d.weightLoss);
+        const completionData = dataPoints.map(d => d.completion);
+        const thcaData = dataPoints.map(d => d.thcaPercent);
+        const thcData = dataPoints.map(d => d.thcPercent);
+
+        const mobile = isMobile();
+
+        // Calculate conversion rates
+        const conversionRates = [];
+        const rateTimestamps = [];
+
+        for (let i = 1; i < dataPoints.length; i++) {
+            const timeDiff = (dataPoints[i].timestamp - dataPoints[i-1].timestamp) / (1000 * 60 * 60);
+            const thcDiff = dataPoints[i].convertedTHC - dataPoints[i-1].convertedTHC;
+            const rate = thcDiff / timeDiff;
+            conversionRates.push(rate);
+            rateTimestamps.push(dataPoints[i].timestamp);
+        }
+
+        // Weight Loss Plot
+        const weightLossTrace = {
+            x: timestamps,
+            y: weightLossData,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Weight Loss',
+            line: { color: '#0d6efd', width: mobile ? 2 : 3 },
+            marker: { size: mobile ? 6 : 8 }
+        };
+
+        const expectedLossTrace = {
+            x: timestamps,
+            y: Array(timestamps.length).fill(config.expectedCO2Loss),
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Expected',
+            line: { color: '#dc3545', width: 2, dash: 'dash' }
+        };
+
+        const weightLossLayout = {
+            title: {
+                text: mobile ? 'Weight Loss' : 'Weight Loss Over Time',
+                font: { color: '#e0e0e0', size: mobile ? 12 : 14 }
+            },
+            paper_bgcolor: '#151515',
+            plot_bgcolor: '#1a1a1a',
+            xaxis: {
+                title: mobile ? '' : 'Time',
+                color: '#a0a0a0',
+                gridcolor: '#ffffff1a',
+                titlefont: { size: mobile ? 10 : 12 },
+                tickfont: { size: mobile ? 8 : 10 }
+            },
+            yaxis: {
+                title: mobile ? 'Loss (g)' : 'Weight Loss (g)',
+                color: '#a0a0a0',
+                gridcolor: '#ffffff1a',
+                titlefont: { size: mobile ? 10 : 12 },
+                tickfont: { size: mobile ? 8 : 10 }
+            },
+            legend: {
+                font: { color: '#e0e0e0', size: mobile ? 9 : 11 },
+                orientation: mobile ? 'h' : 'v',
+                y: mobile ? -0.15 : 1,
+                x: mobile ? 0 : 1,
+                xanchor: mobile ? 'left' : 'right',
+                yanchor: mobile ? 'top' : 'top'
+            },
+            margin: {
+                t: mobile ? 35 : 40,
+                r: mobile ? 10 : 20,
+                b: mobile ? 50 : 40,
+                l: mobile ? 45 : 50
+            },
+            autosize: true,
+            showlegend: true
+        };
+
+        Plotly.newPlot('weightLossPlot', [weightLossTrace, expectedLossTrace], weightLossLayout, {
+            responsive: true,
+            displayModeBar: false
+        });
+
+        // Composition Plot with Completion %
+        const thcaTrace = {
+            x: timestamps,
+            y: thcaData,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'THCa',
+            line: { color: '#ffc107', width: mobile ? 2 : 3 },
+            marker: { size: mobile ? 6 : 8 }
+        };
+
+        const thcTrace = {
+            x: timestamps,
+            y: thcData,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'THC',
+            line: { color: '#0d6efd', width: mobile ? 2 : 3 },
+            marker: { size: mobile ? 6 : 8 }
+        };
+
+        const completionTrace = {
+            x: timestamps,
+            y: completionData,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Complete',
+            line: { color: '#28a745', width: mobile ? 2 : 3 },
+            marker: { size: mobile ? 6 : 8 },
+            yaxis: 'y2'
+        };
+
+        const compositionLayout = {
+            title: {
+                text: mobile ? 'Cannabinoid %' : 'Cannabinoid Composition Over Time',
+                font: { color: '#e0e0e0', size: mobile ? 12 : 14 }
+            },
+            paper_bgcolor: '#151515',
+            plot_bgcolor: '#1a1a1a',
+            xaxis: {
+                title: mobile ? '' : 'Time',
+                color: '#a0a0a0',
+                gridcolor: '#ffffff1a',
+                titlefont: { size: mobile ? 10 : 12 },
+                tickfont: { size: mobile ? 8 : 10 }
+            },
+            yaxis: {
+                title: mobile ? '%' : 'Percentage (%)',
+                color: '#a0a0a0',
+                gridcolor: '#ffffff1a',
+                titlefont: { size: mobile ? 10 : 12 },
+                tickfont: { size: mobile ? 8 : 10 }
+            },
+            yaxis2: {
+                title: mobile ? 'Done' : 'Completion (%)',
+                color: '#28a745',
+                overlaying: 'y',
+                side: 'right',
+                titlefont: { size: mobile ? 10 : 12 },
+                tickfont: { size: mobile ? 8 : 10 },
+                gridcolor: 'transparent'
+            },
+            legend: {
+                font: { color: '#e0e0e0', size: mobile ? 9 : 11 },
+                orientation: mobile ? 'h' : 'v',
+                y: mobile ? -0.15 : 1,
+                x: mobile ? 0 : 1,
+                xanchor: mobile ? 'left' : 'right',
+                yanchor: mobile ? 'top' : 'top'
+            },
+            margin: {
+                t: mobile ? 35 : 40,
+                r: mobile ? 45 : 50,
+                b: mobile ? 50 : 40,
+                l: mobile ? 45 : 50
+            },
+            autosize: true,
+            showlegend: true
+        };
+
+        Plotly.newPlot('compositionPlot', [thcaTrace, thcTrace, completionTrace], compositionLayout, {
+            responsive: true,
+            displayModeBar: false
+        });
+
+        // Rate of Change Plot
+        if (conversionRates.length > 0) {
+            const rateTrace = {
+                x: rateTimestamps,
+                y: conversionRates,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Conversion Rate',
+                line: { color: '#17a2b8', width: mobile ? 2 : 3 },
+                marker: { size: mobile ? 6 : 8 },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(23, 162, 184, 0.1)'
+            };
+
+            const avgRate = conversionRates.reduce((a, b) => a + b, 0) / conversionRates.length;
+            const avgRateTrace = {
+                x: rateTimestamps,
+                y: Array(rateTimestamps.length).fill(avgRate),
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Average',
+                line: { color: '#ffc107', width: 2, dash: 'dash' }
+            };
+
+            const rateLayout = {
+                title: {
+                    text: mobile ? 'Conversion Rate' : 'THCa → THC Conversion Rate',
+                    font: { color: '#e0e0e0', size: mobile ? 12 : 14 }
+                },
+                paper_bgcolor: '#151515',
+                plot_bgcolor: '#1a1a1a',
+                xaxis: {
+                    title: mobile ? '' : 'Time',
+                    color: '#a0a0a0',
+                    gridcolor: '#ffffff1a',
+                    titlefont: { size: mobile ? 10 : 12 },
+                    tickfont: { size: mobile ? 8 : 10 }
+                },
+                yaxis: {
+                    title: mobile ? 'g/hr' : 'THC (g/hour)',
+                    color: '#a0a0a0',
+                    gridcolor: '#ffffff1a',
+                    titlefont: { size: mobile ? 10 : 12 },
+                    tickfont: { size: mobile ? 8 : 10 }
+                },
+                legend: {
+                    font: { color: '#e0e0e0', size: mobile ? 9 : 11 },
+                    orientation: mobile ? 'h' : 'v',
+                    y: mobile ? -0.15 : 1,
+                    x: mobile ? 0 : 1,
+                    xanchor: mobile ? 'left' : 'right',
+                    yanchor: mobile ? 'top' : 'top'
+                },
+                margin: {
+                    t: mobile ? 35 : 40,
+                    r: mobile ? 10 : 20,
+                    b: mobile ? 50 : 40,
+                    l: mobile ? 45 : 50
+                },
+                autosize: true,
+                showlegend: true
+            };
+
+            Plotly.newPlot('ratePlot', [rateTrace, avgRateTrace], rateLayout, {
+                responsive: true,
+                displayModeBar: false
+            });
+        } else {
+            document.getElementById('ratePlot').innerHTML = '<div style="text-align: center; padding: 2rem; color: #a0a0a0;">Add more data points to see conversion rate analysis</div>';
+        }
+    }
+
+    function stopTracking() {
+        isTracking = false;
+        stopStopwatch();
+
+        document.getElementById('tareWeight').disabled = false;
+        document.getElementById('thcaWeight').disabled = false;
+        document.getElementById('otherCannabinoids').disabled = document.getElementById('isolateMode').checked ? true : false;
+        document.getElementById('isolateMode').disabled = false;
+        document.getElementById('startBtn').style.display = 'block';
+        document.getElementById('trackingSection').style.display = 'none';
+        document.getElementById('undoBtn').style.display = 'none';
+
+        saveSession();
+    }
+
+    function exportData(format) {
+        if (dataPoints.length === 0) {
+            alert('No data to export');
+            return;
+        }
+
+        if (format === 'csv') {
+            // Add all requested datapoints to the CSV header
+            let csv = 'Timestamp,Current Weight (g),Tare Weight (g),Input THCa (g),Weight Loss (g),Completion (%),Remaining THCa (g),Converted THC (g),THCa %,THC %,Other %,Current Content Weight (g),Current Rate (g/hr)\n';
+            dataPoints.forEach((point, idx) => {
+                // Calculate current rate for each datapoint (except first)
+                let currentRate = '';
+                if (idx > 0) {
+                    const prev = dataPoints[idx - 1];
+                    const timeDiff = (point.timestamp - prev.timestamp) / (1000 * 60 * 60); // hours
+                    const thcDiff = point.convertedTHC - prev.convertedTHC;
+                    currentRate = timeDiff > 0 ? (thcDiff / timeDiff).toFixed(4) : '';
+                }
+                csv += `${point.timestamp.toISOString()},${point.currentWeight},${config.tareWeight},${config.thcaWeight},${point.weightLoss.toFixed(4)},${point.completion.toFixed(2)},${point.remainingTHCA.toFixed(4)},${point.convertedTHC.toFixed(4)},${point.thcaPercent.toFixed(2)},${point.thcPercent.toFixed(2)},${point.otherPercent.toFixed(2)},${point.currentContentWeight.toFixed(4)},${currentRate}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `decarb-data-${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+        } else if (format === 'png') {
+            const activeTab = document.querySelector('.tab-pane.active');
+            const plotDiv = activeTab.querySelector('[id$="Plot"]');
+            if (plotDiv && plotDiv.id) {
+                Plotly.downloadImage(plotDiv.id, {
+                    format: 'png',
+                    width: 1200,
+                    height: 600,
+                    filename: `decarb-chart-${new Date().toISOString().slice(0,10)}`
+                });
+            }
+        }
+    }
+
+    function resetData() {
+        if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+            stopTracking();
+            dataPoints = [];
+            config = {};
+            startTime = null;
+            lastDataPointTime = null;
+            document.getElementById('tareWeight').value = '0';
+            document.getElementById('thcaWeight').value = '';
+            document.getElementById('otherCannabinoids').value = '0';
+            document.getElementById('currentWeight').value = '';
+
+            // Clear IndexedDB
+            if (db) {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const objectStore = transaction.objectStore(STORE_NAME);
+                objectStore.clear();
+            }
+        }
+    }
+
+    // Re-render plots on window resize
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            if (dataPoints.length > 0) {
+                updatePlots();
+            }
+        }, 250);
+    });
+
+    // Re-render plot when tab is switched
+    document.getElementById('chartTabs').addEventListener('shown.bs.tab', function (event) {
+        if (dataPoints.length > 0) {
+            setTimeout(function() {
+                updatePlots();
+            }, 100);
+        }
+    });
+
+    // Save session before page unload
+    window.addEventListener('beforeunload', () => {
+        if (isTracking) {
+            saveSession();
+        }
+    });
+</script>
+</body>
+</html>
