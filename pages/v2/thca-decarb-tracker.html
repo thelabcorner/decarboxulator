@@ -467,169 +467,178 @@
             padding: 1rem;
         }
 
-        /* Mobile optimizations */
+        .config-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .config-stat-card {
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .config-stat-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .config-stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-blue), #0b5ed7);
+            opacity: 0.7;
+        }
+
+        .config-stat-icon {
+            font-size: 1.2rem;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .config-stat-label {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .config-stat-value {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .config-stat-unit {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-left: 0.25rem;
+            font-weight: 500;
+        }
+
+        .config-stat-secondary {
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .config-section-header {
+            grid-column: 1 / -1;
+            color: var(--accent-blue);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0.5rem 0 0.25rem 0;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Mobile optimizations for config summary */
         @media (max-width: 768px) {
-            .navbar-brand {
-                font-size: 1rem;
-            }
-
-            .navbar-brand i {
-                font-size: 0.9rem;
-            }
-
-            .container-main {
-                padding: 0.75rem;
-            }
-
-            .card-modern {
-                padding: 1rem;
-                margin-bottom: 1rem;
-            }
-
-            .card-title {
-                font-size: 1rem;
-            }
-
-            .stats-grid {
+            .config-summary-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 0.5rem;
             }
 
-            .stat-card {
+            .config-stat-card {
                 padding: 0.5rem;
             }
 
-            .stat-label {
+            .config-stat-icon {
+                font-size: 1rem;
+                margin-bottom: 0.375rem;
+            }
+
+            .config-stat-label {
                 font-size: 0.7rem;
+                margin-bottom: 0.375rem;
             }
 
-            .stat-value {
-                font-size: 1.1rem;
+            .config-stat-value {
+                font-size: 1rem;
             }
 
-            .stat-unit {
-                font-size: 0.75rem;
+            .config-stat-unit {
+                font-size: 0.8rem;
             }
 
-            .analytics-toolbar {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.5rem;
-                padding: 0.75rem;
-            }
-
-            .toolbar-stat {
-                padding: 0.5rem;
-            }
-
-            .toolbar-stat-icon {
-                font-size: 1.2rem;
-            }
-
-            .toolbar-stat-label {
+            .config-stat-secondary {
                 font-size: 0.65rem;
+                margin-top: 0.125rem;
             }
 
-            .toolbar-stat-value {
-                font-size: 0.95rem;
-            }
-
-            .analytics-row {
-                grid-template-columns: 1fr;
-                gap: 0.75rem;
-            }
-
-            .analytics-card {
-                padding: 1rem;
-            }
-
-            .analytics-value {
-                font-size: 1.5rem;
-            }
-
-            .stopwatch-display {
-                font-size: 1.8rem;
-            }
-
-            .alert-info {
-                padding: 0.75rem;
-                font-size: 0.85rem;
-            }
-
-            .btn-group-modern {
-                gap: 0.5rem;
-            }
-
-            .btn-secondary,
-            .btn-warning,
-            .btn-danger {
-                padding: 0.65rem 0.75rem;
-                font-size: 0.9rem;
-            }
-
-            .btn-secondary i,
-            .btn-warning i,
-            .btn-danger i {
-                font-size: 0.85rem;
-            }
-
-            .btn-icon-mobile {
-                padding: 0.75rem;
-                min-width: 48px;
-            }
-
-            .btn-icon-mobile .btn-text {
-                display: none;
-            }
-
-            .plot-container {
-                padding: 0.25rem;
-                margin-bottom: 1rem;
-            }
-
-            .tab-content {
-                padding: 0.5rem;
-            }
-
-            .nav-tabs .nav-link {
-                padding: 0.65rem 0.75rem;
-                font-size: 0.85rem;
-                margin-right: 0.25rem;
-            }
-
-            .nav-tabs .nav-link i {
-                display: none;
-            }
-
-            .progress-container {
-                padding: 0.75rem;
-                margin-bottom: 1rem;
-            }
-
-            .progress {
-                height: 32px;
-                line-height: 32px;
-            }
-
-            .progress-bar {
-                font-size: 0.9rem;
-                line-height: 32px;
+            .config-section-header {
+                font-size: 0.8rem;
+                margin: 0.375rem 0 0.125rem 0;
+                padding-bottom: 0.375rem;
             }
         }
 
         @media (max-width: 480px) {
-            .stats-grid {
+            .config-summary-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
 
-            .stat-value {
-                font-size: 1rem;
+            .config-stat-value {
+                font-size: 0.95rem;
             }
         }
 
-        @media (max-width: 768px) and (orientation: landscape) {
-            .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
+        @keyframes buttonSuccess {
+            0% {
+                transform: scale(1);
+                background-color: var(--accent-blue);
             }
+            50% {
+                transform: scale(0.95);
+                background-color: #28a745;
+            }
+            100% {
+                transform: scale(1);
+                background-color: var(--accent-blue);
+            }
+        }
+
+        @keyframes checkmarkSlide {
+            0% {
+                opacity: 0;
+                transform: translateX(-10px) scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(0) scale(1.2);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .btn-animate-success {
+            animation: buttonSuccess 0.6s ease-in-out;
+        }
+
+        .btn-checkmark {
+            animation: checkmarkSlide 0.5s ease-out;
         }
     </style>
 </head>
@@ -673,6 +682,10 @@
             <label class="form-check-label" for="isolateMode">
                 Isolate Mode (Pure THCa - No Other Cannabinoids)
             </label>
+        </div>
+        <!-- Config summary section -->
+        <div id="configSummary" class="config-summary-grid" style="margin-bottom: 1rem;">
+            <!-- Populated by JS -->
         </div>
         <button class="btn btn-primary" id="startBtn" onclick="startTracking()">
             <i class="fas fa-play me-2"></i>Start Tracking
@@ -874,6 +887,7 @@
             document.getElementById('startBtn').style.display = 'none';
             document.getElementById('trackingSection').style.display = 'block';
 
+            updateConfigSummary(); // <-- Ensure config summary is recalculated and rendered
             updateDisplay();
             updateUndoButton();
             startStopwatch();
@@ -977,6 +991,17 @@
             return;
         }
 
+        // Animate the button
+        const addBtn = document.querySelector('button[onclick="addDataPoint()"]');
+        const originalHTML = addBtn.innerHTML;
+
+        // Add success animation class
+        addBtn.classList.add('btn-animate-success');
+
+        // Change button text with checkmark animation
+        addBtn.innerHTML = '<i class="fas fa-check btn-checkmark me-2"></i><span>Added!</span>';
+        addBtn.disabled = true;
+
         const timestamp = new Date();
         const currentContentWeight = currentWeight - config.tareWeight;
         const weightLoss = config.initialTotalWeight - currentWeight;
@@ -1007,6 +1032,13 @@
         updateDisplay();
         updateUndoButton();
         saveSession();
+
+        // Reset button after animation
+        setTimeout(() => {
+            addBtn.classList.remove('btn-animate-success');
+            addBtn.innerHTML = originalHTML;
+            addBtn.disabled = false;
+        }, 1000);
     }
 
     function removeLastDataPoint() {
@@ -1590,6 +1622,92 @@
         if (isTracking) {
             saveSession();
         }
+    });
+
+    function updateConfigSummary() {
+        const tareWeight = parseFloat(document.getElementById('tareWeight').value) || 0;
+        const thcaWeight = parseFloat(document.getElementById('thcaWeight').value) || 0;
+        const otherCannabinoids = parseFloat(document.getElementById('otherCannabinoids').value) || 0;
+
+        const totalWeight = tareWeight + thcaWeight + otherCannabinoids;
+        const contentWeight = thcaWeight + otherCannabinoids;
+        const otherPercent = contentWeight > 0 ? (otherCannabinoids / contentWeight) * 100 : 0;
+        const thcaPercent = contentWeight > 0 ? (thcaWeight / contentWeight) * 100 : 0;
+        const expectedFinalTHC = thcaWeight * CONVERSION_RATIO;
+        const expectedCO2Loss = thcaWeight * (1 - CONVERSION_RATIO);
+        const expectedFinalContentWeight = expectedFinalTHC + otherCannabinoids;
+        const expectedFinalVesselWeight = tareWeight + expectedFinalContentWeight;
+
+        document.getElementById('configSummary').innerHTML = `
+            <div class="config-section-header">
+                <i class="fas fa-balance-scale me-2"></i>Current Configuration
+            </div>
+            <div class="config-stat-card">
+                <i class="config-stat-icon fas fa-weight"></i>
+                <div class="config-stat-label">Total Weight</div>
+                <div class="config-stat-value">${totalWeight.toFixed(3)}<span class="config-stat-unit">g</span></div>
+                <div class="config-stat-secondary">Tare + Content</div>
+            </div>
+            <div class="config-stat-card">
+                <i class="config-stat-icon fas fa-seedling"></i>
+                <div class="config-stat-label">THCa Input</div>
+                <div class="config-stat-value">${thcaWeight.toFixed(3)}<span class="config-stat-unit">g</span></div>
+                <div class="config-stat-secondary">${thcaPercent.toFixed(1)}% of content</div>
+            </div>
+            <div class="config-stat-card">
+                <i class="config-stat-icon fas fa-cannabis"></i>
+                <div class="config-stat-label">Content Weight</div>
+                <div class="config-stat-value">${contentWeight.toFixed(3)}<span class="config-stat-unit">g</span></div>
+                <div class="config-stat-secondary">THCa + Other</div>
+            </div>
+
+            <div class="config-stat-card">
+                <i class="config-stat-icon fas fa-leaf"></i>
+                <div class="config-stat-label">Other Cannabinoids</div>
+                <div class="config-stat-value">${otherCannabinoids.toFixed(3)}<span class="config-stat-unit">g</span></div>
+                <div class="config-stat-secondary">${otherPercent.toFixed(1)}% of content</div>
+            </div>
+
+            <div class="config-section-header">
+                <i class="fas fa-flask me-2"></i>Expected Results (100% Decarb)
+            </div>
+            <div class="config-stat-card">
+                <i class="config-stat-icon fas fa-cloud"></i>
+                <div class="config-stat-label">CO₂ Loss</div>
+                <div class="config-stat-value">${expectedCO2Loss.toFixed(3)}<span class="config-stat-unit">g</span></div>
+                <div class="config-stat-secondary">THCA => THC + CO₂</div>
+            </div>
+            <div class="config-stat-card">
+                <i class="config-stat-icon fas fa-check-circle"></i>
+                <div class="config-stat-label">Final THC</div>
+                <div class="config-stat-value">${expectedFinalTHC.toFixed(3)}<span class="config-stat-unit">g</span></div>
+                <div class="config-stat-secondary">Fully converted</div>
+            </div>
+            <div class="config-stat-card">
+                <i class="config-stat-icon fas fa-box"></i>
+                <div class="config-stat-label">Final Content</div>
+                <div class="config-stat-value">${expectedFinalContentWeight.toFixed(3)}<span class="config-stat-unit">g</span></div>
+                <div class="config-stat-secondary">THC + Other</div>
+            </div>
+            <div class="config-stat-card">
+                <i class="config-stat-icon fas fa-balance-scale-right"></i>
+                <div class="config-stat-label">Final Vessel Weight</div>
+                <div class="config-stat-value">${expectedFinalVesselWeight.toFixed(3)}<span class="config-stat-unit">g</span></div>
+                <div class="config-stat-secondary">Target weight</div>
+            </div>
+        `;
+    }
+
+    // Attach live update listeners
+    ['tareWeight', 'thcaWeight', 'otherCannabinoids', 'isolateMode'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updateConfigSummary);
+        document.getElementById(id).addEventListener('change', updateConfigSummary);
+    });
+
+    // Initial summary on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        updateConfigSummary();
+        // ...existing code...
     });
 </script>
 </body>
