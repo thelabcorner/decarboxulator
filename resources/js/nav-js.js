@@ -14,16 +14,17 @@ window.toggleMobileMenu = function() {
 async function includeHTML(id, url) {
     const el = document.getElementById(id);
     const response = await fetch(url);
+    if (!response.ok) return; // Abort on 404 or other errors
     const html = await response.text();
     el.innerHTML = html;
 
     // Execute any scripts in the loaded HTML
     const scripts = el.querySelectorAll('script');
     scripts.forEach(script => {
-    const newScript = document.createElement('script');
-    newScript.textContent = script.textContent;
-    document.head.appendChild(newScript);
-});
+        const newScript = document.createElement('script');
+        newScript.textContent = script.textContent;
+        document.head.appendChild(newScript);
+    });
 }
 
     // Process includes and set up mobile menu handlers
