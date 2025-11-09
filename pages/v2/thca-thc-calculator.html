@@ -521,7 +521,7 @@ THCa <i class="fas fa-arrow-left mx-1 opacity-50"></i> THC
                 <div class="stat-card">
                     <i class="stat-icon fas fa-percentage"></i>
                     <div class="stat-label">Mass Retained</div>
-                    <div class="stat-value">87.73<span class="stat-unit">%</span></div>
+                    <div class="stat-value" id="massPercentage">87.7<span class="stat-unit">%</span></div>
                 </div>
                 <div class="stat-card">
                     <i class="stat-icon fas fa-balance-scale"></i>
@@ -574,7 +574,7 @@ THCa <i class="fas fa-arrow-left mx-1 opacity-50"></i> THC
                 <div class="stat-card">
                     <i class="stat-icon fas fa-percentage"></i>
                     <div class="stat-label">Mass Increase</div>
-                    <div class="stat-value">12.27<span class="stat-unit">%</span></div>
+                    <div class="stat-value" id="massPercentageReverse">12.27<span class="stat-unit">%</span></div>
                 </div>
                 <div class="stat-card">
                     <i class="stat-icon fas fa-balance-scale"></i>
@@ -769,7 +769,7 @@ THCa <i class="fas fa-arrow-left mx-1 opacity-50"></i> THC
     // Constants
     const THCA_MW = 358.47005;
     const THC_MW = 314.46065;
-    const CO2_MW = 44.01;
+    const CO2_MW = 44.0094;
     const CONVERSION_RATIO = THC_MW / THCA_MW;
 
     // Unit conversions to grams
@@ -858,6 +858,7 @@ THCa <i class="fas fa-arrow-left mx-1 opacity-50"></i> THC
         
         document.getElementById('thcResult').innerHTML = `${displayThc.toFixed(3)}<span class="result-unit">${unit}</span>`;
         document.getElementById('co2Released').innerHTML = `${displayCo2.toFixed(3)}<span class="stat-unit">${unit}</span>`;
+        document.getElementById('massPercentage').innerHTML = `${(CONVERSION_RATIO * 100).toFixed(3)}<span class="stat-unit">%</span>`;
         document.getElementById('weightLoss').innerHTML = `${displayLoss.toFixed(3)}<span class="stat-unit">${unit}</span>`;
         
         if (document.getElementById('showAllUnits').checked) {
@@ -883,6 +884,7 @@ THCa <i class="fas fa-arrow-left mx-1 opacity-50"></i> THC
         
         document.getElementById('thcaResult').innerHTML = `${displayThca.toFixed(3)}<span class="result-unit">${unit}</span>`;
         document.getElementById('co2ReleasedReverse').innerHTML = `${displayCo2.toFixed(3)}<span class="stat-unit">${unit}</span>`;
+        document.getElementById('massPercentageReverse').innerHTML = `${(((THCA_MW - THC_MW) / THC_MW) * 100).toFixed(3)}<span class="stat-unit">%</span>`;
         document.getElementById('weightAdded').innerHTML = `${displayAdded.toFixed(3)}<span class="stat-unit">${unit}</span>`;
         
         if (document.getElementById('showAllUnits').checked) {
