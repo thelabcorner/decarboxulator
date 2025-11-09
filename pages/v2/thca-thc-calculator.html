@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THCa ⇄ THC Conversion Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.js"></script>
+
+    <link rel="include" href="/pages/v2/dynamic/pwa-meta.html">
+
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #151515;
+            --bg-tertiary: #1a1a1a;
+            --border-color: #ffffff26;
+            --accent-blue: #0d6efd;
+            --accent-green: #28a745;
+            --accent-yellow: #ffc107;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: var(--text-primary);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .card-modern {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title i {
+            color: var(--accent-blue);
+        }
+
+        .form-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-tertiary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .input-group-text {
+            background: #0d6efdba;
+            color: white;
+            font-weight: 700;
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-secondary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .conversion-direction {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .direction-toggle {
+            display: inline-flex;
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.5rem;
+            gap: 0.5rem;
+        }
+
+        .direction-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background-color: transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .direction-btn:hover {
+            color: var(--text-primary);
+            background-color: var(--bg-secondary);
+        }
+
+        .direction-btn.active {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        .conversion-arrow {
+            font-size: 2rem;
+            color: var(--accent-blue);
+            margin: 1rem 0;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+            border: 2px solid var(--accent-blue);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .result-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .result-value {
+            color: var(--accent-blue);
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-unit {
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            margin-left: 0.5rem;
+        }
+
+        .result-subtext {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .stat-unit {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-left: 0.25rem;
+        }
+
+        .alert-info {
+            background-color: rgba(13, 110, 253, 0.1);
+            border: 2px solid rgba(13, 110, 253, 0.3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-check-input {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            width: 1.2rem;
+            height: 1.2rem;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .form-check-label {
+            color: var(--text-secondary);
+            margin-left: 0.5rem;
+        }
+
+        .quick-presets {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .preset-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background-color: var(--bg-secondary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .math-formula {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .formula-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .faq-section {
+            margin-top: 2rem;
+        }
+
+        .faq-item {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .faq-question {
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: var(--bg-tertiary);
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .faq-question:hover {
+            background-color: var(--bg-secondary);
+            color: var(--accent-blue);
+        }
+
+        .faq-question i {
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(90deg);
+        }
+
+        .faq-answer {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 1.25rem;
+            max-height: 1000px;
+        }
+
+        .faq-answer p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .faq-answer p:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .result-value {
+                font-size: 2rem;
+            }
+
+            .direction-toggle {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .direction-btn {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+<nav id="nav" class="navbar-modern">
+</nav>
+
+<div class="container-main">
+    <div class="header">
+        <h1><i class="fas fa-exchange-alt me-2"></i>THCa ⇄ THC Conversion Calculator</h1>
+        <p>Precise molecular weight-based conversions for cannabis decarboxylation</p>
+    </div>
+
+    <div class="alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Scientific Conversion:</strong> This calculator uses exact molecular weights (THCa: 358.47005 g/mol, THC: 314.46065 g/mol) to calculate conversions during decarboxylation. The conversion ratio is 0.87723 (87.73%).
+    </div>
+
+    <div class="card-modern">
+        <div class="card-title">
+            <i class="fas fa-calculator"></i>
+            Conversion Calculator
+        </div>
+
+        <div class="conversion-direction">
+            <div class="direction-toggle">
+                <button class="direction-btn active" id="thcaToThcBtn" onclick="setDirection('thcaToThc')">
+THCa <i class="fas fa-arrow-right mx-1 opacity-50"></i> THC
+                </button>
+                <button class="direction-btn" id="thcToThcaBtn" onclick="setDirection('thcToThca')">
+THCa <i class="fas fa-arrow-left mx-1 opacity-50"></i> THC
+                </button>
+            </div>
+        </div>
+
+        <!-- THCa to THC Section -->
+        <div id="thcaToThcSection">
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label">THCa Amount</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="thcaInput" placeholder="100" step="0.001" oninput="calculateThcaToThc()">
+                        <select class="form-select" id="thcaUnit" onchange="updateThcaPresets(); calculateThcaToThc()" style="max-width: 100px;">
+                            <option value="g">grams</option>
+                            <option value="mg">mg</option>
+                            <option value="oz">oz</option>
+                            <option value="lb">lb</option>
+                            <option value="kg">kg</option>
+                        </select>
+                    </div>
+                    <div class="quick-presets">
+                        <button class="preset-btn" onclick="setPreset('thcaInput', 1)" id="thcaPreset1">1g</button>
+                        <button class="preset-btn" onclick="setPreset('thcaInput', 10)" id="thcaPreset2">10g</button>
+                        <button class="preset-btn" onclick="setPreset('thcaInput', 50)" id="thcaPreset3">50g</button>
+                        <button class="preset-btn" onclick="setPreset('thcaInput', 100)" id="thcaPreset4">100g</button>
+                        <button class="preset-btn" onclick="setPreset('thcaInput', 1000)" id="thcaPreset5">1kg</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="conversion-arrow">
+                <i class="fas fa-arrow-down"></i>
+            </div>
+
+            <div class="result-card">
+                <div class="result-label">Converted THC Amount</div>
+                <div class="result-value" id="thcResult">0.000<span class="result-unit">g</span></div>
+                <div class="result-subtext">After complete decarboxylation</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-cloud"></i>
+                    <div class="stat-label">CO₂ Released</div>
+                    <div class="stat-value" id="co2Released">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-percentage"></i>
+                    <div class="stat-label">Mass Retained</div>
+                    <div class="stat-value">87.73<span class="stat-unit">%</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-balance-scale"></i>
+                    <div class="stat-label">Weight Loss</div>
+                    <div class="stat-value" id="weightLoss">0.000<span class="stat-unit">g</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- THC to THCa Section -->
+        <div id="thcToThcaSection" style="display: none;">
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label">THC Amount</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="thcInput" placeholder="87.73" step="0.001" oninput="calculateThcToThca()">
+                        <select class="form-select" id="thcUnit" onchange="updateThcPresets(); calculateThcToThca()" style="max-width: 100px;">
+                            <option value="g">grams</option>
+                            <option value="mg">mg</option>
+                            <option value="oz">oz</option>
+                            <option value="lb">lb</option>
+                        </select>
+                    </div>
+                    <div class="quick-presets">
+                        <button class="preset-btn" onclick="setPreset('thcInput', 1)" id="thcPreset1">1g</button>
+                        <button class="preset-btn" onclick="setPreset('thcInput', 10)" id="thcPreset2">10g</button>
+                        <button class="preset-btn" onclick="setPreset('thcInput', 50)" id="thcPreset3">50g</button>
+                        <button class="preset-btn" onclick="setPreset('thcInput', 87.73)" id="thcPreset4">87.73g</button>
+                        <button class="preset-btn" onclick="setPreset('thcInput', 877.3)" id="thcPreset5">877.3g</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="conversion-arrow">
+                <i class="fas fa-arrow-down"></i>
+            </div>
+
+            <div class="result-card">
+                <div class="result-label">Original THCa Amount</div>
+                <div class="result-value" id="thcaResult">0.000<span class="result-unit">g</span></div>
+                <div class="result-subtext">Before decarboxylation</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-cloud"></i>
+                    <div class="stat-label">CO₂ Was Released</div>
+                    <div class="stat-value" id="co2ReleasedReverse">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-percentage"></i>
+                    <div class="stat-label">Mass Increase</div>
+                    <div class="stat-value">12.27<span class="stat-unit">%</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-balance-scale"></i>
+                    <div class="stat-label">Weight Added</div>
+                    <div class="stat-value" id="weightAdded">0.000<span class="stat-unit">g</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="showAllUnits" onchange="toggleAllUnits()">
+                <label class="form-check-label" for="showAllUnits">
+                    Show results in all units
+                </label>
+            </div>
+            <div id="allUnitsDisplay" style="display: none;">
+                <div class="stats-grid" id="allUnitsGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Batch Calculator -->
+    <div class="card-modern">
+        <div class="card-title">
+            <i class="fas fa-cubes"></i>
+            Batch Calculator
+        </div>
+        
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Total Product Weight</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="batchWeight" placeholder="1000" step="0.01" oninput="calculateBatch()">
+                    <span class="input-group-text">g</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">THCa Percentage</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="batchThcaPercent" placeholder="85" step="0.1" min="0" max="100" oninput="calculateBatch()">
+                    <span class="input-group-text">%</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="batchResults" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-seedling"></i>
+                    <div class="stat-label">Total THCa</div>
+                    <div class="stat-value" id="batchTotalThca">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-cannabis"></i>
+                    <div class="stat-label">Total THC After Decarb</div>
+                    <div class="stat-value" id="batchTotalThc">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-balance-scale"></i>
+                    <div class="stat-label">Final Product Weight</div>
+                    <div class="stat-value" id="batchFinalWeight">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-chart-line"></i>
+                    <div class="stat-label">Final THC %</div>
+                    <div class="stat-value" id="batchFinalPercent">0.00<span class="stat-unit">%</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <div class="card-modern">
+            <div class="card-title">
+                <i class="fas fa-question-circle"></i>
+                Frequently Asked Questions
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What is the conversion ratio between THCa and THC?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>The conversion ratio is based on molecular weights:</p>
+                    <div class="math-formula">
+                        <div>$$\text{Conversion Ratio} = \frac{\text{MW}_{\text{THC}}}{\text{MW}_{\text{THCa}}} = \frac{314.46065}{358.47005} = 0.87723$$</div>
+                        <div class="formula-label">87.73% of THCa mass becomes THC</div>
+                    </div>
+                    <p>This means 1 gram of THCa produces 0.87723 grams of THC, with 0.1227 grams released as CO₂.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Why does weight decrease during decarboxylation?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>During decarboxylation, THCa loses a carboxyl group (COOH) which is released as CO₂ gas:</p>
+                    <div class="math-formula">
+                        <div>$$\text{THCa} \xrightarrow{\text{Heat}} \text{THC} + \text{CO}_2$$</div>
+                        <div class="formula-label">Decarboxylation reaction</div>
+                    </div>
+                    <p>The CO₂ molecule has a mass of 44.01 g/mol, which represents the 12.27% weight loss during complete conversion.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>How do I calculate final THC percentage after decarboxylation?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>If you start with a product containing X% THCa and Y% other compounds:</p>
+                    <div class="math-formula">
+                        <div>$$\text{Final THC\%} = \frac{X \times 0.87723}{(X \times 0.87723) + Y} \times 100$$</div>
+                        <div class="formula-label">Final THC percentage formula</div>
+                    </div>
+                    <p>Example: 85% THCa + 15% other compounds → (85 × 0.87723) / ((85 × 0.87723) + 15) × 100 = 83.26% THC</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Is this conversion 100% efficient in practice?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>These calculations represent theoretical maximum conversion. In practice, conversion efficiency depends on:</p>
+                    <p><strong>Temperature:</strong> Optimal decarboxylation occurs around 220-240°F (104-116°C)</p>
+                    <p><strong>Time:</strong> Complete conversion typically requires 30-60 minutes at optimal temperature</p>
+                    <p><strong>Conditions:</strong> Some THC may degrade to CBN at higher temperatures or longer times</p>
+                    <p>Real-world conversion efficiency is typically 85-95% of the theoretical maximum shown in these calculations.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Can I convert THC back to THCa?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>No, decarboxylation is an irreversible chemical reaction. Once THCa loses its carboxyl group and becomes THC, it cannot naturally regain it to become THCa again.</p>
+                    <p>The "THC → THCa" calculator is used to determine how much THCa was originally present before decarboxylation occurred, which is useful for:</p>
+                    <p>• Calculating starting material amounts</p>
+                    <p>• Understanding source material composition</p>
+                    <p>• Planning batch production</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<footer id="footer" class="footer-modern">
+</footer>
+
+
+<script>
+    async function includeHTML(id, url) {
+        const el = document.getElementById(id);
+        const response = await fetch(url);
+        el.innerHTML = await response.text();
+    }
+
+    // Process link includes immediately when found
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Process link[rel="include"] elements
+        const includeLinks = document.querySelectorAll('link[rel="include"]');
+        for (const link of includeLinks) {
+            const res = await fetch(link.getAttribute('href'));
+            const html = await res.text();
+            link.insertAdjacentHTML('beforebegin', html);
+            link.remove();
+        }
+
+        // Process nav and footer
+        await Promise.all([
+            includeHTML("nav", "/pages/v2/dynamic/nav.html"),
+            includeHTML("footer", "/pages/v2/dynamic/footer.html")
+        ]);
+    });
+</script>
+<script src="/resources/js/nav-js.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/contrib/auto-render.min.js"></script>
+<script>
+    // Constants
+    const THCA_MW = 358.47005;
+    const THC_MW = 314.46065;
+    const CO2_MW = 44.01;
+    const CONVERSION_RATIO = THC_MW / THCA_MW;
+
+    // Unit conversions to grams
+    const UNITS = {
+        'g': 1,
+        'mg': 0.001,
+        'oz': 28.3495,
+        'lb': 453.592,
+        'kg': 1000
+    };
+
+    // Preset values for different units (in that unit)
+    const PRESET_VALUES = {
+        'g': [1, 10, 50, 100, 1000],
+        'mg': [100, 1000, 5000, 10000, 50000],
+        'oz': [0.035, 0.35, 1.76, 3.53, 35.3],
+        'lb': [0.002, 0.022, 0.11, 0.22, 2.2],
+        'kg': [0.001, 0.01, 0.05, 0.1, 1]
+    };
+
+    // THC-specific presets (for reverse calculation)
+    const THC_PRESET_VALUES = {
+        'g': [1, 10, 50, 87.73, 877.3],
+        'mg': [100, 1000, 5000, 87730, 877300],
+        'oz': [0.035, 0.35, 1.76, 3.09, 30.9],
+        'lb': [0.002, 0.022, 0.11, 0.19, 1.9],
+        'kg': [0.001, 0.01, 0.05, 0.088, 0.88]
+    };
+
+    let currentDirection = 'thcaToThc';
+
+    // Toast Configuration
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#1a1a1a',
+        color: '#e0e0e0',
+        iconColor: '#0d6efd'
+    });
+
+    function setDirection(direction) {
+        currentDirection = direction;
+        
+        if (direction === 'thcaToThc') {
+            document.getElementById('thcaToThcBtn').classList.add('active');
+            document.getElementById('thcToThcaBtn').classList.remove('active');
+            document.getElementById('thcaToThcSection').style.display = 'block';
+            document.getElementById('thcToThcaSection').style.display = 'none';
+            calculateThcaToThc();
+        } else {
+            document.getElementById('thcToThcaBtn').classList.add('active');
+            document.getElementById('thcaToThcBtn').classList.remove('active');
+            document.getElementById('thcToThcaSection').style.display = 'block';
+            document.getElementById('thcaToThcSection').style.display = 'none';
+            calculateThcToThca();
+        }
+    }
+
+    function setPreset(inputId, value) {
+        document.getElementById(inputId).value = value;
+        if (inputId === 'thcaInput') {
+            calculateThcaToThc();
+        } else {
+            calculateThcToThca();
+        }
+    }
+
+    function calculateThcaToThc() {
+        const thcaValue = parseFloat(document.getElementById('thcaInput').value) || 0;
+        const unit = document.getElementById('thcaUnit').value;
+        
+        // Convert to grams
+        const thcaGrams = thcaValue * UNITS[unit];
+        
+        // Calculate THC
+        const thcGrams = thcaGrams * CONVERSION_RATIO;
+        const co2Grams = thcaGrams * (1 - CONVERSION_RATIO);
+        
+        // Display results in the selected unit
+        const displayThc = thcGrams / UNITS[unit];
+        const displayCo2 = co2Grams / UNITS[unit];
+        const displayLoss = co2Grams / UNITS[unit];
+        
+        document.getElementById('thcResult').innerHTML = `${displayThc.toFixed(3)}<span class="result-unit">${unit}</span>`;
+        document.getElementById('co2Released').innerHTML = `${displayCo2.toFixed(3)}<span class="stat-unit">${unit}</span>`;
+        document.getElementById('weightLoss').innerHTML = `${displayLoss.toFixed(3)}<span class="stat-unit">${unit}</span>`;
+        
+        if (document.getElementById('showAllUnits').checked) {
+            displayAllUnits(thcGrams, 'thc');
+        }
+    }
+
+    function calculateThcToThca() {
+        const thcValue = parseFloat(document.getElementById('thcInput').value) || 0;
+        const unit = document.getElementById('thcUnit').value;
+        
+        // Convert to grams
+        const thcGrams = thcValue * UNITS[unit];
+        
+        // Calculate THCa
+        const thcaGrams = thcGrams / CONVERSION_RATIO;
+        const co2Grams = thcaGrams - thcGrams;
+        
+        // Display results in the selected unit
+        const displayThca = thcaGrams / UNITS[unit];
+        const displayCo2 = co2Grams / UNITS[unit];
+        const displayAdded = co2Grams / UNITS[unit];
+        
+        document.getElementById('thcaResult').innerHTML = `${displayThca.toFixed(3)}<span class="result-unit">${unit}</span>`;
+        document.getElementById('co2ReleasedReverse').innerHTML = `${displayCo2.toFixed(3)}<span class="stat-unit">${unit}</span>`;
+        document.getElementById('weightAdded').innerHTML = `${displayAdded.toFixed(3)}<span class="stat-unit">${unit}</span>`;
+        
+        if (document.getElementById('showAllUnits').checked) {
+            displayAllUnits(thcaGrams, 'thca');
+        }
+    }
+
+    function toggleAllUnits() {
+        const display = document.getElementById('allUnitsDisplay');
+        if (document.getElementById('showAllUnits').checked) {
+            display.style.display = 'block';
+            if (currentDirection === 'thcaToThc') {
+                calculateThcaToThc();
+            } else {
+                calculateThcToThca();
+            }
+        } else {
+            display.style.display = 'none';
+        }
+    }
+
+    function displayAllUnits(grams, type) {
+        const grid = document.getElementById('allUnitsGrid');
+        const label = type === 'thc' ? 'THC' : 'THCa';
+        
+        let html = '';
+        for (const [unit, multiplier] of Object.entries(UNITS)) {
+            const value = grams / multiplier;
+            html += `
+                <div class="stat-card">
+                    <div class="stat-label">${label} in ${unit}</div>
+                    <div class="stat-value">${value.toFixed(6)}<span class="stat-unit">${unit}</span></div>
+                </div>
+            `;
+        }
+        
+        grid.innerHTML = html;
+    }
+
+    function calculateBatch() {
+        const batchWeight = parseFloat(document.getElementById('batchWeight').value) || 0;
+        const thcaPercent = parseFloat(document.getElementById('batchThcaPercent').value) || 0;
+        
+        if (batchWeight <= 0 || thcaPercent <= 0) {
+            document.getElementById('batchResults').style.display = 'none';
+            return;
+        }
+        
+        const otherPercent = 100 - thcaPercent;
+        const totalThca = batchWeight * (thcaPercent / 100);
+        const otherWeight = batchWeight * (otherPercent / 100);
+        const totalThc = totalThca * CONVERSION_RATIO;
+        const finalWeight = totalThc + otherWeight;
+        const finalThcPercent = (totalThc / finalWeight) * 100;
+        
+        document.getElementById('batchTotalThca').innerHTML = `${totalThca.toFixed(3)}<span class="stat-unit">g</span>`;
+        document.getElementById('batchTotalThc').innerHTML = `${totalThc.toFixed(3)}<span class="stat-unit">g</span>`;
+        document.getElementById('batchFinalWeight').innerHTML = `${finalWeight.toFixed(3)}<span class="stat-unit">g</span>`;
+        document.getElementById('batchFinalPercent').innerHTML = `${finalThcPercent.toFixed(2)}<span class="stat-unit">%</span>`;
+        
+        document.getElementById('batchResults').style.display = 'block';
+    }
+
+    function toggleFAQ(element) {
+        const faqItem = element.parentElement;
+        const isActive = faqItem.classList.contains('active');
+        
+        // Close all FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Open clicked item if it wasn't active
+        if (!isActive) {
+            faqItem.classList.add('active');
+        }
+    }
+
+    function updateThcaPresets() {
+        const unit = document.getElementById('thcaUnit').value;
+        const presets = PRESET_VALUES[unit];
+
+        for (let i = 0; i < 5; i++) {
+            const btn = document.getElementById(`thcaPreset${i + 1}`);
+            const value = presets[i];
+            btn.onclick = () => setPreset('thcaInput', value);
+
+            // Format display value
+            let displayValue;
+            if (value < 1) {
+                displayValue = value.toFixed(3).replace(/\.?0+$/, '');
+            } else if (value < 100) {
+                displayValue = value.toFixed(2).replace(/\.?0+$/, '');
+            } else {
+                displayValue = value.toFixed(0);
+            }
+
+            btn.textContent = `${displayValue}${unit}`;
+        }
+    }
+
+    function updateThcPresets() {
+        const unit = document.getElementById('thcUnit').value;
+        const presets = THC_PRESET_VALUES[unit];
+
+        for (let i = 0; i < 5; i++) {
+            const btn = document.getElementById(`thcPreset${i + 1}`);
+            const value = presets[i];
+            btn.onclick = () => setPreset('thcInput', value);
+
+            // Format display value
+            let displayValue;
+            if (value < 1) {
+                displayValue = value.toFixed(3).replace(/\.?0+$/, '');
+            } else if (value < 100) {
+                displayValue = value.toFixed(2).replace(/\.?0+$/, '');
+            } else {
+                displayValue = value.toFixed(0);
+            }
+
+            btn.textContent = `${displayValue}${unit}`;
+        }
+    }
+
+    // Initialize KaTeX rendering
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+        });
+        
+        // Initialize preset buttons
+        updateThcaPresets();
+        updateThcPresets();
+
+        // Initial calculation
+        calculateThcaToThc();
+    });
+</script>
+</body>
+</html>

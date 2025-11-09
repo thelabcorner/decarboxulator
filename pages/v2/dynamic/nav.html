@@ -1,0 +1,331 @@
+<style>
+    /* Modern shadcn-style Navbar */
+    .navbar-modern {
+        background-color: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        padding: 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        backdrop-filter: blur(8px);
+    }
+
+    .navbar-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 60px;
+    }
+
+    .navbar-brand-modern {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 1.125rem;
+        letter-spacing: -0.025em;
+        transition: color 0.2s;
+    }
+
+    .navbar-brand-modern:hover {
+        color: var(--accent-blue);
+    }
+
+    .navbar-brand-icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, var(--accent-blue), #0b5ed7);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        color: white;
+    }
+
+    .navbar-brand-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+    }
+
+    .navbar-brand-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+    }
+
+    .navbar-brand-subtitle {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        font-weight: 400;
+    }
+
+    /* Desktop Navigation */
+    .navbar-nav-desktop {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-item-desktop {
+        position: relative;
+    }
+
+    .nav-link-desktop {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+
+    .nav-link-desktop:hover {
+        color: var(--text-primary);
+        background-color: var(--bg-tertiary);
+        border-color: var(--border-color);
+    }
+
+    .nav-link-desktop.active {
+        color: var(--accent-blue);
+        background-color: rgba(13, 110, 253, 0.1);
+        border-color: rgba(13, 110, 253, 0.2);
+    }
+
+    /* Mobile Menu Toggle */
+    .mobile-menu-toggle {
+        display: none;
+        width: 40px;
+        height: 40px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background-color: transparent;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mobile-menu-toggle:hover {
+        background-color: var(--bg-tertiary);
+        border-color: var(--accent-blue);
+    }
+
+    .mobile-menu-toggle.active {
+        background-color: var(--bg-tertiary);
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+    }
+
+    /* Hamburger Animation */
+    .hamburger {
+        width: 20px;
+        height: 2px;
+        background-color: currentColor;
+        position: relative;
+        transition: all 0.3s;
+    }
+
+    .hamburger::before,
+    .hamburger::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        left: 0;
+        background-color: currentColor;
+        transition: all 0.3s;
+    }
+
+    .hamburger::before {
+        top: -6px;
+    }
+
+    .hamburger::after {
+        top: 6px;
+    }
+
+    .mobile-menu-toggle.active .hamburger {
+        background-color: transparent;
+    }
+
+    .mobile-menu-toggle.active .hamburger::before {
+        transform: rotate(45deg);
+        top: 0;
+    }
+
+    .mobile-menu-toggle.active .hamburger::after {
+        transform: rotate(-45deg);
+        top: 0;
+    }
+
+    /* Mobile Navigation Menu */
+    .navbar-nav-mobile {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        border-top: 1px solid var(--border-color);
+        transform: translateY(-100vh);
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 999;
+    }
+
+    .navbar-nav-mobile.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .mobile-nav-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1rem;
+    }
+
+    .nav-link-mobile {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        margin-bottom: 0.25rem;
+    }
+
+    .nav-link-mobile:hover {
+        color: var(--text-primary);
+        background-color: var(--bg-tertiary);
+        border-color: var(--border-color);
+    }
+
+    .nav-link-mobile.active {
+        color: var(--accent-blue);
+        background-color: rgba(13, 110, 253, 0.1);
+        border-color: rgba(13, 110, 253, 0.2);
+    }
+
+    .nav-link-mobile i {
+        width: 16px;
+        text-align: center;
+    }
+
+    /* Responsive Behavior */
+    @media (max-width: 768px) {
+
+        .navbar-nav-desktop {
+            display: none;
+        }
+
+        .mobile-menu-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navbar-container {
+            padding: 0 0.75rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .navbar-container {
+            height: 56px;
+        }
+
+        .navbar-brand-modern {
+            font-size: 1rem;
+        }
+
+        .navbar-brand-icon {
+            width: 28px;
+            height: 28px;
+            font-size: 0.875rem;
+        }
+    }
+</style>
+
+<div class="navbar-container">
+    <a href="#" class="navbar-brand-modern">
+        <div class="navbar-brand-icon">
+            <i class="fas fa-flask"></i>
+        </div>
+        <div class="navbar-brand-text">
+            <div class="navbar-brand-title">Decarboxulator&trade;</div>
+            <div class="navbar-brand-subtitle">THCa Decarboxylation Progress Tracker</div>
+        </div>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <ul class="navbar-nav-desktop">
+        <li class="nav-item-desktop">
+            <a href="#" class="nav-link-desktop active">
+                <i class="fas fa-chart-line"></i>
+                <span>Tracker</span>
+            </a>
+        </li>
+        <li class="nav-item-desktop">
+            <a href="#" class="nav-link-desktop">
+                <i class="fas fa-history"></i>
+                <span>History</span>
+            </a>
+        </li>
+        <li class="nav-item-desktop">
+            <a href="#" class="nav-link-desktop">
+                <i class="fas fa-calculator"></i>
+                <span>Calculator</span>
+            </a>
+        </li>
+        <li class="nav-item-desktop">
+            <a href="#" class="nav-link-desktop">
+                <i class="fas fa-info-circle"></i>
+                <span>About</span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" onclick="window.toggleMobileMenu()">
+        <div class="hamburger"></div>
+    </button>
+</div>
+
+<!-- Mobile Navigation Menu -->
+<div class="navbar-nav-mobile" id="mobileNav">
+    <div class="mobile-nav-container">
+        <a href="/pages/v2/thca-thc-calculator" class="nav-link-mobile" data-name="thca-to-thc">
+            <i class="fas fas fa-exchange-alt"></i>
+            <span>THCA <span style="opacity: 0.5;">⇋</span> THC Calculator</span>
+        </a>
+        <a href="/pages/v2/thca-thc-calculator" class="nav-link-mobile" data-name="thca-to-thc">
+            <i class="fas fas fa-exchange-alt"></i>
+            <span>THC <span style="opacity: 0.5;">⇋</span> THCA Calculator</span>
+        </a>
+
+        <a href="/pages/v2/thca-decarb-tracker" class="nav-link-mobile" data-name="tracker">
+            <i class="fas fa-chart-line"></i>
+            <span>Decarboxylation Progress Tracker</span>
+        </a>
+    </div>
+</div>
