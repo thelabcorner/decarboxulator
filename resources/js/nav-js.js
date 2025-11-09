@@ -39,8 +39,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Process nav and footer
 await Promise.all([
-    includeHTML("nav", "/pages/v2/dynamic/nav.html"),
-    includeHTML("footer", "/pages/v2/dynamic/footer.html")
+    includeHTML("nav", "/decarboxulator/pages/v2/dynamic/nav.html"),
+    includeHTML("footer", "/decarboxulator/pages/v2/dynamic/footer.html")
     ]);
 
     // Set up mobile menu event handlers after nav is loaded
