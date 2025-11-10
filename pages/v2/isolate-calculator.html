@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartridge Isolate Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/contrib/auto-render.min.js"></script>
+
+    <link rel="include" href="/decarboxulator/pages/v2/dynamic/pwa-meta.html">
+
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #151515;
+            --bg-tertiary: #1a1a1a;
+            --border-color: #ffffff26;
+            --accent-blue: #0d6efd;
+            --accent-green: #28a745;
+            --accent-yellow: #ffc107;
+            --accent-red: #dc3545;
+            --accent-purple: #6f42c1;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: var(--text-primary);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .card-modern {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title i {
+            color: var(--accent-blue);
+        }
+
+        .form-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-tertiary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .input-group-text {
+            background: #0d6efdba;
+            color: white;
+            font-weight: 700;
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-secondary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .alert-info {
+            background-color: rgba(13, 110, 253, 0.1);
+            border: 2px solid rgba(13, 110, 253, 0.3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 2px solid rgba(255, 193, 7, 0.3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .form-check-input {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            width: 1.2rem;
+            height: 1.2rem;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .form-check-label {
+            color: var(--text-secondary);
+            margin-left: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .stat-unit {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-left: 0.25rem;
+        }
+
+        .percentage-visual {
+            background-color: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .percentage-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .percentage-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .percentage-segment:hover {
+            filter: brightness(1.2);
+        }
+
+        .segment-thc {
+            background: linear-gradient(135deg, var(--accent-blue), #0b5ed7);
+        }
+
+        .segment-cbn {
+            background: linear-gradient(135deg, var(--accent-purple), #5a32a3);
+        }
+
+        .percentage-legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .quick-presets {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .preset-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background-color: var(--bg-secondary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .math-formula {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .formula-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .faq-section {
+            margin-top: 2rem;
+        }
+
+        .faq-item {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .faq-question {
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: var(--bg-tertiary);
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .faq-question:hover {
+            background-color: var(--bg-secondary);
+            color: var(--accent-blue);
+        }
+
+        .faq-question i {
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(90deg);
+        }
+
+        .faq-answer {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 1.25rem;
+            max-height: 2000px;
+        }
+
+        .faq-answer p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .faq-answer p:last-child {
+            margin-bottom: 0;
+        }
+
+        .faq-answer ol, .faq-answer ul {
+            margin-left: 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .faq-answer li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .percentage-bar {
+                height: 60px;
+                flex-direction: column;
+            }
+
+            .percentage-segment {
+                min-height: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav id="nav" class="navbar-modern">
+</nav>
+
+<div class="container-main">
+    <div class="header">
+        <h1><i class="fas fa-vial me-2"></i>Cartridge Isolate Calculator</h1>
+        <p>Calculate cannabinoid requirements for vape cartridge production</p>
+    </div>
+
+    <div class="alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Production Planning:</strong> Calculate the precise amounts of THC isolate and CBN needed for your cartridge batch. Percentages are automatically normalized to 100%.
+    </div>
+
+    <div class="card-modern">
+        <div class="card-title">
+            <i class="fas fa-calculator"></i>
+            Batch Configuration
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Number of Cartridges</label>
+                <input type="number" class="form-control" id="cartCount" placeholder="100" min="1" step="1" oninput="calculateBatch()">
+                <div class="quick-presets">
+                    <button class="preset-btn" onclick="setCartCount(10)">10</button>
+                    <button class="preset-btn" onclick="setCartCount(50)">50</button>
+                    <button class="preset-btn" onclick="setCartCount(100)">100</button>
+                    <button class="preset-btn" onclick="setCartCount(500)">500</button>
+                    <button class="preset-btn" onclick="setCartCount(1000)">1000</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Capacity per Cartridge</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="cartCapacity" placeholder="1.0" step="0.1" min="0.1" oninput="calculateBatch()">
+                    <span class="input-group-text">g</span>
+                </div>
+                <div class="quick-presets">
+                    <button class="preset-btn" onclick="setCapacity(0.5)">0.5g</button>
+                    <button class="preset-btn" onclick="setCapacity(1.0)">1.0g</button>
+                    <button class="preset-btn" onclick="setCapacity(2.0)">2.0g</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label">THC Ratio</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="thcRatio" placeholder="85" step="0.1" min="0" oninput="calculateBatch()">
+                    <span class="input-group-text">parts</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">CBN Ratio</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="cbnRatio" placeholder="5" step="0.1" min="0" oninput="calculateBatch()">
+                    <span class="input-group-text">parts</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert-info">
+            <i class="fas fa-balance-scale me-2"></i>
+            <strong>Auto-Normalized:</strong> Your ratios are automatically converted to percentages that total 100%. For example, 85:5 becomes 94.4% THC and 5.6% CBN.
+        </div>
+    </div>
+
+    <div id="resultsSection" style="display: none;">
+        <div class="card-modern">
+            <div class="card-title">
+                <i class="fas fa-chart-pie"></i>
+                Composition Breakdown
+            </div>
+
+            <div class="percentage-visual">
+                <div class="percentage-bar" id="percentageBar"></div>
+                <div class="percentage-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, var(--accent-blue), #0b5ed7);"></div>
+                        <span id="thcLegend">THC: 0%</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, var(--accent-purple), #5a32a3);"></div>
+                        <span id="cbnLegend">CBN: 0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-weight"></i>
+                    <div class="stat-label">Total Batch Weight</div>
+                    <div class="stat-value" id="totalWeight">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-cannabis"></i>
+                    <div class="stat-label">THC Needed</div>
+                    <div class="stat-value" id="thcWeight">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-moon"></i>
+                    <div class="stat-label">CBN Needed</div>
+                    <div class="stat-value" id="cbnWeight">0.000<span class="stat-unit">g</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-modern">
+            <div class="card-title">
+                <i class="fas fa-seedling"></i>
+                THCa Source Material
+            </div>
+
+            <div class="alert-warning">
+                <i class="fas fa-lightbulb me-2"></i>
+                <strong>Using THCa Isolate?</strong> Calculate how much THCa is needed before decarboxylation to yield your target THC amount.
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-seedling"></i>
+                    <div class="stat-label">THCa Required (Before Decarb)</div>
+                    <div class="stat-value" id="thcaWeight">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-cloud"></i>
+                    <div class="stat-label">CO₂ Loss During Decarb</div>
+                    <div class="stat-value" id="co2Loss">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-percentage"></i>
+                    <div class="stat-label">Conversion Efficiency</div>
+                    <div class="stat-value">87.73<span class="stat-unit">%</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-arrow-right"></i>
+                    <div class="stat-label">Resulting THC</div>
+                    <div class="stat-value" id="resultingThc">0.000<span class="stat-unit">g</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-modern">
+            <div class="card-title">
+                <i class="fas fa-box"></i>
+                Per-Cartridge Breakdown
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-cannabis"></i>
+                    <div class="stat-label">THC per Cart</div>
+                    <div class="stat-value" id="thcPerCart">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-moon"></i>
+                    <div class="stat-label">CBN per Cart</div>
+                    <div class="stat-value" id="cbnPerCart">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-vial"></i>
+                    <div class="stat-label">Total per Cart</div>
+                    <div class="stat-value" id="totalPerCart">0.000<span class="stat-unit">g</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <div class="card-modern">
+            <div class="card-title">
+                <i class="fas fa-question-circle"></i>
+                Frequently Asked Questions
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>How do I use this calculator?</span>
+                </div>
+                <div class="faq-answer">
+                    <p><strong>Step-by-Step Guide:</strong></p>
+                    <ol>
+                        <li><strong>Enter Batch Size:</strong> Specify how many cartridges you're producing</li>
+                        <li><strong>Set Cartridge Capacity:</strong> Enter the capacity of each cartridge in grams (typically 0.5g, 1.0g, or 2.0g)</li>
+                        <li><strong>Define Target Percentages:</strong> Set your desired THC and CBN percentages</li>
+                        <li><strong>Enable Auto-Balance:</strong> Check this to automatically calculate "Other Compounds" to reach 100%</li>
+                        <li><strong>Review Results:</strong> The calculator shows total weights needed, per-cartridge amounts, and THCa requirements</li>
+                    </ol>
+                    <p>The calculator updates in real-time as you enter values, providing immediate feedback on your formulation.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What are the formulas used?</span>
+                </div>
+                <div class="faq-answer">
+                    <p><strong>Total Batch Weight:</strong></p>
+                    <div class="math-formula">
+                        <div>$$\text{Total Weight} = \text{Number of Cartridges} \times \text{Capacity per Cartridge}$$</div>
+                        <div class="formula-label">Total material needed for batch</div>
+                    </div>
+
+                    <p><strong>Cannabinoid Weights:</strong></p>
+                    <div class="math-formula">
+                        <div>$$\text{THC Weight} = \text{Total Weight} \times \frac{\text{THC\%}}{100}$$</div>
+                        <div class="formula-label">THC isolate needed</div>
+                    </div>
+
+                    <div class="math-formula">
+                        <div>$$\text{CBN Weight} = \text{Total Weight} \times \frac{\text{CBN\%}}{100}$$</div>
+                        <div class="formula-label">CBN needed</div>
+                    </div>
+
+                    <p><strong>THCa to THC Conversion:</strong></p>
+                    <div class="math-formula">
+                        <div>$$\text{THCa Required} = \frac{\text{THC Weight}}{0.87723}$$</div>
+                        <div class="formula-label">THCa needed before decarboxylation</div>
+                    </div>
+
+                    <div class="math-formula">
+                        <div>$$\text{CO}_2 \text{ Loss} = \text{THCa Required} - \text{THC Weight}$$</div>
+                        <div class="formula-label">Weight lost during decarboxylation</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What does "Auto-Balance" do?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Auto-balance ensures your formulation adds up to exactly 100% by automatically calculating the "Other Compounds" percentage.</p>
+
+                    <p><strong>With Auto-Balance Enabled:</strong></p>
+                    <div class="math-formula">
+                        <div>$$\text{Other\%} = 100\% - \text{THC\%} - \text{CBN\%}$$</div>
+                        <div class="formula-label">Automatic calculation</div>
+                    </div>
+
+                    <p><strong>What are "Other Compounds"?</strong></p>
+                    <ul>
+                        <li><strong>Cutting Agents:</strong> MCT oil, PG, VG, or terpenes</li>
+                        <li><strong>Other Cannabinoids:</strong> CBD, CBG, CBC, etc.</li>
+                        <li><strong>Flavor Compounds:</strong> Natural or artificial terpenes</li>
+                        <li><strong>Carrier Oils:</strong> Various cutting/dilution agents</li>
+                    </ul>
+
+                    <p><strong>When to Disable Auto-Balance:</strong></p>
+                    <p>Disable if you want to manually specify all three percentages (THC, CBN, and Other). This is useful when you have a specific formulation in mind that doesn't need to add to exactly 100%.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Should I use THC isolate or THCa isolate?</span>
+                </div>
+                <div class="faq-answer">
+                    <p><strong>THC Isolate (Decarboxylated):</strong></p>
+                    <ul>
+                        <li><strong>Pros:</strong> Ready to use, no conversion needed, consistent potency</li>
+                        <li><strong>Cons:</strong> May be more expensive, less shelf-stable in some conditions</li>
+                        <li><strong>Use when:</strong> You want immediate results without processing</li>
+                    </ul>
+
+                    <p><strong>THCa Isolate (Non-Decarboxylated):</strong></p>
+                    <ul>
+                        <li><strong>Pros:</strong> Often cheaper, more stable for storage, allows you to control decarboxylation</li>
+                        <li><strong>Cons:</strong> Requires decarboxylation step, 12.27% weight loss during conversion</li>
+                        <li><strong>Use when:</strong> You have decarboxylation equipment and want cost savings</li>
+                    </ul>
+
+                    <p><strong>Important:</strong> If using THCa isolate, remember to order 12.27% more than your calculated THC needs to account for CO₂ loss during decarboxylation.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What are common cartridge formulations?</span>
+                </div>
+                <div class="faq-answer">
+                    <p><strong>High Potency (85% THC, 5% CBN, 10% Other):</strong></p>
+                    <p>Maximum cannabinoid content for experienced users. The "Other" typically includes terpenes and minimal cutting agents.</p>
+
+                    <p><strong>Balanced (70% THC, 10% CBN, 20% Other):</strong></p>
+                    <p>Good balance between potency and smoothness. More room for terpenes and cutting agents for better viscosity.</p>
+
+                    <p><strong>Smooth (60% THC, 5% CBN, 35% Other):</strong></p>
+                    <p>Lower potency but smoother draw. More cutting agents for better wicking and flavor delivery.</p>
+
+                    <p><strong>Sleep Formula (50% THC, 20% CBN, 30% Other):</strong></p>
+                    <p>Higher CBN content for sedative effects. Often includes relaxing terpenes in the "Other" portion.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer id="footer" class="footer-modern">
+</footer>
+
+<script src="/decarboxulator/resources/js/nav-js.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Constants
+    const THCA_MW = 358.47005;
+    const THC_MW = 314.46065;
+    const CONVERSION_RATIO = THC_MW / THCA_MW; // 0.87723
+
+    // Toast Configuration
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#1a1a1a',
+        color: '#e0e0e0',
+        iconColor: '#0d6efd'
+    });
+
+    function setCartCount(value) {
+        document.getElementById('cartCount').value = value;
+        calculateBatch();
+    }
+
+    function setCapacity(value) {
+        document.getElementById('cartCapacity').value = value;
+        calculateBatch();
+    }
+
+    function calculateBatch() {
+        const cartCount = parseFloat(document.getElementById('cartCount').value) || 0;
+        const cartCapacity = parseFloat(document.getElementById('cartCapacity').value) || 0;
+        const thcRatio = parseFloat(document.getElementById('thcRatio').value) || 0;
+        const cbnRatio = parseFloat(document.getElementById('cbnRatio').value) || 0;
+
+        // Validation
+        if (cartCount <= 0 || cartCapacity <= 0) {
+            document.getElementById('resultsSection').style.display = 'none';
+            return;
+        }
+
+        if (thcRatio === 0 && cbnRatio === 0) {
+            document.getElementById('resultsSection').style.display = 'none';
+            return;
+        }
+
+        // Normalize ratios to percentages that total 100%
+        const totalRatio = thcRatio + cbnRatio;
+        const thcPercent = (thcRatio / totalRatio) * 100;
+        const cbnPercent = (cbnRatio / totalRatio) * 100;
+
+        // Calculate total weight
+        const totalWeight = cartCount * cartCapacity;
+
+        // Calculate component weights
+        const thcWeight = totalWeight * (thcPercent / 100);
+        const cbnWeight = totalWeight * (cbnPercent / 100);
+
+        // Calculate THCa requirements
+        const thcaWeight = thcWeight / CONVERSION_RATIO;
+        const co2Loss = thcaWeight - thcWeight;
+
+        // Calculate per-cartridge amounts
+        const thcPerCart = thcWeight / cartCount;
+        const cbnPerCart = cbnWeight / cartCount;
+        const totalPerCart = cartCapacity;
+
+        // Update display
+        document.getElementById('totalWeight').innerHTML = `${totalWeight.toFixed(3)}<span class="stat-unit">g</span>`;
+        document.getElementById('thcWeight').innerHTML = `${thcWeight.toFixed(3)}<span class="stat-unit">g</span>`;
+        document.getElementById('cbnWeight').innerHTML = `${cbnWeight.toFixed(3)}<span class="stat-unit">g</span>`;
+
+        document.getElementById('thcaWeight').innerHTML = `${thcaWeight.toFixed(3)}<span class="stat-unit">g</span>`;
+        document.getElementById('co2Loss').innerHTML = `${co2Loss.toFixed(3)}<span class="stat-unit">g</span>`;
+        document.getElementById('resultingThc').innerHTML = `${thcWeight.toFixed(3)}<span class="stat-unit">g</span>`;
+
+        document.getElementById('thcPerCart').innerHTML = `${thcPerCart.toFixed(3)}<span class="stat-unit">g</span>`;
+        document.getElementById('cbnPerCart').innerHTML = `${cbnPerCart.toFixed(3)}<span class="stat-unit">g</span>`;
+        document.getElementById('totalPerCart').innerHTML = `${totalPerCart.toFixed(3)}<span class="stat-unit">g</span>`;
+
+        // Update percentage bar
+        updatePercentageBar(thcPercent, cbnPercent);
+
+        // Show results
+        document.getElementById('resultsSection').style.display = 'block';
+    }
+
+    function updatePercentageBar(thcPercent, cbnPercent) {
+        const bar = document.getElementById('percentageBar');
+        let html = '';
+
+        if (thcPercent > 0) {
+            html += `<div class="percentage-segment segment-thc" style="width: ${thcPercent}%">${thcPercent.toFixed(1)}%</div>`;
+        }
+        if (cbnPercent > 0) {
+            html += `<div class="percentage-segment segment-cbn" style="width: ${cbnPercent}%">${cbnPercent.toFixed(1)}%</div>`;
+        }
+
+        bar.innerHTML = html;
+
+        // Update legend
+        document.getElementById('thcLegend').textContent = `THC: ${thcPercent.toFixed(1)}%`;
+        document.getElementById('cbnLegend').textContent = `CBN: ${cbnPercent.toFixed(1)}%`;
+    }
+
+    function toggleFAQ(element) {
+        const faqItem = element.parentElement;
+        const isActive = faqItem.classList.contains('active');
+        
+        // Close all FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Open clicked item if it wasn't active
+        if (!isActive) {
+            faqItem.classList.add('active');
+        }
+    }
+
+    // Initialize KaTeX rendering
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+        });
+    });
+</script>
+</body>
+</html>
+

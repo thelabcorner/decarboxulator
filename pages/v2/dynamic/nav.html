@@ -231,6 +231,128 @@
         text-align: center;
     }
 
+
+
+    /* Dropdown Styles */
+    .nav-dropdown {
+        position: relative;
+    }
+
+    .nav-dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        min-width: 280px;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        padding: 0.5rem;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.2s ease;
+        z-index: 1000;
+    }
+
+    .nav-dropdown:hover .nav-dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .nav-dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        border-radius: 6px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+
+    .nav-dropdown-item:hover {
+        color: var(--text-primary);
+        background-color: var(--bg-tertiary);
+        border-color: var(--border-color);
+    }
+
+    .nav-dropdown-item i {
+        width: 16px;
+        text-align: center;
+    }
+
+
+
+    /* Mobile Dropdown Styles */
+    .mobile-dropdown {
+        position: relative;
+    }
+
+    .mobile-dropdown-toggle {
+        background: transparent;
+        border: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        justify-content: space-between;
+    }
+
+    .mobile-dropdown-toggle:focus {
+        outline: none;
+    }
+
+    .mobile-caret {
+        transition: transform 0.2s ease;
+    }
+
+    .mobile-dropdown-toggle.active .mobile-caret {
+        transform: rotate(180deg);
+    }
+
+    .mobile-dropdown-menu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        margin-left: 1rem;
+        margin-top: 0.25rem;
+    }
+
+    .mobile-dropdown-menu.show {
+        max-height: 400px;
+    }
+
+    .mobile-dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        margin-bottom: 0.25rem;
+    }
+
+    .mobile-dropdown-item:hover {
+        color: var(--text-primary);
+        background-color: var(--bg-tertiary);
+        border-color: var(--border-color);
+    }
+
+    .mobile-dropdown-item i {
+        width: 16px;
+        text-align: center;
+    }
+
+
     /* Responsive Behavior */
     @media (max-width: 768px) {
 
@@ -280,28 +402,39 @@
     <!-- Desktop Navigation -->
     <ul class="navbar-nav-desktop">
         <li class="nav-item-desktop">
-            <a href="#" class="nav-link-desktop active">
-                <i class="fas fa-chart-line"></i>
-                <span>Tracker</span>
+            <a href="#" class="nav-link-desktop">
+                <i class="fas fa-home opacity-50"></i>
+                <span>Home</span>
             </a>
         </li>
-        <li class="nav-item-desktop">
+        <li class="nav-item-desktop nav-dropdown">
             <a href="#" class="nav-link-desktop">
-                <i class="fas fa-history"></i>
-                <span>History</span>
+                <i class="fa-solid fa-calculator opacity-50"></i>
+                <span>Calculators</span>
+                <i class="fa-solid fa-caret-down opacity-25"></i>
             </a>
-        </li>
-        <li class="nav-item-desktop">
-            <a href="#" class="nav-link-desktop">
-                <i class="fas fa-calculator"></i>
-                <span>Calculator</span>
-            </a>
-        </li>
-        <li class="nav-item-desktop">
-            <a href="#" class="nav-link-desktop">
-                <i class="fas fa-info-circle"></i>
-                <span>About</span>
-            </a>
+            <div class="nav-dropdown-menu">
+                <a href="/decarboxulator/pages/v2/thca-thc-calculator#forward" class="nav-dropdown-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>THCA <span style="opacity: 0.5;">⇋</span> THC Calculator</span>
+                </a>
+                <a href="/decarboxulator/pages/v2/thca-thc-calculator#backward" class="nav-dropdown-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>THC <span style="opacity: 0.5;">⇋</span> THCA Calculator</span>
+                </a>
+                <a href="/decarboxulator/pages/v2/thca-content-analyzer" class="nav-dropdown-item">
+                    <i class="fas fa-scale-balanced"></i>
+                    <span>THCA Content Analyzer</span>
+                </a>
+                <a href="/decarboxulator/pages/v2/thca-decarb-tracker" class="nav-dropdown-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Decarboxylation Progress Tracker</span>
+                </a>
+                <a href="/decarboxulator/pages/v2/thca-decarb-tracker" class="nav-dropdown-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Cartridge Isolate Calculator</span>
+                </a>
+            </div>
         </li>
     </ul>
 
@@ -314,18 +447,40 @@
 <!-- Mobile Navigation Menu -->
 <div class="navbar-nav-mobile" id="mobileNav">
     <div class="mobile-nav-container">
-        <a href="/pages/v2/thca-thc-calculator" class="nav-link-mobile" data-name="thca-to-thc">
-            <i class="fas fas fa-exchange-alt"></i>
-            <span>THCA <span style="opacity: 0.5;">⇋</span> THC Calculator</span>
-        </a>
-        <a href="/pages/v2/thca-thc-calculator" class="nav-link-mobile" data-name="thca-to-thc">
-            <i class="fas fas fa-exchange-alt"></i>
-            <span>THC <span style="opacity: 0.5;">⇋</span> THCA Calculator</span>
+        <a href="#" class="nav-link-mobile">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
         </a>
 
-        <a href="/pages/v2/thca-decarb-tracker" class="nav-link-mobile" data-name="tracker">
-            <i class="fas fa-chart-line"></i>
-            <span>Decarboxylation Progress Tracker</span>
-        </a>
+        <div class="mobile-dropdown">
+            <button class="nav-link-mobile mobile-dropdown-toggle" onclick="toggleMobileDropdown(this, event)">
+                <i class="fa-solid fa-calculator"></i>
+                <span>Calculators</span>
+                <i class="fa-solid fa-caret-down mobile-caret"></i>
+            </button>
+
+            <div class="mobile-dropdown-menu">
+                <a href="/decarboxulator/pages/v2/thca-thc-calculator#forward" class="mobile-dropdown-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>THCA <span style="opacity: 0.5;">⇋</span> THC Calculator</span>
+                </a>
+                <a href="/decarboxulator/pages/v2/thca-thc-calculator#backward" class="mobile-dropdown-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>THC <span style="opacity: 0.5;">⇋</span> THCA Calculator</span>
+                </a>
+                <a href="/decarboxulator/pages/v2/thca-content-analyzer" class="mobile-dropdown-item">
+                    <i class="fas fa-scale-balanced"></i>
+                    <span>THCA Content Analyzer</span>
+                </a>
+                <a href="/decarboxulator/pages/v2/thca-decarb-tracker" class="mobile-dropdown-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Decarboxylation Progress Tracker</span>
+                </a>
+                <a href="/decarboxulator/pages/v2/thca-decarb-tracker" class="mobile-dropdown-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Cartridge Isolate Calculator</span>
+                </a>
+            </div>
+        </div>
     </div>
 </div>
