@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THCa Content Analyzer | Rosin & Extracts</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.js"></script>
+
+    <link rel="include" href="/decarboxulator/pages/v2/dynamic/pwa-meta.html">
+
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #151515;
+            --bg-tertiary: #1a1a1a;
+            --bs-secondary-color: #828282bf;
+            --border-color: #ffffff26;
+            --accent-blue: #0d6efd;
+            --accent-green: #28a745;
+            --accent-yellow: #ffc107;
+            --accent-red: #dc3545;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: var(--text-primary);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .card-modern {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title i {
+            color: var(--accent-blue);
+        }
+
+        .form-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-tertiary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .input-group-text {
+            background: #0d6efdba;
+            color: white;
+            font-weight: 700;
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        .alert-info {
+            background-color: rgba(13, 110, 253, 0.1);
+            border: 2px solid rgba(13, 110, 253, 0.3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 2px solid rgba(220, 53, 69, 0.3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 2px solid rgba(255, 193, 7, 0.3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+            border: 2px solid var(--accent-blue);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .result-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .result-value {
+            color: var(--accent-blue);
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-unit {
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            margin-left: 0.5rem;
+        }
+
+        .result-subtext {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .stat-unit {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-left: 0.25rem;
+        }
+
+        .quick-presets {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .preset-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background-color: var(--bg-secondary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .math-formula {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .formula-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .faq-section {
+            margin-top: 2rem;
+        }
+
+        .faq-item {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .faq-question {
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: var(--bg-tertiary);
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .faq-question:hover {
+            background-color: var(--bg-secondary);
+            color: var(--accent-blue);
+        }
+
+        .faq-question i {
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(90deg);
+        }
+
+        .faq-answer {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 1.25rem;
+            max-height: 2000px;
+        }
+
+        .faq-answer p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .faq-answer p:last-child {
+            margin-bottom: 0;
+        }
+
+        .faq-answer ol, .faq-answer ul {
+            margin-left: 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .faq-answer li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .result-value {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav id="nav" class="navbar-modern">
+</nav>
+
+<div class="container-main">
+    <div class="header">
+        <h1><i class="fas fa-microscope me-3 opacity-50"></i>THCa Content Analyzer</h1>
+        <p>Reverse-engineer THCa percentage from decarboxylation weight loss</p>
+    </div>
+
+    <div class="alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Universal Extract Analyzer:</strong> This tool works for any THCa-dominant extract including rosin, BHO, live resin, hash, flower, and THCa isolate. By measuring CO₂ loss during decarboxylation, we can calculate the original THCa content with high accuracy.
+    </div>
+
+    <div class="card-modern">
+        <div class="card-title">
+            <i class="fas fa-calculator"></i>
+            Weight Loss Analysis
+        </div>
+
+        <div class="alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Critical Requirements:</strong>
+            <ul class="mb-0 mt-2">
+                <li>Use a precise, calibrated scale (minimum 0.01g resolution)</li>
+                <li>Perform decarboxylation in a sealed vessel to prevent material loss</li>
+                <li>Cool vessel completely before final weighing</li>
+                <li>"Burp" sealed vessel after cooling to release trapped CO₂</li>
+                <li>Minimum 5g sample recommended for accurate results</li>
+            </ul>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Initial Weight (Before Decarb)</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="initialWeight" placeholder="50.000" step="0.001" oninput="calculateContent()">
+                    <span class="input-group-text">g</span>
+                </div>
+                <div class="quick-presets">
+                    <button class="preset-btn" onclick="setInitialWeight(5)">5g</button>
+                    <button class="preset-btn" onclick="setInitialWeight(10)">10g</button>
+                    <button class="preset-btn" onclick="setInitialWeight(25)">25g</button>
+                    <button class="preset-btn" onclick="setInitialWeight(50)">50g</button>
+                    <button class="preset-btn" onclick="setInitialWeight(100)">100g</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Final Weight (After Decarb)</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="finalWeight" placeholder="46.250" step="0.001" oninput="calculateContent()">
+                    <span class="input-group-text">g</span>
+                </div>
+                <small class="text-muted"><i class="fas fa-lightbulb me-2 opacity-50"></i>Weight after decarboxylation is presumed complete (no more bubbling)</small>
+            </div>
+        </div>
+
+        <div id="resultsSection" style="display: none;">
+            <div class="result-card">
+                <div class="result-label">Original THCa Content</div>
+                <div class="result-value" id="thcaPercentage">0.00<span class="result-unit">%</span></div>
+                <div class="result-subtext">Percentage of THCa in original sample</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-seedling"></i>
+                    <div class="stat-label">THCa Weight</div>
+                    <div class="stat-value" id="thcaWeight">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-cannabis"></i>
+                    <div class="stat-label">THC Weight (Now)</div>
+                    <div class="stat-value" id="thcWeight">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-cloud"></i>
+                    <div class="stat-label">CO₂ Released</div>
+                    <div class="stat-value" id="co2Released">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-chart-line"></i>
+                    <div class="stat-label">Weight Loss</div>
+                    <div class="stat-value" id="weightLoss">0.000<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-percentage"></i>
+                    <div class="stat-label">Current THC %</div>
+                    <div class="stat-value" id="currentThcPercent">0.00<span class="stat-unit">%</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-leaf"></i>
+                    <div class="stat-label">Other Compounds</div>
+                    <div class="stat-value" id="otherCompounds">0.00<span class="stat-unit">%</span></div>
+                </div>
+            </div>
+
+            <div class="alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong>Safety Warning:</strong> Before decarboxylation, calculate expected CO₂ production and ensure your sealed vessel can safely contain the pressure. Use pressure-rated vessels designed for this purpose. Never use glass jars not rated for pressure!
+            </div>
+        </div>
+    </div>
+
+    <!-- Extract Type Guides -->
+    <div class="card-modern">
+        <div class="card-title">
+            <i class="fas fa-flask"></i>
+            Extract Type Guidelines
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="stat-icon fas fa-droplet"></i>
+                <div class="stat-label">Rosin</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                    Typical: 60-85% THCa<br>
+                    Best results with 10g+
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="stat-icon fas fa-vial"></i>
+                <div class="stat-label">BHO/Shatter</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                    Typical: 70-90% THCa<br>
+                    Ensure complete purge
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="stat-icon fas fa-cube"></i>
+                <div class="stat-label">THCa Isolate</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                    Typical: 95-99% THCa<br>
+                    High precision required
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="stat-icon fas fa-mortar-pestle"></i>
+                <div class="stat-label">Hash/Kief</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                    Typical: 40-70% THCa<br>
+                    Larger sample needed
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="stat-icon fas fa-leaf"></i>
+                <div class="stat-label">Flower</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                    Typical: 15-30% THCa<br>
+                    Must be fully dried
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="stat-icon fas fa-fire"></i>
+                <div class="stat-label">Live Resin</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                    Typical: 65-85% THCa<br>
+                    Account for terpenes
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <div class="card-modern">
+            <div class="card-title">
+                <i class="fas fa-question-circle"></i>
+                Frequently Asked Questions
+            </div>
+
+<div class="faq-item">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+        <i class="fas fa-chevron-right"></i>
+        <span>How does this calculator work?</span>
+    </div>
+    <div class="faq-answer">
+        <p><strong>Mathematical Foundation:</strong></p>
+        <div class="math-formula">
+            <div>$\text{THCa} \xrightarrow{\text{heat}} \text{THC} + \text{CO}_2$</div>
+            <div>$358.47 \text{ g/mol} \rightarrow 314.46 \text{ g/mol} + 44.01 \text{ g/mol}$</div>
+            <div class="formula-label">Stoichiometric decarboxylation reaction</div>
+        </div>
+
+        <p>The calculator uses stoichiometry to work backwards from CO₂ weight loss:</p>
+        <ol>
+            <li><strong>Measure weight loss</strong> = CO₂ released during decarboxylation</li>
+            <li><strong>Calculate moles of CO₂</strong> = weight loss ÷ 44.01 g/mol</li>
+            <li><strong>Calculate original THCa</strong> = moles CO₂ × 358.47 g/mol (1:1 ratio)</li>
+            <li><strong>Calculate percentage</strong> = THCa weight ÷ initial sample weight</li>
+        </ol>
+
+        <p><strong>Best Accuracy with Concentrates:</strong></p>
+        <p>This method works most accurately with <strong>isolates, resin, rosin/BHO, shatter, and hash</strong>High-purity extracts (>70% cannabinoids) provide the most reliable results.</p>
+
+        <p><strong>Flower Analysis - Possible but Complex:</strong></p>
+        <p>This technique <em>can</em> work for flower if you're certain complete decarboxylation occurred, but requires understanding the limitations:</p>
+        <ul>
+            <li><strong>Moisture content</strong> must be completely eliminated first (pre-dry at 180°F)</li>
+            <li><strong>Plant material</strong> contains cellulose, lignin, and other compounds that may degrade at decarb temperatures</li>
+            <li><strong>Expected range</strong> for flower: 15-30% THCa (vs 70-95% for concentrates)</li>
+            <li><strong>Larger samples needed</strong> (minimum 10-20g) due to lower cannabinoid density</li>
+        </ul>
+
+        <p><strong>Terpene Volatilization - Critical Limitation:</strong></p>
+        <p>The biggest source of error comes from <strong>terpene evaporation</strong>, which falsely increases apparent weight loss:</p>
+        <div class="math-formula">
+            <div>$\text{Measured Loss} = \text{CO}_2 + \text{Terpenes} + \text{Other Volatiles}$</div>
+            <div class="formula-label">Why sealed vessels are essential</div>
+        </div>
+
+        <ul>
+            <li><strong>Live resin/flower:</strong> High terpene content (5-15%) can significantly skew results upward</li>
+            <li><strong>Cured extracts:</strong> Lower terpene content (1-5%) provides better accuracy</li>
+            <li><strong>THCa isolate:</strong> Minimal terpenes (<1%) gives highest precision</li>
+        </ul>
+
+        <p><strong>Temperature Considerations:</strong></p>
+        <p>Too low (below 200°F): Incomplete decarboxylation, false low results<br>
+           Too high (above 250°F): THC degradation to CBN, false high results<br>
+           Optimal: 220-240°F for consistent, accurate results</p>
+
+        <div class="alert-info mt-3">
+            <strong>Bottom Line:</strong> This method is most reliable for concentrates and extracts where cannabinoids comprise the majority of the material. For flower or high-terpene extracts, expect some margin of error due to volatile compound loss.
+        </div>
+    </div>
+</div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>How accurate is this compared to lab testing?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>When performed correctly, this method can achieve accuracy within ±2-5% of lab results for high-purity extracts.</p>
+
+                    <p><strong>Comparison to Lab Methods:</strong></p>
+                    <ul>
+                        <li><strong>HPLC (High-Performance Liquid Chromatography)</strong> - Lab standard, ±1% accuracy, $50-100 per test</li>
+                        <li><strong>This Method (Weight Loss)</strong> - ±2-5% accuracy with proper technique, essentially free</li>
+                        <li><strong>GC-MS (Gas Chromatography-Mass Spectrometry)</strong> - ±2% accuracy, $100-200 per test</li>
+                    </ul>
+
+                    <p><strong>Advantages of This Method:</strong></p>
+                    <ul>
+                        <li>Free (no lab fees)</li>
+                        <li>Immediate results</li>
+                        <li>No sample submission/waiting</li>
+                        <li>Based on fundamental chemistry (stoichiometry)</li>
+                        <li>Works anywhere with basic equipment</li>
+                    </ul>
+
+                    <p><strong>When to Use Lab Testing Instead:</strong></p>
+                    <ul>
+                        <li>Regulatory compliance/legal requirements</li>
+                        <li>Need full cannabinoid profile (not just THCa/THC)</li>
+                        <li>Testing for contaminants/pesticides</li>
+                        <li>Commercial product labeling</li>
+                        <li>Research requiring documented chain of custody</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Why must the vessel be sealed?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Sealing the vessel is critical for accurate results because:</p>
+
+                    <p><strong>1. Prevents Material Loss</strong></p>
+                    <p>During decarboxylation, terpenes and other volatile compounds can evaporate. If the vessel is open, these escaping compounds add to the weight loss, making it appear you had more THCa than actually present.</p>
+
+                    <p><strong>2. Ensures Only CO₂ Loss is Measured</strong></p>
+                    <div class="math-formula">
+                        <div>$\text{Weight Loss}_{\text{sealed}} = \text{CO}_2 \text{ only}$</div>
+                        <div>$\text{Weight Loss}_{\text{open}} = \text{CO}_2 + \text{terpenes} + \text{moisture} + \text{other volatiles}$</div>
+                        <div class="formula-label">Sealed vs. open vessel weight loss</div>
+                    </div>
+
+                    <p><strong>3. Safety Considerations</strong></p>
+                    <p>The sealed vessel also serves a safety purpose:</p>
+                    <ul>
+                        <li>Contains any pressure buildup safely</li>
+                        <li>Prevents splattering of hot material</li>
+                        <li>Reduces fire risk from vapor ignition</li>
+                    </ul>
+
+                    <p><strong>Proper Sealing Techniques:</strong></p>
+                    <ul>
+                        <li><strong>Mason Jars:</strong> Use pressure-rated jars with new lids</li>
+                        <li><strong>Lab Glassware:</strong> Rubber septa or ground glass stoppers</li>
+                        <li><strong>Specialized Vessels:</strong> Pressure-rated containers with relief valves</li>
+                    </ul>
+
+                    <div class="alert-warning mt-3">
+                        <strong>Important:</strong> After cooling, "burp" the vessel by briefly opening to release CO₂ pressure, then reseal before final weighing. This prevents trapped CO₂ from affecting the weight measurement.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What if my results seem wrong?</span>
+                </div>
+                <div class="faq-answer">
+                    <p><strong>Results Higher Than Expected?</strong></p>
+                    <p>Possible causes:</p>
+                    <ul>
+                        <li><strong>Moisture Loss</strong> - Sample wasn't completely dry before testing</li>
+                        <li><strong>Solvent Loss</strong> - BHO/extract had residual solvents that evaporated</li>
+                        <li><strong>Open Vessel</strong> - Terpenes/volatiles escaped, increasing apparent weight loss</li>
+                        <li><strong>Incomplete Cooling</strong> - Weighed while still warm (thermal expansion affects weight)</li>
+                    </ul>
+
+                    <p><strong>Results Lower Than Expected?</strong></p>
+                    <p>Possible causes:</p>
+                    <ul>
+                        <li><strong>Incomplete Decarboxylation</strong> - Temperature too low or insufficient time</li>
+                        <li><strong>Trapped CO₂</strong> - Didn't burp the vessel after cooling</li>
+                        <li><strong>Material Already Decarbed</strong> - Sample contained THC instead of THCa</li>
+                        <li><strong>Scale Drift</strong> - Scale wasn't calibrated or drifted during test</li>
+                    </ul>
+
+                    <p><strong>Verification Steps:</strong></p>
+                    <ol>
+                        <li>Repeat the test with a fresh sample</li>
+                        <li>Calibrate your scale before testing</li>
+                        <li>Ensure sample is completely dry (can pre-dry in oven at 180°F)</li>
+                        <li>Verify temperature is stable at 220-240°F throughout</li>
+                        <li>Ensure complete decarboxylation (no more bubbling)</li>
+                        <li>Compare to expected range for your extract type</li>
+                    </ol>
+
+                    <p><strong>Typical Ranges by Extract Type:</strong></p>
+                    <ul>
+                        <li>THCa Isolate: 95-99%</li>
+                        <li>BHO/Shatter: 70-90%</li>
+                        <li>Rosin: 60-85%</li>
+                        <li>Hash: 40-70%</li>
+                        <li>Flower: 15-30%</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Can I use this for CBD or other cannabinoids?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>This calculator is specifically designed for THCa analysis and will not give accurate results for other cannabinoid acids.</p>
+
+                    <p><strong>Why THCa Only?</strong></p>
+                    <p>The calculator uses the specific molecular weight of THCa (358.47005 g/mol). Other cannabinoid acids have different molecular weights:</p>
+                    <ul>
+                        <li><strong>CBDa:</strong> 358.47 g/mol (same as THCa, so technically works!)</li>
+                        <li><strong>CBGa:</strong> 360.49 g/mol (2g/mol difference)</li>
+                        <li><strong>CBCa:</strong> 358.47 g/mol (same as THCa)</li>
+                        <li><strong>THCVa:</strong> 330.42 g/mol (28g/mol difference - significant error)</li>
+                    </ul>
+
+                    <p><strong>For CBDa Analysis:</strong></p>
+                    <p>Good news! CBDa has nearly identical molecular weight to THCa, so this calculator will work with similar accuracy. Just substitute "CBDa" for "THCa" in your interpretation.</p>
+
+                    <p><strong>For Mixed Cannabinoid Profiles:</strong></p>
+                    <p>If your extract contains significant amounts of multiple cannabinoid acids, results will be an average weighted by the molecular weights. This is less accurate but still provides useful information about total acidic cannabinoid content.</p>
+
+                    <p><strong>Future Development:</strong></p>
+                    <p>A multi-cannabinoid version would require additional inputs or advanced analysis beyond simple weight loss measurement.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<footer id="footer" class="footer-modern">
+</footer>
+
+<script src="/decarboxulator/resources/js/nav-js.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/contrib/auto-render.min.js"></script>
+<script>
+    // Constants
+    const THCA_MW = 358.47005;  // g/mol
+    const THC_MW = 314.46065;   // g/mol
+    const CO2_MW = 44.0094;     // g/mol
+    const CONVERSION_RATIO = THC_MW / THCA_MW;
+
+    // Toast Configuration
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#1a1a1a',
+        color: '#e0e0e0',
+        iconColor: '#0d6efd'
+    });
+
+    function setInitialWeight(value) {
+        document.getElementById('initialWeight').value = value.toFixed(3);
+        calculateContent();
+    }
+
+    function calculateContent() {
+        const initialWeight = parseFloat(document.getElementById('initialWeight').value) || 0;
+        const finalWeight = parseFloat(document.getElementById('finalWeight').value) || 0;
+
+        // Validation
+        if (initialWeight <= 0 || finalWeight <= 0) {
+            document.getElementById('resultsSection').style.display = 'none';
+            return;
+        }
+
+        if (finalWeight >= initialWeight) {
+            Toast.fire({
+                icon: 'error',
+                title: 'Final weight must be less than initial weight'
+            });
+            document.getElementById('resultsSection').style.display = 'none';
+            return;
+        }
+
+        const weightLoss = initialWeight - finalWeight;
+
+        // Sanity check - weight loss shouldn't exceed ~15% for most extracts
+        const lossPercent = (weightLoss / initialWeight) * 100;
+        if (lossPercent > 15) {
+            Toast.fire({
+                icon: 'warning',
+                title: 'Unusually high weight loss - verify measurements'
+            });
+        }
+
+        // Calculate moles of CO2 released
+        const molesCO2 = weightLoss / CO2_MW;
+
+        // Calculate THCa weight (1:1 molar ratio with CO2)
+        const thcaWeight = molesCO2 * THCA_MW;
+
+        // Calculate THCa percentage
+        const thcaPercent = (thcaWeight / initialWeight) * 100;
+
+        // Calculate resulting THC weight
+        const thcWeight = thcaWeight * CONVERSION_RATIO;
+
+        // Calculate current THC percentage (after decarb)
+        const currentThcPercent = (thcWeight / finalWeight) * 100;
+
+        // Calculate other compounds percentage
+        const otherCompounds = 100 - thcaPercent;
+
+        // Display results
+        document.getElementById('thcaPercentage').innerHTML = `${thcaPercent.toFixed(2)}<span class="result-unit">%</span>`;
+        document.getElementById('thcaWeight').innerHTML = `${thcaWeight.toFixed(3)}<span class="stat-unit">g</span>`;
+        document.getElementById('thcWeight').innerHTML = `${thcWeight.toFixed(3)}<span class="stat-unit">g</span>`;
+        document.getElementById('co2Released').innerHTML = `${weightLoss.toFixed(3)}<span class="stat-unit">g</span>`;
+        document.getElementById('weightLoss').innerHTML = `${weightLoss.toFixed(3)}<span class="stat-unit">g</span>`;
+        document.getElementById('currentThcPercent').innerHTML = `${currentThcPercent.toFixed(2)}<span class="stat-unit">%</span>`;
+        document.getElementById('otherCompounds').innerHTML = `${otherCompounds.toFixed(2)}<span class="stat-unit">%</span>`;
+
+        // Show results section
+        document.getElementById('resultsSection').style.display = 'block';
+
+        // Quality feedback
+        if (thcaPercent > 99) {
+            Toast.fire({
+                icon: 'warning',
+                title: 'Result exceeds 99% - verify your measurements'
+            });
+        } else if (thcaPercent < 5) {
+            Toast.fire({
+                icon: 'info',
+                title: 'Low THCa content detected - this may be decarbed material'
+            });
+        } else if (thcaPercent >= 90 && thcaPercent <= 99) {
+            Toast.fire({
+                icon: 'success',
+                title: 'High purity THCa detected!'
+            });
+        }
+    }
+
+    function toggleFAQ(element) {
+        const faqItem = element.parentElement;
+        const isActive = faqItem.classList.contains('active');
+
+        // Close all FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Open clicked item if it wasn't active
+        if (!isActive) {
+            faqItem.classList.add('active');
+        }
+    }
+
+    // Initialize KaTeX rendering
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$", right: "$", display: true},
+                {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+        });
+    });
+</script>
+</body>
+</html>
