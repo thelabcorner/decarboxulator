@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THCa PSI Chart | Decarboxulator&trade;</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/contrib/auto-render.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+    <link rel="include" href="/decarboxulator/pages/v2/dynamic/pwa-meta.html">
+
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #151515;
+            --bg-tertiary: #1a1a1a;
+            --border-color: #ffffff26;
+            --accent-blue: #0d6efd;
+            --accent-green: #28a745;
+            --accent-yellow: #ffc107;
+            --accent-red: #dc3545;
+            --accent-purple: #6f42c1;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-muted: #888888;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: var(--text-primary);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .card-modern {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title i {
+            color: var(--accent-blue);
+        }
+
+        .form-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-tertiary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .input-group-text {
+            background: #0d6efdba;
+            color: white;
+            font-weight: 700;
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-secondary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .alert-info {
+            background-color: rgba(13, 110, 253, 0.1);
+            border: 2px solid rgba(13, 110, 253, 0.3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 2px solid rgba(255, 193, 7, 0.3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 2px solid rgba(220, 53, 69, 0.3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .stat-card.safe {
+            border-color: var(--accent-green);
+        }
+
+        .stat-card.warning {
+            border-color: var(--accent-yellow);
+        }
+
+        .stat-card.danger {
+            border-color: var(--accent-red);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-icon.safe {
+            color: var(--accent-green);
+        }
+
+        .stat-icon.warning {
+            color: var(--accent-yellow);
+        }
+
+        .stat-icon.danger {
+            color: var(--accent-red);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .stat-unit {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-left: 0.25rem;
+        }
+
+        .quick-presets {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .preset-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background-color: var(--bg-secondary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .temp-toggle {
+            display: flex;
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .temp-btn {
+            flex: 1;
+            padding: 0.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .temp-btn.active {
+            background-color: var(--accent-blue);
+            color: white;
+        }
+
+        .heatmap-container {
+            background-color: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            height: 400px;
+            position: relative;
+            overflow: auto;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
+        .heatmap-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .heatmap-table th, .heatmap-table td {
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .heatmap-table th {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .heatmap-cell {
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .heatmap-cell:hover {
+            opacity: 0.8;
+        }
+
+        .heatmap-cell.safe {
+            background-color: rgba(40, 167, 69, 0.8);
+            color: white;
+        }
+
+        .heatmap-cell.warning {
+            background-color: rgba(255, 193, 7, 0.8);
+            color: black;
+        }
+
+        .heatmap-cell.danger {
+            background-color: rgba(220, 53, 69, 0.8);
+            color: white;
+        }
+
+        .math-formula {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .formula-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .faq-section {
+            margin-top: 2rem;
+        }
+
+        .faq-item {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .faq-question {
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: var(--bg-tertiary);
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .faq-question:hover {
+            background-color: var(--bg-secondary);
+            color: var(--accent-blue);
+        }
+
+        .faq-question i {
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(90deg);
+        }
+
+        .faq-answer {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 1.25rem;
+            max-height: 2000px;
+        }
+
+        .faq-answer p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .faq-answer p:last-child {
+            margin-bottom: 0;
+        }
+
+        .faq-answer ol, .faq-answer ul {
+            margin-left: 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .faq-answer li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .heatmap-container {
+                height: 300px;
+            }
+
+            .heatmap-table {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav id="nav" class="navbar-modern">
+</nav>
+
+<div class="container-main">
+    <div class="header">
+        <h1><i class="fas fa-gauge-high me-3 opacity-50"></i>THCa PSI Chart</h1>
+        <p>Analyze pressure buildup during THCa decarboxylation in closed vessels</p>
+    </div>
+
+    <div class="alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Safety Analysis:</strong> Calculate CO₂ pressure buildup during decarboxylation to ensure safe vessel operation. Based on ideal gas law and molecular stoichiometry.
+    </div>
+
+    <div class="card-modern">
+        <div class="card-title">
+            <i class="fas fa-sliders-h"></i>
+            Calculation Parameters
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Extract Weight</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="inputWeight" placeholder="100" step="0.1" min="0" oninput="calculatePressure()">
+                    <span class="input-group-text">g</span>
+                </div>
+                <div class="quick-presets">
+                    <button class="preset-btn" onclick="setWeight(10)">10g</button>
+                    <button class="preset-btn" onclick="setWeight(50)">50g</button>
+                    <button class="preset-btn" onclick="setWeight(100)">100g</button>
+                    <button class="preset-btn" onclick="setWeight(500)">500g</button>
+                    <button class="preset-btn" onclick="setWeight(1000)">1kg</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">THCa Concentration</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="thcaConc" placeholder="85" step="0.1" min="0" max="100" oninput="calculatePressure()">
+                    <span class="input-group-text">%</span>
+                </div>
+                <div class="quick-presets">
+                    <button class="preset-btn" onclick="setConcentration(20)">20%</button>
+                    <button class="preset-btn" onclick="setConcentration(50)">50%</button>
+                    <button class="preset-btn" onclick="setConcentration(85)">85%</button>
+                    <button class="preset-btn" onclick="setConcentration(95)">95%</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Temperature</label>
+                <div class="temp-toggle">
+                    <button class="temp-btn active" id="fahrenheit" onclick="setTempUnit('F')">°F</button>
+                    <button class="temp-btn" id="celsius" onclick="setTempUnit('C')">°C</button>
+                </div>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="inputTemperature" placeholder="170" step="1" oninput="calculatePressure()">
+                    <span class="input-group-text" id="tempUnit">°F</span>
+                </div>
+                <div class="quick-presets" id="tempPresets">
+                    <button class="preset-btn" onclick="setTemperature(150)">150°F</button>
+                    <button class="preset-btn" onclick="setTemperature(170)">170°F</button>
+                    <button class="preset-btn" onclick="setTemperature(200)">200°F</button>
+                    <button class="preset-btn" onclick="setTemperature(240)">240°F</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Vessel Volume</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="customVesselVolume" placeholder="16" step="0.1" min="0" oninput="calculatePressure()">
+                    <span class="input-group-text">fl oz</span>
+                </div>
+                <div class="quick-presets">
+                    <button class="preset-btn" onclick="setVolume(4)">4 fl oz</button>
+                    <button class="preset-btn" onclick="setVolume(8)">8 fl oz</button>
+                    <button class="preset-btn" onclick="setVolume(16)">16 fl oz</button>
+                    <button class="preset-btn" onclick="setVolume(32)">32 fl oz</button>
+                    <button class="preset-btn" onclick="setVolume(64)">64 fl oz</button>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="generateHeatmap()">
+            <i class="fas fa-calculator me-2"></i>Calculate Pressure
+        </button>
+    </div>
+
+    <div id="resultsSection" style="display: none;">
+        <div class="card-modern">
+            <div class="card-title">
+                <i class="fas fa-chart-bar"></i>
+                Pressure Analysis
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card" id="maxPressureCard">
+                    <i class="stat-icon fas fa-gauge-high" id="pressureIcon"></i>
+                    <div class="stat-label">Maximum Pressure</div>
+                    <div class="stat-value" id="maxPressure">0.0<span class="stat-unit">PSI</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-cloud"></i>
+                    <div class="stat-label">CO₂ Generated</div>
+                    <div class="stat-value" id="co2Generated">0.00<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-flask"></i>
+                    <div class="stat-label">THCa Decarbed</div>
+                    <div class="stat-value" id="thcaAmount">0.00<span class="stat-unit">g</span></div>
+                </div>
+                <div class="stat-card">
+                    <i class="stat-icon fas fa-thermometer-half"></i>
+                    <div class="stat-label">Temperature</div>
+                    <div class="stat-value" id="tempDisplay">0<span class="stat-unit">°F</span></div>
+                </div>
+            </div>
+
+            <div id="pressureWarning" class="alert-warning" style="display: none;">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>High Pressure Warning:</strong> Pressure exceeds 30 PSI. Use appropriate pressure-rated equipment.
+            </div>
+
+            <div id="pressureDanger" class="alert-danger" style="display: none;">
+                <i class="fas fa-skull-crossbones me-2"></i>
+                <strong>Extreme Pressure Alert:</strong> Pressure exceeds 50 PSI. This poses serious safety risks. Use only pressure vessels rated for these conditions.
+            </div>
+        </div>
+
+        <div class="card-modern">
+            <div class="card-title">
+                <i class="fas fa-th"></i>
+                Pressure Heatmap
+            </div>
+            <div class="heatmap-container">
+                <div class="chart-wrapper">
+                    <div id="heatmapChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <div class="card-modern">
+            <div class="card-title">
+                <i class="fas fa-question-circle"></i>
+                Frequently Asked Questions
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>How does this calculator work?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>The calculator uses the <strong>ideal gas law</strong> and stoichiometry to predict CO₂ pressure buildup during decarboxylation:</p>
+                    <ol>
+                        <li>Calculate moles of THCa based on weight and concentration</li>
+                        <li>Determine moles of CO₂ produced (1:1 ratio with THCa)</li>
+                        <li>Apply ideal gas law to calculate pressure at given temperature and volume</li>
+                    </ol>
+                    <p>The decarboxylation reaction: <strong>THCa → THC + CO₂</strong></p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What are the mathematical formulas?</span>
+                </div>
+                <div class="faq-answer">
+                    <p><strong>Ideal Gas Law:</strong></p>
+                    <div class="math-formula">
+                        <div>$$PV = nRT$$</div>
+                        <div class="formula-label">Where P = pressure, V = volume, n = moles, R = gas constant, T = temperature</div>
+                    </div>
+
+                    <p><strong>Moles of CO₂ produced:</strong></p>
+                    <div class="math-formula">
+                        <div>$$n_{CO_2} = \frac{\text{Weight} \times \text{THCa\%}}{100 \times 358.47}$$</div>
+                        <div class="formula-label">Using THCa molecular weight of 358.47 g/mol</div>
+                    </div>
+
+                    <p><strong>Pressure calculation:</strong></p>
+                    <div class="math-formula">
+                        <div>$$P = \frac{n_{CO_2} \times R \times T}{V}$$</div>
+                        <div class="formula-label">Pressure in atmospheres, converted to PSI</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What pressure levels are safe?</span>
+                </div>
+                <div class="faq-answer">
+                    <p><strong>Pressure Safety Guidelines:</strong></p>
+                    <ul>
+                        <li><strong style="color: var(--accent-green);">0-15 PSI:</strong> Safe for most glass vessels and standard equipment</li>
+                        <li><strong style="color: var(--accent-yellow);">15-30 PSI:</strong> Use pressure-rated glassware or steel vessels</li>
+                        <li><strong style="color: var(--accent-red);">30+ PSI:</strong> Requires specialized pressure equipment, safety protocols</li>
+                    </ul>
+                    <p><strong>Important:</strong> Always use appropriate pressure relief valves and follow safety protocols. This calculator provides estimates - actual conditions may vary.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Why does vessel volume matter?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Vessel volume directly affects pressure through the ideal gas law. For the same amount of CO₂:</p>
+                    <ul>
+                        <li><strong>Smaller vessels = Higher pressure</strong> (inverse relationship)</li>
+                        <li><strong>Larger vessels = Lower pressure</strong> (more space for gas expansion)</li>
+                    </ul>
+                    <p>This is why proper vessel selection is critical for safe decarboxylation processes.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>How accurate are these calculations?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>The calculations are based on established thermodynamic principles, but real-world factors can affect accuracy:</p>
+                    <p><strong>Accurate assumptions:</strong></p>
+                    <ul>
+                        <li>Ideal gas behavior of CO₂ at moderate temperatures</li>
+                        <li>Complete decarboxylation reaction</li>
+                        <li>Molecular weight constants</li>
+                    </ul>
+                    <p><strong>Potential variations:</strong></p>
+                    <ul>
+                        <li>Incomplete decarboxylation reactions</li>
+                        <li>Temperature gradients in vessels</li>
+                        <li>Material solubility effects</li>
+                        <li>Vessel compliance (slight expansion)</li>
+                    </ul>
+                    <p>Use these calculations as guidelines and always implement appropriate safety measures.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer id="footer" class="footer-modern">
+</footer>
+
+<script src="/decarboxulator/resources/js/nav-js.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Constants for calculations
+    // Constants for calculations
+    const THCA_MW = 358.47005; // g/mol
+    const CO2_MW = 44.0094;   // g/mol
+    const R = 0.0821;       // L·atm/(mol·K)
+    const ATM_TO_PSI = 14.6959487755;
+
+    let currentTempUnit = 'F';
+    let heatmapTable = null;
+
+    // Toast Configuration
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#1a1a1a',
+        color: '#e0e0e0',
+        iconColor: '#0d6efd'
+    });
+
+    function setWeight(value) {
+        document.getElementById('inputWeight').value = value;
+        calculatePressure();
+    }
+
+    function setConcentration(value) {
+        document.getElementById('thcaConc').value = value;
+        calculatePressure();
+    }
+
+    function setTemperature(value) {
+        document.getElementById('inputTemperature').value = value;
+        calculatePressure();
+    }
+
+    function setVolume(value) {
+        document.getElementById('customVesselVolume').value = value;
+        calculatePressure();
+    }
+
+    function setTempUnit(unit) {
+        currentTempUnit = unit;
+
+        // Update UI
+        document.getElementById('fahrenheit').classList.toggle('active', unit === 'F');
+        document.getElementById('celsius').classList.toggle('active', unit === 'C');
+        document.getElementById('tempUnit').textContent = '°' + unit;
+
+        // Update presets
+        updateTempPresets();
+
+        // Convert existing value
+        const tempInput = document.getElementById('inputTemperature');
+        if (tempInput.value) {
+            const currentValue = parseFloat(tempInput.value);
+            if (unit === 'C' && document.getElementById('fahrenheit').classList.contains('active')) {
+                // Converting from F to C
+                tempInput.value = ((currentValue - 32) * 5/9).toFixed(0);
+            } else if (unit === 'F' && document.getElementById('celsius').classList.contains('active')) {
+                // Converting from C to F
+                tempInput.value = (currentValue * 9/5 + 32).toFixed(0);
+            }
+        }
+
+        calculatePressure();
+    }
+
+    function updateTempPresets() {
+        const presetsContainer = document.getElementById('tempPresets');
+        let presets;
+
+        if (currentTempUnit === 'F') {
+            presets = [
+                { value: 150, label: '150°F' },
+                { value: 170, label: '170°F' },
+                { value: 200, label: '200°F' },
+                { value: 240, label: '240°F' }
+            ];
+        } else {
+            presets = [
+                { value: 65, label: '65°C' },
+                { value: 77, label: '77°C' },
+                { value: 93, label: '93°C' },
+                { value: 116, label: '116°C' }
+            ];
+        }
+
+        presetsContainer.innerHTML = presets.map(preset =>
+            `<button class="preset-btn" onclick="setTemperature(${preset.value})">${preset.label}</button>`
+        ).join('');
+    }
+
+    function convertToKelvin(temp, unit) {
+        if (unit === 'F') {
+            return (temp - 32) * 5/9 + 273.15;
+        } else {
+            return temp + 273.15;
+        }
+    }
+
+    function calculatePressure() {
+        const weight = parseFloat(document.getElementById('inputWeight').value) || 0;
+        const thcaConc = parseFloat(document.getElementById('thcaConc').value) || 0;
+        const temp = parseFloat(document.getElementById('inputTemperature').value) || 0;
+        const volumeFLoz = parseFloat(document.getElementById('customVesselVolume').value) || 0;
+
+        if (weight <= 0 || thcaConc <= 0 || temp <= 0 || volumeFLoz <= 0) {
+            document.getElementById('resultsSection').style.display = 'none';
+            return;
+        }
+
+        // Calculate moles of THCa
+        const thcaWeight = weight * (thcaConc / 100);
+        const molesThca = thcaWeight / THCA_MW;
+
+        // 1:1 stoichiometry - moles CO2 = moles THCa
+        const molesCO2 = molesThca;
+        const co2Weight = molesCO2 * CO2_MW;
+
+        // Convert volume to liters (1 fl oz = 0.0295735 L)
+        const volumeL = volumeFLoz * 0.0295735;
+
+        // Convert temperature to Kelvin
+        const tempK = convertToKelvin(temp, currentTempUnit);
+
+        // Calculate pressure using ideal gas law
+        const pressureAtm = (molesCO2 * R * tempK) / volumeL;
+        const pressurePSI = pressureAtm * ATM_TO_PSI;
+
+        // Update display
+        updateResultsDisplay(pressurePSI, co2Weight, thcaWeight, temp);
+
+        // Show results
+        document.getElementById('resultsSection').style.display = 'block';
+    }
+
+    function updateResultsDisplay(pressurePSI, co2Weight, thcaWeight, temp) {
+        // Update stats
+        document.getElementById('maxPressure').innerHTML = `${pressurePSI.toFixed(1)}<span class="stat-unit">PSI</span>`;
+        document.getElementById('co2Generated').innerHTML = `${co2Weight.toFixed(2)}<span class="stat-unit">g</span>`;
+        document.getElementById('thcaAmount').innerHTML = `${thcaWeight.toFixed(2)}<span class="stat-unit">g</span>`;
+        document.getElementById('tempDisplay').innerHTML = `${temp}<span class="stat-unit">°${currentTempUnit}</span>`;
+
+        // Update pressure status
+        const maxPressureCard = document.getElementById('maxPressureCard');
+        const pressureIcon = document.getElementById('pressureIcon');
+        const warningAlert = document.getElementById('pressureWarning');
+        const dangerAlert = document.getElementById('pressureDanger');
+
+        // Remove existing classes
+        maxPressureCard.classList.remove('safe', 'warning', 'danger');
+        pressureIcon.classList.remove('safe', 'warning', 'danger');
+
+        // Hide alerts
+        warningAlert.style.display = 'none';
+        dangerAlert.style.display = 'none';
+
+        if (pressurePSI <= 15) {
+            maxPressureCard.classList.add('safe');
+            pressureIcon.classList.add('safe');
+        } else if (pressurePSI <= 30) {
+            maxPressureCard.classList.add('warning');
+            pressureIcon.classList.add('warning');
+            warningAlert.style.display = 'block';
+        } else {
+            maxPressureCard.classList.add('danger');
+            pressureIcon.classList.add('danger');
+            dangerAlert.style.display = 'block';
+        }
+    }
+
+    function generateHeatmap() {
+        const weight = parseFloat(document.getElementById('inputWeight').value) || 0;
+        const thcaConc = parseFloat(document.getElementById('thcaConc').value) || 0;
+        const temp = parseFloat(document.getElementById('inputTemperature').value) || 0;
+
+        if (weight <= 0 || thcaConc <= 0 || temp <= 0) {
+            Toast.fire({
+                icon: 'error',
+                title: 'Missing Parameters',
+                text: 'Please fill in all required fields'
+            });
+            return;
+        }
+
+        calculatePressure();
+        createHeatmapTable();
+
+        Toast.fire({
+            icon: 'success',
+            title: 'Calculation Complete',
+            text: 'Pressure analysis updated'
+        });
+    }
+
+    function createHeatmapTable() {
+        const weight = parseFloat(document.getElementById('inputWeight').value) || 0;
+        const thcaConc = parseFloat(document.getElementById('thcaConc').value) || 0;
+
+        // Generate data for different vessel sizes and temperatures
+        const vesselSizes = [4, 8, 16, 32, 64]; // fl oz
+        const temperatures = currentTempUnit === 'F' ? [150, 170, 200, 240] : [65, 77, 93, 116];
+
+        const thcaWeight = weight * (thcaConc / 100);
+        const molesThca = thcaWeight / THCA_MW;
+        const molesCO2 = molesThca;
+
+        // Build table HTML
+        let tableHTML = '<table class="heatmap-table"><thead><tr><th>Vessel Volume</th>';
+        temperatures.forEach(temp => {
+            tableHTML += `<th>${temp}°${currentTempUnit}</th>`;
+        });
+        tableHTML += '</tr></thead><tbody>';
+
+        vesselSizes.forEach(volume => {
+            tableHTML += `<tr><td>${volume} fl oz</td>`;
+            temperatures.forEach(temp => {
+                const volumeL = volume * 0.0295735;
+                const tempK = convertToKelvin(temp, currentTempUnit);
+                const pressureAtm = (molesCO2 * R * tempK) / volumeL;
+                const pressurePSI = pressureAtm * ATM_TO_PSI;
+
+                let cellClass = 'heatmap-cell';
+                if (pressurePSI <= 15) {
+                    cellClass += ' safe';
+                } else if (pressurePSI <= 30) {
+                    cellClass += ' warning';
+                } else {
+                    cellClass += ' danger';
+                }
+
+                tableHTML += `<td class="${cellClass}" title="${volume} fl oz @ ${temp}°${currentTempUnit}">${pressurePSI.toFixed(1)} PSI</td>`;
+            });
+            tableHTML += '</tr>';
+        });
+        tableHTML += '</tbody></table>';
+
+        // Update the heatmap container
+        document.getElementById('heatmapChart').innerHTML = tableHTML;
+    }
+
+    function toggleFAQ(element) {
+        const faqItem = element.parentElement;
+        const isActive = faqItem.classList.contains('active');
+
+        // Close all FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Open clicked item if it wasn't active
+        if (!isActive) {
+            faqItem.classList.add('active');
+        }
+    }
+
+    // Initialize KaTeX rendering
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+        });
+
+        // Initialize temperature presets
+        updateTempPresets();
+    });
+</script>
+</body>
+</html>
