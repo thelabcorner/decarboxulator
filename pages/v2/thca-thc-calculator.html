@@ -736,31 +736,7 @@ THCa <i class="fas fa-arrow-left mx-1 opacity-50"></i> THC
 </footer>
 
 
-<script>
-    async function includeHTML(id, url) {
-        const el = document.getElementById(id);
-        const response = await fetch(url);
-        el.innerHTML = await response.text();
-    }
 
-    // Process link includes immediately when found
-    document.addEventListener('DOMContentLoaded', async function() {
-        // Process link[rel="include"] elements
-        const includeLinks = document.querySelectorAll('link[rel="include"]');
-        for (const link of includeLinks) {
-            const res = await fetch(link.getAttribute('href'));
-            const html = await res.text();
-            link.insertAdjacentHTML('beforebegin', html);
-            link.remove();
-        }
-
-        // Process nav and footer
-        await Promise.all([
-            includeHTML("nav", "/pages/v2/dynamic/nav.html"),
-            includeHTML("footer", "/pages/v2/dynamic/footer.html")
-        ]);
-    });
-</script>
 <script src="/resources/js/nav-js.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
