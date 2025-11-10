@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edibles Dosage Calculator | Cannabinoid Concentration Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/contrib/auto-render.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+    <link rel="include" href="/decarboxulator/pages/v2/dynamic/pwa-meta.html">
+
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #151515;
+            --bg-tertiary: #1a1a1a;
+            --border-color: #ffffff26;
+            --accent-blue: #0d6efd;
+            --accent-green: #28a745;
+            --accent-yellow: #ffc107;
+            --accent-red: #dc3545;
+            --accent-purple: #6f42c1;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-muted: #888888;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: var(--text-primary);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .card-modern {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title i {
+            color: var(--accent-blue);
+        }
+
+        .form-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-tertiary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .input-group-text {
+            background: #0d6efdba;
+            color: white;
+            font-weight: 700;
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-secondary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .alert-info {
+            background-color: rgba(13, 110, 253, 0.1);
+            border: 2px solid rgba(13, 110, 253, 0.3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 2px solid rgba(255, 193, 7, 0.3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 2px solid rgba(220, 53, 69, 0.3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .stat-card.safe {
+            border-color: var(--accent-green);
+        }
+
+        .stat-card.warning {
+            border-color: var(--accent-yellow);
+        }
+
+        .stat-card.danger {
+            border-color: var(--accent-red);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-icon.safe {
+            color: var(--accent-green);
+        }
+
+        .stat-icon.warning {
+            color: var(--accent-yellow);
+        }
+
+        .stat-icon.danger {
+            color: var(--accent-red);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .stat-unit {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-left: 0.25rem;
+        }
+
+        .quick-presets {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .preset-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background-color: var(--bg-secondary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .math-formula {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .formula-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .faq-section {
+            margin-top: 2rem;
+        }
+
+        .faq-item {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .faq-question {
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: var(--bg-tertiary);
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .faq-question:hover {
+            background-color: var(--bg-secondary);
+            color: var(--accent-blue);
+        }
+
+        .faq-question i {
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(90deg);
+        }
+
+        .faq-answer {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 1.25rem;
+            max-height: 2000px;
+        }
+
+        .faq-answer p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .faq-answer p:last-child {
+            margin-bottom: 0;
+        }
+
+        .faq-answer ol, .faq-answer ul {
+            margin-left: 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .faq-answer li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav id="nav" class="navbar-modern">
+</nav>
+
+<div class="container-main">
+    <div class="header">
+        <h1><i class="fas fa-cookie-bite opacity-50 me-3"></i>Edibles Dosage Calculator</h1>
+        <p>Calculate cannabinoid content and serving sizes for homemade edibles</p>
+    </div>
+
+    <div class="alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Dosage Analysis:</strong> Calculate total THC/CBD content and per-serving doses for safe edible preparation. Choose between weight-based or concentration-based inputs.
+    </div>
+
+    <div class="card-modern">
+        <div class="card-title">
+            <i class="fas fa-sliders-h"></i>
+            Recipe Parameters
+        </div>
+
+        <!-- Input Method Selection -->
+        <div class="row g-3 mb-4">
+            <div class="col-12">
+                <label class="form-label">Input Method</label>
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check" name="inputMethod" id="weightBased" value="weight" checked onchange="toggleInputMethod()">
+                    <label class="btn btn-secondary" for="weightBased">
+                        <i class="fas fa-weight opacity-50 me-2"></i>Specific Weights
+                    </label>
+                    <input type="radio" class="btn-check" name="inputMethod" id="concentrationBased" value="concentration" onchange="toggleInputMethod()">
+                    <label class="btn btn-secondary" for="concentrationBased">
+                        <i class="fas fa-percentage opacity-50 me-2"></i>Extract Weight + %
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weight-based inputs -->
+        <div id="weightInputs" class="weight-inputs">
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">THCA Weight</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="thcaWeight" placeholder="0" step="0.001" min="0" oninput="calculateDosage()">
+                        <select class="form-select" id="thcaUnit" onchange="updateTHCAPresets(); calculateDosage()" style="max-width: 80px;">
+                            <option value="mg">mg</option>
+                            <option value="g">g</option>
+                        </select>
+                    </div>
+                    <div class="quick-presets" id="thcaPresets">
+                        <button class="preset-btn" onclick="setTHCAWeight(50)">50mg</button>
+                        <button class="preset-btn" onclick="setTHCAWeight(100)">100mg</button>
+                        <button class="preset-btn" onclick="setTHCAWeight(250)">250mg</button>
+                        <button class="preset-btn" onclick="setTHCAWeight(500)">500mg</button>
+                    </div>
+                    <small class="opacity-50">Converts to THC automatically (87.7% efficiency)</small>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">THC Weight</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="thcWeight" placeholder="0" step="0.001" min="0" oninput="calculateDosage()">
+                        <select class="form-select" id="thcUnit" onchange="updateTHCPresets(); calculateDosage()" style="max-width: 80px;">
+                            <option value="mg">mg</option>
+                            <option value="g">g</option>
+                        </select>
+                    </div>
+                    <div class="quick-presets" id="thcPresets">
+                        <button class="preset-btn" onclick="setTHCWeight(50)">50mg</button>
+                        <button class="preset-btn" onclick="setTHCWeight(100)">100mg</button>
+                        <button class="preset-btn" onclick="setTHCWeight(250)">250mg</button>
+                        <button class="preset-btn" onclick="setTHCWeight(500)">500mg</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">CBD Weight</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="cbdWeight" placeholder="0" step="0.001" min="0" oninput="calculateDosage()">
+                        <select class="form-select" id="cbdUnit" onchange="updateCBDPresets(); calculateDosage()" style="max-width: 80px;">
+                            <option value="mg">mg</option>
+                            <option value="g">g</option>
+                        </select>
+                    </div>
+                    <div class="quick-presets" id="cbdPresets">
+                        <button class="preset-btn" onclick="setCBDWeight(0)">0mg</button>
+                        <button class="preset-btn" onclick="setCBDWeight(50)">50mg</button>
+                        <button class="preset-btn" onclick="setCBDWeight(100)">100mg</button>
+                        <button class="preset-btn" onclick="setCBDWeight(250)">250mg</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Concentration-based inputs -->
+        <div id="concentrationInputs" class="concentration-inputs" style="display: none;">
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Extract Weight</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="inputWeight" placeholder="1" step="0.1" min="0" oninput="calculateDosage()">
+                        <span class="input-group-text">g</span>
+                    </div>
+                    <div class="quick-presets">
+                        <button class="preset-btn" onclick="setWeight(0.5)">0.5g</button>
+                        <button class="preset-btn" onclick="setWeight(1)">1g</button>
+                        <button class="preset-btn" onclick="setWeight(2)">2g</button>
+                        <button class="preset-btn" onclick="setWeight(5)">5g</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Total THC Concentration</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="thcConc" placeholder="50" step="0.1" min="0" max="100" oninput="calculateDosage()">
+                        <span class="input-group-text">%</span>
+                    </div>
+                    <div class="quick-presets">
+                        <button class="preset-btn" onclick="setTHC(20)">20%</button>
+                        <button class="preset-btn" onclick="setTHC(50)">50%</button>
+                        <button class="preset-btn" onclick="setTHC(70)">70%</button>
+                        <button class="preset-btn" onclick="setTHC(90)">90%</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">CBD Concentration</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="cbdConc" placeholder="0" step="0.1" min="0" max="100" oninput="calculateDosage()">
+                        <span class="input-group-text">%</span>
+                    </div>
+                    <div class="quick-presets">
+                        <button class="preset-btn" onclick="setCBD(0)">0%</button>
+                        <button class="preset-btn" onclick="setCBD(10)">10%</button>
+                        <button class="preset-btn" onclick="setCBD(20)">20%</button>
+                        <button class="preset-btn" onclick="setCBD(50)">50%</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-12">
+                <label class="form-label">Number of Servings</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="servings" placeholder="10" step="1" min="1" oninput="calculateDosage()">
+                    <span class="input-group-text">servings</span>
+                </div>
+                <div class="quick-presets">
+                    <button class="preset-btn" onclick="setServings(8)">8</button>
+                    <button class="preset-btn" onclick="setServings(12)">12</button>
+                    <button class="preset-btn" onclick="setServings(24)">24</button>
+                    <button class="preset-btn" onclick="setServings(48)">48</button>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="calculateDosage()">
+            <i class="fas fa-calculator me-2"></i>Calculate Dosage
+        </button>
+    </div>
+
+    <div id="resultsSection" style="display: none;">
+        <div class="card-modern">
+            <div class="card-title">
+                <i class="fas fa-chart-bar"></i>
+                Dosage Analysis
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card" id="totalTHCCard">
+                    <i class="stat-icon fas fa-cannabis" id="thcIcon"></i>
+                    <div class="stat-label">Total THC</div>
+                    <div class="stat-value" id="totalTHC">0.0<span class="stat-unit">mg</span></div>
+                </div>
+                <div class="stat-card" id="totalCBDCard">
+                    <i class="stat-icon fas fa-leaf"></i>
+                    <div class="stat-label">Total CBD</div>
+                    <div class="stat-value" id="totalCBD">0.0<span class="stat-unit">mg</span></div>
+                </div>
+                <div class="stat-card" id="thcPerServingCard">
+                    <i class="stat-icon fas fa-utensils"></i>
+                    <div class="stat-label">THC per Serving</div>
+                    <div class="stat-value" id="thcPerServing">0.0<span class="stat-unit">mg</span></div>
+                </div>
+                <div class="stat-card" id="cbdPerServingCard">
+                    <i class="stat-icon fas fa-utensils"></i>
+                    <div class="stat-label">CBD per Serving</div>
+                    <div class="stat-value" id="cbdPerServing">0.0<span class="stat-unit">mg</span></div>
+                </div>
+            </div>
+
+            <div id="doseWarning" class="alert-warning" style="display: none;">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>High Dose Warning:</strong> THC per serving exceeds 10 mg. Start low and go slow.
+            </div>
+
+            <div id="doseDanger" class="alert-danger" style="display: none;">
+                <i class="fas fa-skull-crossbones me-2"></i>
+                <strong>Extreme Dose Alert:</strong> THC per serving exceeds 25 mg. This could cause severe intoxication.
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <div class="card-modern">
+            <div class="card-title">
+                <i class="fas fa-question-circle"></i>
+                Frequently Asked Questions
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>How does this calculator work?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>The calculator determines cannabinoid content in edibles using two methods:</p>
+                    <ol>
+                        <li><strong>Weight-based:</strong> Enter specific THCA, THC, and CBD weights (supports mg and g units)</li>
+                        <li><strong>Concentration-based:</strong> Enter extract weight and cannabinoid percentages</li>
+                    </ol>
+                    <p><strong>THCA Conversion:</strong> THCA → THC with 87.7% efficiency (accounts for molecular weight difference)</p>
+                    <p><strong>Formula:</strong> Total Cannabinoid (mg) = Weight (g) × Concentration (%) × 10</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What units can I use for weight inputs?</span>
+                </div>
+                <div class="faq-answer">
+                    <p><strong>Weight-based mode supports:</strong></p>
+                    <ul>
+                        <li><strong>Milligrams (mg):</strong> Ideal for smaller amounts and precise dosing</li>
+                        <li><strong>Grams (g):</strong> Convenient for larger quantities</li>
+                    </ul>
+                    <p>The calculator automatically converts between units for accurate calculations. Choose the unit that matches your measurement tools or lab results.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What's the difference between THCA and THC?</span>
+                </div>
+                <div class="faq-answer">
+                    <p><strong>THCA (Tetrahydrocannabinolic Acid):</strong></p>
+                    <ul>
+                        <li>Raw, non-psychoactive form found in fresh cannabis</li>
+                        <li>Converts to THC when heated (decarboxylation)</li>
+                        <li>87.7% conversion efficiency due to molecular weight loss</li>
+                    </ul>
+                    <p><strong>THC (Tetrahydrocannabinol):</strong></p>
+                    <ul>
+                        <li>Active, psychoactive cannabinoid</li>
+                        <li>Result of THCA decarboxylation</li>
+                        <li>What actually causes intoxication</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What are safe edible doses?</span>
+                </div>
+                <div class="faq-answer">
+                    <p><strong>Dosage Guidelines:</strong></p>
+                    <ul>
+                        <li><strong style="color: var(--accent-green);">0-5 mg THC:</strong> Micro-dose, mild effects</li>
+                        <li><strong style="color: var(--accent-yellow);">5-10 mg THC:</strong> Standard dose for beginners</li>
+                        <li><strong style="color: var(--accent-red);">10-25 mg THC:</strong> Moderate to strong effects</li>
+                        <li><strong style="color: var(--accent-red);">25+ mg THC:</strong> Very strong, use caution</li>
+                    </ul>
+                    <p><strong>Important:</strong> Edibles take 30-120 minutes to onset. Start low, wait, then dose more if needed.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Why include CBD?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>CBD provides balance and reduces THC anxiety:</p>
+                    <ul>
+                        <li><strong>1:1 Ratio:</strong> Equal THC:CBD for balanced effects</li>
+                        <li><strong>2:1 Ratio:</strong> Higher THC for medical use</li>
+                        <li><strong>High CBD:</strong> For anxiety relief with minimal intoxication</li>
+                    </ul>
+                    <p>CBD doesn't get you "high" but modulates THC effects.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>How accurate are these calculations?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Calculations are based on lab-tested concentrations, but real-world factors affect accuracy:</p>
+                    <p><strong>Accurate assumptions:</strong></p>
+                    <ul>
+                        <li>Uniform mixing in the edible medium</li>
+                        <li>Consistent serving sizes</li>
+                        <li>Proper decarboxylation</li>
+                    </ul>
+                    <p><strong>Potential variations:</strong></p>
+                    <ul>
+                        <li>Extraction efficiency differences</li>
+                        <li>Cannabinoid degradation over time</li>
+                        <li>Individual metabolism variations</li>
+                    </ul>
+                    <p>Always test small batches and label clearly.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer id="footer" class="footer-modern">
+</footer>
+
+<script src="/decarboxulator/resources/js/nav-js.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Toast Configuration
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#1a1a1a',
+        color: '#e0e0e0',
+        iconColor: '#0d6efd'
+    });
+
+    function toggleInputMethod() {
+        const isWeightBased = document.getElementById('weightBased').checked;
+        document.getElementById('weightInputs').style.display = isWeightBased ? 'block' : 'none';
+        document.getElementById('concentrationInputs').style.display = isWeightBased ? 'none' : 'block';
+        calculateDosage();
+    }
+
+    // Unit conversion helper
+    function convertToMg(value, unit) {
+        return unit === 'g' ? value * 1000 : value;
+    }
+
+    // Update preset buttons based on selected unit
+    function updateTHCAPresets() {
+        const unit = document.getElementById('thcaUnit').value;
+        const presetsContainer = document.getElementById('thcaPresets');
+
+        if (unit === 'g') {
+            presetsContainer.innerHTML = `
+                <button class="preset-btn" onclick="setTHCAWeight(0.05)">0.05g</button>
+                <button class="preset-btn" onclick="setTHCAWeight(0.1)">0.1g</button>
+                <button class="preset-btn" onclick="setTHCAWeight(0.25)">0.25g</button>
+                <button class="preset-btn" onclick="setTHCAWeight(0.5)">0.5g</button>
+            `;
+        } else {
+            presetsContainer.innerHTML = `
+                <button class="preset-btn" onclick="setTHCAWeight(50)">50mg</button>
+                <button class="preset-btn" onclick="setTHCAWeight(100)">100mg</button>
+                <button class="preset-btn" onclick="setTHCAWeight(250)">250mg</button>
+                <button class="preset-btn" onclick="setTHCAWeight(500)">500mg</button>
+            `;
+        }
+    }
+
+    function updateTHCPresets() {
+        const unit = document.getElementById('thcUnit').value;
+        const presetsContainer = document.getElementById('thcPresets');
+
+        if (unit === 'g') {
+            presetsContainer.innerHTML = `
+                <button class="preset-btn" onclick="setTHCWeight(0.05)">0.05g</button>
+                <button class="preset-btn" onclick="setTHCWeight(0.1)">0.1g</button>
+                <button class="preset-btn" onclick="setTHCWeight(0.25)">0.25g</button>
+                <button class="preset-btn" onclick="setTHCWeight(0.5)">0.5g</button>
+            `;
+        } else {
+            presetsContainer.innerHTML = `
+                <button class="preset-btn" onclick="setTHCWeight(50)">50mg</button>
+                <button class="preset-btn" onclick="setTHCWeight(100)">100mg</button>
+                <button class="preset-btn" onclick="setTHCWeight(250)">250mg</button>
+                <button class="preset-btn" onclick="setTHCWeight(500)">500mg</button>
+            `;
+        }
+    }
+
+    function updateCBDPresets() {
+        const unit = document.getElementById('cbdUnit').value;
+        const presetsContainer = document.getElementById('cbdPresets');
+
+        if (unit === 'g') {
+            presetsContainer.innerHTML = `
+                <button class="preset-btn" onclick="setCBDWeight(0)">0g</button>
+                <button class="preset-btn" onclick="setCBDWeight(0.05)">0.05g</button>
+                <button class="preset-btn" onclick="setCBDWeight(0.1)">0.1g</button>
+                <button class="preset-btn" onclick="setCBDWeight(0.25)">0.25g</button>
+            `;
+        } else {
+            presetsContainer.innerHTML = `
+                <button class="preset-btn" onclick="setCBDWeight(0)">0mg</button>
+                <button class="preset-btn" onclick="setCBDWeight(50)">50mg</button>
+                <button class="preset-btn" onclick="setCBDWeight(100)">100mg</button>
+                <button class="preset-btn" onclick="setCBDWeight(250)">250mg</button>
+            `;
+        }
+    }
+
+    // Weight-based setters
+    function setTHCAWeight(value) {
+        document.getElementById('thcaWeight').value = value;
+        calculateDosage();
+    }
+
+    function setTHCWeight(value) {
+        document.getElementById('thcWeight').value = value;
+        calculateDosage();
+    }
+
+    function setCBDWeight(value) {
+        document.getElementById('cbdWeight').value = value;
+        calculateDosage();
+    }
+
+    // Concentration-based setters
+    function setWeight(value) {
+        document.getElementById('inputWeight').value = value;
+        calculateDosage();
+    }
+
+    function setTHC(value) {
+        document.getElementById('thcConc').value = value;
+        calculateDosage();
+    }
+
+    function setCBD(value) {
+        document.getElementById('cbdConc').value = value;
+        calculateDosage();
+    }
+
+    function setServings(value) {
+        document.getElementById('servings').value = value;
+        calculateDosage();
+    }
+
+    function calculateDosage() {
+        const servings = parseInt(document.getElementById('servings').value) || 1;
+        const isWeightBased = document.getElementById('weightBased').checked;
+
+        let totalTHC = 0;
+        let totalCBD = 0;
+
+        if (isWeightBased) {
+            // Weight-based calculation with unit conversion
+            const thcaWeight = parseFloat(document.getElementById('thcaWeight').value) || 0;
+            const thcaUnit = document.getElementById('thcaUnit').value;
+            const thcWeight = parseFloat(document.getElementById('thcWeight').value) || 0;
+            const thcUnit = document.getElementById('thcUnit').value;
+            const cbdWeight = parseFloat(document.getElementById('cbdWeight').value) || 0;
+            const cbdUnit = document.getElementById('cbdUnit').value;
+
+            // Convert all weights to mg
+            const thcaWeightMg = convertToMg(thcaWeight, thcaUnit);
+            const thcWeightMg = convertToMg(thcWeight, thcUnit);
+            const cbdWeightMg = convertToMg(cbdWeight, cbdUnit);
+
+            // Convert THCA to THC (87.7% efficiency)
+            const thcFromTHCA = thcaWeightMg * 0.877;
+            totalTHC = thcFromTHCA + thcWeightMg;
+            totalCBD = cbdWeightMg;
+        } else {
+            // Concentration-based calculation
+            const weight = parseFloat(document.getElementById('inputWeight').value) || 0;
+            const thcConc = parseFloat(document.getElementById('thcConc').value) || 0;
+            const cbdConc = parseFloat(document.getElementById('cbdConc').value) || 0;
+
+            if (weight <= 0) {
+                document.getElementById('resultsSection').style.display = 'none';
+                return;
+            }
+
+            totalTHC = weight * (thcConc / 100) * 1000;
+            totalCBD = weight * (cbdConc / 100) * 1000;
+        }
+
+        if (servings <= 0 || (totalTHC === 0 && totalCBD === 0)) {
+            document.getElementById('resultsSection').style.display = 'none';
+            return;
+        }
+
+        // Per serving
+        const thcPerServing = totalTHC / servings;
+        const cbdPerServing = totalCBD / servings;
+
+        // Update display
+        updateResultsDisplay(totalTHC, totalCBD, thcPerServing, cbdPerServing);
+
+        // Show results
+        document.getElementById('resultsSection').style.display = 'block';
+    }
+
+    function updateResultsDisplay(totalTHC, totalCBD, thcPerServing, cbdPerServing) {
+        // Update stats
+        document.getElementById('totalTHC').innerHTML = `${totalTHC.toFixed(1)}<span class="stat-unit">mg</span>`;
+        document.getElementById('totalCBD').innerHTML = `${totalCBD.toFixed(1)}<span class="stat-unit">mg</span>`;
+        document.getElementById('thcPerServing').innerHTML = `${thcPerServing.toFixed(1)}<span class="stat-unit">mg</span>`;
+        document.getElementById('cbdPerServing').innerHTML = `${cbdPerServing.toFixed(1)}<span class="stat-unit">mg</span>`;
+
+        // Update dose status
+        const thcPerServingCard = document.getElementById('thcPerServingCard');
+        const doseWarning = document.getElementById('doseWarning');
+        const doseDanger = document.getElementById('doseDanger');
+
+        // Remove existing classes
+        thcPerServingCard.classList.remove('safe', 'warning', 'danger');
+
+        // Hide alerts
+        doseWarning.style.display = 'none';
+        doseDanger.style.display = 'none';
+
+        if (thcPerServing <= 10) {
+            thcPerServingCard.classList.add('safe');
+        } else if (thcPerServing <= 25) {
+            thcPerServingCard.classList.add('warning');
+            doseWarning.style.display = 'block';
+        } else {
+            thcPerServingCard.classList.add('danger');
+            doseDanger.style.display = 'block';
+        }
+    }
+
+    function toggleFAQ(element) {
+        const faqItem = element.parentElement;
+        const isActive = faqItem.classList.contains('active');
+
+        // Close all FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Open clicked item if it wasn't active
+        if (!isActive) {
+            faqItem.classList.add('active');
+        }
+    }
+
+    // Initialize KaTeX rendering
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+        });
+    });
+</script>
+</body>
+</html>
+
