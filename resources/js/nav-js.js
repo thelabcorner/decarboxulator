@@ -14,7 +14,10 @@ window.toggleMobileMenu = function() {
 async function includeHTML(id, url) {
     const el = document.getElementById(id);
     const response = await fetch(url);
-    if (!response.ok) return; // Abort on 404 or other errors
+    if (!response.ok) {
+        console.error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
+        return;
+    }
     const html = await response.text();
     el.innerHTML = html;
 
