@@ -1,93 +1,18 @@
-<!--
-Open-Natural License
-
-Copyright (C) 2020-2024 Jackson Cummings - TheDabCorner™ LLC.
-
-Preamble
-This license recognizes that mathematics and logic, as fundamental
-components of nature, are beyond exclusive ownership. The software
-covered by this license is a creative and intuitive expression by
-the author, Jackson Cummings, implementing principles of
-stoichiometry, mathematics, and logical reasoning. This document
-establishes the terms under which this software may be used, copied,
-and distributed.
-
-Grant of License
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal with the Software without restriction,
-including without limitation the rights to use, copy, modify, merge,
-publish, distribute, sublicense, and/or sell copies of the Software,
-all subject to the following conditions:
-
-I. Non-Commercial Use:
-   A. The above copyright notice and this permission notice must be
-   included in all copies or substantial portions of the Software.
-   B. If the Software is redistributed in a non-commercial context,
-   the phrase "Powered by Decarboxulator™" must be prominently
-   displayed in the product or service.
-
-II. Commercial Use:
-   A. Open Source Option:
-      1. If the Software is used in a commercial product or service,
-      the complete source code of that product or service must be made
-      available to the public under this license or another permissive
-      open source license approved by the Open Source Initiative (OSI).
-      2. A notation "Powered by Decarboxulator™" must be prominently
-      displayed in the product or service.
-
-   B. Commercial License Option:
-      1. Use of the Software in commercial products or services without
-      disclosure of source code requires a commercial license obtained
-      from the Licensor.
-      2. Contact the Licensor at admin@thedabcorner.site for licensing
-      options and fees.
-      3. Redistribution of the Software, or any derivative works, in
-      source or binary form, requires prior written consent from the
-      Licensor.
-      4. A notation "Powered by Decarboxulator™" must be prominently
-      displayed in the product or service.
-
-III. Research and Academic Use:
-   A. The Software may be used for research and academic purposes
-   without obtaining a commercial license, provided that:
-      1. The above copyright notice and this permission notice are
-      included in all copies or substantial portions of the Software.
-      2. Proper attribution is given to the authors and the Software
-      in any publications or presentations resulting from the use of
-      the Software.
-
-Warranty Disclaimer
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
-BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN
-ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-Trademark Notice
-This license does not grant any rights in the trademarks, service
-marks, brand names, or logos of TheDabCorner™ LLC or Decarboxulator™.
-
-Termination
-This license is subject to termination if its terms are violated.
-Upon termination, all rights granted under this license will cease
-immediately without notice from the Licensor. Following termination,
-re-acquisition of licensing rights requires express written consent
-from the Licensor. The Licensor reserves the right to modify or
-revoke the licenses of any third parties who have received copies or
-derivative works of the Software from you, to protect the Licensor's
-interests.
-
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) + Search Console Ownership-->
-    <meta name="google-site-verification" content="zehT3yCzGEa80mOM6j42f99nbI5144vL1prN8kHSaJc" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decarboxulator™ | Cannabinoid Decarboxylation Tools</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.js"></script>
+
+    <link rel="include" href="/decarboxulator/pages/v2/dynamic/pwa-meta.html">
+
+    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LK9VC1VS8P"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -96,267 +21,440 @@ interests.
 
         gtag('config', 'G-LK9VC1VS8P');
     </script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2039258942878313"
-            crossorigin="anonymous"></script>
-
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>Decarboxulator™ | Home</title>
-
-    <!-- Apple Mobile Web App Capable -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <link rel="manifest" href="./resources/assets/manifest.webmanifest">
-
-    <!-- Sitemap Link -->
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="./resources/assets/sitemap.xml">
 
 
-    <link rel="apple-touch-icon" sizes="180x180" href="./resources/assets/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="./resources/assets/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./resources/assets/favicon-16x16.png">
-    <link rel="mask-icon" href="./resources/assets/safari-pinned-tab.svg" color="#000000">
-    <link rel="shortcut icon" href="./resources/assets/favicon.ico">
-    <meta name="apple-mobile-web-app-title" content="Decarboxulator&trade;">
-    <meta name="application-name" content="Decarboxulator&trade;">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-config" content="./resources/assets/browserconfig.xml">
-    <meta name="theme-color" content="#333">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #151515;
+            --bg-tertiary: #1a1a1a;
+            --bg-quaternary: #202020;
+            --border-color: #ffffff1a;
+            --accent-blue: #0d6efd;
+            --accent-green: #28a745;
+            --accent-yellow: #ffc107;
+            --accent-red: #dc3545;
+            --accent-purple: #6f42c1;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-muted: #888888;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
 
-    <!-- Favicon-->
-    <link rel="icon" type="image/x-icon" href="./resources/assets/favicon.ico" />
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+        }
 
-    <!-- Core theme CSS (includes Bootstrap)-->
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link href="./resources/css/styles.css" rel="stylesheet" />
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <!-- Dark-Mode CSS -->
-    <link href="./resources/css/dark-mode.css" rel="stylesheet" />
+        .hero-section {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 4rem 1rem;
+            text-align: center;
+        }
 
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-description {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-hero-primary {
+            background-color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-hero-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0b5ed7;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-hero-secondary {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-hero-secondary:hover {
+            background-color: var(--bg-tertiary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .features-section {
+            padding: 4rem 1rem;
+        }
+
+        .features-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: var(--text-primary);
+            display: block;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .stats-section {
+            background-color: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 3rem 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .about-section {
+            padding: 4rem 1rem;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .about-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .about-text {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .hero-icons {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            opacity: 0.7;
+        }
+
+        .hero-icons i {
+            font-size: 2rem;
+            color: var(--accent-blue);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .hero-description {
+                font-size: 0.9rem;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .features-title {
+                font-size: 1.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .feature-card {
+                padding: 1.5rem;
+            }
+
+            .feature-icon {
+                font-size: 2rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .hero-icons {
+                gap: 1.5rem;
+            }
+
+            .hero-icons i {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="d-flex" id="wrapper">
-    <!-- Sidebar-->
-    <div class="border-end bg-white" id="sidebar-wrapper">
-        <div class="sidebar-heading border-bottom bg-light">Decarboxulator™</div>
-        <div class="list-group list-group-flush">
-            <a class=" active list-group-item list-group-item-action list-group-item-light p-3" href="../decarboxulator/index">Home</a>
-            <a class=" list-group-item list-group-item-action list-group-item-light p-3" href="pages/rosin-thca-finder"><span class="w3-tag w3-blue">New!</span> Rosin THCa % Analyzer</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="pages/max-pressure"><span class="w3-tag w3-blue">New!</span> Max Pressure Calculator</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="pages/dcx-yield">THCa Decarboxylation Yield Calculator</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="pages/input-finder">THC From THCa Input Finder</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="pages/progress-tracker"><span class="w3-tag w3-blue">New!</span> Decarboxylation Progress Tracker</a>
-<!--            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="pages/time-predictor">Total Decarboxylation Time Predictor</a>-->
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="pages/iso-calc">Cartridge Isolate Calculator</a>
+
+<nav id="nav" class="navbar-modern">
+</nav>
+
+<div class="hero-section">
+    <div class="container-main">
+        <div class="hero-icons">
+            <i class="fas fa-flask"></i>
+            <i class="fas fa-chart-line"></i>
+            <i class="fas fa-exchange-alt"></i>
+            <i class="fas fa-vial"></i>
+            <i class="fas fa-scale-balanced"></i>
         </div>
-    </div>
-    <!-- Page content wrapper-->
-    <div id="page-content-wrapper">
-        <!-- Top navigation-->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-            <div class="container-fluid">
-                <button class="btn btn-primary" id="sidebarToggle">Menu</button>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon" style="color:#fff"></span></button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <div class="dropdown-item">
-                                    <label class="switch">
-                                        <input type="checkbox" id="darkModeToggle">
-                                        <span class="slider round"></span>
-                                    </label>
-                                    <span class="toggle-label">Dark Mode</span>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <!-- Page content-->
-        <div class="container-fluid">
-            <div class="tab-content p-3">
-                <h1 class="mt-4">Decarboxulator™</h1>
-                <p>Welcome to Decarboxulator™, a powerful tool designed to assist you in various decarboxylation-related calculations.</p>
-
-                <div class="alert alert-success">
-                    <h4>Install Decarboxulator&trade; as an App</h4>
-                    <p>Decarboxulator™ can be installed as a standalone app on your device for easy access!</p>
-                    <ul>
-                        <li><strong>Chromium Browsers:</strong> Click install button in the far-right corner of your browser's addreess bar and select "Install Decarboxulator™".</li>
-                        <li><strong>Android:</strong> Tap the three dots in the top right corner of your browser and select "Add to Home Screen".</li>
-                        <li><strong>iOS:</strong> Tap the share button at the bottom of your browser and select "Add to Home Screen".</li>
-                    </ul>
-                </div>
-                <div class="accordion" id="tipsAccordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="descriptionHeading">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#descriptionCollapse" aria-expanded="false" aria-controls="descriptionCollapse">
-                                How to Master Decarboxulator™
-                            </button>
-                        </h2>
-                        <div id="descriptionCollapse" class="accordion-collapse collapse" aria-labelledby="descriptionHeading">
-                            <div class="accordion-body">
-                                <p>On each page, you will find a form with various input fields. Fill them out and click the Calculate button!</p>
-                                <p> Read every spoiler that you find (like this one you're reading) to get tips and tricks for the most accurate results!</p>
-                                <div class="alert alert-success" role="alert">
-                                    <h4>Expression Evaluation</h4>
-                                    <p>Decarboxulator™ uses a powerful custom expression evaluation engine similar to that of Excel formulas!</p>
-                                    <p>This allows for you to perform complex calculations and unit conversions inline within your input fields. Say goodbye to app-switching to calculate!</p>
-                                    <p>In any input field simply press/type the '=' key, then type in a 'PEMDAS' math expression like <span class="w3-tag w3-blue">2+2</span> or <span class="w3-tag w3-blue">(4*7) + (56+92)</span> and press enter. The result will be displayed in the active input field. Try it out below!</p>
-                                    <input type="text" class="form-control" id="expressionInput" placeholder="=2+2">
-                                    <hr>
-                                    <p>Another example use case of our engine is inline unit conversion, for example, try this expression: <span class="w3-tag w3-blue">=(2.4 lb to grams)</span></p>
-                                    <p>Or even more complex expressions like <span class="w3-tag w3-blue">=(3.1 lb to grams) / 4</span> or <span class="w3-tag w3-blue">=(5.1 lb to grams) + (8 oz to grams) in kilograms</span></p>
-                                    <hr>
-                                    <p>For more advanced calculations, you can use the <a href="https://mathjs.org/docs/expressions/syntax.html" target="_blank">MathJS</a> syntax.</p>
-                                </div>
-                                <div class="alert alert-success">
-                                    <h4>Install Decarboxulator&trade; as an App</h4>
-                                    <p>Decarboxulator™ can be installed as a standalone app on your device for easy access!</p>
-                                    <ul>
-                                        <li><strong>Chromium Browsers:</strong> Click install button in the far-right corner of your browser's addreess bar and select "Install Decarboxulator™".</li>
-                                        <li><strong>Android:</strong> Tap the three dots in the top right corner of your browser and select "Add to Home Screen".</li>
-                                        <li><strong>iOS:</strong> Tap the share button at the bottom of your browser and select "Add to Home Screen".</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
+        <h1 class="hero-title">Decarboxulator™</h1>
+        <p class="hero-subtitle">Precision Cannabis Processing Tools</p>
+        <p class="hero-description">Molecular weight-based calculators for decarboxylation and production. Optimize yield with scientific accuracy.</p>
+        <div class="hero-cta">
+            <a href="#features" class="btn-hero-primary">
+                <i class="fas fa-tools me-2"></i>Explore Tools
+            </a>
+            <a href="https://github.com/thedabcorner/decarboxulator" class="btn-hero-secondary">
+                <i class="fab fa-github me-2"></i>Source
+            </a>
         </div>
-
     </div>
 </div>
-<!-- Bootstrap core JS-->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Core theme JS-->
-<script src="resources/js/core-theme/core-theme-scripts.js"></script>
-<!-- Dark Mode JS -->
-<script src="resources/js/core-theme/dark-mode.js"></script>
-<!-- Expression Evaluation -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.2/math.min.js" integrity="sha512-d35gaU1E+gZdyLbQUGODiOEXqH+Q4pj9BmkFS3xwTrmw7DustRm+tfpfVQaywn9l+qCsd5dsJ4A+11s/OisvFw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="resources/js/utils/expression-eval.js"></script>
 
-<!-- Footer -->
-<footer class="bg-light py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h5>About Decarboxulator™</h5>
-                <p>Decarboxulator™ is a powerful suite of tools designed to streamline and optimize your decarboxylation processes. Developed by TheDabCorner LLC, our mission is to provide cutting-edge solutions for the cannabis industry.</p>
-            </div>
-            <div class="col-md-6">
-                <h5>Give Credit!</h5>
-                <p>If this tool has helped you, please consider giving credit to me by linking back to Decarboxulator™ on your products or sharing our link on social media. Your support is greatly appreciated!</p>
-           </div>
-            <div class="col-sm-6">
-                <h5>Social Media</h5>
-                <a href="https://www.instagram.com/thelabcorner" class="btn btn-social-icon btn-instagram"><i class="fab fa-instagram fa-2x"></i></a>
-                <a href="https://www.linkedin.com/in/thelabcorner/" class="btn btn-social-icon btn-linkedin"><i class="fab fa-linkedin fa-2x"></i></a>
-                <a href="https://www.youtube.com/channel/UCmAosOLRv5gs4i0pA56isdQ" class="btn btn-social-icon btn-youtube"><i class="fab fa-youtube fa-2x"></i></a>
-            </div>
-            <div class="col-md-3">
-                <h5>Quick Links</h5>
-                <ul class="list-unstyled">
-                    <li><a href="./index">Home</a></li>
-                    <li><a href="https://thedabcorner.site/">Graphic Design</a></li>
-                    <li><a href="https://thedabcorner.site/thelabcorner">Consultation</a></li>
-                    <li><a href="mailto:contact@thedabcorner.site">Contact</a></li>
-                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#licenseModal">License & Terms</a></li>
-                </ul>
-            </div>
+<section id="features" class="features-section">
+    <div class="container-main">
+        <h2 class="features-title"><i class="fas fa-wrench me-2"></i>Tools</h2>
+        <div class="features-grid">
+            <a href="/decarboxulator/pages/v2/thca-decarb-tracker" class="feature-card">
+                <i class="feature-icon fas fa-chart-line"></i>
+                <h3 class="feature-title">Progress Tracker</h3>
+                <p class="feature-description">Real-time decarboxylation monitoring with kinetic modeling.</p>
+            </a>
+
+            <a href="/decarboxulator/pages/v2/edible-calculator" class="feature-card">
+                <i class="feature-icon fas fa-cookie-bite"></i>
+                <h3 class="feature-title">Edible Dosage Calculator</h3>
+                <p class="feature-description">Formulate precise dosages for cannabis-infused edibles.</p>
+            </a>
+
+            <a href="/decarboxulator/pages/v2/thca-thc-calculator#forward" class="feature-card">
+                <i class="feature-icon fas fa-arrow-right"></i>
+                <h3 class="feature-title">THCa → THC</h3>
+                <p class="feature-description">Calculate THC yield from THCa decarboxylation.</p>
+            </a>
+
+            <a href="/decarboxulator/pages/v2/thca-thc-calculator#backward" class="feature-card">
+                <i class="feature-icon fas fa-arrow-left"></i>
+                <h3 class="feature-title">THC → THCa</h3>
+                <p class="feature-description">Reverse-engineer original THCa content.</p>
+            </a>
+
+            <a href="/decarboxulator/pages/v2/thca-content-analyzer" class="feature-card">
+                <i class="feature-icon fas fa-scale-balanced"></i>
+                <h3 class="feature-title">Content Analyzer</h3>
+                <p class="feature-description">Analyze THCa percentages and optimal decarboxylation.</p>
+            </a>
+
+            <a href="/decarboxulator/pages/v2/max-pressure" class="feature-card">
+                <i class="feature-icon fas fa-gauge-simple-high"></i>
+                <h3 class="feature-title">THCA PSI Chart</h3>
+                <p class="feature-description">Estimate pressure in sealed containers during decarboxylation.</p>
+            </a>
+
+            <a href="/decarboxulator/pages/v2/isolate-calculator" class="feature-card">
+                <i class="feature-icon fas fa-vial"></i>
+                <h3 class="feature-title">Isolate Calculator</h3>
+                <p class="feature-description">Plan cartridge production with cannabinoid ratios.</p>
+            </a>
         </div>
-        <hr>
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <p>&copy; 2024 TheDabCorner&trade; LLC. All rights reserved.</p>
+    </div>
+</section>
+
+<section class="stats-section">
+    <div class="container-main">
+        <div class="stats-grid">
+            <div>
+                <div class="stat-number"><i class="fas fa-check-circle"></i> 99.7%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div>
+                <div class="stat-number"><i class="fas fa-tools"></i> 7</div>
+                <div class="stat-label">Tools</div>
+            </div>
+            <div>
+                <div class="stat-number"><i class="fas fa-clock"></i> 24/7</div>
+                <div class="stat-label">Monitoring</div>
+            </div>
+            <div>
+                <div class="stat-number"><i class="fas fa-code"></i> ∞</div>
+                <div class="stat-label">Open Source</div>
             </div>
         </div>
     </div>
+</section>
+
+<section id="about" class="about-section">
+    <div class="container-main">
+        <div class="about-content">
+            <h2 class="about-title"><i class="fas fa-info-circle me-2"></i>About</h2>
+            <p class="about-text">Laboratory-grade tools for cannabis processing. Built on precise molecular calculations for maximum potency and efficiency.</p>
+            <div class="hero-cta">
+                <a href="/decarboxulator/pages/v2/thca-decarb-tracker" class="btn-hero-primary">
+                    <i class="fas fa-play me-2"></i>Start
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer id="footer" class="footer-modern">
 </footer>
 
+<script src="/decarboxulator/resources/js/nav-js.js"></script>
 
-<!-- License Modal -->
-<div class="modal fade" id="licenseModal" tabindex="-1" aria-labelledby="licenseModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="licenseModalLabel">License & Terms</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Open-Natural License</strong></p>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-                <p>Copyright (C) 2020-2024 Jackson Cummings - TheDabCorner™ LLC.</p>
+<script>
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
 
-                <p><strong>Preamble:</strong> This license recognizes that mathematics and logic, as fundamental components of nature, are beyond exclusive ownership. The software covered by this license is a creative and intuitive expression by the author, Jackson Cummings, implementing principles of stoichiometry, mathematics, and logical reasoning.</p>
-
-                <p><strong>Grant of License:</strong> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal with the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, all subject to the following conditions:</p>
-
-                <p><strong>I. Non-Commercial Use:</strong>
-                <ul>
-                    <li>The above copyright notice and this permission notice must be included in all copies or substantial portions of the Software.</li>
-                    <li>If the Software is redistributed in a non-commercial context, the phrase "Powered by Decarboxulator™" must be prominently displayed in the product or service.</li>
-                </ul>
-                </p>
-
-                <p><strong>II. Commercial Use:</strong>
-                <ul>
-                    <li><strong>Open Source Option:</strong>
-                        <ol>
-                            <li>If the Software is used in a commercial product or service, the complete source code of that product or service must be made available to the public under this license or another permissive open source license approved by the Open Source Initiative (OSI).</li>
-                            <li>A notation "Powered by Decarboxulator™" must be prominently displayed in the product or service.</li>
-                        </ol>
-                    </li>
-                    <li><strong>Commercial License Option:</strong>
-                        <ol>
-                            <li>Use of the Software in commercial products or services without disclosure of source code requires a commercial license obtained from the Licensor.</li>
-                            <li>Contact the Licensor at admin@thedabcorner.site for licensing options and fees.</li>
-                            <li>Redistribution of the Software, or any derivative works, in source or binary form, requires prior written consent from the Licensor.</li>
-                            <li>A notation "Powered by Decarboxulator™" must be prominently displayed in the product or service.</li>
-                        </ol>
-                    </li>
-                </ul>
-                </p>
-
-                <p><strong>III. Research and Academic Use:</strong>
-                <ul>
-                    <li>The Software may be used for research and academic purposes without obtaining a commercial license, provided that:
-                        <ol>
-                            <li>The above copyright notice and this permission notice are included in all copies or substantial portions of the Software.</li>
-                            <li>Proper attribution is given to the authors and the Software in any publications or presentations resulting from the use of the Software.</li>
-                        </ol>
-                    </li>
-                </ul>
-                </p>
-
-                <p><strong>Warranty Disclaimer:</strong> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-
-                <p><strong>Trademark Notice:</strong> This license does not grant any rights in the trademarks, service marks, brand names, or logos of TheDabCorner™ LLC or Decarboxulator™.</p>
-
-                <p><strong>Termination:</strong> This license is subject to termination if its terms are violated. Upon termination, all rights granted under this license will cease immediately without notice from the Licensor. Following termination, re-acquisition of licensing rights requires express written consent from the Licensor. The Licensor reserves the right to modify or revoke the licenses of any third parties who have received copies or derivative works of the Software from you, to protect the Licensor's interests.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
+    // Initialize KaTeX rendering for any math if needed
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof renderMathInElement !== 'undefined') {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
+        }
+    });
+</script>
 </body>
 </html>

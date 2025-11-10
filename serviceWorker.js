@@ -2,7 +2,7 @@ const cacheName = 'my-cache-v2';
 
 const filesToCache = [
     "/",
-    "/index.html",
+    "/index-old.html",
     "/mobile.css",
     "/serviceWorker.js",
     "/calculatorJS/calculateCartridgeIsolate.js",
