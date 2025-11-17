@@ -98,7 +98,7 @@
 
         .btn-hero-primary {
             background-color: var(--accent-blue);
-            border: 1px solid var(--accent-blue);
+            border: 2px solid var(--accent-blue);
             color: white;
             padding: 0.75rem 1.5rem;
             border-radius: 6px;
@@ -109,14 +109,14 @@
 
         .btn-hero-primary:hover {
             background-color: #0b5ed7;
-            border-color: #0b5ed7;
+            border-color: rgba(255, 255, 255, 0.26);
             color: white;
             transform: translateY(-1px);
         }
 
         .btn-hero-secondary {
             background-color: transparent;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             color: var(--text-primary);
             padding: 0.75rem 1.5rem;
             border-radius: 6px;
@@ -153,7 +153,7 @@
 
         .feature-card {
             background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             padding: 2rem;
             transition: all 0.2s;
@@ -343,45 +343,145 @@
         <div class="features-grid">
             <a href="/decarboxulator/pages/v2/thca-decarb-tracker" class="feature-card">
                 <i class="feature-icon fas fa-chart-line"></i>
-                <h3 class="feature-title">Decarboxylation Progress Tracker</h3>
+                <h3 class="feature-title">Decarboxylation Progress Tracker <span class="badge bg-primary">v2.0</span></h3>
                 <p class="feature-description">Real-time decarboxylation monitoring with kinetic modeling.</p>
+                <div class="feature-tags mb-2">
+                    <span class="badge bg-secondary">Real-time</span>
+                    <span class="badge bg-secondary">Kinetics</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-1">
+                    <i class="fas fa-arrow-right me-1"></i>Launch Tool
+                </button>
             </a>
 
             <a href="/decarboxulator/pages/v2/edible-calculator" class="feature-card">
                 <i class="feature-icon fas fa-cookie-bite"></i>
-                <h3 class="feature-title">Edible Dosage Calculator</h3>
+                <h3 class="feature-title">Edible Dosage Calculator <span class="badge bg-primary">v2.0</span></h3>
                 <p class="feature-description">Formulate precise dosages for cannabis-infused edibles.</p>
+                <div class="feature-tags mb-2">
+                    <span class="badge bg-secondary">Dosing</span>
+                    <span class="badge bg-secondary">Edibles</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-1">
+                    <i class="fas fa-arrow-right me-1"></i>Launch Tool
+                </button>
             </a>
 
             <a href="/decarboxulator/pages/v2/thca-thc-calculator#forward" class="feature-card">
                 <i class="feature-icon fas fa-arrow-right"></i>
-                <h3 class="feature-title">THCa to THC Calculator</h3>
+                <h3 class="feature-title">THCa to THC Calculator <span class="badge bg-primary">v2.0</span></h3>
                 <p class="feature-description">Calculate THC yield from THCa decarboxylation.</p>
+                <div class="feature-tags mb-2">
+                    <span class="badge bg-secondary">Conversion</span>
+                    <span class="badge bg-secondary">Yield</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-1">
+                    <i class="fas fa-arrow-right me-1"></i>Launch Tool
+                </button>
             </a>
 
             <a href="/decarboxulator/pages/v2/thca-thc-calculator#backward" class="feature-card">
                 <i class="feature-icon fas fa-arrow-left"></i>
-                <h3 class="feature-title">THC to THCa Calculator</h3>
+                <h3 class="feature-title">THC to THCa Calculator <span class="badge bg-primary">v2.0</span></h3>
                 <p class="feature-description">Reverse-engineer THC mass to find the THCA required to create it.</p>
+                <div class="feature-tags mb-2">
+                    <span class="badge bg-secondary">Reverse</span>
+                    <span class="badge bg-secondary">Planning</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-1">
+                    <i class="fas fa-arrow-right me-1"></i>Launch Tool
+                </button>
             </a>
 
             <a href="/decarboxulator/pages/v2/thca-content-analyzer" class="feature-card">
                 <i class="feature-icon fas fa-scale-balanced"></i>
-                <h3 class="feature-title">THCA Percent Analyzer</h3>
+                <h3 class="feature-title">THCA Percent Analyzer <span class="badge bg-primary">v2.0</span></h3>
                 <p class="feature-description">Reverse-engineer original THCa and final THC percent concentration by taking weight measurements</p>
+                <div class="feature-tags mb-2">
+                    <span class="badge bg-secondary">Analysis</span>
+                    <span class="badge bg-secondary">Potency</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-1">
+                    <i class="fas fa-arrow-right me-1"></i>Launch Tool
+                </button>
             </a>
 
             <a href="/decarboxulator/pages/v2/max-pressure" class="feature-card">
                 <i class="feature-icon fas fa-gauge-simple-high"></i>
-                <h3 class="feature-title">THCA PSI Chart</h3>
+                <h3 class="feature-title">THCA PSI Chart <span class="badge bg-primary">v2.0</span></h3>
                 <p class="feature-description">Estimate pressure in sealed containers during decarboxylation.</p>
+                <div class="feature-tags mb-2">
+                    <span class="badge bg-secondary">Safety</span>
+                    <span class="badge bg-secondary">Pressure</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-1">
+                    <i class="fas fa-arrow-right me-1"></i>Launch Tool
+                </button>
             </a>
 
             <a href="/decarboxulator/pages/v2/isolate-calculator" class="feature-card">
                 <i class="feature-icon fas fa-vial"></i>
-                <h3 class="feature-title">Cartridge Isolate Calculator</h3>
+                <h3 class="feature-title">Cartridge Isolate Calculator <span class="badge bg-primary">v2.0</span></h3>
                 <p class="feature-description">Plan cartridge production with cannabinoid ratios.</p>
+                <div class="feature-tags mb-2">
+                    <span class="badge bg-secondary">Production</span>
+                    <span class="badge bg-secondary">Ratios</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-1">
+                    <i class="fas fa-arrow-right me-1"></i>Launch Tool
+                </button>
             </a>
+
+            <style>
+                .feature-card button {
+                    width: 100%;
+                    color: #ffffffa1;
+                    pointer-events: none;
+                    padding: 7.5px 30px;
+                    border: 2px solid var(--border-color);
+                }
+
+                .feature-card button,
+                .feature-card button i {
+                    transition: background 0.2s, color 0.2s, border-color 0.2s;
+                }
+
+                .feature-card button i {
+                    color: #0d6efd;
+                    background: #59595942;
+                    padding: 3px;
+                    border-radius: 5px;
+                    margin-right: 8px !important;
+                    border: 2px solid #80808024;
+                }
+
+                .feature-card:hover button, .feature-card:hover button i {
+                    background-color: var(--accent-blue);
+                    color: white;
+                    border-color: #ffffff40;
+                }
+
+                .feature-tags {
+                    display: flex;
+                    gap: 0.5rem;
+                    flex-wrap: wrap;
+                }
+
+                .feature-tags .badge {
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                    padding: 0.25rem 0.5rem;
+                    background-color: var(--bg-quaternary) !important;
+                    color: var(--text-muted);
+                    border: 1px solid var(--border-color);
+                }
+
+                .feature-tags .badge.bg-info {
+                    background-color: var(--accent-blue) !important;
+                    color: white;
+                    border-color: var(--accent-blue);
+                }
+            </style>
         </div>
     </div>
 </section>
