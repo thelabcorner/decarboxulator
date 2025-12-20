@@ -811,12 +811,12 @@
             <div class="stats-grid">
                 <div class="stat-card" id="totalTHCCard">
                     <i class="stat-icon fas fa-cannabis" id="thcIcon"></i>
-                    <div class="stat-label" id="totalTHCLabel">Total THC</div>
+                    <div class="stat-label" id="totalTHCLabel">Recipe Total THC</div>
                     <div class="stat-value" id="totalTHC">0.0<span class="stat-unit">mg</span></div>
                 </div>
                 <div class="stat-card" id="totalCBDCard">
                     <i class="stat-icon fas fa-leaf"></i>
-                    <div class="stat-label" id="totalCBDLabel">Total CBD</div>
+                    <div class="stat-label" id="totalCBDLabel">Recipe Total CBD</div>
                     <div class="stat-value" id="totalCBD">0.0<span class="stat-unit">mg</span></div>
                 </div>
                 <div class="stat-card" id="thcPerServingCard">
@@ -1172,7 +1172,7 @@
             thcPerServing = totalTHC / servings;
             cbdPerServing = totalCBD / servings;
 
-            updateResultsLabels('Total THC', 'Total CBD', 'THC per Serving', 'CBD per Serving');
+            updateResultsLabels('Recipe Total THC', 'Recipe Total CBD', 'THC per Serving', 'CBD per Serving');
         } else if (method === 'concentration') {
             // Concentration-based calculation
             const weight = parseFloat(document.getElementById('inputWeight').value) || 0;
@@ -1191,7 +1191,7 @@
             thcPerServing = totalTHC / servings;
             cbdPerServing = totalCBD / servings;
 
-            updateResultsLabels('Total THC', 'Total CBD', 'THC per Serving', 'CBD per Serving');
+            updateResultsLabels('Recipe Total THC', 'Recipe Total CBD', 'THC per Serving', 'CBD per Serving');
         } else if (method === 'desired') {
             // Desired dose calculation
             const desiredTHC = parseFloat(document.getElementById('desiredTHC').value) || 0;
