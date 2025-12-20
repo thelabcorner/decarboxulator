@@ -485,53 +485,54 @@ interests.
         }
     </style>
 
-    <div id="v2Banner" class="fixed-banner" role="region" aria-label="V2 overhaul banner">
-        <div class="banner-container">
-            <div class="banner-content">
-                <div class="banner-icon">
-                    <i class="fas fa-rocket" aria-hidden="true"></i>
-                </div>
-                <div class="banner-text-wrapper">
-                    <h3 class="banner-title">🎉 Decarboxulator V2 is Now Live!</h3>
-                    <p class="banner-description">Experience our completely redesigned interface with improved performance, new calculation tools, and enhanced user experience.</p>
-                </div>
-            </div>
-            <div class="banner-actions">
-                <a href="../pages/v2/max-pressure" class="banner-btn" role="button">
-                    Explore V2
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-                <button id="closeBanner" type="button" class="banner-close" aria-label="Close banner">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        </div>
+    <!-- Redirection Overlay to hide old page content -->
+    <div id="redirect-overlay" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+">
+        <div style="
+        width: 40px;
+        height: 40px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #2563eb;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    "></div>
+        <h2 style="margin: 0; font-size: 1.25rem; color: #1e293b;">Moving to V2 Max Pressure</h2>
+        <p style="color: #64748b; margin-top: 8px;">Upgrading your experience...</p>
     </div>
+
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 
     <script>
         (function () {
-            const banner = document.getElementById('v2Banner');
-            if (!banner) return;
+            const targetURL = "../pages/v2/max-pressure";
 
-            const STORAGE_KEY = 'v2BannerDismissed';
-
-            // Check if banner was previously dismissed
-            if (localStorage.getItem(STORAGE_KEY)) {
-                banner.style.display = 'none';
-                return;
+            // Safety check to prevent redirect loops
+            if (!window.location.pathname.includes("v2/max-pressure")) {
+                // .replace is used so the user doesn't get stuck when hitting the 'Back' button
+                window.location.replace(targetURL);
+            } else {
+                // If already on the V2 page, remove the overlay
+                const overlay = document.getElementById('redirect-overlay');
+                if(overlay) overlay.style.display = 'none';
             }
-
-            // Handle dismiss button
-            document.getElementById('closeBanner').addEventListener('click', () => {
-                banner.style.opacity = '0';
-                banner.style.transform = 'translateY(100%)';
-                banner.style.transition = 'all 0.3s ease';
-
-                setTimeout(() => {
-                    banner.style.display = 'none';
-                    localStorage.setItem(STORAGE_KEY, 'true');
-                }, 300);
-            });
         })();
     </script>
 

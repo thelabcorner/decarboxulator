@@ -181,204 +181,35 @@ interests.
         </nav>
 
 
-<style>
-    .fixed-banner {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 1050;
-        background: linear-gradient(135deg, hsl(221.2 83.2% 53.3%) 0%, hsl(212 95% 68%) 100%);
-        color: hsl(0 0% 100%);
-        padding: 1.25rem 1.5rem;
-        box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(8px);
-    }
-
-    .banner-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1.5rem;
-    }
-
-    .banner-content {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        flex: 1;
-        min-width: 0;
-    }
-
-    .banner-icon {
-        width: 48px;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
-        flex-shrink: 0;
-        font-size: 1.5rem;
-    }
-
-    .banner-text-wrapper {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .banner-title {
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin: 0 0 0.25rem 0;
-        color: hsl(0 0% 100%);
-    }
-
-    .banner-description {
-        font-size: 0.875rem;
-        margin: 0;
-        color: rgba(255, 255, 255, 0.9);
-        line-height: 1.4;
-    }
-
-    .banner-actions {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        flex-shrink: 0;
-    }
-
-    .banner-btn {
-        padding: 0.625rem 1.25rem;
-        background: hsl(0 0% 100%);
-        color: hsl(221.2 83.2% 53.3%);
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.875rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    }
-
-    .banner-btn:hover {
-        background: rgba(255, 255, 255, 0.95);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .banner-close {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.1);
-        border: none;
-        border-radius: 6px;
-        color: hsl(0 0% 100%);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-size: 1.25rem;
-        padding: 0;
-    }
-
-    .banner-close:hover {
-        background: rgba(255, 255, 255, 0.2);
-    }
-
-    @media (max-width: 768px) {
-        .fixed-banner {
-            padding: 1rem;
-        }
-
-        .banner-container {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 1rem;
-        }
-
-        .banner-icon {
-            width: 40px;
-            height: 40px;
-            font-size: 1.25rem;
-        }
-
-        .banner-title {
-            font-size: 1rem;
-        }
-
-        .banner-description {
-            font-size: 0.8125rem;
-        }
-
-        .banner-actions {
-            justify-content: space-between;
-            width: 100%;
-        }
-
-        .banner-btn {
-            flex: 1;
-        }
-    }
-</style>
-
-<div id="v2Banner" class="fixed-banner" role="region" aria-label="V2 overhaul banner">
-    <div class="banner-container">
-        <div class="banner-content">
-            <div class="banner-icon">
-                <i class="fas fa-rocket" aria-hidden="true"></i>
-            </div>
-            <div class="banner-text-wrapper">
-                <h3 class="banner-title">🎉 Decarboxulator V2 is Now Live!</h3>
-                <p class="banner-description">Experience our completely redesigned interface with improved performance, new calculation tools, and enhanced user experience.</p>
+        <div id="redirect-container" style="
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: sans-serif;
+">
+            <div style="text-align: center;">
+                <p style="font-weight: 600; color: #2563eb; font-size: 1.25rem;">Upgrading your experience...</p>
+                <p style="color: #64748b;">Redirecting you to Decarboxulator V2</p>
             </div>
         </div>
-        <div class="banner-actions">
-            <a href="../pages/v2/thca-thc-calculator" class="banner-btn" role="button">
-                Explore V2
-                <i class="fas fa-arrow-right"></i>
-            </a>
-            <button id="closeBanner" type="button" class="banner-close" aria-label="Close banner">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </div>
-</div>
 
-<script>
-    (function () {
-        const banner = document.getElementById('v2Banner');
-        if (!banner) return;
+        <script>
+            (function () {
+                const targetURL = "../pages/v2/thca-thc-calculator";
 
-        const STORAGE_KEY = 'v2BannerDismissed';
-
-        // Check if banner was previously dismissed
-        if (localStorage.getItem(STORAGE_KEY)) {
-            banner.style.display = 'none';
-            return;
-        }
-
-        // Handle dismiss button
-        document.getElementById('closeBanner').addEventListener('click', () => {
-            banner.style.opacity = '0';
-            banner.style.transform = 'translateY(100%)';
-            banner.style.transition = 'all 0.3s ease';
-
-            setTimeout(() => {
-                banner.style.display = 'none';
-                localStorage.setItem(STORAGE_KEY, 'true');
-            }, 300);
-        });
-    })();
-</script>
+                // Prevent redirect loops if this script is accidentally included on the V2 page
+                if (!window.location.href.includes("v2/thca-thc-calculator")) {
+                    window.location.href = targetURL;
+                } else {
+                    // Hide the redirect overlay if we are already there
+                    document.getElementById('redirect-container').style.display = 'none';
+                }
+            })();
+        </script>
 
 
 
