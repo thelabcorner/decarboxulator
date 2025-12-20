@@ -578,6 +578,13 @@
             }
         }
 
+        /* Subtle unit style for parenthetical mg display */
+        .subtle-unit {
+            opacity: 0.75;
+            font-weight: 400;
+            font-size: 0.95rem;
+            margin-left: 0.4rem;
+        }
     </style>
 </head>
 <body>
@@ -1140,6 +1147,7 @@
         let servings = 1;
         let thcPerServing = 0;
         let cbdPerServing = 0;
+        let showBothUnits = false; // when true, show total values in g + (mg)
 
         if (method === 'weight') {
             // Weight-based calculation with unit conversion
@@ -1195,7 +1203,8 @@
             thcPerServing = desiredTHC;
             cbdPerServing = desiredCBD;
 
-            updateResultsLabels('Required THC', 'Required CBD', 'THC per Serving', 'CBD per Serving');
+            updateResultsLabels('Recipe Required THC', 'Recipe Required CBD', 'THC per Serving', 'CBD per Serving');
+            showBothUnits = true;
         }
 
         if (servings <= 0 || (totalTHC === 0 && totalCBD === 0)) {
@@ -1204,7 +1213,7 @@
         }
 
         // Update display
-        updateResultsDisplay(totalTHC, totalCBD, thcPerServing, cbdPerServing);
+        updateResultsDisplay(totalTHC, totalCBD, thcPerServing, cbdPerServing, showBothUnits);
 
         // Show results
         document.getElementById('resultsSection').style.display = 'block';
@@ -1217,10 +1226,18 @@
         document.getElementById('cbdPerServingLabel').textContent = cbdPerServingLabel;
     }
 
-    function updateResultsDisplay(totalTHC, totalCBD, thcPerServing, cbdPerServing) {
+    function updateResultsDisplay(totalTHC, totalCBD, thcPerServing, cbdPerServing, showBothUnits = false) {
         // Update stats
-        document.getElementById('totalTHC').innerHTML = `${totalTHC.toFixed(1)}<span class="stat-unit">mg</span>`;
-        document.getElementById('totalCBD').innerHTML = `${totalCBD.toFixed(1)}<span class="stat-unit">mg</span>`;
+        if (showBothUnits) {
+            const totalTHCG = totalTHC / 1000;
+            const totalCBDG = totalCBD / 1000;
+            // Show grams as primary value and mg in parentheses with 0.75 opacity
+            document.getElementById('totalTHC').innerHTML = `${totalTHCG.toFixed(3)}<span class="stat-unit">g</span> <span class="subtle-unit">(${totalTHC.toFixed(1)} mg)</span>`;
+            document.getElementById('totalCBD').innerHTML = `${totalCBDG.toFixed(3)}<span class="stat-unit">g</span> <span class="subtle-unit">(${totalCBD.toFixed(1)} mg)</span>`;
+        } else {
+            document.getElementById('totalTHC').innerHTML = `${totalTHC.toFixed(1)}<span class="stat-unit">mg</span>`;
+            document.getElementById('totalCBD').innerHTML = `${totalCBD.toFixed(1)}<span class="stat-unit">mg</span>`;
+        }
         document.getElementById('thcPerServing').innerHTML = `${thcPerServing.toFixed(1)}<span class="stat-unit">mg</span>`;
         document.getElementById('cbdPerServing').innerHTML = `${cbdPerServing.toFixed(1)}<span class="stat-unit">mg</span>`;
 
@@ -1275,3 +1292,4 @@
 </script>
 </body>
 </html>
+
