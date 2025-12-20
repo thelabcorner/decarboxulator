@@ -585,6 +585,81 @@
             font-size: 0.95rem;
             margin-left: 0.4rem;
         }
+
+        /* shadcn/ui-inspired radio group for packaging label selector */
+        .radio-group-shadcn {
+            display: flex;
+            gap: 1.5rem;
+            margin: 0.5rem 0 0.5rem 0;
+        }
+        .radio-shadcn {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            padding: 0.5rem 1.25rem 0.5rem 2.25rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-tertiary);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-size: 1rem;
+            min-width: 0;
+            user-select: none;
+        }
+        .radio-shadcn:focus-within {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px var(--accent-blue)33;
+        }
+        .radio-shadcn.selected {
+            border-color: var(--accent-blue);
+            background: var(--bg-secondary);
+        }
+        .radio-shadcn .custom-radio {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.1rem;
+            height: 1.1rem;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .radio-shadcn.selected .custom-radio {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px var(--accent-blue)33;
+        }
+        .custom-radio-indicator {
+            width: 0.55rem;
+            height: 0.55rem;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .radio-shadcn.selected .custom-radio-indicator {
+            opacity: 1;
+        }
+        .radio-shadcn input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .radio-shadcn .radio-label-text {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 1rem;
+        }
+        .radio-shadcn .radio-desc {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            font-weight: 400;
+            margin-left: 0.25rem;
+        }
     </style>
 </head>
 <body>
@@ -639,7 +714,7 @@
                         <button class="preset-btn" onclick="setTHCAWeight(250)">250mg</button>
                         <button class="preset-btn" onclick="setTHCAWeight(500)">500mg</button>
                     </div>
-                    <small class="opacity-50">Converts to THC automatically (87.7% efficiency)</small>
+                    <small class="opacity-50">Converts to THC automatically (87.723% efficiency)</small>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">THC Weight</label>
@@ -694,6 +769,24 @@
         <!-- Concentration-based inputs -->
         <div id="concentrationInputs" class="concentration-inputs" style="display: none;">
             <div class="row g-3 mb-3">
+                <div class="col-12">
+                    <label class="form-label">Extract Packaging Format</label>
+                    <div class="radio-group-shadcn" role="radiogroup" aria-labelledby="extractLabelMode">
+                        <label class="radio-shadcn" id="label-total" tabindex="0">
+                            <input class="form-check-input" type="radio" name="concMode" id="concModeTotal" value="total" checked onchange="toggleConcMode(); calculateDosage()" aria-checked="true" autocomplete="off">
+                            <span class="custom-radio"><span class="custom-radio-indicator"></span></span>
+                            <span class="radio-label-text">Total THC %</span>
+                            <span class="radio-desc">(single value)</span>
+                        </label>
+                        <label class="radio-shadcn" id="label-separate" tabindex="0">
+                            <input class="form-check-input" type="radio" name="concMode" id="concModeSeparate" value="separate" onchange="toggleConcMode(); calculateDosage()" aria-checked="false" autocomplete="off">
+                            <span class="custom-radio"><span class="custom-radio-indicator"></span></span>
+                            <span class="radio-label-text">THCa % + THC %</span>
+                            <span class="radio-desc">(separate values)</span>
+                        </label>
+                    </div>
+                    <small class="opacity-50">Choose how the extract label reports cannabinoids so the calculator converts THCa appropriately.</small>
+                </div>
                 <div class="col-md-4">
                     <label class="form-label">Extract Weight</label>
                     <div class="input-group">
@@ -707,8 +800,20 @@
                         <button class="preset-btn" onclick="setWeight(5)">5g</button>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">Total THC Concentration</label>
+                <div class="col-md-4" id="thcaConcGroup" style="display:none;">
+                    <label class="form-label">THCa Concentration (label)</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="thcaConc" placeholder="0" step="0.1" min="0" max="100" oninput="calculateDosage()">
+                        <span class="input-group-text">%</span>
+                    </div>
+                    <div class="quick-presets">
+                        <button class="preset-btn" onclick="(document.getElementById('thcaConc').value=30, calculateDosage())">30%</button>
+                        <button class="preset-btn" onclick="(document.getElementById('thcaConc').value=50, calculateDosage())">50%</button>
+                        <button class="preset-btn" onclick="(document.getElementById('thcaConc').value=70, calculateDosage())">70%</button>
+                    </div>
+                </div>
+                <div class="col-md-4" id="thcConcGroup">
+                    <label class="form-label" id="thcConcLabel">Total THC Concentration</label>
                     <div class="input-group">
                         <input type="number" class="form-control" id="thcConc" placeholder="50" step="0.1" min="0" max="100" oninput="calculateDosage()">
                         <span class="input-group-text">%</span>
@@ -863,7 +968,7 @@
                         <li><strong>Concentration-based:</strong> Enter extract weight and cannabinoid percentages</li>
                         <li><strong>Desired Dose:</strong> Specify desired mg per serving for THC/CBD and number of servings</li>
                     </ol>
-                    <p><strong>THCA Conversion:</strong> THCA → THC with 87.7% efficiency (accounts for molecular weight difference)</p>
+                    <p><strong>THCA Conversion:</strong> THCA → THC with 87.723% efficiency (accounts for molecular weight difference)</p>
                     <p><strong>Formula:</strong> Total Cannabinoid (mg) = Weight (g) × Concentration (%) × 10</p>
                 </div>
             </div>
@@ -909,7 +1014,7 @@
                     <ul>
                         <li>Raw, non-psychoactive form found in fresh cannabis</li>
                         <li>Converts to THC when heated (decarboxylation)</li>
-                        <li>87.7% conversion efficiency due to molecular weight loss</li>
+                        <li>87.723% conversion efficiency due to molecular weight loss</li>
                     </ul>
                     <p><strong>THC (Tetrahydrocannabinol):</strong></p>
                     <ul>
@@ -1011,6 +1116,22 @@
         document.getElementById('concentrationInputs').style.display = method === 'concentration' ? 'block' : 'none';
         document.getElementById('desiredInputs').style.display = method === 'desired' ? 'block' : 'none';
         calculateDosage();
+    }
+
+    // Toggle concentration input mode: total THC% vs separate THCa% + THC%
+    function toggleConcMode() {
+        const mode = document.querySelector('input[name="concMode"]:checked')?.value || 'total';
+        const thcaGroup = document.getElementById('thcaConcGroup');
+        const thcLabel = document.getElementById('thcConcLabel');
+
+        if (mode === 'separate') {
+            thcaGroup.style.display = 'block';
+            thcLabel.textContent = 'THC Concentration (label)';
+        } else {
+            thcaGroup.style.display = 'none';
+            thcLabel.textContent = 'Total THC Concentration';
+        }
+        updateShadcnRadioGroup();
     }
 
     // Unit conversion helper
@@ -1147,7 +1268,7 @@
         let servings = 1;
         let thcPerServing = 0;
         let cbdPerServing = 0;
-        let showBothUnits = false; // when true, show total values in g + (mg)
+        let showBothUnits = false; // now always true for total values in all modes
 
         if (method === 'weight') {
             // Weight-based calculation with unit conversion
@@ -1164,8 +1285,8 @@
             const thcWeightMg = convertToMg(thcWeight, thcUnit);
             const cbdWeightMg = convertToMg(cbdWeight, cbdUnit);
 
-            // Convert THCA to THC (87.7% efficiency)
-            const thcFromTHCA = thcaWeightMg * 0.877;
+            // Convert THCA to THC (87.723% efficiency)
+            const thcFromTHCA = thcaWeightMg * 0.87723;
             totalTHC = thcFromTHCA + thcWeightMg;
             totalCBD = cbdWeightMg;
 
@@ -1173,11 +1294,14 @@
             cbdPerServing = totalCBD / servings;
 
             updateResultsLabels('Recipe Total THC', 'Recipe Total CBD', 'THC per Serving', 'CBD per Serving');
+            showBothUnits = true;
         } else if (method === 'concentration') {
             // Concentration-based calculation
             const weight = parseFloat(document.getElementById('inputWeight').value) || 0;
-            const thcConc = parseFloat(document.getElementById('thcConc').value) || 0;
+            const concMode = document.querySelector('input[name="concMode"]:checked')?.value || 'total';
             const cbdConc = parseFloat(document.getElementById('cbdConc').value) || 0;
+            let thcConc = parseFloat(document.getElementById('thcConc').value) || 0;
+            let thcaConc = 0;
             servings = parseInt(document.getElementById('servingsConc').value) || 1;
 
             if (weight <= 0) {
@@ -1185,13 +1309,31 @@
                 return;
             }
 
-            totalTHC = weight * (thcConc / 100) * 1000;
+            if (concMode === 'separate') {
+                thcaConc = parseFloat(document.getElementById('thcaConc').value) || 0;
+                // Validate combined percentages — warn if they exceed 100%
+                if ((thcaConc + thcConc) > 100) {
+                    // Non-blocking warning to prompt user to verify label values
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'Combined THCa + THC exceeds 100% — please verify label values.'
+                    });
+                }
+                // Convert THCa% -> mg THC after decarb (87.723%)
+                const thcFromTHCA_mg = weight * (thcaConc / 100) * 1000 * 0.87723;
+                const thcFromTHC_mg = weight * (thcConc / 100) * 1000;
+                totalTHC = thcFromTHCA_mg + thcFromTHC_mg;
+            } else {
+                // total THC% reported on label
+                totalTHC = weight * (thcConc / 100) * 1000;
+            }
             totalCBD = weight * (cbdConc / 100) * 1000;
 
             thcPerServing = totalTHC / servings;
             cbdPerServing = totalCBD / servings;
 
             updateResultsLabels('Recipe Total THC', 'Recipe Total CBD', 'THC per Serving', 'CBD per Serving');
+            showBothUnits = true;
         } else if (method === 'desired') {
             // Desired dose calculation
             const desiredTHC = parseFloat(document.getElementById('desiredTHC').value) || 0;
@@ -1227,17 +1369,12 @@
     }
 
     function updateResultsDisplay(totalTHC, totalCBD, thcPerServing, cbdPerServing, showBothUnits = false) {
-        // Update stats
-        if (showBothUnits) {
-            const totalTHCG = totalTHC / 1000;
-            const totalCBDG = totalCBD / 1000;
-            // Show grams as primary value and mg in parentheses with 0.75 opacity
-            document.getElementById('totalTHC').innerHTML = `${totalTHCG.toFixed(3)}<span class="stat-unit">g</span> <span class="subtle-unit">(${totalTHC.toFixed(1)} mg)</span>`;
-            document.getElementById('totalCBD').innerHTML = `${totalCBDG.toFixed(3)}<span class="stat-unit">g</span> <span class="subtle-unit">(${totalCBD.toFixed(1)} mg)</span>`;
-        } else {
-            document.getElementById('totalTHC').innerHTML = `${totalTHC.toFixed(1)}<span class="stat-unit">mg</span>`;
-            document.getElementById('totalCBD').innerHTML = `${totalCBD.toFixed(1)}<span class="stat-unit">mg</span>`;
-        }
+        // Always show both units for total values
+        const totalTHCG = totalTHC / 1000;
+        const totalCBDG = totalCBD / 1000;
+        document.getElementById('totalTHC').innerHTML = `${totalTHCG.toFixed(3)}<span class="stat-unit">g</span> <span class="subtle-unit">(${totalTHC.toFixed(1)} mg)</span>`;
+        document.getElementById('totalCBD').innerHTML = `${totalCBDG.toFixed(3)}<span class="stat-unit">g</span> <span class="subtle-unit">(${totalCBD.toFixed(1)} mg)</span>`;
+        // Per serving values remain in mg only
         document.getElementById('thcPerServing').innerHTML = `${thcPerServing.toFixed(1)}<span class="stat-unit">mg</span>`;
         document.getElementById('cbdPerServing').innerHTML = `${cbdPerServing.toFixed(1)}<span class="stat-unit">mg</span>`;
 
@@ -1279,6 +1416,41 @@
         }
     }
 
+    // Enhance shadcn radio group selection state
+    function updateShadcnRadioGroup() {
+        const radios = document.querySelectorAll('.radio-group-shadcn .radio-shadcn');
+        radios.forEach(label => {
+            const input = label.querySelector('input[type="radio"]');
+            if (input.checked) {
+                label.classList.add('selected');
+                input.setAttribute('aria-checked', 'true');
+            } else {
+                label.classList.remove('selected');
+                input.setAttribute('aria-checked', 'false');
+            }
+        });
+    }
+
+    // Add keyboard navigation for accessibility
+    document.addEventListener('DOMContentLoaded', function() {
+        updateShadcnRadioGroup();
+        document.querySelectorAll('.radio-group-shadcn input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', updateShadcnRadioGroup);
+        });
+        // Keyboard navigation for radio group
+        document.querySelectorAll('.radio-group-shadcn .radio-shadcn').forEach(label => {
+            label.addEventListener('keydown', function(e) {
+                if (e.key === ' ' || e.key === 'Enter') {
+                    const input = label.querySelector('input[type="radio"]');
+                    input.checked = true;
+                    input.dispatchEvent(new Event('change', {bubbles: true}));
+                    input.focus();
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+
     // Initialize KaTeX rendering
     document.addEventListener("DOMContentLoaded", function() {
         renderMathInElement(document.body, {
@@ -1288,6 +1460,9 @@
             ],
             throwOnError: false
         });
+
+        // Ensure concentration toggle initial state when page loads
+        toggleConcMode();
     });
 </script>
 </body>
