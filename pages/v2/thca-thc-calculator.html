@@ -472,7 +472,7 @@
 
     <div class="alert-info">
         <i class="fas fa-info-circle opacity-50 me-2"></i>
-        <strong>Precise Calculation:</strong> Utilizes exact molecular weights (THCa: 358.47005 g/mol, THC: 314.46065 g/mol) for decarboxylation conversions. Conversion ratio: 0.87723 (~87.73%).
+        <strong>Precise Calculation:</strong> Utilizes exact molecular weights (THCa: 358.47005 g/mol, THC: 314.46065 g/mol) for decarboxylation conversions. Conversion ratio: 0.87723 (~87.723%).
     </div>
 
     <div class="card-modern">
@@ -552,7 +552,7 @@ THCa <i class="fas fa-arrow-left mx-1 opacity-50"></i> THC
                 <div class="col-12">
                     <label class="form-label">THC Amount</label>
                     <div class="input-group">
-                        <input type="number" class="form-control" id="thcInput" placeholder="87.73" step="0.001" oninput="calculateThcToThca()">
+                        <input type="number" class="form-control" id="thcInput" placeholder="87.723" step="0.001" oninput="calculateThcToThca()">
                         <select class="form-select" id="thcUnit" onchange="updateThcPresets(); calculateThcToThca()" style="max-width: 100px;">
                             <option value="g">grams</option>
                             <option value="mg">mg</option>
@@ -564,8 +564,8 @@ THCa <i class="fas fa-arrow-left mx-1 opacity-50"></i> THC
                         <button class="preset-btn" onclick="setPreset('thcInput', 1)" id="thcPreset1">1g</button>
                         <button class="preset-btn" onclick="setPreset('thcInput', 10)" id="thcPreset2">10g</button>
                         <button class="preset-btn" onclick="setPreset('thcInput', 50)" id="thcPreset3">50g</button>
-                        <button class="preset-btn" onclick="setPreset('thcInput', 87.73)" id="thcPreset4">87.73g</button>
-                        <button class="preset-btn" onclick="setPreset('thcInput', 877.3)" id="thcPreset5">877.3g</button>
+                        <button class="preset-btn" onclick="setPreset('thcInput', 87.723)" id="thcPreset4">87.723g</button>
+                        <button class="preset-btn" onclick="setPreset('thcInput', 877.23)" id="thcPreset5">877.23g</button>
                     </div>
                 </div>
             </div>
@@ -679,7 +679,7 @@ THCa <i class="fas fa-arrow-left mx-1 opacity-50"></i> THC
                     <p>The conversion ratio is based on molecular weights:</p>
                     <div class="math-formula">
                         <div>$$\text{Conversion Ratio} = \frac{\text{MW}_{\text{THC}}}{\text{MW}_{\text{THCa}}} = \frac{314.46065}{358.47005} = 0.87723$$</div>
-                        <div class="formula-label">87.73% of THCa mass becomes THC</div>
+                        <div class="formula-label">87.723% of THCa mass becomes THC</div>
                     </div>
                     <p>This means 1 gram of THCa produces 0.87723 grams of THC, with 0.1227 grams released as CO₂.</p>
                 </div>
@@ -784,7 +784,7 @@ THCa <i class="fas fa-arrow-left mx-1 opacity-50"></i> THC
 
     // THC-specific presets (for reverse calculation)
     const THC_PRESET_VALUES = {
-        'g': [1, 10, 50, 87.73, 877.3],
+        'g': [1, 10, 50, 87.723, 877.3],
         'mg': [100, 1000, 5000, 87730, 877300],
         'oz': [0.035, 0.35, 1.76, 3.09, 30.9],
         'lb': [0.002, 0.022, 0.11, 0.19, 1.9],
