@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ | Decarboxulator™ Knowledge Base</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- External Libs -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.js"></script>
+
+    <!-- Meta -->
+    <link rel="include" href="/decarboxulator/pages/v2/dynamic/pwa-meta.html">
+    <meta name="description" content="Comprehensive FAQ on cannabis decarboxylation. Learn about THCa conversion, optimal temperatures, timing, and advanced techniques.">
+
+    <!-- Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LK9VC1VS8P"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-LK9VC1VS8P');
+    </script>
+
+    <style>
+        :root {
+            /* Shadcn/Zinc Dark Theme Palette */
+            --background: #09090b;
+            --foreground: #fafafa;
+
+            --card: #18181b;
+            --card-foreground: #fafafa;
+            --card-border: #27272a;
+
+            --popover: #09090b;
+            --popover-foreground: #fafafa;
+
+            --primary: #fafafa;
+            --primary-foreground: #18181b;
+
+            --secondary: #27272a;
+            --secondary-foreground: #fafafa;
+
+            --muted: #27272a;
+            --muted-foreground: #a1a1aa;
+
+            --accent: #27272a;
+            --accent-foreground: #fafafa;
+
+            --destructive: #7f1d1d;
+            --destructive-foreground: #fafafa;
+
+            --border: #27272a;
+            --input: #27272a;
+            --ring: #d4d4d8;
+
+            --radius: 0.75rem;
+
+            /* Category Specific Colors (Subtle/Pastel for Dark Mode) */
+            --color-basics: #3b82f6;   /* Blue */
+            --color-science: #8b5cf6;  /* Violet */
+            --color-technique: #10b981; /* Emerald */
+            --color-safety: #ef4444;   /* Red */
+            --color-advanced: #f59e0b; /* Amber */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--foreground);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- Hero Section --- */
+        .hero-section {
+            background: linear-gradient(to bottom, var(--background), #111113);
+            border-bottom: 1px solid var(--border);
+            padding: 5rem 1rem 3rem;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #fff, #a1a1aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.125rem;
+            color: var(--muted-foreground);
+            margin-bottom: 2.5rem;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* --- Search Bar --- */
+        .search-container {
+            max-width: 550px;
+            margin: 0 auto 2.5rem;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted-foreground);
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.75rem;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--foreground);
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--ring);
+            box-shadow: 0 0 0 1px var(--ring);
+        }
+
+        /* --- Category Filters --- */
+        .category-filters {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .category-chip {
+            padding: 0.5rem 1rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 9999px; /* Pill shape */
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-chip:hover {
+            background: var(--secondary);
+            color: var(--foreground);
+        }
+
+        .category-chip.active {
+            background: var(--foreground);
+            color: var(--background);
+            border-color: var(--foreground);
+        }
+
+        /* --- FAQ Grid --- */
+        .container-main {
+            max-width: 1000px; /* Reduced width for better readability */
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .faq-section {
+            padding: 3rem 0;
+        }
+
+        .faq-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .faq-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .faq-card:hover {
+            border-color: var(--muted-foreground);
+        }
+
+        .faq-card.expanded {
+            border-color: var(--color-science); /* Default expand color fallback */
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Dynamic Border Colors based on category when expanded */
+        .faq-card[data-cat="basics"].expanded { border-color: var(--color-basics); }
+        .faq-card[data-cat="science"].expanded { border-color: var(--color-science); }
+        .faq-card[data-cat="technique"].expanded { border-color: var(--color-technique); }
+        .faq-card[data-cat="safety"].expanded { border-color: var(--color-safety); }
+        .faq-card[data-cat="advanced"].expanded { border-color: var(--color-advanced); }
+
+        .faq-header {
+            padding: 1.25rem;
+            display: flex;
+            align-items: center; /* Center vertically */
+            gap: 1rem;
+            background: transparent;
+        }
+
+        /* Icon styling */
+        .faq-icon-wrapper {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1rem;
+            background: var(--secondary);
+            color: var(--muted-foreground);
+            transition: all 0.3s ease;
+        }
+
+        /* Icon colors */
+        .cat-basics .faq-icon-wrapper { color: var(--color-basics); background: rgba(59, 130, 246, 0.1); }
+        .cat-science .faq-icon-wrapper { color: var(--color-science); background: rgba(139, 92, 246, 0.1); }
+        .cat-technique .faq-icon-wrapper { color: var(--color-technique); background: rgba(16, 185, 129, 0.1); }
+        .cat-safety .faq-icon-wrapper { color: var(--color-safety); background: rgba(239, 68, 68, 0.1); }
+        .cat-advanced .faq-icon-wrapper { color: var(--color-advanced); background: rgba(245, 158, 11, 0.1); }
+
+        .faq-question-wrapper {
+            flex: 1;
+        }
+
+        .faq-category-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            color: var(--muted-foreground);
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        .faq-question {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .faq-expand-icon {
+            color: var(--muted-foreground);
+            transition: transform 0.3s ease;
+        }
+
+        .faq-card.expanded .faq-expand-icon {
+            transform: rotate(180deg);
+            color: var(--foreground);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(to bottom, var(--card), rgba(0,0,0,0.2));
+        }
+
+        .faq-answer-content {
+            padding: 0 1.5rem 1.5rem 4.75rem; /* Indent to align with text, not icon */
+            color: #d4d4d8;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* --- Internal Content Styling --- */
+        .faq-answer-content p { margin-bottom: 1rem; }
+        .faq-answer-content p:last-child { margin-bottom: 0; }
+
+        .faq-answer-content strong {
+            color: var(--foreground);
+            font-weight: 600;
+        }
+
+        .faq-answer-content ul {
+            margin: 0.5rem 0 1rem;
+            padding-left: 1.2rem;
+            list-style-type: disc;
+        }
+
+        .faq-answer-content li {
+            margin-bottom: 0.4rem;
+            padding-left: 0.2rem;
+        }
+
+        .faq-answer-content li::marker {
+            color: var(--muted-foreground);
+        }
+
+        .highlight-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--foreground);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .highlight-box strong { display: block; margin-bottom: 0.5rem; }
+
+        .no-results {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--muted-foreground);
+            background: var(--card);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+        }
+
+        /* --- Related Tools --- */
+        .related-tools {
+            margin-top: 4rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .related-tools-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .tool-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--muted-foreground);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .tool-link:hover {
+            background: var(--secondary);
+            color: var(--foreground);
+            border-color: var(--muted-foreground);
+            transform: translateY(-2px);
+        }
+
+        .tool-link i {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--foreground);
+        }
+
+        .tool-link-title {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2rem; }
+            .faq-answer-content { padding: 0 1.25rem 1.25rem; } /* Reset indent on mobile */
+            .faq-icon-wrapper { width: 2rem; height: 2rem; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav id="nav" class="navbar-modern"></nav>
+
+<div class="hero-section">
+    <div class="container-main">
+        <h1 class="hero-title">Knowledge Base</h1>
+        <p class="hero-subtitle">The definitive guide to cannabis decarboxylation. From molecular science to practical safety.</p>
+
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-bar" id="searchInput" placeholder="Search for answers (e.g., 'temperature', 'smell', 'time')...">
+        </div>
+
+        <div class="category-filters">
+            <div class="category-chip active" data-category="all">
+                All
+            </div>
+            <div class="category-chip" data-category="basics">
+                <i class="fas fa-circle" style="font-size: 0.5rem; color: var(--color-basics);"></i> Basics
+            </div>
+            <div class="category-chip" data-category="science">
+                <i class="fas fa-circle" style="font-size: 0.5rem; color: var(--color-science);"></i> Science
+            </div>
+            <div class="category-chip" data-category="technique">
+                <i class="fas fa-circle" style="font-size: 0.5rem; color: var(--color-technique);"></i> Technique
+            </div>
+            <div class="category-chip" data-category="safety">
+                <i class="fas fa-circle" style="font-size: 0.5rem; color: var(--color-safety);"></i> Safety
+            </div>
+            <div class="category-chip" data-category="advanced">
+                <i class="fas fa-circle" style="font-size: 0.5rem; color: var(--color-advanced);"></i> Advanced
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="faq-section">
+    <div class="container-main">
+        <div class="faq-grid" id="faqGrid">
+            <!-- Content injected via JS -->
+        </div>
+
+        <div class="no-results" id="noResults" style="display: none;">
+            <i class="fas fa-search-minus fa-2x mb-3" style="opacity: 0.5;"></i>
+            <h3>No results found</h3>
+            <p>Try adjusting your search terms or clearing the filters.</p>
+        </div>
+
+        <div class="related-tools">
+            <h2 class="related-tools-title">
+                <i class="fas fa-shapes"></i>
+                Related Tools
+            </h2>
+            <div class="tools-grid">
+                <a href="/decarboxulator/pages/v2/thca-decarb-tracker" class="tool-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="tool-link-title">Decarb Tracker</span>
+                </a>
+                <a href="/decarboxulator/pages/v2/thca-thc-calculator" class="tool-link">
+                    <i class="fas fa-calculator"></i>
+                    <span class="tool-link-title">Yield Calculator</span>
+                </a>
+                <a href="/decarboxulator/pages/v2/edible-calculator" class="tool-link">
+                    <i class="fas fa-cookie-bite"></i>
+                    <span class="tool-link-title">Edible Potency</span>
+                </a>
+                <a href="/decarboxulator/pages/v2/max-pressure" class="tool-link">
+                    <i class="fas fa-gauge-simple-high"></i>
+                    <span class="tool-link-title">Pressure Safety</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer id="footer" class="footer-modern"></footer>
+
+<!-- Scripts -->
+<script src="/decarboxulator/resources/js/nav-js.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // FAQ Data
+    const faqData = [
+        {
+            category: 'basics',
+            icon: 'fa-atom',
+            question: 'What is decarboxylation?',
+            answer: `<p>Decarboxylation is a chemical reaction that removes a carboxyl group (-COOH) from a molecule, releasing carbon dioxide (CO₂) as a byproduct. In the context of cannabis, this reaction converts acidic cannabinoids (like THCa and CBDa) into their neutral, bioactive forms (THC and CBD).</p>
+                <p>Think of the THCa molecule like a battery: as it absorbs energy (heat) from its environment, it eventually reaches a "fully charged" state where the bond becomes unstable and breaks, ejecting the carboxyl group. While this occurs naturally over long periods, applying thermal energy accelerates this decomposition significantly.</p>`
+        },
+        {
+            category: 'technique',
+            icon: 'fa-fire',
+            question: 'How do you decarboxylate?',
+            answer: `<p>Decarboxylation in simplicity is the controlled application of gentle, even heat to convert acidic cannabinoids (like THCa) into their neutral, active forms (like THC). The goal is to supply enough thermal energy for the carboxyl group to be released as CO₂ while minimizing volatile loss (like terpenes) and thermal degradation (THC -> CBN).</p>
+                <p>Common approaches (high level):</p>
+                <ul>
+                    <li><strong>Flower:</strong> Spread material thinly so heat penetrates evenly. Use a stable, well‑calibrated heat source and monitor temperature with an oven thermometer rather than relying on the appliance's dial.</li>
+                    <li><strong>Extracts:</strong> Use a shallow, heat‑conductive vessel and gently agitate or stir periodically; visual cues (bubbling that slows or stops) are often used by professionals for extracts.</li>
+                    <li><strong>Sealed/controlled methods:</strong> Vacuum‑sealed or sous‑vide style approaches can retain terpenes by avoiding direct air exposure; pressure‑rated glass can trap vapors safely when used correctly.</li>
+                </ul>
+                <p>Safety & best practices:</p>
+                <ul>
+                    <li>Verify local laws before performing any cannabinoid processing.</li>
+                    <li>Use an accurate thermometer and avoid rapid or uneven heating that can create hot spots and degrade cannabinoids into byproducts.</li>
+                    <li>Avoid unvented sealed containers unless the vessel is rated for pressure; decarboxylation releases CO₂ and can pressurize enclosures.</li>
+                    <li>Consider small test batches to validate your process and preserve terpenes where desired.</li>
+                </ul>
+                <div class="highlight-box">
+                    Don't guess. Use our <a href="/decarboxulator/pages/v2/thca-decarb-tracker" style="color: var(--foreground); text-decoration: underline;">Decarboxylation Progress Tracker</a> to calculate based on your specific inputs.
+                </div>`
+        },
+
+        {
+            category: 'basics',
+            icon: 'fa-fire',
+            question: 'Why is decarboxylation necessary?',
+            answer: `<p>Raw cannabis produces cannabinoid acids which are pharmacologically distinct from their neutral counterparts. THCa, for example, does not bind effectively to CB1 receptors in the human endocannabinoid system and therefore is not psychoactive.</p>
+                <p><strong>Decarboxylation is required to:</strong></p>
+                <ul>
+                    <li>Convert non-intoxicating THCa into psychoactive THC.</li>
+                    <li>Increase oral bioavailability for edibles and tinctures.</li>
+                    <li>Activate the molecular structure required for specific therapeutic effects.</li>
+                </ul>
+                <p><strong>On crystallization and product handling:</strong></p>
+                <p>THCa contains a carboxyl group (\-COOH) capable of forming intermolecular hydrogen bonds, which can lead to crystallization or aggregation in concentrates and extracts. During decarboxylation the carboxyl group is cleaved off and released as carbon dioxide (CO₂), producing neutral THC. Without the \-COOH group THC cannot form the same hydrogen-bonding network and is much less likely to crystallize. This reduced tendency to crystallize improves solubility and flow, which is important for consistent products such as vape cartridges, distillates, and uniformly blended edibles.</p>`
+        },
+        {
+            category: 'basics',
+            icon: 'fa-cookie-bite',
+            question: 'Why do edibles get you so much higher?',
+            answer: `<p>When you eat cannabis, the cannabinoids pass through the digestive system and undergo hepatic first\-pass metabolism. The liver converts \`Δ9\`\-THC (D9\-THC) into \`11\-hydroxy\-THC (11\-OH\-THC)\` via oxidative metabolism and subsequent cyclization. 11\-OH\-THC crosses the blood\-brain barrier more readily and has a higher CB1 receptor binding affinity and intrinsic activity than D9\-THC, producing stronger psychoactive effects per milligram.</p>
+                <p>Practical consequences:</p>
+                <ul>
+                    <li>Slower onset (typically 30–120 minutes) due to digestion and metabolism.</li>
+                    <li>Higher peak intensity because 11\-OH\-THC is more potent centrally.</li>
+                    <li>Longer duration (often 6–12+ hours) compared with inhalation.</li>
+                </ul>
+                <p><strong>Tip:</strong> Dose conservatively and wait for full onset before redosing to avoid unexpectedly strong effects.</p>`
+        },
+        {
+            category: 'basics',
+            icon: 'fa-oil-can',
+            question: 'Do I need to decarboxylate extracts?',
+            answer: `<p>Yes, if the extract is intended for oral consumption (edibles/tinctures) or if you are formulating vape cartridges that require specific viscosity changes. Most extraction methods (like hydrocarbon or cold ethanol) preserve the acid forms (THCa).</p>
+                <p><strong>The Advantage of Extracts:</strong><br>Decarboxylating extracts offers a distinct advantage over flower: <strong>visual confirmation</strong>. Because the extract turns into a fluid, you can visually monitor the CO₂ generation (bubbling). When the bubbling reaction significantly subsides or stops, the reaction is complete.</p>`
+        },
+        {
+            category: 'basics',
+            icon: 'fa-cannabis',
+            question: 'Do I need to decarboxylate flower?',
+            answer: `<p>Yes, for any application other than combustion (smoking). If you are making butter, oil, or eating flower, it must be decarbed first.</p>
+                <p><strong>The Challenge with Flower:</strong><br>Unlike extracts, you cannot see the CO₂ bubbles inside the plant material. Reliance on "color change" (browning) is <strong>anecdotal and scientifically unreliable</strong>. Precision with flower requires gravimetric analysis (weighing the mass loss) or strict adherence to temperature curves, though variables like moisture content make this difficult to perfect without real-time tracking.</p>`
+        },
+        {
+            category: 'science',
+            icon: 'fa-temperature-high',
+            question: 'What is the optimal temperature for decarboxylation?',
+            answer: `<p>There is no single "magic" temperature. The optimal setting depends heavily on <strong>extract</strong> or <strong>biomass</strong> volume and <strong>heat transfer characteristics</strong>. A small sample will reach target temp much faster than a large jar of extract.</p>
+                <p><strong>Key Thermal Dynamics:</strong></p>
+                <ul>
+                    <li><strong>Reaction Rates:</strong> Rate increases exponentially with temperature. Higher temps are faster but increase the risk of converting THC to CBN (degradation).</li>
+                    <li><strong>Terpene Preservation:</strong> Lower temperatures require longer exposure but reduce energy-induced Reactive Oxygen Species (ROS), helping preserve volatile terpenes.</li>
+                    <li><strong>Mass/Volume:</strong> Large volumes of extract can take 45 minutes to over an hour just to reach the target temperature before the reaction time even begins.</li>
+                </ul>
+                <div class="highlight-box">
+                    Don't guess. Use our <a href="/decarboxulator/pages/v2/thca-decarb-tracker" style="color: var(--foreground); text-decoration: underline;">Decarboxylation Progress Tracker</a> to calculate based on your specific inputs.
+                </div>`
+        },
+        {
+            category: 'science',
+            icon: 'fa-clock',
+            question: 'How long does decarboxylation take?',
+            answer: `<p>Decarboxylation is a <strong>first-order kinetic reaction</strong>. This means the rate of reaction is proportional to the concentration of the remaining reactant. As the process progresses, it naturally slows down.</p>
+                <p><strong>The "Tail End" Efficiency:</strong><br>Converting the final few percent of THCa can take as long as converting the first 50%. Consequently, many professional operators stop the process at 90-98% conversion to avoid excessive thermal degradation of the product waiting for that last 2%.</p>
+                <p>Because of variables in starting temperature, vessel material, and volume, fixed time estimates are inaccurate. We recommend using kinetic modeling tools rather than static recipes.</p>
+                <div class="highlight-box">
+                    Don't guess. Use our <a href="/decarboxulator/pages/v2/thca-decarb-tracker" style="color: var(--foreground); text-decoration: underline;">Decarboxylation Progress Tracker</a> to calculate based on your specific inputs.
+                </div>
+`
+        },
+        {
+            category: 'technique',
+            icon: 'fa-jar',
+            question: 'What container should I use? (Safety Warning)',
+            answer: `<p>Container selection is a critical safety decision. <strong>Borosilicate glass</strong> (like laboratory beakers or high-quality kitchenware) is recommended due to its resistance to thermal shock.</p>
+                <div class="highlight-box" style="border-left-color: red;">
+                    <strong>CRITICAL WARNING: Sealed Vessels</strong><br>
+                    Decarboxylation releases CO₂ gas. In a sealed vessel (like a Mason jar), this builds immense pressure rapidly. Standard jars are not rated for these pressures and <strong>can explode</strong>.
+                </div>
+                <p>Before using a sealed container, you must calculate the potential pressure generated by your specific mass of product. Use our <a href="../decarboxulator/pages/v2/max-pressure" style="color: var(--foreground); text-decoration: underline;">Pressure Safety Calculator</a> to ensure your vessel can safely contain the reaction.</p>
+                <p><strong>NEVER use silicone:</strong> Terpenes are solvents that can leach chemicals out of silicone and into your product, and vice versa, especially when heated. Silicone is not chemically compatible with heated cannabis extracts.</p>`
+        },
+        {
+            category: 'safety',
+            icon: 'fa-wind',
+            question: 'Is decarboxylation safe? What about CO2?',
+            answer: `<p>For small personal batches, the primary risks are thermal burns or glass breakage. However, scaling up presents specific hazards:</p>
+                <ul>
+                    <li><strong>Asphyxiation Risk:</strong> Decarboxylating large quantities of extract generates significant volumes of CO₂. Ensure the area is well-ventilated or monitored.</li>
+                    <li><strong>Pressure:</strong> As noted in the container section, sealed vessels are essentially pressure bombs if not rated correctly.</li>
+                    <li><strong>Fire Safety:</strong> Decarboxylation itself is not highly flammable, but <strong>terpenes</strong> are. High-terpene extracts release flammable vapors that can ignite if exposed to an open heating element or spark.</li>
+                </ul>`
+        },
+        {
+            category: 'technique',
+            icon: 'fa-bread-slice',
+            question: 'Should I grind my cannabis before decarbing?',
+            answer: `<p>Grinding increases surface area, which improves heat transfer consistency. However, it also exposes more surface area to oxidation.</p>
+                <p>For most home applications, a coarse breakdown (hazelnut size) is the best compromise. Powdering the material is unnecessary and may result in burnt material at the edges of the container before the center reaches temperature.</p>`
+        },
+        {
+            category: 'advanced',
+            icon: 'fa-flask',
+            question: 'How can I strictly determine when it is done?',
+            answer: `<p><strong>Extracts:</strong> The "bubble test" is highly effective. When the rapid formation of large bubbles transitions to very tiny, slow foam or stops entirely, the reaction is chemically complete.</p>
+                <p><strong>Flower:</strong> Visual cues like "golden brown" are subjective. The only scientific method for flower (without HPLC testing) is <strong>gravimetric analysis</strong>.</p>
+                <p>This involves weighing the product before and after heating. However, you must account for the loss of water (moisture content) and volatile terpenes, not just the CO₂ loss, which makes calculation difficult without precise knowledge of the starting moisture content.</p>
+                <div class="highlight-box">
+                    Don't guess. Use our <a href="/decarboxulator/pages/v2/thca-decarb-tracker" style="color: var(--foreground); text-decoration: underline;">Decarboxylation Progress Tracker</a> to calculate based on your specific inputs.
+                </div>
+`
+
+        },
+        {
+            category: 'advanced',
+            icon: 'fa-weight-hanging',
+            question: 'What is the precise conversion ratio?',
+            answer: `<p>The theoretical mass retention when converting THCa to THC is determined by the ratio of their molecular weights.</p>
+                <div class="highlight-box">
+                    <strong>Conversion Factor: 0.87723</strong>
+                </div>
+                <p>This means 1.0 gram of 100% pure THCa will yield a maximum theoretical maximum of <strong>0.87723 grams</strong> of THC. The remaining mass (~12.3%) is lost as CO₂ gas.</p>
+                <p>In real-world applications, total weight loss is often higher (15-20%) due to the evaporation of water and terpenes alongside the CO₂.</p>`
+        },
+        {
+            category: 'advanced',
+            icon: 'fa-chart-line',
+            question: 'What happens to terpenes during decarboxylation?',
+            answer: `<p>Terpenes are volatile organic compounds (VOCs) with varying boiling points. Heat is the enemy of terpene preservation.</p>
+                <p>During decarboxylation, lighter terpenes (monoterpenes like Pinene and Limonene) typically volatilize and are lost. Furthermore, heat energy can create Reactive Oxygen Species (ROS) that degrade terpenes through oxidation.</p>
+                <p>To maximize terpene retention, use a pressure-rated sealed vessel (borosilicate) to trap vapors, and opt for lower temperatures for longer durations to reduce thermal stress.</p>`
+        },
+        {
+            category: 'science',
+            icon: 'fa-dna',
+            question: 'Does this apply to CBD and CBG?',
+            answer: `<p>Yes. The decarboxylation of CBDa to CBD and CBGa to CBG follows the same chemical principles (loss of a carboxyl group). The activation energies are similar, though reaction rates may vary slightly. The general temperature ranges and physical indicators (bubbling for extracts) remain applicable for all major cannabinoids.</p>`
+        },
+        {
+            category: 'advanced',
+            icon: 'fa-bolt',
+            question: 'What is the activation energy?',
+            answer: `<p>The activation energy (Ea) for THCa decarboxylation is generally accepted to be in the range of <strong>100-110 kJ/mol</strong>.</p>
+                <p>This value dictates how sensitive the reaction rate is to temperature changes. According to the Arrhenius equation, even small increases in temperature can drastically shorten the time required for conversion, but simultaneously narrow the window between "perfectly decarbed" and "degraded to CBN."</p>`
+        }
+    ];
+
+    let currentFilter = 'all';
+    let currentSearch = '';
+
+    function renderFAQs() {
+        const grid = document.getElementById('faqGrid');
+        const noResults = document.getElementById('noResults');
+
+        let filteredData = faqData;
+
+        // Apply category filter
+        if (currentFilter !== 'all') {
+            filteredData = filteredData.filter(item => item.category === currentFilter);
+        }
+
+        // Apply search filter
+        if (currentSearch) {
+            const searchLower = currentSearch.toLowerCase();
+            filteredData = filteredData.filter(item =>
+                item.question.toLowerCase().includes(searchLower) ||
+                item.answer.toLowerCase().includes(searchLower)
+            );
+        }
+
+        // Show/hide no results
+        if (filteredData.length === 0) {
+            grid.style.display = 'none';
+            noResults.style.display = 'block';
+            return;
+        } else {
+            grid.style.display = 'flex'; // Flex column for the stack layout
+            noResults.style.display = 'none';
+        }
+
+        // Generate HTML
+        grid.innerHTML = filteredData.map((faq, index) => `
+            <div class="faq-card cat-${faq.category}" data-cat="${faq.category}">
+                <div class="faq-header">
+                    <div class="faq-icon-wrapper">
+                        <i class="fas ${faq.icon}"></i>
+                    </div>
+                    <div class="faq-question-wrapper">
+                        <span class="faq-category-label">${faq.category}</span>
+                        <h3 class="faq-question">${faq.question}</h3>
+                    </div>
+                    <div class="faq-expand-icon">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        ${faq.answer}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Re-attach listeners
+        document.querySelectorAll('.faq-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Prevent closing if clicking links inside answer
+                if(e.target.tagName === 'A') return;
+
+                const answer = this.querySelector('.faq-answer');
+                const isExpanded = this.classList.contains('expanded');
+
+                // Toggle Class
+                this.classList.toggle('expanded');
+
+                // Animate Height
+                if (!isExpanded) {
+                    answer.style.maxHeight = answer.scrollHeight + "px";
+                } else {
+                    answer.style.maxHeight = null;
+                }
+            });
+        });
+    }
+
+    // Filter Chips
+    document.querySelectorAll('.category-chip').forEach(chip => {
+        chip.addEventListener('click', function() {
+            document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = this.dataset.category;
+            renderFAQs();
+        });
+    });
+
+    // Search Input
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        currentSearch = e.target.value;
+        renderFAQs();
+    });
+
+    // Initial Render
+    renderFAQs();
+</script>
+
+</body>
+</html>

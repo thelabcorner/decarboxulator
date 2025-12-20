@@ -673,10 +673,174 @@
         <p>Calculate cannabinoid content and serving sizes for homemade edibles</p>
     </div>
 
-    <div class="alert-info">
-        <i class="fas fa-info-circle me-2"></i>
-        <strong>Dosage Analysis:</strong> Calculate total THC/CBD content and per-serving doses for safe edible preparation. Choose between weight-based, concentration-based, or desired dose inputs.
+<style>
+/* shadcn-dark alert styles - no gradients or shadows, 2px borders */
+.alert-shadcn-dark {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  border-left: 2px solid transparent;
+  border-radius: 10px;
+  padding: 0.9rem 1.2rem;
+  transition: transform 0.12s ease;
+  font-size: 0.98rem;
+}
+.alert-shadcn-dark:hover {
+  transform: translateY(-2px);
+}
+.alert-shadcn-dark .alert-icon {
+    padding: 3px 10px;
+    /* flex: 0 0 auto; */
+    font-size: 1.25rem;
+    /* margin-top: 0.08rem; */
+    display: block;
+    place-items: center;
+    /* width: 1.6rem; */
+    /* height: 1.6rem; */
+    border-radius: 6px;
+    background-color: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    color: var(--accent-blue);
+}
+.alert-shadcn-dark .content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.alert-shadcn-dark .alert-title {
+  font-weight: 650;
+  font-size: 1.02rem;
+  margin-bottom: 0.18rem;
+  color: var(--text-primary);
+}
+.alert-shadcn-dark .alert-desc {
+  color: var(--text-secondary);
+  line-height: 1.45;
+  font-size: 0.95rem;
+}
+.alert-shadcn-dark .alert-actions {
+  margin-top: 0.6rem;
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+/* variants - use solid 2px left border color changes, no gradients */
+.alert-shadcn-dark.info {
+  border-left-color: var(--accent-blue);
+  background-color: rgba(13,110,253,0.03);
+  color: #cfeffd;
+}
+.alert-shadcn-dark.info .alert-icon {
+  color: var(--accent-blue);
+  background-color: var(--bg-primary);
+  border-color: var(--border-color);
+}
+
+.alert-shadcn-dark.warning {
+  border-left-color: var(--accent-yellow);
+  background-color: rgba(250,204,21,0.03);
+  color: #fff6d8;
+}
+.alert-shadcn-dark.warning .alert-icon {
+  color: var(--accent-yellow);
+  background-color: var(--bg-primary);
+  border-color: var(--border-color);
+}
+
+/* small button/link styles - 2px borders, flat */
+.alert-shadcn-dark .btn-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.32rem 0.7rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  background: transparent;
+  border: 2px solid var(--border-color);
+  color: inherit;
+  text-decoration: none;
+}
+.alert-shadcn-dark .btn-inline.primary {
+  background-color: rgba(13,110,253,0.04);
+  border-color: rgba(13,110,253,0.12);
+  color: #dbeafe;
+  font-weight: 600;
+}
+
+/* css */
+.alert-shadcn-dark.warning .btn-inline.primary {
+  background-color: rgba(250,204,21,0.06); /* subtle yellow fill */
+  border-color: rgba(250,204,21,0.18);     /* yellow border (2px already applied) */
+  color: var(--accent-yellow);              /* make text/icon match the warning icon */
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.alert-shadcn-dark.warning .btn-inline.primary i {
+  color: currentColor; /* icon inherits the yellow text color */
+}
+
+/* hover / focus states */
+.alert-shadcn-dark.warning .btn-inline.primary:hover,
+.alert-shadcn-dark.warning .btn-inline.primary:focus {
+  background-color: rgba(250,204,21,0.10);
+  border-color: rgba(250,204,21,0.28);
+  outline: none;
+  box-shadow: none;
+}
+
+.alert-shadcn-dark .list-inline {
+  margin: 0.45rem 0 0 1.05rem;
+  padding-left: 1rem;
+  color: var(--text-secondary);
+}
+@media (max-width: 576px) {
+  .alert-shadcn-dark { padding: 0.7rem; }
+  .alert-shadcn-dark .alert-title { font-size: 1rem; }
+}
+</style>
+
+<!-- Info (shadcn-dark) -->
+<div class="alert-shadcn-dark info mb-3" role="status" aria-live="polite">
+  <span class="alert-icon" aria-hidden="true">
+    <i class="fas fa-info-circle"></i>
+  </span>
+  <div class="content">
+    <div class="alert-title">Dosage Analysis</div>
+    <div class="alert-desc">
+      Calculate total THC/CBD content and per-serving doses for safe edible preparation.
+      Choose between weight-based, concentration-based, or desired dose inputs.
     </div>
+  </div>
+</div>
+
+<!-- Warning (shadcn-dark) -->
+<div class="alert-shadcn-dark warning mb-3" role="alert" aria-live="assertive">
+  <span class="alert-icon" aria-hidden="true">
+    <i class="fas fa-fire"></i>
+  </span>
+  <div class="content">
+    <div class="alert-title">Decarboxylation Required!</div>
+    <div class="alert-desc">
+      To feel the psychoactive effects of your edibles, <u>you must decarboxylate</u> your cannabis or extract before infusing it.
+      <div class="list-inline">
+        <ul>
+          <li>THCA (raw cannabis) is not psychoactive.</li>
+          <li>Heating converts THCA into active THC.</li>
+          <li>Typical: 220–240°F (105–115°C) for 30–60 min.</li>
+        </ul>
+      </div>
+      <div class="alert-actions">
+        <a href="../decarboxylation-faq.html" class="btn-inline primary">
+          <i class="fas fa-question-circle"></i><span>Decarboxylation FAQ</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 
     <div class="card-modern">
         <div class="card-title">
