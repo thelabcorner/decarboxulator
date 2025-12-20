@@ -818,11 +818,8 @@
                         <input type="number" class="form-control" id="thcConc" placeholder="50" step="0.1" min="0" max="100" oninput="calculateDosage()">
                         <span class="input-group-text">%</span>
                     </div>
-                    <div class="quick-presets">
-                        <button class="preset-btn" onclick="setTHC(20)">20%</button>
-                        <button class="preset-btn" onclick="setTHC(50)">50%</button>
-                        <button class="preset-btn" onclick="setTHC(70)">70%</button>
-                        <button class="preset-btn" onclick="setTHC(90)">90%</button>
+                    <div class="quick-presets" id="thcConcPresets">
+                        <!-- Presets will be set dynamically -->
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -1132,6 +1129,7 @@
             thcLabel.textContent = 'Total THC Concentration';
         }
         updateShadcnRadioGroup();
+        updateTHCConcPresets();
     }
 
     // Unit conversion helper
@@ -1199,6 +1197,26 @@
                 <button class="preset-btn" onclick="setCBDWeight(50)">50mg</button>
                 <button class="preset-btn" onclick="setCBDWeight(100)">100mg</button>
                 <button class="preset-btn" onclick="setCBDWeight(250)">250mg</button>
+            `;
+        }
+    }
+
+    // Update THC concentration presets for separate mode
+    function updateTHCConcPresets() {
+        const concMode = document.querySelector('input[name="concMode"]:checked')?.value || 'total';
+        const presetsContainer = document.getElementById('thcConcPresets');
+        if (concMode === 'separate') {
+            presetsContainer.innerHTML = `
+                <button class="preset-btn" onclick="setTHC(0)">0%</button>
+                <button class="preset-btn" onclick="setTHC(1)">1.0%</button>
+                <button class="preset-btn" onclick="setTHC(3)">3.0%</button>
+            `;
+        } else {
+            presetsContainer.innerHTML = `
+                <button class="preset-btn" onclick="setTHC(20)">20%</button>
+                <button class="preset-btn" onclick="setTHC(50)">50%</button>
+                <button class="preset-btn" onclick="setTHC(70)">70%</button>
+                <button class="preset-btn" onclick="setTHC(90)">90%</button>
             `;
         }
     }
@@ -1463,6 +1481,7 @@
 
         // Ensure concentration toggle initial state when page loads
         toggleConcMode();
+        updateTHCConcPresets();
     });
 </script>
 </body>
