@@ -276,6 +276,73 @@
             margin-top: 1.5rem;
             padding-top: 1.5rem;
         }
+
+        .faq-section {
+            margin-top: 2rem;
+        }
+
+        .faq-item {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .faq-question {
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: var(--bg-tertiary);
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .faq-question:hover {
+            background-color: var(--bg-secondary);
+            color: var(--accent-blue);
+        }
+
+        .faq-question i {
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(90deg);
+        }
+
+        .faq-answer {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 1.25rem;
+            max-height: 1000px;
+        }
+
+        .faq-answer p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .faq-answer p:last-child {
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
@@ -478,6 +545,123 @@
             </div>
             <div class="stats-grid" id="perCartGrid">
                 <!-- Dynamic per-cart stats -->
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <div class="card-modern">
+            <div class="card-title">
+                <i class="fas fa-question-circle"></i>
+                Frequently Asked Questions
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What are cannabis isolates?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Cannabis isolates are pure, crystalline forms of individual cannabinoids extracted from the plant. Common isolates include THCa, THC, CBD, CBN, and CBG crystals. They are typically 95-99% pure and contain minimal plant material, making them ideal for precise dosing and formulation.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Why use isolates for cartridges?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Isolates offer several advantages for cartridge production:</p>
+                    <p><strong>Precision:</strong> Exact cannabinoid ratios without plant variability</p>
+                    <p><strong>Consistency:</strong> Batch-to-batch uniformity</p>
+                    <p><strong>Purity:</strong> Minimal contaminants or unwanted compounds</p>
+                    <p><strong>Customization:</strong> Ability to create specific formulations</p>
+                    <p><strong>Solubility:</strong> Often better solubility in carrier oils</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>How does decarboxylation work with isolates?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>THCa isolates must be decarboxylated to convert to THC:</p>
+                    <div class="math-formula">
+                        <div>$$\text{THCa} \xrightarrow{\text{Heat}} \text{THC} + \text{CO}_2$$</div>
+                        <div class="formula-label">Decarboxylation reaction</div>
+                    </div>
+                    <p>The conversion ratio is 0.87723 (87.723%), meaning 1g THCa produces 0.87723g THC with 0.12277g CO₂ loss. Optimal temperature is 220-240°F (104-116°C) for 30-60 minutes.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What's the difference between THC and THCa isolates?</span>
+                </div>
+                <div class="faq-answer">
+                    <p><strong>THCa Isolate:</strong> Acidic precursor form, non-psychoactive. Requires decarboxylation to become THC. Often appears as white crystals or diamonds.</p>
+                    <p><strong>THC Isolate:</strong> Decarboxylated form, psychoactive. Ready to use without heating. More expensive due to the decarboxylation process.</p>
+                    <p>Use THCa for formulations requiring decarboxylation control, THC for pre-decarboxylated products.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>How do I calculate ratios for my formulation?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>The calculator uses a parts-based system that's automatically normalized to 100%:</p>
+                    <p><strong>Example:</strong> 85 parts THC + 10 parts Terpenes + 5 parts CBN = 100 parts total</p>
+                    <p><strong>Final percentages:</strong> THC: 85%, Terpenes: 10%, CBN: 5%</p>
+                    <p>This ensures your formulation adds up correctly regardless of the numbers you enter. The calculator then converts these ratios to actual weights based on your batch size.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What are terpenes and why add them?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Terpenes are aromatic compounds that give cannabis its scent and flavor. In isolate-based cartridges:</p>
+                    <p><strong>Flavor Enhancement:</strong> Restore natural taste profiles</p>
+                    <p><strong>Entourage Effect:</strong> May enhance cannabinoid effects</p>
+                    <p><strong>Product Appeal:</strong> More enjoyable user experience</p>
+                    <p>Terpenes are typically added as essential oils. The calculator accounts for terpenes in total weight but excludes them from decarboxylation calculations since they don't require heating.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>How do I handle partial decarboxylation?</span>
+                </div>
+                <div class="faq-answer">
+                    <p>For formulations with both THC and THCa, use partial decarboxylation:</p>
+                    <p><strong>Process:</strong> Start with calculated THCa input, heat until target conversion is reached</p>
+                    <p><strong>Monitoring:</strong> Use the decarb tracker tool for precise control</p>
+                    <p><strong>Formula:</strong> Target % = (THC needed / 0.87723) ÷ Total THCa input × 100</p>
+                    <p>This creates products with specific THC:THCa ratios for different effects or legal requirements.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>What safety considerations should I keep in mind?</span>
+                </div>
+                <div class="faq-answer">
+                    <p><strong>Handling:</strong> Wear gloves and eye protection when working with isolates</p>
+                    <p><strong>Temperature:</strong> Avoid overheating (above 250°F) to prevent THC degradation to CBN</p>
+                    <p><strong>Dosage:</strong> Start with low concentrations and test products thoroughly</p>
+                    <p><strong>Storage:</strong> Keep isolates in cool, dark places away from light and moisture</p>
+                    <p><strong>Legal:</strong> Ensure compliance with local regulations regarding cannabinoid concentrations</p>
+                </div>
             </div>
         </div>
     </div>
@@ -790,6 +974,21 @@
         document.getElementById('cartCapacity').value = val;
         calculateBatch();
     }
+    function toggleFAQ(element) {
+        const faqItem = element.parentElement;
+        const isActive = faqItem.classList.contains('active');
+
+        // Close all FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Open clicked item if it wasn't active
+        if (!isActive) {
+            faqItem.classList.add('active');
+        }
+    }
 </script>
 </body>
 </html>
+
