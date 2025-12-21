@@ -1,11 +1,14 @@
 /**
  * PWA Install Banner Logic - Cross-Platform Optimized
+ * Updated: Handles In-App Browsers & Non-Safari iOS restrictions
  */
 class PWAInstallBanner {
     STORAGE_KEY = 'pwa-banner-dismissed';
     HIDE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
     constructor() {
+        this.environment = this.detectEnvironment();
+
         if (this.shouldSkip()) return;
 
         this.deferredPrompt = null;
@@ -14,23 +17,48 @@ class PWAInstallBanner {
     }
 
     shouldSkip() {
-        // 1. Check if already installed
+        // 1. Check if already installed (Standalone mode)
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches
             || window.navigator.standalone
             || document.referrer.includes('android-app://');
         if (isStandalone) return true;
 
-        // 2. Check for In-App Browsers (FB, Instagram, etc.) - PWA install usually fails here
-        const ua = navigator.userAgent || navigator.vendor || window.opera;
-        const isInApp = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1);
-        if (isInApp) return true;
-
-        // 3. Check LocalStorage dismissal
-        const dismissedAt = localStorage.getItem(this.STORAGE_KEY);
-        if (dismissedAt === 'true') return true;
-        if (dismissedAt && Date.now() - parseInt(dismissedAt) < this.HIDE_DURATION) return true;
+        // 2. Check LocalStorage dismissal
+        // We do NOT skip for In-App Browsers anymore; we want to warn them.
+        const stored = localStorage.getItem(this.STORAGE_KEY);
+        if (stored) {
+            try {
+                const data = JSON.parse(stored);
+                if (data.permanent) return true;
+                if (data.timestamp && Date.now() - data.timestamp < this.HIDE_DURATION) return true;
+            } catch (e) {
+                // Invalid JSON, ignore
+            }
+        }
 
         return false;
+    }
+
+    detectEnvironment() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+
+        // 1. Detect OS
+        const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isAndroid = /Android/i.test(ua);
+
+        // 2. Detect In-App Browsers (FB, IG, TikTok, Snapchat, Line, etc)
+        // Note: 'wv' is often used for Android WebViews
+        const isIAB = /FBAN|FBAV|Instagram|bytedance|Musical\.ly|TikTok|Snapchat|Line|Twitter|LinkedIn|wv/.test(ua);
+
+        // 3. Detect Specific iOS Browsers
+        // iOS Chrome = CriOS, iOS Firefox = FxiOS, iOS Edge = EdgiOS
+        const isIOSChrome = isIOS && /CriOS/.test(ua);
+        const isIOSNonSafari = isIOS && (isIOSChrome || /FxiOS|EdgiOS|OPiOS|MercuryiOS/.test(ua));
+
+        // Strictly Safari (Not Chrome/Firefox on iOS)
+        const isSafari = isIOS && /Safari/.test(ua) && !isIOSNonSafari;
+
+        return { isIOS, isAndroid, isIAB, isSafari, isIOSNonSafari };
     }
 
     init() {
@@ -38,8 +66,7 @@ class PWAInstallBanner {
         this.render();
         this.cacheDOM();
 
-        const device = this.detectDevice();
-        this.setupInstructions(device);
+        this.setupInstructions();
         this.bindEvents();
 
         window.addEventListener('load', () => {
@@ -47,28 +74,19 @@ class PWAInstallBanner {
         });
     }
 
-    detectDevice() {
-        const ua = navigator.userAgent;
-        // Handle iPadOS where it identifies as Macintosh
-        const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-        if (isIOS) return 'ios';
-        if (/Android/i.test(ua)) return 'android';
-        return 'desktop';
-    }
-
     getStyles() {
         return `
             :root {
                 --pwa-bg: #1a1a1a;
                 --pwa-accent: #3b82f6;
+                --pwa-warning: #f59e0b;
                 --pwa-text: #ffffff;
                 --pwa-muted: #a1a1aa;
                 --pwa-border: rgba(255, 255, 255, 0.1);
             }
             .pwa-install-banner {
                 position: fixed;
-                bottom: 10px; left: 10px; right: 10px; /* Changed to bottom for better thumb reach */
+                bottom: 10px; left: 10px; right: 10px;
                 background: var(--pwa-bg);
                 border: 1px solid var(--pwa-border);
                 border-radius: 10px;
@@ -87,6 +105,9 @@ class PWAInstallBanner {
                 border-radius: 12px; display: flex; align-items: center;
                 justify-content: center; color: #fff; font-size: 1.25rem;
             }
+            /* Change color for warning state (IAB/Non-Safari) */
+            .pwa-icon-box.is-warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+            
             .pwa-body { flex: 1; padding-right: 20px; }
             .pwa-title { margin: 0 0 4px; font-size: 1rem; color: var(--pwa-text); font-weight: 600; }
             .pwa-desc { margin: 0 0 12px; font-size: 0.85rem; color: var(--pwa-muted); line-height: 1.4; }
@@ -97,6 +118,8 @@ class PWAInstallBanner {
                 border-radius: 6px; font-size: 0.75rem; color: var(--pwa-text);
             }
             .pwa-step i { color: var(--pwa-accent); width: 14px; text-align: center; }
+            .pwa-step.warning i { color: var(--pwa-warning); }
+            
             .pwa-actions { display: flex; gap: 8px; }
             .pwa-btn {
                 padding: 10px 16px; border-radius: 8px; border: 1px solid var(--pwa-border);
@@ -121,10 +144,10 @@ class PWAInstallBanner {
             <div id="pwaBanner" class="pwa-install-banner">
                 <div class="pwa-container">
                     <button id="pwaCloseBtn" class="pwa-close"><i class="fas fa-times"></i></button>
-                    <div class="pwa-icon-box"><i class="fas fa-mobile-alt"></i></div>
+                    <div id="pwaIcon" class="pwa-icon-box"><i class="fas fa-mobile-alt"></i></div>
                     <div class="pwa-body">
-                        <h3 class="pwa-title">Install Decarboxulator&trade;</h3>
-                        <p class="pwa-desc">Add the app to your homescreen for a faster, full-screen experience.</p>
+                        <h3 id="pwaTitle" class="pwa-title">Install App</h3>
+                        <p id="pwaDesc" class="pwa-desc">Add to homescreen for the best experience.</p>
                         <div id="pwaSteps" class="pwa-steps"></div>
                         <div class="pwa-actions">
                             <button id="pwaInstallBtn" class="pwa-btn pwa-btn-main" style="display:none;">Install Now</button>
@@ -140,6 +163,9 @@ class PWAInstallBanner {
     cacheDOM() {
         this.elements = {
             banner: document.getElementById('pwaBanner'),
+            iconBox: document.getElementById('pwaIcon'),
+            title: document.getElementById('pwaTitle'),
+            desc: document.getElementById('pwaDesc'),
             steps: document.getElementById('pwaSteps'),
             installBtn: document.getElementById('pwaInstallBtn'),
             laterBtn: document.getElementById('pwaLaterBtn'),
@@ -148,11 +174,15 @@ class PWAInstallBanner {
     }
 
     bindEvents() {
+        // Handle native install prompt (Android/Desktop)
         window.addEventListener('beforeinstallprompt', (e) => {
+            // If we are in an IAB, we usually don't get this event,
+            // but if we do, we should respect the specific IAB check logic first.
+            if (this.environment.isIAB) return;
+
             e.preventDefault();
             this.deferredPrompt = e;
             this.elements.installBtn.style.display = 'block';
-            // Hide manual steps if native install is available
             this.elements.steps.style.display = 'none';
         });
 
@@ -162,24 +192,78 @@ class PWAInstallBanner {
         window.addEventListener('appinstalled', () => this.dismiss(true));
     }
 
-    setupInstructions(device) {
-        const configs = {
-            ios: [
+    setupInstructions() {
+        const { isIOS, isAndroid, isIAB, isSafari, isIOSNonSafari } = this.environment;
+        let steps = [];
+        let title = "Install Decarboxulator&trade;";
+        let desc = "Add to homescreen for a full-screen experience.";
+        let icon = "fa-mobile-alt";
+        let isWarning = false;
+
+        // 1. In-App Browser Handling (IG, FB, TikTok)
+        if (isIAB) {
+            title = "Open in Browser";
+            desc = "To install this app, you must open it in your system browser.";
+            icon = "fa-external-link-alt";
+            isWarning = true;
+
+            if (isIOS) {
+                steps = [
+                    { icon: 'fa-ellipsis-h', text: 'Tap the menu icon (•••)' },
+                    { icon: 'fa-compass', text: 'Select "Open in Safari" or "Open in Browser"' }
+                ];
+            } else {
+                // Android IAB
+                steps = [
+                    { icon: 'fa-ellipsis-v', text: 'Tap the menu icon (⋮)' },
+                    { icon: 'fa-chrome', text: 'Select "Open in Chrome" or "Browser"' }
+                ];
+            }
+        }
+        // 2. iOS Non-Safari Handling (Chrome on iOS, Firefox on iOS)
+        else if (isIOSNonSafari) {
+            title = "Open in Safari";
+            desc = "Installation is only supported in the Safari browser.";
+            icon = "fa-compass";
+            isWarning = true;
+            steps = [
+                { icon: 'fa-copy', text: 'Copy this page URL' },
+                { icon: 'fa-compass', text: 'Open the <b>Safari</b> app and paste URL' }
+            ];
+        }
+        // 3. iOS Safari (Standard Manual Install)
+        else if (isSafari) {
+            steps = [
                 { icon: 'fa-share-square', text: 'Tap the "Share" button' },
                 { icon: 'fa-plus-square', text: 'Select "Add to Home Screen"' }
-            ],
-            android: [
+            ];
+        }
+        // 4. Android (Manual fallback if beforeinstallprompt fails)
+        else if (isAndroid) {
+            steps = [
                 { icon: 'fa-ellipsis-v', text: 'Tap the three dots (menu)' },
                 { icon: 'fa-arrow-down', text: 'Tap "Install App" or "Add to Home"' }
-            ],
-            desktop: [
+            ];
+        }
+        // 5. Desktop Default
+        else {
+            steps = [
                 { icon: 'fa-desktop', text: 'Click the install icon in the address bar' }
-            ]
-        };
+            ];
+        }
 
-        const steps = configs[device] || configs.desktop;
+        // Update UI
+        this.elements.title.innerText = title;
+        this.elements.desc.innerText = desc;
+        this.elements.iconBox.innerHTML = `<i class="fas ${icon}"></i>`;
+
+        if (isWarning) {
+            this.elements.iconBox.classList.add('is-warning');
+            this.elements.laterBtn.innerText = "Close"; // 'Later' doesn't make sense for a redirect warning
+        }
+
         this.elements.steps.innerHTML = steps.map(s => `
-            <div class="pwa-step">
+            <div class="pwa-step ${isWarning ? 'warning' : ''}">
                 <i class="fas ${s.icon}"></i>
                 <span>${s.text}</span>
             </div>
@@ -202,7 +286,11 @@ class PWAInstallBanner {
 
     dismiss(permanent = false) {
         this.toggleVisibility(false);
-        localStorage.setItem(this.STORAGE_KEY, permanent ? 'true' : Date.now().toString());
+        const data = {
+            permanent: permanent,
+            timestamp: permanent ? null : Date.now()
+        };
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
     }
 
     loadFontAwesome() {
