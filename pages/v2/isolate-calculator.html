@@ -407,6 +407,11 @@
             <small><i class="fas fa-exclamation-triangle me-1"></i> <strong>Recrystallization Risk:</strong> CBD content is <strong>&gt;20%</strong>. This formulation may be prone to recrystallization/crashing out.</small>
         </div>
 
+        <!-- New terpene warning: warns when terpene percentage is over 10% -->
+        <div id="terpeneWarning" class="alert alert-warning py-2 mt-2" style="display:none;">
+            <small><i class="fas fa-exclamation-triangle me-1"></i> <strong>Terpene Warning:</strong> Terpene percentage is <strong>&gt;10%</strong>. High terpene concentrations may be harsh — they can cause burning sensations, strong throat irritation, or excessive sneezing.</small>
+        </div>
+
         <div id="compoundsContainer">
             <!-- Dynamic Rows will be injected here -->
         </div>
@@ -896,6 +901,14 @@
 
         // Toggle CBD Warning (> 20%)
         show($('cbdCrystWarning'), finalCbdPercent >= 19.99);
+
+        // NEW: Toggle Terpene Warning (> 10%)
+        const finalTerpenePercent = results
+            .filter(r => r.finalType === 'Terpenes')
+            .reduce((sum, r) => sum + r.finalPercentage, 0);
+
+        // Trigger when terpene percentage is over 10%
+        show($('terpeneWarning'), finalTerpenePercent >= 9.99);
     }
 
     // Update Functions
