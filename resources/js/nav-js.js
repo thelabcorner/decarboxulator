@@ -49,7 +49,11 @@ async function includeHTML(id, url) {
     const scripts = el.querySelectorAll('script');
     scripts.forEach(script => {
         const newScript = document.createElement('script');
-        newScript.textContent = script.textContent;
+        if (script.src) {
+            newScript.src = script.src;
+        } else {
+            newScript.textContent = script.textContent;
+        }
         document.head.appendChild(newScript);
     });
 }
