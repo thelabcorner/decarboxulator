@@ -21,6 +21,17 @@
     <link rel="include" href="/decarboxulator/pages/v2/dynamic/pwa-meta.html">
     <meta name="description" content="Comprehensive FAQ on cannabis decarboxylation. Learn about THCa conversion, optimal temperatures, timing, and advanced techniques.">
 
+    <!-- SEO & Social Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="FAQ | Decarboxulator™ Knowledge Base">
+    <meta property="og:description" content="Comprehensive answers on cannabis decarboxylation science, safety, and techniques. Calculate temps, timing, and pressure.">
+
+    <meta property="og:url" content="/decarboxulator/pages/v2/decarboxylation-faq"> <!-- UPDATE THIS URL -->
+
+    <meta name="twitter:card" content="summary_large_image">
+
+
+
     <!-- Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LK9VC1VS8P"></script>
     <script>
@@ -70,6 +81,21 @@
             --color-technique: #10b981; /* Emerald */
             --color-safety: #ef4444;   /* Red */
             --color-advanced: #f59e0b; /* Amber */
+
+
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #151515;
+            --bg-tertiary: #1a1a1a;
+            --border-color: #ffffff26;
+            --accent-blue: #0d6efd;
+            --accent-green: #28a745;
+            --accent-yellow: #ffc107;
+            --accent-red: #dc3545;
+            --accent-purple: #6f42c1;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-muted: #888888;
+
         }
 
         * {
@@ -161,7 +187,7 @@
             padding: 0.5rem 1rem;
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 9999px; /* Pill shape */
+            border-radius: 5px; /* Pill shape */
             color: var(--muted-foreground);
             font-size: 0.875rem;
             font-weight: 500;
@@ -204,7 +230,7 @@
         .faq-card {
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: var(--radius);
+            border-radius: 7px;
             overflow: hidden;
             transition: all 0.25s ease;
             cursor: pointer;
@@ -470,7 +496,7 @@
                 </a>
                 <a href="/decarboxulator/pages/v2/thca-thc-calculator" class="tool-link">
                     <i class="fas fa-calculator"></i>
-                    <span class="tool-link-title">Yield Calculator</span>
+                    <span class="tool-link-title">THCa -> THC</span>
                 </a>
                 <a href="/decarboxulator/pages/v2/edible-calculator" class="tool-link">
                     <i class="fas fa-cookie-bite"></i>
@@ -763,8 +789,34 @@
         renderFAQs();
     });
 
+    // --- NEW: SEO Schema Generator ---
+    function injectSchema() {
+        const schema = {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": faqData.map(item => ({
+                "@type": "Question",
+                "name": item.question,
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": item.answer
+                    // Note: Google allows HTML in the answer (links, lists),
+                    // which your data already has.
+                }
+            }))
+        };
+
+        const scriptTag = document.createElement('script');
+        scriptTag.type = 'application/ld+json';
+        scriptTag.text = JSON.stringify(schema);
+        document.head.appendChild(scriptTag);
+    }
+
     // Initial Render
     renderFAQs();
+
+    // Inject SEO Data
+    injectSchema();
 </script>
 
 </body>
