@@ -195,7 +195,7 @@ class PWAInstallBanner {
     setupInstructions() {
         const { isIOS, isAndroid, isIAB, isSafari, isIOSNonSafari } = this.environment;
         let steps = [];
-        let title = "Install Decarboxulator&trade;";
+        let title = "Install Decarboxulator™";
         let desc = "Add to homescreen for a full-screen experience.";
         let icon = "fa-mobile-alt";
         let isWarning = false;
