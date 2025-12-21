@@ -393,6 +393,16 @@
 
         <div class="alert-info py-2">
             <small><i class="fas fa-info-circle me-1"></i> Ratios are auto-normalized to 100%. Add compounds to build your target profile.</small>
+            <small id="thcaConversionHint" style="display:none;"><br><i class="fas fa-arrow-right me-1"></i> <strong>THCa Mode:</strong> Your THCa will be converted to THC. Results show final THC content.</small>
+        </div>
+
+        <!-- New Warnings -->
+        <div id="crystallizationWarning" class="alert alert-warning py-2 mt-2" style="display:none;">
+            <small><i class="fas fa-exclamation-triangle me-1"></i> <strong>Crystallization Risk:</strong> Final THCa content is <strong>&gt;15%</strong>. This formulation is in territory prone to crystallization.</small>
+        </div>
+
+        <div id="cbdCrystWarning" class="alert alert-warning py-2 mt-2" style="display:none;">
+            <small><i class="fas fa-exclamation-triangle me-1"></i> <strong>Recrystallization Risk:</strong> CBD content is <strong>&gt;20%</strong>. This formulation may be prone to recrystallization/crashing out.</small>
         </div>
 
         <div id="compoundsContainer">
@@ -438,10 +448,10 @@
 
             <!-- Standard Logic (THC conversion) -->
             <div id="logicStandard" style="display:none;">
-                <span class="logic-badge logic-active">Standard Decarboxylation</span>
+                <span class="logic-badge logic-active">Full Decarboxylation Required</span>
                 <div class="alert-warning">
                     <i class="fas fa-fire me-2"></i>
-                    <strong>Full Decarboxylation Required:</strong> To achieve the target THC weight, you must decarboxylate the THCa isolate completely.
+                    <strong>THCa → THC Conversion:</strong> To achieve your target THC content, start with the THCa input below and fully decarboxylate it. The conversion accounts for 87.723% yield (12.277% CO₂ loss).
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -508,12 +518,19 @@
                 </div>
             </div>
 
-            <!-- THCa Only Logic -->
+            <!-- THCa Only Logic (remains as THCa) -->
             <div id="logicNoDecarb" style="display:none;">
-                <span class="logic-badge logic-active">No Decarboxylation</span>
+                <span class="logic-badge logic-active">THCa-Only Formulation</span>
                 <div class="alert-info">
                     <i class="fas fa-snowflake me-2"></i>
-                    <strong>Cold Formulation:</strong> No THC conversion detected. Ensure THCa crystals are properly melted/incorporated if using diamonds.
+                    <strong>No Decarboxylation Required:</strong> Your formulation uses THCa without converting to THC. This is suitable for cold formulations or products where you want to preserve the acidic form. Ensure THCa crystals are properly melted/incorporated if using diamonds.
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="stat-icon fas fa-cubes"></i>
+                        <div class="stat-label">THCa Input Needed</div>
+                        <div class="stat-value" id="noDecarbThcaInput">0.000<span class="stat-unit">g</span></div>
+                    </div>
                 </div>
             </div>
 
@@ -673,14 +690,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Constants
-    const THCA_MW = 358.47;
-    const THC_MW = 314.46;
     const CONVERSION_RATIO = 0.87723;
-
-    // Available Compounds
-    const COMPOUNDS_LIST = [
-        'THC', 'THCa', 'CBN', 'CBD', 'CBG', 'THCV', 'Terpenes', 'Other'
-    ];
+    const COMPOUNDS_LIST = ['THC', 'THCa', 'CBN', 'CBD', 'CBG', 'THCV', 'Terpenes', 'Other'];
 
     // Initial State
     let compoundRows = [
@@ -689,17 +700,93 @@
         { type: 'Terpenes', value: 10 }
     ];
 
+    // DOM Helpers
+    const $ = id => document.getElementById(id);
+    const show = (el, visible = true) => el.style.display = visible ? 'block' : 'none';
+    const getInputValue = id => parseFloat($(id).value) || 0;
+
+    // Utility Functions
+    const sumBy = (arr, key) => arr.reduce((sum, item) => sum + (item[key] || 0), 0);
+    const filterSum = (arr, predicate, key) => arr.filter(predicate).reduce((sum, r) => sum + (r[key] || 0), 0);
+    const getInputWeight = r => r.inputWeight || r.weight || 0;
+
+    const consolidateResults = results => {
+        const consolidated = {};
+        results.forEach(r => {
+            const type = r.finalType;
+            if (!consolidated[type]) consolidated[type] = { weight: 0, percent: 0 };
+            consolidated[type].weight += r.finalWeight;
+            consolidated[type].percent += r.finalPercentage;
+        });
+        return consolidated;
+    };
+
+    // HTML Templates
+    const html = {
+        statUnit: (value, unit = 'g', decimals = 3) =>
+            `${value.toFixed(decimals)}<span class="stat-unit">${unit}</span>`,
+
+        subValue: (value, label = 'w/o terpenes') =>
+            `<span class="stat-subvalue">${value.toFixed(3)}g <span style="font-size: 10.8px;opacity: 0.5;">${label}</span></span>`,
+
+        withSubvalue: (main, base, show) =>
+            `${html.statUnit(main)}${show ? html.subValue(base) : ''}`,
+
+        statCard: (icon, label, valueHtml) => `
+            <div class="stat-card">
+                <i class="stat-icon fas fa-${icon}"></i>
+                <div class="stat-label">${label}</div>
+                <div class="stat-value">${valueHtml}</div>
+            </div>`,
+
+        percentBadge: percent => `
+            <span class="shadcn-badge">${percent.toFixed(1)}<span style="opacity: 0.7; font-size: 0.82rem; margin-left: 3px;">%</span></span>`,
+
+        percentSegment: (type, percent) => `
+            <div class="percentage-segment color-${type}" style="width: ${percent}%" title="${type}: ${percent.toFixed(1)}%">
+                ${percent > 5 ? percent.toFixed(1) + '%' : ''}
+            </div>`,
+
+        legendItem: (type, percent) => `
+            <div class="legend-item">
+                <div class="legend-color color-${type}"></div>
+                <span>${type}: ${percent.toFixed(1)}%</span>
+            </div>`,
+
+        selectOptions: (options, selected) =>
+            options.map(opt => `<option value="${opt}" ${selected === opt ? 'selected' : ''}>${opt}</option>`).join(''),
+
+        compoundRow: (row, index) => `
+            <div class="compound-row">
+                <div class="flex-grow-1">
+                    <select class="form-select" onchange="updateRowType(${index}, this.value)">
+                        ${html.selectOptions(COMPOUNDS_LIST, row.type)}
+                    </select>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="input-group">
+                        <input type="number" class="form-control" value="${row.value}" min="0" step="0.1"
+                            oninput="updateRowValue(${index}, this.value)" placeholder="Parts">
+                        <span class="input-group-text">pts</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline-danger" onclick="removeRow(${index})" title="Remove">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>`
+    };
+
+    // Initialization
     document.addEventListener('DOMContentLoaded', () => {
         renderRows();
         calculateBatch();
-
-        // Render Math formulas
         renderMathInElement(document.body, {
             delimiters: [{left: "$$", right: "$$", display: true}],
             throwOnError: false
         });
     });
 
+    // Row Management
     function addCompoundRow() {
         compoundRows.push({ type: 'Other', value: 0 });
         renderRows();
@@ -724,271 +811,226 @@
     }
 
     function renderRows() {
-        const container = document.getElementById('compoundsContainer');
-        container.innerHTML = '';
-
-        compoundRows.forEach((row, index) => {
-            const rowDiv = document.createElement('div');
-            rowDiv.className = 'compound-row';
-
-            // Build Options
-            let optionsHtml = '';
-            COMPOUNDS_LIST.forEach(opt => {
-                optionsHtml += `<option value="${opt}" ${row.type === opt ? 'selected' : ''}>${opt}</option>`;
-            });
-
-            rowDiv.innerHTML = `
-                <div class="flex-grow-1">
-                    <select class="form-select" onchange="updateRowType(${index}, this.value)">
-                        ${optionsHtml}
-                    </select>
-                </div>
-                <div class="flex-grow-1">
-                    <div class="input-group">
-                        <input type="number" class="form-control" value="${row.value}" min="0" step="0.1"
-                            oninput="updateRowValue(${index}, this.value)" placeholder="Parts">
-                        <span class="input-group-text">pts</span>
-                    </div>
-                </div>
-                <button class="btn btn-outline-danger" onclick="removeRow(${index})" title="Remove">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            container.appendChild(rowDiv);
-        });
+        $('compoundsContainer').innerHTML = compoundRows.map((row, i) => html.compoundRow(row, i)).join('');
     }
 
-    function calculateBatch() {
-        const cartCount = parseFloat(document.getElementById('cartCount').value) || 0;
-        const cartCapacity = parseFloat(document.getElementById('cartCapacity').value) || 0;
+    // Processing Functions
+    function processThcaOnlyMode(results) {
+        const thcaInputWeight = filterSum(results, r => r.type === 'THCa', 'weight');
+        const thcOutputWeight = thcaInputWeight * CONVERSION_RATIO;
+        const otherWeight = filterSum(results, r => r.type !== 'THCa', 'weight');
+        const totalFinal = thcOutputWeight + otherWeight;
 
-        const totalParts = compoundRows.reduce((sum, row) => sum + row.value, 0);
+        return results.map(row => row.type === 'THCa'
+            ? { ...row, finalType: 'THC', finalWeight: thcOutputWeight, inputWeight: thcaInputWeight, finalPercentage: (thcOutputWeight / totalFinal) * 100 }
+            : { ...row, finalType: row.type, finalWeight: row.weight, inputWeight: row.weight, finalPercentage: (row.weight / totalFinal) * 100 }
+        );
+    }
+
+    function processStandardMode(results) {
+        return results.map(row => ({
+            ...row, finalType: row.type, finalWeight: row.weight, finalPercentage: row.percentage, inputWeight: row.weight
+        }));
+    }
+
+    // Main Calculation
+    function calculateBatch() {
+        const cartCount = getInputValue('cartCount');
+        const cartCapacity = getInputValue('cartCapacity');
+        const totalParts = sumBy(compoundRows, 'value');
 
         if (totalParts === 0 || cartCount === 0) {
-            document.getElementById('resultsSection').style.display = 'none';
+            show($('resultsSection'), false);
             return;
         }
 
         const totalWeight = cartCount * cartCapacity;
+        const hasThc = compoundRows.some(r => r.type === 'THC' && r.value > 0);
+        const hasThca = compoundRows.some(r => r.type === 'THCa' && r.value > 0);
+        const thcaOnlyMode = hasThca && !hasThc;
 
-        // Calculate Weights & Colors
-        const results = compoundRows.map(row => {
+        show($('thcaConversionHint'), thcaOnlyMode);
+
+        let results = compoundRows.map(row => {
             const percentage = (row.value / totalParts) * 100;
-            const weight = totalWeight * (percentage / 100);
-            return { ...row, percentage, weight };
+            return { ...row, percentage, weight: totalWeight * (percentage / 100) };
         });
 
-        // Calculate Base Weight (Total - Terpenes)
-        const terpeneWeight = results
-            .filter(r => r.type === 'Terpenes')
-            .reduce((sum, r) => sum + r.weight, 0);
-        const baseWeight = totalWeight - terpeneWeight;
+        results = thcaOnlyMode ? processThcaOnlyMode(results) : processStandardMode(results);
+
+        const terpeneWeight = filterSum(results, r => r.type === 'Terpenes', 'finalWeight');
+        const actualFinalWeight = sumBy(results, 'finalWeight');
         const hasTerpenes = terpeneWeight > 0;
 
-        // Render Total Weight + Base Weight
-        document.getElementById('totalWeight').innerHTML = `
-            ${totalWeight.toFixed(3)}<span class="stat-unit">g</span>
-            ${hasTerpenes ? `<span class="stat-subvalue">${baseWeight.toFixed(3)}g <span style="font-size: 10.8px;opacity: 0.5;">w/o terpenes</span></span>` : ''}
-        `;
+        $('totalWeight').innerHTML = html.withSubvalue(actualFinalWeight, actualFinalWeight - terpeneWeight, hasTerpenes);
 
-        updateVisuals(results, totalWeight);
-        updateSourceLogic(results, totalWeight, terpeneWeight, baseWeight, hasTerpenes);
-        updatePerCartGrid(results, cartCount);
+        updateVisuals(results, thcaOnlyMode);
+        updateSourceLogic(results, actualFinalWeight, terpeneWeight, hasTerpenes, thcaOnlyMode);
+        updatePerCartGrid(results, cartCount, actualFinalWeight, thcaOnlyMode);
 
-        document.getElementById('resultsSection').style.display = 'block';
+        // NEW: Call the warning update function
+        updateWarnings(results);
+
+        show($('resultsSection'));
     }
 
-    function updateVisuals(results, totalWeight) {
-        // Update Bar
-        const bar = document.getElementById('percentageBar');
-        const legend = document.getElementById('percentageLegend');
-        const weightCards = document.getElementById('dynamicWeightCards');
+    // NEW FUNCTION: Handle THCa and CBD Warnings
+    function updateWarnings(results) {
+        // Calculate consolidated percentages based on finalType
+        // We use filterSum logic but adapted for percentages
+        const totalPercent = sumBy(results, 'finalPercentage'); // Should be ~100
 
-        let barHtml = '';
-        let legendHtml = '';
-        let cardsHtml = '';
+        const finalThcaPercent = results
+            .filter(r => r.finalType === 'THCa')
+            .reduce((sum, r) => sum + r.finalPercentage, 0);
 
-        // Consolidate duplicates for display
-        const consolidated = {};
-        results.forEach(r => {
-            if (!consolidated[r.type]) consolidated[r.type] = { weight: 0, percent: 0 };
-            consolidated[r.type].weight += r.weight;
-            consolidated[r.type].percent += r.percentage;
-        });
+        const finalCbdPercent = results
+            .filter(r => r.finalType === 'CBD')
+            .reduce((sum, r) => sum + r.finalPercentage, 0);
+
+        // Toggle THCa Warning (> 15%)
+        // Note: If in 'thcaOnlyMode', finalType is converted to THC, so this naturally stays 0
+        show($('crystallizationWarning'), finalThcaPercent >= 14.99);
+
+        // Toggle CBD Warning (> 20%)
+        show($('cbdCrystWarning'), finalCbdPercent >= 19.99);
+    }
+
+    // Update Functions
+    function updateVisuals(results, thcaOnlyMode) {
+        const consolidated = consolidateResults(results);
+        let barHtml = '', legendHtml = '', cardsHtml = '';
 
         for (const [type, data] of Object.entries(consolidated)) {
             if (data.percent > 0) {
-                barHtml += `<div class="percentage-segment color-${type}" style="width: ${data.percent}%" title="${type}: ${data.percent.toFixed(1)}%">
-                    ${data.percent > 5 ? data.percent.toFixed(1) + '%' : ''}
-                </div>`;
-
-                legendHtml += `
-                    <div class="legend-item">
-                        <div class="legend-color color-${type}"></div>
-                        <span>${type}: ${data.percent.toFixed(1)}%</span>
-                    </div>`;
-
-                cardsHtml += `
-                    <div class="stat-card">
-                        <i class="stat-icon fas fa-flask"></i>
-                        <div class="stat-label">${type} Needed</div>
-                        <div class="stat-value">${data.weight.toFixed(3)}<span class="stat-unit">g</span></div>
-                    </div>`;
+                barHtml += html.percentSegment(type, data.percent);
+                legendHtml += html.legendItem(type, data.percent);
+                const label = `${type} ${thcaOnlyMode && type === 'THC' ? '(After Decarb)' : 'Final'}`;
+                cardsHtml += html.statCard('flask', label, html.statUnit(data.weight));
             }
         }
 
-        bar.innerHTML = barHtml;
-        legend.innerHTML = legendHtml;
-        weightCards.innerHTML = cardsHtml;
+        $('percentageBar').innerHTML = barHtml;
+        $('percentageLegend').innerHTML = legendHtml;
+        $('dynamicWeightCards').innerHTML = cardsHtml;
     }
 
-    function updateSourceLogic(results, totalWeight, terpeneWeight, baseWeight, hasTerpenes) {
-        let totalThcWeight = 0;
-        let totalThcaWeight = 0;
-        let otherIngredientsWeight = 0;
+    function updateSourceLogic(results, actualFinalWeight, terpeneWeight, hasTerpenes, thcaOnlyMode) {
+        const totalThcWeight = filterSum(results, r => r.type === 'THC', 'weight');
+        const totalThcaWeight = filterSum(results, r => r.type === 'THCa', 'weight');
 
-        results.forEach(r => {
-            if (r.type === 'THC') totalThcWeight += r.weight;
-            else if (r.type === 'THCa') totalThcaWeight += r.weight;
-            else otherIngredientsWeight += r.weight;
-        });
+        ['logicStandard', 'logicPartial', 'logicNoDecarb'].forEach(id => show($(id), false));
 
-        // Hide all logic panels first
-        document.getElementById('logicStandard').style.display = 'none';
-        document.getElementById('logicPartial').style.display = 'none';
-        document.getElementById('logicNoDecarb').style.display = 'none';
-
-        // Pre-Decarb Weight Calculation
-        let inputThcaNeeded = 0;
-        let co2Loss = 0;
-
-        if (totalThcWeight > 0 && totalThcaWeight > 0) {
-            // PARTIAL DECARB LOGIC
-            // THCa needed to create the THC portion
-            const thcaForConversion = totalThcWeight / CONVERSION_RATIO;
-
-            // Total THCa needed (Conversion + Direct)
-            inputThcaNeeded = thcaForConversion + totalThcaWeight;
-
-            // Percentage
-            const completionPercent = (thcaForConversion / inputThcaNeeded) * 100;
-
-            // CO2 Loss is just the difference between input needed and result weight
-            // (Input THCa - Final THC)
-            co2Loss = thcaForConversion - totalThcWeight;
-
-            document.getElementById('partialDecarbPercent').innerHTML = `${completionPercent.toFixed(2)}<span class="stat-unit">%</span>`;
-            document.getElementById('partialTotalInput').innerHTML = `${inputThcaNeeded.toFixed(3)}<span class="stat-unit">g</span>`;
-            document.getElementById('partialBreakdown').innerHTML = `(${thcaForConversion.toFixed(2)}g for Conv. + ${totalThcaWeight.toFixed(2)}g Raw)`;
-            document.getElementById('partialThcProduced').innerHTML = `${totalThcWeight.toFixed(3)}<span class="stat-unit">g</span>`;
-
-            document.getElementById('logicPartial').style.display = 'block';
-
+        if (thcaOnlyMode) {
+            const thcaResult = results.find(r => r.type === 'THCa');
+            setStandardLogic(thcaResult.inputWeight, thcaResult.inputWeight - thcaResult.finalWeight);
+        } else if (totalThcWeight > 0 && totalThcaWeight > 0) {
+            setPartialLogic(totalThcWeight, totalThcaWeight);
         } else if (totalThcWeight > 0) {
-            // STANDARD FULL DECARB
-            inputThcaNeeded = totalThcWeight / CONVERSION_RATIO;
-            co2Loss = inputThcaNeeded - totalThcWeight;
-
-            document.getElementById('stdThcaInput').innerHTML = `${inputThcaNeeded.toFixed(3)}<span class="stat-unit">g</span>`;
-            document.getElementById('stdCo2Loss').innerHTML = `${co2Loss.toFixed(3)}<span class="stat-unit">g</span>`;
-            document.getElementById('logicStandard').style.display = 'block';
-
+            const inputNeeded = totalThcWeight / CONVERSION_RATIO;
+            setStandardLogic(inputNeeded, inputNeeded - totalThcWeight);
         } else if (totalThcaWeight > 0) {
-            // NO DECARB (THCa only)
-            inputThcaNeeded = totalThcaWeight;
-            co2Loss = 0;
-            document.getElementById('logicNoDecarb').style.display = 'block';
-        } else {
-            // No THC/THCa
-            inputThcaNeeded = 0;
-            co2Loss = 0;
+            $('noDecarbThcaInput').innerHTML = html.statUnit(totalThcaWeight);
+            show($('logicNoDecarb'));
         }
 
-        // --- Measurement Breakdown Calculation ---
-        // Before Decarb = (THCa Input) + (Other Ingredients)
-        const weightBeforeDecarb = inputThcaNeeded + otherIngredientsWeight;
-
-        // After Decarb = Final Target Weight
-        const weightAfterDecarb = totalWeight;
-
-        // Calculate base weights (without terpenes)
-        // baseWeight is already totalWeight - terpeneWeight
-        // For before decarb, subtract terpeneWeight from weightBeforeDecarb
-        const weightBeforeDecarbBase = weightBeforeDecarb - terpeneWeight;
-        const weightAfterDecarbBase = baseWeight;
-
-        document.getElementById('batchBeforeDecarb').innerHTML = `
-            ${weightBeforeDecarb.toFixed(3)}<span class="stat-unit">g</span>
-            ${hasTerpenes ? `<span class="stat-subvalue">${weightBeforeDecarbBase.toFixed(3)}g <span style="font-size: 10.8px;opacity: 0.5;">w/o terpenes</span></span>` : ''}
-        `;
-        document.getElementById('batchAfterDecarb').innerHTML = `
-            ${weightAfterDecarb.toFixed(3)}<span class="stat-unit">g</span>
-            ${hasTerpenes ? `<span class="stat-subvalue">${weightAfterDecarbBase.toFixed(3)}g <span style="font-size: 10.8px;opacity: 0.5;">w/o terpenes</span></span>` : ''}
-        `;
+        updateMeasurementBreakdown(results, actualFinalWeight, terpeneWeight, hasTerpenes);
     }
 
-    function updatePerCartGrid(results, cartCount) {
-        const grid = document.getElementById('perCartGrid');
-        let html = '';
+    function setStandardLogic(input, loss) {
+        $('stdThcaInput').innerHTML = html.statUnit(input);
+        $('stdCo2Loss').innerHTML = html.statUnit(loss);
+        show($('logicStandard'));
+    }
 
-        const consolidated = {};
-        results.forEach(r => {
-            if (!consolidated[r.type]) consolidated[r.type] = 0;
-            consolidated[r.type] += r.weight;
-        });
+    function setPartialLogic(thcWeight, thcaWeight) {
+        const thcaForConversion = thcWeight / CONVERSION_RATIO;
+        const totalInput = thcaForConversion + thcaWeight;
 
-        const totalPerCart = Object.values(consolidated).reduce((a, b) => a + b, 0) / cartCount;
-        html += `
-            <div class="stat-card">
-                <i class="stat-icon fas fa-vial"></i>
-                <div class="stat-label">Total Fill</div>
-                <div class="stat-value">${totalPerCart.toFixed(2)}<span class="stat-unit">g</span></div>
-            </div>`;
+        $('partialDecarbPercent').innerHTML = html.statUnit((thcaForConversion / totalInput) * 100, '%', 2);
+        $('partialTotalInput').innerHTML = html.statUnit(totalInput);
+        $('partialBreakdown').innerHTML = `(${thcaForConversion.toFixed(2)}g for Conv. + ${thcaWeight.toFixed(2)}g Raw)`;
+        $('partialThcProduced').innerHTML = html.statUnit(thcWeight);
+        show($('logicPartial'));
+    }
 
-        for (const [type, weight] of Object.entries(consolidated)) {
-            if (weight > 0) {
-                const perCart = weight / cartCount;
-                const percent = totalPerCart > 0 ? (perCart / totalPerCart) * 100 : 0;
-                html += `
-                    <div class="stat-card">
-                        <i class="stat-icon fas fa-syringe"></i>
-                        <div class="stat-label">${type} / Cart</div>
-                        <div class="stat-value">
-                            ${perCart.toFixed(3)}<span class="stat-unit">g</span>
-                            <span class="shadcn-badge">${percent.toFixed(1)}<span style="    opacity: 0.7;
-                                                                                            font-size: 0.82rem;
-                                                                                            margin-left: 3px;">%</span>
-                            </span>
-                        </div>
-                    </div>`;
+    function updateMeasurementBreakdown(results, actualFinalWeight, terpeneWeight, hasTerpenes) {
+        const weightBefore = results.reduce((sum, r) => sum + getInputWeight(r), 0);
+        const terpeneInput = results.filter(r => r.type === 'Terpenes').reduce((sum, r) => sum + getInputWeight(r), 0);
+
+        $('batchBeforeDecarb').innerHTML = html.withSubvalue(weightBefore, weightBefore - terpeneInput, hasTerpenes);
+        $('batchAfterDecarb').innerHTML = html.withSubvalue(actualFinalWeight, actualFinalWeight - terpeneWeight, hasTerpenes);
+    }
+
+    function updatePerCartGrid(results, cartCount, actualFinalWeight, thcaOnlyMode) {
+        const cartCapacity = getInputValue('cartCapacity');
+        const consolidated = consolidateResults(results);
+        let gridHtml = '';
+
+        if (thcaOnlyMode) {
+            gridHtml = html.statCard('vial', 'Total Fill per Cart', html.statUnit(cartCapacity));
+
+            for (const [type, data] of Object.entries(consolidated)) {
+                if (data.percent > 0) {
+                    const perCart = cartCapacity * (data.percent / 100);
+                    gridHtml += html.statCard('syringe', `${type} / Cart`,
+                        `${html.statUnit(perCart)}${html.percentBadge(data.percent)}`);
+                }
+            }
+
+            if (thcaOnlyMode && cartCapacity > 0) {
+                const newCount = Math.floor(actualFinalWeight / cartCapacity);
+                // Remove any previous alert
+                const prevAlert = document.getElementById('perCartAlert');
+                if (prevAlert) prevAlert.remove();
+                // Create the alert HTML
+                const alertHtml = `<div id="perCartAlert" class="alert alert-warning" role="alert" style="margin-bottom:0;">
+        <strong>Notice:</strong> Based on the final yield, you will only be able to fill <b>${newCount}</b> full cartridge${newCount !== 1 ? 's' : ''} at <b>${cartCapacity.toFixed(3)}g</b> each.
+    </div>`;
+                // Insert as sibling after perCartGrid
+                $('perCartGrid').insertAdjacentHTML('afterend', alertHtml);
+            } else {
+                // Remove alert if not in thcaOnlyMode
+                const prevAlert = document.getElementById('perCartAlert');
+                if (prevAlert) prevAlert.remove();
+            }
+        } else {
+            const totalPerCart = actualFinalWeight / cartCount;
+            gridHtml = html.statCard('vial', 'Total Fill per Cart', html.statUnit(totalPerCart));
+
+            for (const [type, data] of Object.entries(consolidated)) {
+                if (data.weight > 0) {
+                    const perCart = data.weight / cartCount;
+                    const percent = totalPerCart > 0 ? (perCart / totalPerCart) * 100 : 0;
+                    gridHtml += html.statCard('syringe', `${type} / Cart`,
+                        `${html.statUnit(perCart)}${html.percentBadge(percent)}`);
+                }
             }
         }
-        grid.innerHTML = html;
+
+        $('perCartGrid').innerHTML = gridHtml;
     }
 
+    // Public Setters
     function setCartCount(val) {
-        document.getElementById('cartCount').value = val;
+        $('cartCount').value = val;
         calculateBatch();
     }
+
     function setCapacity(val) {
-        document.getElementById('cartCapacity').value = val;
+        $('cartCapacity').value = val;
         calculateBatch();
     }
+
     function toggleFAQ(element) {
         const faqItem = element.parentElement;
         const isActive = faqItem.classList.contains('active');
-
-        // Close all FAQ items
-        document.querySelectorAll('.faq-item').forEach(item => {
-            item.classList.remove('active');
-        });
-
-        // Open clicked item if it wasn't active
-        if (!isActive) {
-            faqItem.classList.add('active');
-        }
+        document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+        if (!isActive) faqItem.classList.add('active');
     }
 </script>
 </body>
 </html>
+
+
 
