@@ -458,6 +458,21 @@
                 </div>
                 <small class="text-muted"><i class="fas fa-lightbulb me-2 opacity-50"></i>Weight after decarboxylation is presumed complete (no more bubbling)</small>
             </div>
+            <div class="card border border-danger rounded-lg p-4 mb-3" style="width: 92%; background:#1e0e0e;margin: 1rem;">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fas fa-gauge-high text-danger me-2 opacity-50"></i>
+                    <span class="fw-bold" style="font-size:1.1rem; color: #ff7979">THCa PSI Chart</span>
+                </div>
+                <div class="mb-3" style="font-size:0.97rem; color: #9d3448;">
+                    Before decarboxylation, calculate expected CO₂ production and ensure your sealed vessel can safely contain the pressure. Use pressure-rated vessels designed for this purpose. Never use glass jars not rated for pressure!
+                </div>
+                <a href="/decarboxulator/pages/v2/max-pressure" role="button"
+                   class="btn btn-outline-danger d-inline-flex align-items-center gap-2 fw-semibold"
+                   style="border-radius:8px;">
+                    <i class="fas fa-gauge-high opacity-50"></i>
+                    THCa PSI Calculator
+                </a>
+            </div>
         </div>
 
         <div id="resultsSection" style="display: none;">
@@ -498,11 +513,6 @@
                     <div class="stat-label">Other Compounds</div>
                     <div class="stat-value" id="otherCompounds">0.00<span class="stat-unit">%</span></div>
                 </div>
-            </div>
-
-            <div class="alert-danger">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                <strong>Safety Warning:</strong> Before decarboxylation, calculate expected CO₂ production and ensure your sealed vessel can safely contain the pressure. Use pressure-rated vessels designed for this purpose. Never use glass jars not rated for pressure!
             </div>
         </div>
     </div>
@@ -861,7 +871,12 @@
         const otherCompounds = 100 - thcaPercent;
 
         // Display results
-        document.getElementById('thcaPercentage').innerHTML = `${thcaPercent.toFixed(2)}<span class="result-unit">%</span>`;
+        // in `pages/v2/thca-content-analyzer.html` replace the thcaPercentage assignment with:
+        let percentHtml = `${thcaPercent.toFixed(2)}<span class="result-unit">%</span>`;
+        if (thcaPercent < 0 || thcaPercent > 100) {
+            percentHtml += `<br><small style="font-size: 0.8rem" class="text-warning fw-bold">Warning: terpene losses or measurement error</small>`;
+        }
+        document.getElementById('thcaPercentage').innerHTML = percentHtml;
         document.getElementById('thcaWeight').innerHTML = `${thcaWeight.toFixed(3)}<span class="stat-unit">g</span>`;
         document.getElementById('thcWeight').innerHTML = `${thcWeight.toFixed(3)}<span class="stat-unit">g</span>`;
         document.getElementById('co2Released').innerHTML = `${weightLoss.toFixed(3)}<span class="stat-unit">g</span>`;
