@@ -7,11 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/contrib/auto-render.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
 
     <link rel="include" href="/decarboxulator/pages/v2/dynamic/pwa-meta.html">
 
@@ -299,6 +299,19 @@
             color: var(--text-primary);
         }
 
+        .badge-shadcn {
+            display: inline-block;
+            background: #23272f;
+            color: #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.15em 0.5em;
+            border: 1px solid #2c323d;
+            vertical-align: middle;
+            margin-left: 0.25em;
+        }
+
         .temp-toggle {
             display: flex;
             background-color: var(--bg-tertiary);
@@ -525,7 +538,7 @@
             <div class="col-md-6">
                 <label class="form-label">Extract Weight</label>
                 <div class="input-group">
-                    <input type="number" class="form-control" id="inputWeight" placeholder="100" step="0.1" min="0" oninput="calculatePressure()">
+                    <input type="number" class="form-control" id="inputWeight" placeholder="100" step="0.1" min="0" oninput="generateHeatmap()">
                     <span class="input-group-text">g</span>
                 </div>
                 <div class="quick-presets">
@@ -539,7 +552,7 @@
             <div class="col-md-6">
                 <label class="form-label">THCa Concentration</label>
                 <div class="input-group">
-                    <input type="number" class="form-control" id="thcaConc" placeholder="85" step="0.1" min="0" max="100" oninput="calculatePressure()">
+                    <input type="number" class="form-control" id="thcaConc" placeholder="85" step="0.1" min="0" max="100" oninput="generateHeatmap()">
                     <span class="input-group-text">%</span>
                 </div>
                 <div class="quick-presets">
@@ -559,7 +572,7 @@
                     <button class="temp-btn" id="celsius" onclick="setTempUnit('C')">°C</button>
                 </div>
                 <div class="input-group">
-                    <input type="number" class="form-control" id="inputTemperature" placeholder="170" step="1" oninput="calculatePressure()">
+                    <input type="number" class="form-control" id="inputTemperature" placeholder="170" step="1" oninput="generateHeatmap()">
                     <span class="input-group-text" id="tempUnit">°F</span>
                 </div>
                 <div class="quick-presets" id="tempPresets">
@@ -572,7 +585,7 @@
             <div class="col-md-6">
                 <label class="form-label">Vessel Volume</label>
                 <div class="input-group">
-                    <input type="number" class="form-control" id="customVesselVolume" placeholder="16" step="0.1" min="0" oninput="calculatePressure()">
+                    <input type="number" class="form-control" id="customVesselVolume" placeholder="16" step="0.1" min="0" oninput="generateHeatmap()">
                     <span class="input-group-text">fl oz</span>
                 </div>
                 <div class="quick-presets">
@@ -759,18 +772,60 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-    // Constants for calculations
-    // Constants for calculations
-    const THCA_MW = 358.47005; // g/mol
-    const CO2_MW = 44.0094;   // g/mol
-    const R = 0.0821;       // L·atm/(mol·K)
-    const ATM_TO_PSI = 14.6959487755;
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
 
+<script>
+    /* ============================================================================
+       Decarboxulator™ Pressure Model (Drop-in Replacement)
+       - Fixes temperature unit conversion bug
+       - Uses high-accuracy gas constant (SI) + precise unit conversions
+       - Improves physics: includes trapped air heating + optional conversion efficiency
+       - Reports both Gauge PSI (above ambient) and Absolute PSI
+       - Treats the entered vessel volume as HEADSPACE volume (recommended)
+    ============================================================================ */
+
+    /* -----------------------------
+       Physical constants (accurate)
+    ------------------------------ */
+    const MW_THCA = 358.47005;            // g/mol  (THCa)
+    const MW_CO2  = 44.0094;              // g/mol  (CO2)
+
+    const R_SI    = 8.31446261815324;     // J/(mol·K) = Pa·m^3/(mol·K)  (CODATA)
+    const PA_PER_ATM = 101325;            // Pa
+    const PSI_PER_PA = 0.00014503773773020923;  // psi/Pa (exact enough)
+    const FLOZ_TO_M3 = 29.5735295625e-6;  // m^3 per US fl oz (29.5735295625 mL)
+
+    /* Atmospheric baseline:
+       - If sealed at ambient (not vacuum), absolute pressure is ~14.696 psi at sea level.
+       - Gauge pressure = absolute - ambient_at_process (safety-relevant).
+    */
+    const P_ATM_PSI_DEFAULT = 14.695948775513449; // psi, ~1 atm
+
+    /* Assumptions / knobs (no UI changes required) */
+    const MODEL = {
+        // Temperature (if you seal at room temp then heat up)
+        // We'll try to read a #sealTemperature input if you add one later.
+        sealTempF_default: 70,
+
+        // Conversion efficiency: not all THCa may decarb, not all CO2 stays in gas phase,
+        // there may be leaks, dissolution, etc. 1.0 = "worst-case / upper bound".
+        // We'll try to read a #conversionEfficiency input (0..1) if present.
+        conversionEfficiency_default: 1.0,
+
+        // Ambient pressure baseline (psi). We'll try #ambientPressurePsi if present.
+        ambientPressurePsi_default: P_ATM_PSI_DEFAULT,
+    };
+
+    /* -----------------------------
+       App state
+    ------------------------------ */
     let currentTempUnit = 'F';
     let heatmapTable = null;
 
-    // Toast Configuration
+    /* -----------------------------
+       Toast (unchanged)
+    ------------------------------ */
     const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -782,255 +837,340 @@
         iconColor: '#0d6efd'
     });
 
-    function setWeight(value) {
-        document.getElementById('inputWeight').value = value;
-        calculatePressure();
+    /* -----------------------------
+       DOM helpers (small perf win)
+    ------------------------------ */
+    const $ = (id) => document.getElementById(id);
+
+    function readNumber(id, fallback = NaN) {
+        const el = $(id);
+        if (!el) return fallback;
+        const v = parseFloat(el.value);
+        return Number.isFinite(v) ? v : fallback;
     }
 
-    function setConcentration(value) {
-        document.getElementById('thcaConc').value = value;
-        calculatePressure();
-    }
+    /* -----------------------------
+       Preset setters (unchanged API)
+    ------------------------------ */
+    function setWeight(value) { $('inputWeight').value = value; generateHeatmap(); }
+    function setConcentration(value) { $('thcaConc').value = value; generateHeatmap(); }
+    function setTemperature(value) { $('inputTemperature').value = value; generateHeatmap(); }
+    function setVolume(value) { $('customVesselVolume').value = value; generateHeatmap(); }
 
-    function setTemperature(value) {
-        document.getElementById('inputTemperature').value = value;
-        calculatePressure();
-    }
-
-    function setVolume(value) {
-        document.getElementById('customVesselVolume').value = value;
-        calculatePressure();
-    }
-
-    function setTempUnit(unit) {
-        currentTempUnit = unit;
-
-        // Update UI
-        document.getElementById('fahrenheit').classList.toggle('active', unit === 'F');
-        document.getElementById('celsius').classList.toggle('active', unit === 'C');
-        document.getElementById('tempUnit').textContent = '°' + unit;
-
-        // Update presets
-        updateTempPresets();
-
-        // Convert existing value
-        const tempInput = document.getElementById('inputTemperature');
-        if (tempInput.value) {
-            const currentValue = parseFloat(tempInput.value);
-            if (unit === 'C' && document.getElementById('fahrenheit').classList.contains('active')) {
-                // Converting from F to C
-                tempInput.value = ((currentValue - 32) * 5/9).toFixed(0);
-            } else if (unit === 'F' && document.getElementById('celsius').classList.contains('active')) {
-                // Converting from C to F
-                tempInput.value = (currentValue * 9/5 + 32).toFixed(0);
-            }
-        }
-
-        calculatePressure();
+    /* -----------------------------
+       Temperature utilities
+    ------------------------------ */
+    function convertToKelvin(temp, unit) {
+        const u = (unit || 'F').toUpperCase();
+        if (u === 'F') return (temp - 32) * 5/9 + 273.15;
+        return temp + 273.15; // C -> K
     }
 
     function updateTempPresets() {
-        const presetsContainer = document.getElementById('tempPresets');
-        let presets;
+        const presetsContainer = $('tempPresets');
+        if (!presetsContainer) return;
 
-        if (currentTempUnit === 'F') {
-            presets = [
+        const presets = (currentTempUnit === 'F')
+            ? [
                 { value: 150, label: '150°F' },
                 { value: 170, label: '170°F' },
                 { value: 200, label: '200°F' },
                 { value: 240, label: '240°F' }
-            ];
-        } else {
-            presets = [
+            ]
+            : [
                 { value: 65, label: '65°C' },
                 { value: 77, label: '77°C' },
                 { value: 93, label: '93°C' },
                 { value: 116, label: '116°C' }
             ];
-        }
 
-        presetsContainer.innerHTML = presets.map(preset =>
-            `<button class="preset-btn" onclick="setTemperature(${preset.value})">${preset.label}</button>`
-        ).join('');
+        presetsContainer.innerHTML = presets
+            .map(p => `<button class="preset-btn" onclick="setTemperature(${p.value})">${p.label}</button>`)
+            .join('');
     }
 
-    function convertToKelvin(temp, unit) {
-        if (unit === 'F') {
-            return (temp - 32) * 5/9 + 273.15;
-        } else {
-            return temp + 273.15;
+    /* Fix: the old setTempUnit converted incorrectly because it checked .active AFTER toggling. */
+    function setTempUnit(unit) {
+        const nextUnit = (unit || 'F').toUpperCase();
+        const prevUnit = currentTempUnit;
+
+        if (nextUnit !== 'F' && nextUnit !== 'C') return;
+        if (nextUnit === prevUnit) return;
+
+        currentTempUnit = nextUnit;
+
+        // Update UI
+        const fBtn = $('fahrenheit');
+        const cBtn = $('celsius');
+        if (fBtn) fBtn.classList.toggle('active', nextUnit === 'F');
+        if (cBtn) cBtn.classList.toggle('active', nextUnit === 'C');
+
+        const unitLabel = $('tempUnit');
+        if (unitLabel) unitLabel.textContent = '°' + nextUnit;
+
+        // Convert existing numeric value in-place
+        const tempInput = $('inputTemperature');
+        if (tempInput && tempInput.value) {
+            const v = parseFloat(tempInput.value);
+            if (Number.isFinite(v)) {
+                let converted = v;
+                if (prevUnit === 'F' && nextUnit === 'C') converted = (v - 32) * 5/9;
+                if (prevUnit === 'C' && nextUnit === 'F') converted = v * 9/5 + 32;
+                tempInput.value = (Math.round(converted)).toString();
+            }
         }
+
+        updateTempPresets();
+        generateHeatmap();
     }
 
+    /* -----------------------------
+       Physics model
+       Pressure in a sealed vessel at process temperature includes:
+       1) Heated trapped air: P_air = P0 * (T_process / T_seal)
+          (n, V constant; ideal gas)
+       2) Generated CO2: P_CO2 = n_CO2 * R * T_process / V_headspace
+       Total absolute: P_abs = P_air + P_CO2
+       Gauge (above ambient at process): P_gauge = P_abs - P_ambient
+    ------------------------------ */
+    function computeModel({ weight_g, thca_pct, temp_value, temp_unit, headspace_floz }) {
+        const T_process_K = convertToKelvin(temp_value, temp_unit);
+
+        // Defaults or optional inputs (future-proof without breaking current UI)
+        const sealTemp = readNumber('sealTemperature', MODEL.sealTempF_default);
+        const sealTempUnit = readNumber('sealTempUnit', NaN); // ignore; kept for future
+        const T_seal_K = convertToKelvin(sealTemp, 'F');
+
+        const eff = Math.min(1, Math.max(0, readNumber('conversionEfficiency', MODEL.conversionEfficiency_default)));
+        const P0_psi = readNumber('ambientPressurePsi', MODEL.ambientPressurePsi_default);
+
+        // Mass & moles
+        const thca_g = weight_g * (thca_pct / 100);
+        const n_thca = thca_g / MW_THCA;
+
+        // 1:1 stoichiometry (THCa -> THC + CO2), scaled by efficiency
+        const n_co2 = n_thca * eff;
+        const co2_g = n_co2 * MW_CO2;
+
+        // Volume (treat input as HEADSPACE)
+        const V_m3 = headspace_floz * FLOZ_TO_M3;
+
+        // Pressure contributions (Pa)
+        // Heated trapped air (absolute) from seal -> process:
+        const P_air_psi = P0_psi * (T_process_K / T_seal_K);
+
+        // CO2 partial pressure using SI gas constant:
+        const P_co2_pa  = (n_co2 * R_SI * T_process_K) / V_m3;
+        const P_co2_psi = P_co2_pa * PSI_PER_PA;
+
+        // Total absolute at process
+        const P_abs_psi = P_air_psi + P_co2_psi;
+
+        // Gauge relative to ambient at process.
+        // If you want “gauge above room ambient”, replace P0_psi below with P0_psi.
+        const P_gauge_psi = P_abs_psi - P0_psi;
+
+        return {
+            T_process_K,
+            T_seal_K,
+            eff,
+            P0_psi,
+            thca_g,
+            n_thca,
+            n_co2,
+            co2_g,
+            headspace_floz,
+            P_air_psi,
+            P_co2_psi,
+            P_abs_psi,
+            P_gauge_psi
+        };
+    }
+
+    /* -----------------------------
+       Main calculation (drop-in)
+    ------------------------------ */
     function calculatePressure() {
-        const weight = parseFloat(document.getElementById('inputWeight').value) || 0;
-        const thcaConc = parseFloat(document.getElementById('thcaConc').value) || 0;
-        const temp = parseFloat(document.getElementById('inputTemperature').value) || 0;
-        const volumeFLoz = parseFloat(document.getElementById('customVesselVolume').value) || 0;
+        const weight = readNumber('inputWeight', 0);
+        const thcaConc = readNumber('thcaConc', 0);
+        const temp = readNumber('inputTemperature', 0);
+        const volumeFLoz = readNumber('customVesselVolume', 0);
 
-        if (weight <= 0 || thcaConc <= 0 || temp <= 0 || volumeFLoz <= 0) {
-            document.getElementById('resultsSection').style.display = 'none';
+        if (!(weight > 0 && thcaConc > 0 && temp > 0 && volumeFLoz > 0)) {
+            const rs = $('resultsSection');
+            if (rs) rs.style.display = 'none';
             return;
         }
 
-        // Calculate moles of THCa
-        const thcaWeight = weight * (thcaConc / 100);
-        const molesThca = thcaWeight / THCA_MW;
+        const out = computeModel({
+            weight_g: weight,
+            thca_pct: thcaConc,
+            temp_value: temp,
+            temp_unit: currentTempUnit,
+            headspace_floz: volumeFLoz
+        });
 
-        // 1:1 stoichiometry - moles CO2 = moles THCa
-        const molesCO2 = molesThca;
-        const co2Weight = molesCO2 * CO2_MW;
+        // Update display (Gauge is what matters for vessel stress in typical use)
+        updateResultsDisplay(out, temp);
 
-        // Convert volume to liters (1 fl oz = 0.0295735 L)
-        const volumeL = volumeFLoz * 0.0295735;
-
-        // Convert temperature to Kelvin
-        const tempK = convertToKelvin(temp, currentTempUnit);
-
-        // Calculate pressure using ideal gas law
-        const pressureAtm = (molesCO2 * R * tempK) / volumeL;
-        const pressurePSI = pressureAtm * ATM_TO_PSI;
-
-        // Update display
-        updateResultsDisplay(pressurePSI, co2Weight, thcaWeight, temp);
-
-        // Show results
-        document.getElementById('resultsSection').style.display = 'block';
+        const rs = $('resultsSection');
+        if (rs) rs.style.display = 'block';
     }
 
-    function updateResultsDisplay(pressurePSI, co2Weight, thcaWeight, temp) {
-        // Update stats
-        document.getElementById('maxPressure').innerHTML = `${pressurePSI.toFixed(1)}<span class="stat-unit">PSI</span>`;
-        document.getElementById('co2Generated').innerHTML = `${co2Weight.toFixed(2)}<span class="stat-unit">g</span>`;
-        document.getElementById('thcaAmount').innerHTML = `${thcaWeight.toFixed(2)}<span class="stat-unit">g</span>`;
-        document.getElementById('tempDisplay').innerHTML = `${temp}<span class="stat-unit">°${currentTempUnit}</span>`;
+    function updateResultsDisplay(out, tempDisplayValue) {
+        const {
+            P_gauge_psi, P_abs_psi, P_co2_psi, P_air_psi,
+            co2_g, thca_g, eff, P0_psi
+        } = out;
 
-        // Update pressure status
-        const maxPressureCard = document.getElementById('maxPressureCard');
-        const pressureIcon = document.getElementById('pressureIcon');
-        const warningAlert = document.getElementById('pressureWarning');
-        const dangerAlert = document.getElementById('pressureDanger');
+        // Existing UI fields
+        if ($('maxPressure')) {
+            $('maxPressure').innerHTML =
+                `${P_gauge_psi.toFixed(1)}<span class="badge-shadcn">PSI (gauge)</span>` +
+                `<div class="small opacity-50 mt-1">${P_abs_psi.toFixed(1)} <span class="badge-shadcn">PSI (abs)</span></div>`;
+        }
 
-        // Remove existing classes
-        maxPressureCard.classList.remove('safe', 'warning', 'danger');
-        pressureIcon.classList.remove('safe', 'warning', 'danger');
+        if ($('co2Generated')) $('co2Generated').innerHTML = `${co2_g.toFixed(2)}<span class="stat-unit">g</span>`;
+        if ($('thcaAmount')) $('thcaAmount').innerHTML = `${thca_g.toFixed(2)}<span class="stat-unit">g</span>`;
+        if ($('tempDisplay')) $('tempDisplay').innerHTML = `${tempDisplayValue}<span class="stat-unit">°${currentTempUnit}</span>`;
 
-        // Hide alerts
-        warningAlert.style.display = 'none';
-        dangerAlert.style.display = 'none';
+        // Optional extra context if you later add placeholders (won’t break if missing)
+        if ($('pressureBreakdown')) {
+            $('pressureBreakdown').innerHTML =
+                `Air@T: ${P_air_psi.toFixed(1)} psi abs, CO₂: ${P_co2_psi.toFixed(1)} psi, Ambient: ${P0_psi.toFixed(2)} psi, Eff: ${(eff*100).toFixed(0)}%`;
+        }
 
-        if (pressurePSI <= 15) {
-            maxPressureCard.classList.add('safe');
-            pressureIcon.classList.add('safe');
-        } else if (pressurePSI <= 30) {
-            maxPressureCard.classList.add('warning');
-            pressureIcon.classList.add('warning');
-            warningAlert.style.display = 'block';
+        // Status styling uses GAUGE pressure
+        const maxPressureCard = $('maxPressureCard');
+        const pressureIcon = $('pressureIcon');
+        const warningAlert = $('pressureWarning');
+        const dangerAlert = $('pressureDanger');
+
+        if (maxPressureCard) maxPressureCard.classList.remove('safe', 'warning', 'danger');
+        if (pressureIcon) pressureIcon.classList.remove('safe', 'warning', 'danger');
+        if (warningAlert) warningAlert.style.display = 'none';
+        if (dangerAlert) dangerAlert.style.display = 'none';
+
+        // Keep your thresholds, now interpreted as GAUGE PSI (more physically meaningful)
+        if (P_gauge_psi <= 15) {
+            maxPressureCard && maxPressureCard.classList.add('safe');
+            pressureIcon && pressureIcon.classList.add('safe');
+        } else if (P_gauge_psi <= 30) {
+            maxPressureCard && maxPressureCard.classList.add('warning');
+            pressureIcon && pressureIcon.classList.add('warning');
+            if (warningAlert) {
+                warningAlert.style.display = 'block';
+                // Optional: enrich existing alert text if it exists as a node
+                const msg = warningAlert.querySelector('.pressure-msg');
+                if (msg) msg.textContent = `Gauge ${P_gauge_psi.toFixed(1)} psi (Abs ${P_abs_psi.toFixed(1)}).`;
+            }
         } else {
-            maxPressureCard.classList.add('danger');
-            pressureIcon.classList.add('danger');
-            dangerAlert.style.display = 'block';
+            maxPressureCard && maxPressureCard.classList.add('danger');
+            pressureIcon && pressureIcon.classList.add('danger');
+            if (dangerAlert) {
+                dangerAlert.style.display = 'block';
+                const msg = dangerAlert.querySelector('.pressure-msg');
+                if (msg) msg.textContent = `Gauge ${P_gauge_psi.toFixed(1)} psi (Abs ${P_abs_psi.toFixed(1)}).`;
+            }
         }
     }
 
+    /* -----------------------------
+       Heatmap (same model, consistent)
+    ------------------------------ */
     function generateHeatmap() {
-        const weight = parseFloat(document.getElementById('inputWeight').value) || 0;
-        const thcaConc = parseFloat(document.getElementById('thcaConc').value) || 0;
-        const temp = parseFloat(document.getElementById('inputTemperature').value) || 0;
+        const weight = readNumber('inputWeight', 0);
+        const thcaConc = readNumber('thcaConc', 0);
+        const temp = readNumber('inputTemperature', 0);
 
-        if (weight <= 0 || thcaConc <= 0 || temp <= 0) {
-            Toast.fire({
-                icon: 'error',
-                title: 'Missing Parameters',
-                text: 'Please fill in all required fields'
-            });
+        if (!(weight > 0 && thcaConc > 0 && temp > 0)) {
+            Toast.fire({ icon: 'error', title: 'Missing Parameters', text: 'Please fill in all required fields' });
             return;
         }
 
         calculatePressure();
         createHeatmapTable();
 
-        Toast.fire({
-            icon: 'success',
-            title: 'Calculation Complete',
-            text: 'Pressure analysis updated'
-        });
+        Toast.fire({ icon: 'success', title: 'Calculation Complete', text: 'Pressure analysis updated' });
     }
 
     function createHeatmapTable() {
-        const weight = parseFloat(document.getElementById('inputWeight').value) || 0;
-        const thcaConc = parseFloat(document.getElementById('thcaConc').value) || 0;
+        const weight = readNumber('inputWeight', 0);
+        const thcaConc = readNumber('thcaConc', 0);
+        if (!(weight > 0 && thcaConc > 0)) return;
 
-        // Generate data for different vessel sizes and temperatures
-        const vesselSizes = [4, 8, 16, 32, 64]; // fl oz
-        const temperatures = currentTempUnit === 'F' ? [150, 170, 200, 240] : [65, 77, 93, 116];
+        const vesselSizes = [4, 8, 16, 32, 64]; // fl oz (HEADSPACE)
+        const temperatures = (currentTempUnit === 'F')
+            ? [150, 170, 200, 240]
+            : [65, 77, 93, 116];
 
-        const thcaWeight = weight * (thcaConc / 100);
-        const molesThca = thcaWeight / THCA_MW;
-        const molesCO2 = molesThca;
+        let html = '<table class="heatmap-table"><thead><tr><th>Headspace</th>';
+        temperatures.forEach(t => html += `<th>${t}°${currentTempUnit}</th>`);
+        html += '</tr></thead><tbody>';
 
-        // Build table HTML
-        let tableHTML = '<table class="heatmap-table"><thead><tr><th>Vessel Volume</th>';
-        temperatures.forEach(temp => {
-            tableHTML += `<th>${temp}°${currentTempUnit}</th>`;
-        });
-        tableHTML += '</tr></thead><tbody>';
+        vesselSizes.forEach(vol => {
+            html += `<tr><td>${vol} fl oz</td>`;
 
-        vesselSizes.forEach(volume => {
-            tableHTML += `<tr><td>${volume} fl oz</td>`;
-            temperatures.forEach(temp => {
-                const volumeL = volume * 0.0295735;
-                const tempK = convertToKelvin(temp, currentTempUnit);
-                const pressureAtm = (molesCO2 * R * tempK) / volumeL;
-                const pressurePSI = pressureAtm * ATM_TO_PSI;
+            temperatures.forEach(t => {
+                const out = computeModel({
+                    weight_g: weight,
+                    thca_pct: thcaConc,
+                    temp_value: t,
+                    temp_unit: currentTempUnit,
+                    headspace_floz: vol
+                });
 
-                let cellClass = 'heatmap-cell';
-                if (pressurePSI <= 15) {
-                    cellClass += ' safe';
-                } else if (pressurePSI <= 30) {
-                    cellClass += ' warning';
-                } else {
-                    cellClass += ' danger';
-                }
+                const psiG = out.P_gauge_psi;
+                const psiA = out.P_abs_psi;
 
-                tableHTML += `<td class="${cellClass}" title="${volume} fl oz @ ${temp}°${currentTempUnit}">${pressurePSI.toFixed(1)} PSI</td>`;
+                let cls = 'heatmap-cell';
+                if (psiG <= 15) cls += ' safe';
+                else if (psiG <= 30) cls += ' warning';
+                else cls += ' danger';
+
+                html += `
+        <td class="${cls}" title="
+Gauge: ${psiG.toFixed(2)} psi
+Absolute: ${psiA.toFixed(2)} psi">
+          <div class="psi-g"><span class="badge-shadcn" style="background: #23272f91 !important; border: none;">${psiG.toFixed(1)} PSI (gau)</span></div>
+          <div class="psi-a"><span class="badge-shadcn" style="background: #23272f91 !important; border: none;">${psiA.toFixed(0)}  PSI (abs)</span></div>
+        </td>`;
             });
-            tableHTML += '</tr>';
-        });
-        tableHTML += '</tbody></table>';
 
-        // Update the heatmap container
-        document.getElementById('heatmapChart').innerHTML = tableHTML;
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        $('heatmapChart').innerHTML = html;
     }
 
+
+    /* -----------------------------
+       FAQ toggle (unchanged)
+    ------------------------------ */
     function toggleFAQ(element) {
         const faqItem = element.parentElement;
         const isActive = faqItem.classList.contains('active');
 
-        // Close all FAQ items
-        document.querySelectorAll('.faq-item').forEach(item => {
-            item.classList.remove('active');
-        });
-
-        // Open clicked item if it wasn't active
-        if (!isActive) {
-            faqItem.classList.add('active');
-        }
+        document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+        if (!isActive) faqItem.classList.add('active');
     }
 
-    // Initialize KaTeX rendering
+    /* -----------------------------
+       KaTeX init + presets
+    ------------------------------ */
     document.addEventListener("DOMContentLoaded", function() {
         renderMathInElement(document.body, {
             delimiters: [
-                {left: "$$", right: "$$", display: true},
-                {left: "$", right: "$", display: false}
+                { left: "$$", right: "$$", display: true },
+                { left: "$",  right: "$",  display: false }
             ],
             throwOnError: false
         });
 
-        // Initialize temperature presets
         updateTempPresets();
     });
 </script>
+
 </body>
 </html>
