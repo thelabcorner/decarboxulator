@@ -423,16 +423,116 @@
             Weight Loss Analysis
         </div>
 
-        <div class="alert-warning">
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            <strong>Critical Requirements:</strong>
-            <ul class="mb-0 mt-2">
-                <li>Use a precise, calibrated scale (minimum 0.01g resolution)</li>
-                <li>Perform decarboxylation in a sealed vessel to prevent material loss</li>
-                <li>Cool vessel completely before final weighing</li>
-                <li>"Burp" sealed vessel after cooling to release trapped CO₂</li>
-                <li>Minimum 5g sample recommended for accurate results</li>
-            </ul>
+
+        <style>
+        /* ShadCN-inspired warning card */
+        .shad-warning {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            background: linear-gradient(180deg, rgba(255,193,7,0.03), rgba(255,193,7,0.01));
+            border: 1px solid rgba(255,193,7,0.12);
+            padding: 14px;
+            border-radius: 10px;
+            color: var(--text-primary);
+        }
+
+        .shad-warning .chip {
+            min-width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(255,193,7,0.15), rgba(255,193,7,0.25));
+            color: #f59e0b;
+            font-size: 1.15rem;
+            flex-shrink: 0;
+            border: 1px solid rgba(255,193,7,0.18);
+        }
+
+        .shad-warning .content {
+            flex: 1;
+            font-size: 0.95rem;
+            line-height: 1.45;
+        }
+
+        .shad-warning .title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .shad-warning ul {
+            margin: 6px 0 8px 1rem;
+            padding: 0;
+            color: var(--text-secondary);
+        }
+
+        .shad-warning .muted {
+            color: var(--text-secondary);
+            font-size: 0.86rem;
+            margin-bottom: 8px;
+        }
+
+        .shad-warning .cta {
+            display: inline-flex;
+            gap: 0.5rem;
+            align-items: center;
+            padding: 6px 10px;
+            background: transparent;
+            border: 1px solid rgba(255,193,7,0.12);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .shad-warning .cta:hover {
+            background: rgba(255,193,7,0.04);
+            border-color: rgba(255,193,7,0.22);
+        }
+
+        /* small helper for inline badge */
+        .shad-warning .badge {
+            display: inline-block;
+            padding: 3px 18px;
+            border-radius: 3px;
+            background: rgba(255, 193, 7, 0.08);
+            color: #f59e0b;
+            font-weight: 700;
+            font-size: 0.75rem;
+            margin-left: 6px;
+        }
+        </style>
+
+        <div class="shad-warning mb-3" role="note" aria-labelledby="criticalReqs">
+            <div class="chip" aria-hidden="true">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+
+            <div class="content">
+                <div id="criticalReqs" class="title">
+                    Critical Requirements
+                    <span class="badge">Important</span>
+                </div>
+
+                <ul>
+                    <li>Use a precise, calibrated scale (recommended: <strong>0.01g</strong> resolution or better).</li>
+                    <li>Decarboxylate in a sealed, pressure-rated vessel to avoid terpene escape.</li>
+                    <li>Allow the vessel to fully cool and then "burp" before final weighing.</li>
+                    <li>Use a sample size that meets the <strong>Recommended</strong> minimum from the Precision & Sample Guide below.</li>
+                </ul>
+
+                <button class="cta" type="button" onclick="document.getElementById('precisionGuide').scrollIntoView({behavior:'smooth'})">
+                    <i class="fas fa-arrow-down me-1" aria-hidden="true"></i>
+                    View Sample Guide
+                </button>
+            </div>
         </div>
 
         <div class="row g-3 mb-3">
@@ -517,64 +617,290 @@
         </div>
     </div>
 
-    <!-- Extract Type Guides -->
-    <div class="card-modern">
-        <div class="card-title">
-            <i class="fas fa-flask"></i>
-            Extract Type Guidelines
+    <!-- Precision & Guidelines Section -->
+    <div class="card-modern" id="precisionGuide">
+        <div class="card-title d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-scale-balanced"></i>
+                <span>Precision & Sample Guide</span>
+            </div>
+
+            <!-- Scale Selector Tabs (ShadCN style) -->
+            <div class="scale-tabs">
+                <button class="scale-tab" onclick="updatePrecisionTable(0.1)" id="tab-0.1">
+                    <span class="tab-label">Kitchen</span>
+                    <span class="tab-val">0.1g</span>
+                </button>
+                <button class="scale-tab active" onclick="updatePrecisionTable(0.01)" id="tab-0.01">
+                    <span class="tab-label">Pocket</span>
+                    <span class="tab-val">0.01g</span>
+                </button>
+                <button class="scale-tab" onclick="updatePrecisionTable(0.001)" id="tab-0.001">
+                    <span class="tab-label">Lab</span>
+                    <span class="tab-val">0.001g</span>
+                </button>
+            </div>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <i class="stat-icon fas fa-droplet"></i>
-                <div class="stat-label">Rosin</div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                    Typical: 60-85% THCa<br>
-                    Best results with 10g+
+        <div class="row g-4">
+            <!-- Guidelines Info -->
+            <div class="col-lg-4">
+                <div class="guide-panel">
+                    <h5 class="guide-header">
+                        <i class="fas fa-crosshairs me-2 text-primary"></i>
+                        Accuracy Zone
+                    </h5>
+                    <p class="guide-text">
+                        Your scale's resolution dictates the minimum sample size required to detect the CO₂ weight loss signal.
+                    </p>
+
+                    <div class="alert-box mb-3">
+                        <div class="alert-icon"><i class="fas fa-flask"></i></div>
+                        <div>
+                            <strong>Math Minimum:</strong> The smallest amount where weight loss is mathematically detectable ($\Delta m \ge 2r$).
+                        </div>
+                    </div>
+
+                    <div class="alert-box success">
+                        <div class="alert-icon"><i class="fas fa-check-circle"></i></div>
+                        <div>
+                            <strong>Recommended:</strong> A safe amount that buffers against moisture and terpene errors ($\Delta m \ge 10r$).
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="stat-card">
-                <i class="stat-icon fas fa-vial"></i>
-                <div class="stat-label">BHO/Shatter</div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                    Typical: 70-90% THCa<br>
-                    Ensure complete purge
-                </div>
-            </div>
-            <div class="stat-card">
-                <i class="stat-icon fas fa-cube"></i>
-                <div class="stat-label">THCa Isolate</div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                    Typical: 95-99% THCa<br>
-                    High precision required
-                </div>
-            </div>
-            <div class="stat-card">
-                <i class="stat-icon fas fa-mortar-pestle"></i>
-                <div class="stat-label">Hash/Kief</div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                    Typical: 40-70% THCa<br>
-                    Larger sample needed
-                </div>
-            </div>
-            <div class="stat-card">
-                <i class="stat-icon fas fa-leaf"></i>
-                <div class="stat-label">Flower</div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                    Typical: 15-30% THCa<br>
-                    Must be fully dried
-                </div>
-            </div>
-            <div class="stat-card">
-                <i class="stat-icon fas fa-fire"></i>
-                <div class="stat-label">Live Resin</div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                    Typical: 65-85% THCa<br>
-                    Account for terpenes
+
+            <!-- Dynamic Table -->
+            <div class="col-lg-8">
+                <div class="table-container">
+                    <table class="shad-table">
+                        <thead>
+                        <tr>
+                            <th>Extract Type</th>
+                            <th class="text-center">Avg. THCa</th>
+                            <th class="text-end">Math Min.</th>
+                            <th class="text-end">Recommended</th>
+                            <th class="text-center">Viability</th>
+                        </tr>
+                        </thead>
+                        <tbody id="precisionTableBody">
+                        <!-- JS Injected Rows -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+    <style>
+        /* Scale Selector Tabs */
+        .scale-tabs {
+            display: flex;
+            background: var(--bg-primary);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .scale-tab {
+            background: transparent;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.1;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .scale-tab:hover {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .scale-tab.active {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-label { font-size: 0.7rem; text-transform: uppercase; font-weight: 600; opacity: 0.7; }
+        .tab-val { font-size: 0.9rem; font-weight: 700; color: var(--accent-blue); }
+
+        /* Guide Panel */
+        .guide-panel {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1.25rem;
+            height: 100%;
+            border: 1px solid var(--border-color);
+        }
+
+        .guide-header { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary); }
+        .guide-text { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.5rem; }
+
+        .alert-box {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 193, 7, 0.05);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .alert-box.success {
+            background: rgba(40, 167, 69, 0.05);
+            border-color: rgba(40, 167, 69, 0.2);
+        }
+
+        .alert-icon { font-size: 1.1rem; display: flex; align-items: flex-start; margin-top: 2px; }
+
+        /* ShadCN Styled Table */
+        .table-container {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .shad-table { width: 100%; border-collapse: collapse; }
+
+        .shad-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+        }
+
+        .shad-table td {
+            padding: 14px 16px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .shad-table tr:last-child td { border-bottom: none; }
+        .shad-table tr:hover { background: rgba(255,255,255,0.02); }
+
+        /* Table Badges */
+        .badge-extract {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #555; }
+        .dot.rosin { background: #eab308; }
+        .dot.isolate { background: #fff; }
+        .dot.flower { background: #22c55e; }
+        .dot.hash { background: #d97706; }
+        .dot.bho { background: #f59e0b; }
+
+        .status-pill {
+            padding: 4px 8px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .status-ideal { background: rgba(40, 167, 69, 0.15); color: #4ade80; border: 1px solid rgba(40, 167, 69, 0.3); }
+        .status-ok { background: rgba(255, 193, 7, 0.15); color: #fcd34d; border: 1px solid rgba(255, 193, 7, 0.3); }
+        .status-hard { background: rgba(220, 53, 69, 0.15); color: #f87171; border: 1px solid rgba(220, 53, 69, 0.3); }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            .scale-tabs { width: 100%; justify-content: space-between; margin-top: 10px; }
+            .scale-tab { flex: 1; }
+            .table-container { overflow-x: auto; }
+        }
+    </style>
+    <script>
+        // Add this new section to your existing script
+
+        // Stoichiometry Constant: Mass Ratio of CO2 / THCa
+        const K_FACTOR = 0.12277;
+
+        // Extract Data
+        const extractTypes = [
+            { name: "THCa Isolate", percent: 0.98, type: "isolate", icon: "fas fa-cube" },
+            { name: "BHO / Shatter", percent: 0.80, type: "bho", icon: "fas fa-vial" },
+            { name: "Rosin / Live Resin", percent: 0.75, type: "rosin", icon: "fas fa-droplet" },
+            { name: "Bubble Hash", percent: 0.55, type: "hash", icon: "fas fa-mortar-pestle" },
+            { name: "Reclaim", percent: 0.33, type: "reclaim", icon: "fas fa-mortar-pestle" },
+            { name: "Flower / Trim", percent: 0.20, type: "flower", icon: "fas fa-cannabis" }
+        ];
+
+        function updatePrecisionTable(resolution) {
+            // Update active tab state
+            document.querySelectorAll('.scale-tab').forEach(btn => {
+                btn.classList.remove('active');
+                if(parseFloat(btn.id.split('-')[1]) === resolution) {
+                    btn.classList.add('active');
+                }
+            });
+
+            const tbody = document.getElementById('precisionTableBody');
+            tbody.innerHTML = '';
+
+            extractTypes.forEach(extract => {
+                // Math: Min Mass = (Factor * Resolution) / (k * percentage)
+                // Factor 2.0 = Absolute mathematical detection limit (2 steps on scale)
+                // Factor 10.0 = Practical safe limit (10 steps on scale) to account for error
+
+                const mathMin = (2.0 * resolution) / (K_FACTOR * extract.percent);
+                const recMin = (10.0 * resolution) / (K_FACTOR * extract.percent);
+
+                let statusHtml = '';
+                let rowClass = '';
+
+                // Determine Viability Status
+                if (recMin > 50) {
+                    statusHtml = `<span class="status-pill status-hard">Impractical</span>`;
+                    rowClass = 'opacity-50'; // Dim rows that require huge samples
+                } else if (recMin > 15) {
+                    statusHtml = `<span class="status-pill status-hard">Large Sample</span>`;
+                } else if (recMin > 1) {
+                    statusHtml = `<span class="status-pill status-ok">Good</span>`;
+                } else {
+                    statusHtml = `<span class="status-pill status-ideal">Excellent</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = rowClass;
+                tr.innerHTML = `
+            <td>
+                <div class="badge-extract">
+                    <span class="dot ${extract.type}"></span>
+                    ${extract.name}
+                </div>
+            </td>
+            <td class="text-center text-muted">${(extract.percent * 100).toFixed(0)}%</td>
+            <td class="text-end font-monospace text-secondary">${mathMin.toFixed(2)}g</td>
+            <td class="text-end font-monospace fw-bold text-light">${recMin.toFixed(2)}g</td>
+            <td class="text-center">${statusHtml}</td>
+        `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Initialize on load
+        document.addEventListener("DOMContentLoaded", function() {
+            updatePrecisionTable(0.01); // Default to 0.01g scale
+            // ... keep your existing MathJax init ...
+        });
+    </script>
 
     <!-- FAQ Section -->
     <div class="faq-section">
@@ -925,7 +1251,7 @@
     document.addEventListener("DOMContentLoaded", function() {
         renderMathInElement(document.body, {
             delimiters: [
-                {left: "$", right: "$", display: true},
+                {left: "$$", right: "$$", display: true},
                 {left: "$", right: "$", display: false}
             ],
             throwOnError: false
