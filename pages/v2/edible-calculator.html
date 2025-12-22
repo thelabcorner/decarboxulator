@@ -361,7 +361,7 @@
                     <i class="stat-icon fas fa-cannabis"></i>
                     <div class="stat-label">Total Active THC</div>
                     <div class="stat-value" id="totalTHC">0<span class="stat-unit">mg</span></div>
-                    <small class="text-muted d-block mt-1" style="font-size:0.75rem">Post-Decarb</small>
+                    <small class="opacity-50 d-block mt-1" style="font-size:0.75rem">Post-Decarb</small>
                 </div>
                 <div class="stat-card">
                     <i class="stat-icon fas fa-leaf"></i>
@@ -383,20 +383,11 @@
 
             <div class="card-title" style="font-size: 1rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
                 <i class="fas fa-utensils"></i>
-                Per Serving Analysis
+                Per-Serving Breakdown
             </div>
 
-            <div class="stats-grid">
-                <div class="stat-card" id="thcServingCard">
-                    <i class="stat-icon fas fa-cubes"></i>
-                    <div class="stat-label">THC Per Serving</div>
-                    <div class="stat-value" id="thcPerServing">0<span class="stat-unit">mg</span></div>
-                </div>
-                <div class="stat-card">
-                    <i class="stat-icon fas fa-shield-heart"></i>
-                    <div class="stat-label">CBD Per Serving</div>
-                    <div class="stat-value" id="cbdPerServing">0<span class="stat-unit">mg</span></div>
-                </div>
+            <div class="stats-grid" id="perServingGrid">
+                <!-- dynamically populated in JS based on formulation builder compounds -->
             </div>
 
             <div id="doseWarning" class="alert-shadcn-dark warning mt-3" style="display: none;">
@@ -731,23 +722,87 @@
         const thcPer = totalTHC / servings;
         const cbdPer = totalCBD / servings;
 
-        $('thcPerServing').innerHTML = `${thcPer.toFixed(1)}<span class="stat-unit">mg</span>`;
-        $('cbdPerServing').innerHTML = `${cbdPer.toFixed(1)}<span class="stat-unit">mg</span>`;
+        // Dynamically populate per-serving grid
+        const perServingGrid = $('perServingGrid');
+        const ICONS = { THCa: 'fa-flask', THC: 'fa-cannabis', CBD: 'fa-leaf', CBN: 'fa-vial', CBG: 'fa-capsules', Other: 'fa-square-full' };
 
-        // Warnings
-        const card = $('thcServingCard');
-        card.className = 'stat-card'; // reset
+        // Build cards: always include active THC if present (accounts for THCa conversion), then list other cannabinoids
+        const cards = [];
+
+        if (thcPer > 0) {
+            const directPer = (composition['THC'] || 0) / servings;
+
+            const directLine = directPer > 0
+                ? `<small class="opacity-50 d-block mt-1" style="font-size:0.75rem">Direct THC: ${directPer.toFixed(1)} mg/serving</small>`
+                : '';
+
+            cards.push(`
+                <div class="stat-card" id="perServing-THC" data-key="THC">
+                    <i class="stat-icon fas ${ICONS['THC']}"></i>
+                    <div class="stat-label">THC (active) per serving</div>
+                    <div class="stat-value">${thcPer.toFixed(1)}<span class="stat-unit">mg</span></div>
+                    ${directLine}
+                </div>
+            `);
+        }
+
+        // THCa (raw) card -- show if present
+        if ((composition['THCa'] || 0) > 0) {
+            const rawPer = (composition['THCa'] || 0) / servings;
+            const approxActive = ((composition['THCa'] || 0) * DECARB_RATE) / servings;
+            cards.push(`
+                <div class="stat-card" id="perServing-THCa" data-key="THCa">
+                    <i class="stat-icon fas ${ICONS['THCa']}"></i>
+                    <div class="stat-label">THCa (raw) per serving</div>
+                    <div class="stat-value">${rawPer.toFixed(1)}<span class="stat-unit">mg</span></div>
+                    <small class="opacity-50 d-block mt-1" style="font-size:0.75rem">≈ ${approxActive.toFixed(1)} mg THC (post-decarb)</small>
+                </div>
+            `);
+        }
+
+        // CBD / CBN combined info (use computed cbdPer which may include CBN contributions)
+        if (cbdPer > 0) {
+            cards.push(`
+                <div class="stat-card" id="perServing-CBD" data-key="CBD">
+                    <i class="stat-icon fas ${ICONS['CBD']}"></i>
+                    <div class="stat-label">CBD (and related) per serving</div>
+                    <div class="stat-value">${cbdPer.toFixed(1)}<span class="stat-unit">mg</span></div>
+                </div>
+            `);
+        }
+
+        // Add remaining specific cannabinoids if present (CBN, CBG, Other), showing raw per-serving values
+        ['CBN','CBG','Other'].forEach(key => {
+            const val = composition[key] || 0;
+            if (val > 0) {
+                const per = val / servings;
+                const icon = ICONS[key] || ICONS['Other'];
+                cards.push(`
+                    <div class="stat-card" id="perServing-${key}" data-key="${key}">
+                        <i class="stat-icon fas ${icon}"></i>
+                        <div class="stat-label">${key} per serving</div>
+                        <div class="stat-value">${per.toFixed(1)}<span class="stat-unit">mg</span></div>
+                    </div>
+                `);
+            }
+        });
+
+        perServingGrid.innerHTML = cards.join('');
+
+        // Warnings - apply to the combined active THC per serving card
+        const thcCard = $('perServing-THC');
+        if (thcCard) thcCard.className = 'stat-card';
         $('doseWarning').style.display = 'none';
         $('doseDanger').style.display = 'none';
 
         if(thcPer > 25) {
-            card.classList.add('danger');
+            if (thcCard) thcCard.classList.add('danger');
             $('doseDanger').style.display = 'flex';
         } else if(thcPer > 10) {
-            card.classList.add('warning');
+            if (thcCard) thcCard.classList.add('warning');
             $('doseWarning').style.display = 'flex';
         } else {
-            card.classList.add('safe');
+            if (thcCard) thcCard.classList.add('safe');
         }
 
         // Composition Bar
