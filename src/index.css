@@ -404,21 +404,17 @@ pre, code, kbd, output, input { font-family: var(--numeric-font); font-variant-n
   border-right: 1px solid var(--border); background: var(--rail);
   display: flex; flex-direction: column; align-items: center; padding: 8px 7px;
 }
-.activation-delta-mark { display: block; width: 32px; height: 32px; }
-:root {
-  --brand-mark-delta: var(--accent);
-  --brand-mark-molecule: #f5f7f6;
-}
+.dcxr-mark { display: inline-block; position: relative; flex-shrink: 0; width: 32px; height: 32px; }
+.dcxr-mark img { display: block; width: 100%; height: 100%; }
+.dcxr-mark-dark { display: none !important; }
+:root.dark .dcxr-mark-light { display: none !important; }
+:root.dark .dcxr-mark-dark { display: block !important; }
 .rail-brand {
-  flex: 0 0 36px; width: 36px; height: 36px; background: #18181b;
-  color: var(--brand-mark-molecule); border-radius: 7px; display: grid; place-items: center;
+  flex: 0 0 36px; width: 36px; height: 36px; background: transparent;
+  border-radius: 7px; display: grid; place-items: center;
   margin: 0 0 18px;
 }
-/* The brand lime needs a dark ground against light-mode navigation surfaces.
-   On the dark rail, the original transparent mark is restored. */
-.rail-brand:hover { background: #27272a; }
-:root.dark .rail-brand { background: transparent; }
-:root.dark .rail-brand:hover { background: var(--rail-hover); }
+.rail-brand:hover { background: var(--rail-hover); }
 .rail-routes, .rail-bottom { display: flex; flex-direction: column; gap: 5px; width: 100%; align-items: center; }
 .rail-bottom { margin-top: auto; padding-top: 8px; }
 .rail-route, .rail-control {

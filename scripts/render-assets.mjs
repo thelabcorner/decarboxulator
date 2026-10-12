@@ -3,17 +3,16 @@ import { getOgPages } from './og-registry.mjs';
 import { createElement as h } from 'react';
 import { Resvg } from '@resvg/resvg-js';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { generateBrandIcons } from './generate-brand-icons.mjs';
 
 const PAGES = getOgPages();
 const INTER_REGULAR = readFileSync(new URL('./fonts/Inter-Regular.ttf', import.meta.url));
 const INTER_BOLD = readFileSync(new URL('./fonts/Inter-Bold.ttf', import.meta.url));
 const W = 1200;
 const H = 630;
-// Same canonical vector used for the UI mark, browser icon and installed app.
-const BRAND_SVG = readFileSync(new URL('../public/brand/activation-delta.svg', import.meta.url), 'utf8');
+// Designer-supplied DCXR dark artwork for route-specific OG cards.
+const BRAND_SVG = readFileSync(new URL('../public/brand/SVG/dcxr-dark.svg', import.meta.url), 'utf8');
 const BRAND_DATA_URI = 'data:image/svg+xml;base64,' + Buffer.from(BRAND_SVG).toString('base64');
-const BRAND_INNER = BRAND_SVG.match(/<svg\b[^>]*>([\s\S]*?)<\/svg>/)?.[1];
-if (!BRAND_INNER) throw new Error('Invalid Activation Delta SVG source');
 
 const C = Object.freeze({
   base: '#111113', panel: '#171719', inset: '#202023',
@@ -170,27 +169,5 @@ for (const [index, page] of PAGES.entries()) {
   console.log('OG', path);
 }
 
-// Emit the favicon *from the source vector*, rather than relying on a stale
-// hand-edited copy. A separate full-bleed square protects maskable safe areas.
-function iconSvg(maskable = false) {
-  const size = maskable ? '.39' : '.56';
-  const inset = maskable ? '12.5' : '4';
-  const background = maskable
-    ? '<rect width="64" height="64" fill="#111113"/>'
-    : '<rect width="64" height="64" rx="13" fill="#111113"/>';
-  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
-    background + '<g transform="translate(' + inset + ' ' + inset +
-    ') scale(' + size + ')">' + BRAND_INNER + '</g></svg>';
-}
-const favicon = iconSvg();
-const maskableIcon = iconSvg(true);
-writeFileSync(new URL('../public/favicon.svg', import.meta.url), favicon);
-writeFileSync(new URL('../public/icon-maskable.svg', import.meta.url), maskableIcon);
-for (const size of [180, 192, 512]) {
-  const png = new Resvg(favicon, {fitTo: {mode: 'width', value: size}}).render().asPng();
-  const filename = size === 180 ? 'apple-touch-icon.png' : 'icon-' + size + '.png';
-  writeFileSync(new URL('../public/' + filename, import.meta.url), png);
-}
-writeFileSync(new URL('../public/icon-maskable-512.png', import.meta.url),
-  new Resvg(maskableIcon, {fitTo: {mode: 'width', value: 512}}).render().asPng());
-console.log('Satori: generated ' + PAGES.length + ' discovered route OG images and Activation Delta app icons.');
+generateBrandIcons();
+console.log('Satori: generated ' + PAGES.length + ' discovered route OG images and DCXR v4 app icons.');

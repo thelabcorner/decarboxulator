@@ -8,7 +8,7 @@ import { APP_MAJOR_VERSION, CREATOR_NAME, CREATOR_URL, FAQ_PATH, GUIDE_PATH, NAV
 const ToolSearch = lazy(() => import('./ToolSearch').then(module => ({default:module.ToolSearch})));
 const HistoryDrawer = lazy(() => import('./HistoryDrawer').then(module => ({default:module.HistoryDrawer})));
 import { SavedLibraryContext } from '../lib/SavedLibraryContext';
-import { ActivationDeltaMark } from './ActivationDeltaMark';
+import { DcxrMark } from './DcxrMark';
 import { ScrollView } from './ScrollView';
 import { InstallAppDialog } from './InstallAppDialog';
 import { VersionBadge } from './VersionBadge';
@@ -212,7 +212,7 @@ export function StudioLayout() {
       <aside className="studio-sidebar" id="studio-navigation" aria-label="Workspace navigation">
         <div className="studio-rail">
           <Link to="/" onClick={closeMobile} className="rail-brand" aria-label="Decarboxulator overview" title="Decarboxulator">
-             <ActivationDeltaMark className="activation-delta-mark"/>
+             <DcxrMark/>
           </Link>
           <nav className="rail-routes" aria-label="Primary sections">
             <SidebarLink item={OVERVIEW} current={pathname} onNavigate={closeMobile} compact/>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Check, Copy, Download, Ellipsis, ExternalLink, MonitorDown, Plus, Share2, Smartphone, X } from 'lucide-react';
-import { ActivationDeltaMark } from './ActivationDeltaMark';
+import { DcxrMark } from './DcxrMark';
 import { useDialogFocus } from '../lib/useDialogFocus';
 import { ScrollView } from './ScrollView';
 import './InstallAppDialog.css';
@@ -93,7 +93,7 @@ export function InstallAppDialog({ open, onClose }: { open: boolean; onClose: ()
     <button type="button" className="tool-search-backdrop" aria-label="Close install guide" onClick={onClose}/>
     <section ref={ref} className="install-dialog" role="dialog" aria-modal="true" aria-labelledby="install-heading">
       <div className="install-header">
-        <span className="install-mark"><ActivationDeltaMark className="activation-delta-mark"/></span>
+        <span className="install-mark"><DcxrMark/></span>
         <span className="install-header-copy"><span className="install-eyebrow">DECARBOXULATOR / V4</span>
           <strong id="install-heading">{installed ? 'Already installed' : 'Install the app'}</strong></span>
         <button type="button" className="install-icon-button" aria-label="Close install guide" data-dialog-initial onClick={onClose}><X size={16}/></button>

@@ -8,7 +8,7 @@
 }
 .install-header { flex: 0 0 auto; display: flex; align-items: center; gap: 11px; padding: 13px 14px; border-bottom: 1px solid var(--border); }
 .install-mark { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; background: #18181b; border-radius: 7px; }
-.install-mark .activation-delta-mark { width: 31px; height: 31px; }
+.install-mark .dcxr-mark { width: 31px; height: 31px; }
 .install-header-copy { display: grid; gap: 4px; flex: 1; min-width: 0; }
 .install-header-copy strong { font-size: 15px; font-weight: 705; letter-spacing: -.38px; color: var(--strong); }
 .install-eyebrow { font-size: 9px; font-weight: 660; color: var(--muted); letter-spacing: .5px; }

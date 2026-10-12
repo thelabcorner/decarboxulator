@@ -40,12 +40,8 @@ a:focus-visible{outline:3px solid #6a9b13;outline-offset:3px}
 @media(max-width:420px){body{padding:14px}.topbar{padding:12px 18px}.content{padding:27px 20px 23px}.footer{padding:14px 20px}h1{letter-spacing:-.7px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 </style>`;
-// Exact Activation Delta brand geometry from src/components/ActivationDeltaMark.tsx.
-const icon='<svg viewBox="0 0 100 100" fill="none" aria-hidden="true" focusable="false">'+
-  '<path d="M43 17 13 75h61L43 17Z" stroke="#aaff00" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>'+
-  '<path d="M43 58h17" stroke="#aaff00" stroke-width="8" stroke-linecap="round"/>'+
-  '<path d="m67 36 14-15m0 0 8-8m-8 8-6-8" stroke="#f5f7f6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>'+
-  '<circle cx="81" cy="21" r="4.5" fill="#f5f7f6"/><circle cx="90" cy="12" r="5.5" fill="#f5f7f6"/><circle cx="74" cy="12" r="3.5" fill="#f5f7f6"/></svg>';
+// Exact designer-authored dark mark on the static migration fallback.
+const icon=readFileSync(new URL('../public/brand/SVG/dcxr-dark.svg',import.meta.url),'utf8').replace(/^<\?xml[^>]*\?>\s*/, '');
 const arrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>';
 const info='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>';
 const toolNames={

@@ -13,9 +13,11 @@ export const Route = createRootRoute({
        { name: 'theme-color', content: '#aaff00' },
     ],
     links: [
-       { rel:'icon', type:'image/svg+xml', href: `${import.meta.env.BASE_URL}favicon.svg?v=activation-delta-3` },
-       { rel:'apple-touch-icon', sizes:'180x180', href: `${import.meta.env.BASE_URL}apple-touch-icon.png?v=activation-delta-3` },
-       { rel:'manifest', href: `${import.meta.env.BASE_URL}site.webmanifest?v=lime-chrome-1` },
+       { rel:'icon', href: `${import.meta.env.BASE_URL}favicon.ico?v=dcxr-v4-1`, sizes: 'any' },
+       { rel:'icon', type:'image/svg+xml', media:'(prefers-color-scheme: light)', href: `${import.meta.env.BASE_URL}favicon-light.svg?v=dcxr-v4-1` },
+       { rel:'icon', type:'image/svg+xml', media:'(prefers-color-scheme: dark)', href: `${import.meta.env.BASE_URL}favicon-dark.svg?v=dcxr-v4-1` },
+       { rel:'apple-touch-icon', sizes:'180x180', href: `${import.meta.env.BASE_URL}apple-touch-icon.png?v=dcxr-v4-1` },
+       { rel:'manifest', href: `${import.meta.env.BASE_URL}site.webmanifest?v=dcxr-v4-1` }
     ],
   }),
   component: Root,
