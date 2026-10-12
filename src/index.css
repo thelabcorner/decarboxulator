@@ -706,3 +706,20 @@ pre, code, kbd, output, input { font-family: var(--numeric-font); font-variant-n
       Preserve compact surrounding controls without ever triggering focus zoom. */
    :is(input:not(.number-input input), select, textarea) { font-size: 16px; }
 }
+
+/* Mobile-first reading scale for search arrivals. The desktop workbench keeps
+   New York density; long scientific copy and directory names must remain
+   legible at a real handheld viewport instead of relying on forced zoom. */
+@media (max-width: 760px) {
+  .workbench-heading p { font-size: 13px; line-height: 1.52; }
+  .workbench-tool-name strong { font-size: 13px; }
+  .workbench-tool-name small { font-size: 12px; }
+  .workbench-methods, .workbench-attribution { font-size: 12px; line-height: 1.55; }
+  .workbench-section-heading p, .workbench-eyebrow { font-size: 12px; }
+  .calculator-app-copy > span, .calculator-app-stats dt,
+  .calculator-app-kpi-caption, .calculator-app-status { font-size: 12px; }
+  .calculator-app-breakdown, .calculator-app-return,
+  .calculator-app-kpi p, .calculator-app-tabs button { font-size: 12px; }
+  .calculator-studio .field-heading label,
+  .calculator-studio .selector-field > label { font-size: 12px; }
+}

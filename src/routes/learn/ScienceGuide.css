@@ -23,13 +23,13 @@
 .science-question{background:var(--panel-inset);}
 .science-question summary{display:flex;gap:0.75rem;align-items:center;padding:0.75rem 0.8rem;cursor:pointer;list-style:none;}
 .science-question summary::-webkit-details-marker{display:none;}
-.science-question-title{flex:1;min-width:0;font-size:0.84rem;line-height:1.36;font-weight:600;color:var(--ink);}
-.science-question-title small{display:block;margin-top:0.22rem;font-size:0.72rem;font-weight:400;color:var(--muted);}
+.science-question-title{flex:1;min-width:0;font-size:1rem;line-height:1.45;font-weight:600;color:var(--ink);}
+.science-question-title small{display:block;margin-top:0.22rem;font-size:0.92rem;font-weight:400;color:var(--muted);}
 .science-question-number{font-size:0.75rem;color:var(--muted);font-variant-numeric:tabular-nums;align-self:flex-start;}
 .science-question summary>svg{flex:0 0 auto;color:var(--muted);transition:transform .15s;}
 .science-question[open] summary>svg{transform:rotate(180deg);}
 .science-question[open] summary{background:var(--panel-inset);border-bottom:1px solid var(--border);}
-.science-question>p{margin:0;padding:0.85rem 0.85rem 1rem 2.8rem;line-height:1.57;font-size:0.84rem;color:var(--muted);}
+.science-question>p{margin:0;padding:0.85rem 0.85rem 1rem 2.8rem;line-height:1.64;font-size:1rem;color:var(--muted);}
 .science-links,.science-sources{display:grid;}
 .science-links a,.science-sources a{display:flex;align-items:center;justify-content:space-between;gap:0.6rem;text-decoration:none;color:var(--ink);font-size:0.81rem;padding:0.68rem 0.9rem;border-bottom:1px solid var(--border);}
 .science-links a:last-child,.science-sources a:last-child{border-bottom:0;}
