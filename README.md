@@ -136,3 +136,7 @@ The generated app manifest and `sw.js` support standalone mobile display and off
 The theoretical conversion factor is `MW_THC / MW_THCA = 314.46 / 358.47`. Its inverse is *mass equivalence*, not a chemically reversible process. Batch calculations assume complete conversion and zero changes other than THCa-derived CO₂. Gravimetric inversion cannot distinguish CO₂ from water, solvent or terpene losses and is not a validated assay. Per-serving formulation is an idealized homogeneous mixture estimate, not a direct potency measurement or clinical guidance.
 
 All these limitations are surfaced in the live UI and in static explanation content.
+
+## Hosting and custom-domain migration
+
+GitHub Actions publishes V4 from `main`. See [the GitHub Pages and Cloudflare domain runbook](docs/DEPLOYMENT.md) for the SEO-safe transition to `dcxr.thedabcorner.site` and the alias `decarboxulator.thedabcorner.site`.
