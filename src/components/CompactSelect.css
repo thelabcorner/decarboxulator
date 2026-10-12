@@ -1,0 +1,60 @@
+/* Shared Task-inspired menu visual grammar; portaled above nested studio ScrollViews. */
+.studio-compact-select { display: block; min-width: 0; width: 100%; }
+.studio-compact-trigger {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  width: 100%; min-width: 0; height: 34px; padding: 0 10px;
+  color: var(--ink); background: var(--panel-inset);
+  border: 1px solid var(--border); border-radius: 5px;
+  text-align: left; font-family: inherit; font-size: 12px; font-weight: 550;
+  transition: border-color 80ms ease, background 80ms ease;
+}
+.studio-compact-trigger:hover:not(:disabled) { background: var(--hover); }
+.studio-compact-trigger[data-open="true"] { border-color: var(--muted); background: var(--hover); }
+.studio-compact-trigger svg { color: var(--muted); flex: none; }
+.studio-compact-value { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.studio-compact-trigger:disabled { opacity: .5; }
+.studio-compact-menu {
+  position: fixed; z-index: 160;
+  display: flex; flex-direction: column; gap: 0;
+  overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain;
+  box-sizing: border-box; padding: 2px;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--panel); color: var(--ink);
+  box-shadow: 0 12px 32px rgb(0 0 0 / .2), 0 2px 7px rgb(0 0 0 / .1);
+  font: 450 12px/1.2 "Inter Variable", Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  -webkit-overflow-scrolling: touch;
+}
+.studio-compact-menu[data-positioned="false"] { visibility: hidden; pointer-events: none; }
+.studio-compact-item {
+  flex: none; display: flex; align-items: center; gap: 7px;
+  width: 100%; min-height: 23px; padding: 2px 7px 2px 8px;
+  border: 0; border-radius: 3px; outline: 0;
+  text-align: left; color: var(--ink); background: transparent;
+  font: inherit; cursor: default;
+}
+.studio-compact-item:hover, .studio-compact-item:focus-visible {
+  background: var(--hover); outline: 0; box-shadow: inset 0 0 0 1px var(--border-subtle);
+}
+.studio-compact-item[aria-checked="true"] { font-weight: 610; }
+.studio-compact-check {
+  width: 19px; min-width: 19px; height: 18px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--muted);
+}
+.studio-compact-item[aria-checked="true"] .studio-compact-check { color: var(--accent-ink); }
+.studio-compact-choice { min-width: 0; display: flex; flex-direction: column; gap: 3px; flex: 1; overflow-wrap: anywhere; }
+.studio-compact-choice small { font: 400 10px/1.35 "Inter Variable", Inter, system-ui, sans-serif; color: var(--muted); }
+.saved-library-filter-row .studio-compact-select { flex: 1 1 0; width: 0; min-width: 0; }
+.saved-library-filter-row .studio-compact-trigger { height: 30px; font-size: 10.5px; background: var(--panel); padding: 0 7px; }
+@media (max-width: 380px) {
+  .saved-library-filter-row .studio-compact-trigger { padding-inline: 5px; font-size: 10px; gap: 4px; }
+}
+@media (pointer: coarse) {
+  .studio-compact-item { min-height: 36px; padding-block: 7px; }
+  .studio-compact-menu { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio-compact-trigger { transition: none; }
+}

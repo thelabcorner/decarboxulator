@@ -1,0 +1,138 @@
+/* Supplemental styles for pressure, tracker, and cartridge calculators */
+
+
+/* panel-full spans both grid columns */
+@media (min-width: 800px) {
+  .calculator-grid .panel-full { grid-column: 1 / -1; }
+}
+
+/* Tracker progress bar */
+.tracker-progress-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--panel-inset);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.tracker-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--accent);
+  transition: width 0.4s ease;
+}
+
+/* Readings table */
+.readings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+.readings-table th, .readings-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.3rem 0.5rem;
+  text-align: right;
+}
+.readings-table th { text-align: left; opacity: 0.65; font-weight: 500; }
+.readings-table td:first-child { text-align: left; opacity: 0.55; }
+
+/* Compound row builder */
+.compound-rows-section { display: flex; flex-direction: column; gap: 0.5rem; }
+.compound-row-item { display: flex; align-items: flex-end; gap: 0.5rem; }
+.compound-type-select {
+  flex: 0 0 7rem;
+  height: 2.4rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--panel-inset);
+  color: var(--ink);
+  font-size: 0.85rem;
+}
+
+/* Composition bar */
+.composition-bar {
+  display: flex;
+  height: 1.2rem;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 0.75rem 0;
+  font-size: 0.72rem;
+  color: #fff;
+  font-weight: 600;
+}
+.comp-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: width 0.3s;
+}
+
+/* Per-cart row */
+.per-cart-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  padding: 0.15rem 0;
+}
+
+/* Action button variants */
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  background: var(--accent);
+  color: #17190d;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.action-button:disabled { opacity: 0.45; cursor: not-allowed; }
+.action-button:not(:disabled):hover { opacity: 0.85; }
+.action-button-secondary {
+  background: var(--panel-inset);
+  color: var(--ink);
+  border: 1px solid var(--border);
+}
+
+/* Dense V4 studio workbenches — the V3 builders rebuilt as controls, not article cards. */
+.studio-builder-title { display:flex;justify-content:space-between;gap:0.65rem;align-items:center; }
+.studio-builder-list { display:grid;gap:0.5rem; }
+.studio-builder-row { display:grid;gap:0.48rem;padding:0.7rem;border:1px solid var(--border);border-radius:7px;background:var(--panel-inset);min-width:0; }
+.studio-builder-row-heading { display:flex;justify-content:space-between;align-items:center;min-height:22px;gap:0.5rem; }
+.studio-builder-fields { display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0.55rem;align-items:start; }
+.studio-builder-fields > *, .studio-builder-row > * { min-width:0; }
+.studio-field-caption, .studio-builder-select-field label { display:block;font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:0.4rem; }
+.studio-legend, .tracker-chart-legend {display:flex;flex-wrap:wrap;gap:0.4rem 0.85rem;font-size:0.76rem;color:var(--muted);}
+.studio-legend span,.tracker-chart-legend span {display:inline-flex;align-items:center;gap:0.35rem;}
+.studio-legend i,.tracker-chart-legend i {display:inline-block;width:8px;height:8px;border-radius:2px;flex:0 0 auto;}
+.studio-fieldset {padding:0;margin:0;border:0;min-width:0;display:grid;gap:0.75rem;}
+.studio-fieldset:disabled {opacity:0.75;}
+.studio-check {display:inline-flex;align-items:center;gap:0.45rem;font-size:0.8rem;color:var(--ink);cursor:pointer;}
+.studio-check input {width:16px;height:16px;accent-color:var(--accent);}
+.tracker-toolbar {display:flex;align-items:flex-end;flex-wrap:wrap;gap:0.55rem;}
+.tracker-input-flex {flex:1 1 150px;min-width:0;}
+.tracker-chart-wrap {border:1px solid var(--border);border-radius:7px;padding:0.75rem 0.65rem 0.1rem;background:var(--panel-inset);min-width:0;}
+.tracker-chart {display:block;width:100%;height:auto;max-height:275px;color:var(--muted);font-family:Inter,system-ui,sans-serif;}
+.tracker-graph-tabs {display:flex;gap:0.35rem;flex-wrap:wrap;}
+.tracker-graph-tabs button {border:1px solid var(--border);background:var(--panel-inset);color:var(--muted);border-radius:5px;padding:0.4rem 0.6rem;font:inherit;font-size:0.79rem;cursor:pointer;}
+.tracker-graph-tabs button[aria-pressed="true"] {background:var(--accent);border-color:var(--accent);color:#17190d;font-weight:650;}
+.tracker-table-wrap.scroll-view { overflow:hidden; max-width:100%; }
+.tracker-table-wrap > .scroll-view__viewport { padding-bottom: 7px; }
+.tracker-table-wrap .readings-table {white-space:nowrap;min-width:580px;}
+.tracker-table-wrap .readings-table th {text-align:right;}
+.tracker-table-wrap .readings-table th:first-child {text-align:left;}
+@media(max-width:480px) {
+  .studio-builder-row {padding:0.58rem;}
+  .studio-builder-fields {gap:0.45rem;}
+  .tracker-chart-wrap {padding:0.4rem 0.1rem 0;}
+  .tracker-graph-tabs button {flex:1 1 auto;min-width:0;padding:0.43rem 0.3rem;}
+}
+

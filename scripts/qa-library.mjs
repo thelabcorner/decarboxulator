@@ -1,0 +1,21 @@
+import { chromium } from '@playwright/test';
+const width = Number(process.argv[2] || 375);
+const path = process.argv[3] || '/tools/batch-yield';
+const mode = process.argv[4] || 'list';
+const browser = await chromium.launch({channel:'chrome',headless:true});
+const page = await browser.newPage({viewport:{width,height:812},colorScheme:'dark',deviceScaleFactor:1});
+await page.goto('http://127.0.0.1:42061'+path,{waitUntil:'networkidle'});
+await page.getByRole('button',{name:'Save calculation'}).click();
+await page.locator('.workspace-toolbar').getByRole('button',{name:'Saved calculations'}).click();
+await page.locator('.saved-library-dialog').waitFor({state:'visible'});
+if(mode==='inspect') await page.locator('.saved-library-row-main').first().click();
+const report=await page.evaluate(()=>{
+ const dlg=document.querySelector('.saved-library-dialog');
+ const rail=document.querySelector('.studio-rail');
+ const info=(el)=>el ? {x:el.getBoundingClientRect().x,width:el.getBoundingClientRect().width}:null;
+ return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,dialog:info(dlg),rail:info(rail),rows:document.querySelectorAll('.saved-library-row').length};
+});
+console.log('STATUS:'+JSON.stringify(report));
+const buffer=await page.screenshot({type:'jpeg',quality:68});
+console.log('IMAGE:'+buffer.toString('base64'));
+await browser.close();

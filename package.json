@@ -1,0 +1,52 @@
+{
+  "name": "decarboxulator-v4",
+  "private": true,
+  "version": "4.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run assets:render && vite build && tsc -b && npm run seo:generate && npm run offline:generate && npm run seo:verify",
+    "build:pages": "node scripts/build-pages.mjs",
+    "build:cloudflare": "node scripts/build-cloudflare.mjs",
+    "deploy:cloudflare": "npm run build:cloudflare && wrangler pages deploy dist/client --project-name decarboxulator-v4 --branch main",
+    "assets:render": "node scripts/render-assets.mjs",
+    "seo:generate": "node scripts/generate-legacy-redirects.mjs && node scripts/generate-seo.mjs",
+    "offline:generate": "node scripts/generate-offline.mjs",
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "test:ui": "node scripts/run-ui-qa.mjs",
+    "test:webkit": "node scripts/qa-webkit-mobile.mjs",
+    "test:offline": "node scripts/qa-navigation-offline.mjs",
+    "test:tracker-ui": "node scripts/qa-tracker-backup.mjs",
+    "test:calculators": "node scripts/qa-calculator-studio.mjs",
+    "test:tracker-studio": "node scripts/qa-tracker-studio.mjs",
+    "test:tracker-kinetics": "node scripts/qa-tracker-kinetics.mjs",
+    "test:tracker": "node scripts/qa-tracker-sessions.mjs",
+    "test:pages": "npm run build:pages && node scripts/verify-pages.mjs",
+    "seo:verify": "node scripts/verify-seo.mjs && node scripts/verify-faq-parity.mjs",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "build:domain": "node scripts/build-domain.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@tanstack/react-router": "^1.170.42",
+    "@tanstack/react-start": "^1.168.61",
+    "lucide-react": "^1.55.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@resvg/resvg-js": "^2.6.2",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.1.0",
+    "oxlint": "^1.79.0",
+    "satori": "^0.47.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.3"
+  }
+}

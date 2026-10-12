@@ -1,0 +1,153 @@
+[
+  {
+    "path": "/",
+    "section": "WORKSPACE / OVERVIEW",
+    "title": [
+      "Decarboxulator",
+      "Calculator studio"
+    ],
+    "description": "Conversion, batch yields, mass-loss analysis, edible and cartridge formulas, gas pressure and tracking.",
+    "value": "08",
+    "valueLabel": "CALCULATOR ROUTES",
+    "input": "THCa + parameters",
+    "output": "Model-dependent results",
+    "detail": "THEORETICAL MODELS"
+  },
+  {
+    "path": "/tools/thca-to-thc",
+    "section": "STOICHIOMETRY / FORWARD",
+    "title": [
+      "THCa → THC",
+      "conversion"
+    ],
+    "description": "Theoretical THC output and CO₂ mass loss from an entered THCa starting mass.",
+    "value": "0.87723",
+    "valueLabel": "THC / THCA MASS RATIO",
+    "input": "10.000 g THCa",
+    "output": "8.772 g THC",
+    "detail": "THCA − CO₂ = THC"
+  },
+  {
+    "path": "/tools/thc-to-thca",
+    "section": "STOICHIOMETRY / REVERSE",
+    "title": [
+      "THC → THCa",
+      "planning"
+    ],
+    "description": "Starting THCa required for a target THC mass at complete conversion. Inverse calculation only.",
+    "value": "1.13996",
+    "valueLabel": "THCA / THC MASS RATIO",
+    "input": "10.000 g target THC",
+    "output": "11.400 g starting THCa",
+    "detail": "INVERSE MASS EQUIVALENCE"
+  },
+  {
+    "path": "/tools/batch-yield",
+    "section": "PRODUCTION / MASS BALANCE",
+    "title": [
+      "Batch yield",
+      "calculator"
+    ],
+    "description": "Model idealized THC formation, CO₂ release, and final batch mass.",
+    "value": "87.723%",
+    "valueLabel": "THCA MASS RETAINED AS THC",
+    "input": "Batch mass + THCa %",
+    "output": "THC + final batch mass",
+    "detail": "STOICHIOMETRIC YIELD"
+  },
+  {
+    "path": "/tools/thca-percentage",
+    "section": "ANALYTICAL / GRAVIMETRY",
+    "title": [
+      "THCa content",
+      "analyzer"
+    ],
+    "description": "Estimate starting THCa from the initial and final weight. Assumes CO₂ is the only mass lost.",
+    "value": "12.277%",
+    "valueLabel": "THEORETICAL CO₂ MASS LOSS",
+    "input": "Initial / final mass",
+    "output": "Estimated THCa fraction",
+    "detail": "NOT A POTENCY ASSAY"
+  },
+  {
+    "path": "/tools/edible-dosage",
+    "section": "FORMULATION / SERVINGS",
+    "title": [
+      "Edible dosage",
+      "calculator"
+    ],
+    "description": "Calculate potential THC per serving from ingredient weights, potency and recovery.",
+    "value": "mg",
+    "valueLabel": "THC PER SERVING",
+    "input": "Ingredient + potency",
+    "output": "Potential mg / serving",
+    "detail": "ASSUMES UNIFORM MIXING"
+  },
+  {
+    "path": "/tools/max-pressure",
+    "section": "PHYSICAL MODEL / HEADSPACE",
+    "title": [
+      "Vessel pressure",
+      "model"
+    ],
+    "description": "Fixed-headspace ideal-gas calculation for decarboxylation-generated CO₂.",
+    "value": "nRT/V",
+    "valueLabel": "IDEAL-GAS PRESSURE TERM",
+    "input": "Mass + °F + volume",
+    "output": "Modeled pressure",
+    "detail": "NOT A VESSEL SAFETY RATING"
+  },
+  {
+    "path": "/tools/decarb-tracker",
+    "section": "ANALYTICAL / TRACKER",
+    "title": [
+      "Decarb progress",
+      "tracker"
+    ],
+    "description": "Log mass readings and calculate apparent conversion from CO₂-only loss.",
+    "value": "Δm",
+    "valueLabel": "MEASURED MASS CHANGE",
+    "input": "Starting / current mass",
+    "output": "Apparent conversion %",
+    "detail": "ASSUMES CO₂-ONLY LOSS"
+  },
+  {
+    "path": "/tools/cartridge-formulation",
+    "section": "FORMULATION / CARTRIDGES",
+    "title": [
+      "Cartridge",
+      "formulation"
+    ],
+    "description": "Calculate ingredient masses for target cartridge fills or an available starting blend.",
+    "value": "∑m",
+    "valueLabel": "STARTING MASS BALANCE",
+    "input": "Target fill + ratios",
+    "output": "Ingredient starting mass",
+    "detail": "EXPLICIT ACID TREATMENT"
+  },
+  {
+    "path": "/faq",
+    "section": "Reference / Knowledge base",
+    "title": ["Decarboxylation", "questions & answers"],
+    "description": "Explore chemistry, mass balance, processing, analytical assumptions and model limitations.",
+    "value": "FAQ",
+    "valueLabel": "EVIDENCE-INFORMED REFERENCE",
+    "input": "Chemical & process questions",
+    "output": "Assumptions and answers",
+    "detail": "SCIENCE / REFERENCE"
+  },
+  {
+    "path": "/learn/decarboxylation-math",
+    "section": "REFERENCE / CHEMISTRY",
+    "title": [
+      "Decarboxylation",
+      "math"
+    ],
+    "description": "Stoichiometric derivations, reference molar masses, and model limitations.",
+    "value": "44.01",
+    "valueLabel": "CO₂ MOLAR MASS · g/mol",
+    "input": "THCa → THC + CO₂",
+    "output": "314.46 / 358.47",
+    "detail": "MOLECULAR MASS BASIS"
+  }
+]

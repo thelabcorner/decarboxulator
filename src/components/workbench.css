@@ -1,0 +1,344 @@
+/* Decarboxulator V4 / application-grade calculator workbenches.
+   Solid zinc surfaces, Inter everywhere, crisp borders, no gradients or glass. */
+
+.tool-heading {
+  margin: 0 0 15px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.tool-heading-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.tool-heading-primary { flex: 1; min-width: 0; }
+.tool-heading-context {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-height: 16px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 590;
+}
+.tool-heading-context-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 2px;
+  background: var(--accent-ink);
+}
+.tool-heading-ordinal {
+  border-left: 1px solid var(--border);
+  color: var(--subtle);
+  padding-left: 8px;
+  margin-left: 2px;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.tool-heading h1 {
+  font-size: clamp(18px, 1.7vw, 23px);
+  font-weight: 700;
+  letter-spacing: -.52px;
+  line-height: 1.2;
+  margin: 5px 0 3px;
+  color: var(--strong);
+}
+.tool-heading p {
+  max-width: 72ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+.tool-heading-reference {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 29px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0 9px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 580;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+.tool-heading-reference:hover {
+  background: var(--hover);
+  color: var(--strong);
+}
+.conversion-companion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -3px 0 11px;
+  padding: 6px 9px;
+  background: var(--panel-inset);
+  color: var(--muted);
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+  font-size: 10.5px;
+  min-width: 0;
+}
+.conversion-companion > span { min-width: 0; }
+.conversion-companion a {
+  margin-left: auto;
+  color: var(--accent-ink);
+  font-weight: 650;
+  padding: 3px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.conversion-companion a:hover { background: var(--selected); }
+@media (max-width: 480px) {
+  .conversion-companion { font-size: 10px; gap: 6px; }
+  .conversion-companion > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+.calculator-grid {
+  grid-template-columns: minmax(0, .97fr) minmax(0, 1.03fr);
+  align-items: start;
+  gap: 11px;
+}
+.calculator-grid > .studio-panel { min-width: 0; }
+.studio-panel {
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--panel);
+}
+.panel-heading {
+  min-height: 48px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+.panel-heading h2 {
+  font-size: 12px;
+  font-weight: 675;
+  letter-spacing: -.18px;
+  margin-bottom: 2px;
+}
+.panel-heading p {
+  font-size: 10px;
+  line-height: 1.3;
+  color: var(--muted);
+}
+.panel-content { padding: 12px 13px; }
+.input-stack { gap: 12px; }
+.field-heading { margin-bottom: 5px; }
+.field-heading label, .selector-field > label { font-size: 10.5px; font-weight: 635; }
+.selector-field > label { margin-bottom: 6px; }
+.number-input, .segmented-control { border-radius: 5px; }
+.number-input { background: var(--panel-inset); }
+.number-field-prominent .number-input { height: 50px; }
+.number-field-prominent .number-input input { font-size: 25px; letter-spacing: -.85px; }
+.number-input input, .metric dd, .primary-number, .formula, .formula-disclosure, .workbench-factor strong {
+  font-family: "Inter Variable", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.formula-box {
+  padding: 0;
+  gap: 0;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 2px;
+}
+.formula-box > .small-label { display: none; }
+.formula-box:has(.formula-disclosure:not([open])) > .fine-print { display: none; }
+.formula-disclosure { min-width: 0; }
+.formula-disclosure > summary {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  min-height: 34px;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 615;
+  list-style: none;
+  user-select: none;
+}
+.formula-disclosure > summary::-webkit-details-marker { display: none; }
+.formula-disclosure > summary:hover { color: var(--strong); }
+.formula-disclosure > summary > svg:last-child { margin-left: auto; transition: transform 130ms ease; }
+.formula-disclosure[open] > summary > svg:last-child { transform: rotate(180deg); }
+.formula-disclosure .formula {
+  border-top: 1px solid var(--border-subtle);
+  padding: 10px 0 7px;
+  font-size: 11px;
+  line-height: 1.65;
+}
+.formula-box > .fine-print { margin-bottom: 5px; }
+.primary-result {
+  border: 1px solid var(--border-subtle);
+  background: var(--panel-inset);
+  padding: 13px;
+  border-radius: 5px;
+}
+.primary-number { letter-spacing: -1.25px; }
+.metric-grid { gap: 0 14px; }
+.metric { padding-block: 10px; }
+.metric dt { font-size: 10px; }
+.metric dd { font-size: 15px; font-weight: 680; }
+.mass-balance {
+  margin-top: 11px;
+  padding: 10px 11px;
+  background: var(--panel);
+  border: 1px solid var(--border-subtle);
+}
+.mass-balance-track { height: 6px; }
+.notice { font-size: 10.5px; padding-top: 10px; margin-top: 8px; }
+
+/* Technical reference is available in-place, never masquerading as a blog article. */
+.workbench-reference {
+  display: block;
+  margin-top: 12px;
+  max-width: none;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.workbench-reference:target { border-color: var(--accent-ink); }
+.workbench-reference-trigger {
+  min-height: 48px;
+  padding: 9px 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.workbench-reference-trigger::-webkit-details-marker { display: none; }
+.workbench-reference-trigger:hover { background: var(--hover); }
+.workbench-reference-icon {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: var(--panel-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+  color: var(--muted);
+}
+.workbench-reference-title {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  font-size: 11.5px;
+  font-weight: 660;
+  color: var(--ink);
+}
+.workbench-reference-title small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 450;
+}
+.workbench-reference-chevron {
+  color: var(--muted);
+  transition: transform 130ms ease;
+}
+.workbench-reference[open] > summary .workbench-reference-chevron { transform: rotate(180deg); }
+.workbench-reference-body {
+  padding: 15px 17px;
+  border-top: 1px solid var(--border-subtle);
+}
+.workbench-reference-body h2, .workbench-reference-body h3 {
+  font-size: 12.5px;
+  margin: 0 0 8px;
+  font-weight: 670;
+  color: var(--strong);
+}
+.workbench-reference-body p {
+  margin: 0 0 10px;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 11.5px;
+  max-width: 95ch;
+}
+.workbench-reference-body p:last-child { margin-bottom: 0; }
+.tool-faq { margin-top: 7px; margin-bottom: 16px; }
+.tool-faq-list { border: 0; border-top: 1px solid var(--border-subtle); border-radius: 0; }
+.tool-faq-item { padding: 0; }
+.tool-faq-item + .tool-faq-item { border-top: 1px solid var(--border-subtle); }
+.tool-faq-item > summary {
+  list-style: none;
+  cursor: pointer;
+  min-height: 41px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 575;
+  line-height: 1.4;
+}
+.tool-faq-item > summary::-webkit-details-marker { display: none; }
+.tool-faq-item > summary:hover { background: var(--hover); }
+.tool-faq-item > summary svg { margin-left: auto; color: var(--muted); }
+.tool-faq-item[open] > summary svg { transform: rotate(180deg); }
+.tool-faq-item p {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.65;
+  margin: 0;
+  padding: 0 17px 14px;
+}
+.tool-faq-guide {
+  min-height: 40px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.tool-faq-guide:hover { background: var(--hover); color: var(--strong); }
+.tool-faq-guide svg:last-child { margin-left: auto; }
+@media (min-width: 1100px) and (min-height: 720px) {
+  .calculator-grid > .studio-panel:nth-child(2) { position: sticky; top: 5px; }
+}
+@media (max-width: 760px) {
+  .tool-heading { margin-bottom: 11px; padding-bottom: 10px; }
+  .tool-heading-row { gap: 6px; }
+  .tool-heading h1 { font-size: clamp(17px, 4.8vw, 21px); line-height: 1.23; letter-spacing: -.46px; }
+  .tool-heading p { font-size: 10.5px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .tool-heading-reference { flex-shrink: 0; width: 29px; height: 29px; justify-content: center; padding: 0; }
+  .tool-heading-reference span { display: none; }
+  .calculator-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .studio-panel .panel-heading {
+    padding: 9px 10px;
+    min-height: 43px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+  .studio-panel .panel-heading-copy > p { display: none; }
+  .studio-panel .panel-heading h2 { font-size: 11.5px; }
+  .studio-panel .panel-content { padding: 11px; }
+  .studio-panel .workspace-actions { margin: 0; flex-wrap: nowrap; gap: 3px; }
+  .studio-panel .workspace-actions .text-button { width: 30px; min-width: 30px; height: 29px; min-height: 29px; padding: 0; justify-content: center; }
+  .studio-panel .workspace-actions .text-button span { display: none; }
+  .studio-panel .workspace-actions .text-button svg { width: 14px; height: 14px; }
+  .number-field-prominent .number-input { height: 49px; padding: 0 10px; }
+  .number-field-prominent .number-input input { font-size: 24px; }
+  .primary-result { padding: 11px; }
+  .primary-number { font-size: 30px; }
+  .workbench-reference { margin-top: 9px; }
+  .workbench-reference-trigger { min-height: 45px; padding: 8px 10px; }
+  .workbench-reference-body { padding: 12px; }
+}
+@media (max-width: 360px) {
+  .tool-heading-context { font-size: 9.5px; }
+  .workbench-reference-title small { font-size: 9.5px; }
+  .workbench-reference-trigger { gap: 7px; }
+}

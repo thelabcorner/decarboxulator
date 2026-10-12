@@ -1,0 +1,59 @@
+[
+  {
+    "legacy": "pages/v2/index.html",
+    "target": "/"
+  },
+  {
+    "legacy": "pages/v2/thca-thc-calculator.html",
+    "target": "/tools/thca-to-thc/",
+    "reverseHash": true
+  },
+  {
+    "legacy": "pages/v2/thca-content-analyzer.html",
+    "target": "/tools/thca-percentage/"
+  },
+  {
+    "legacy": "pages/v2/thca-decarb-tracker.html",
+    "target": "/tools/decarb-tracker/"
+  },
+  {
+    "legacy": "pages/v2/edible-calculator.html",
+    "target": "/tools/edible-dosage/"
+  },
+  {
+    "legacy": "pages/v2/max-pressure.html",
+    "target": "/tools/max-pressure/"
+  },
+  {
+    "legacy": "pages/v2/isolate-calculator.html",
+    "target": "/tools/cartridge-formulation/"
+  },
+  {
+    "legacy": "pages/v2/decarboxylation-faq.html",
+    "target": "/learn/decarboxylation-math/"
+  },
+  {
+    "legacy": "pages/dcx-yield.html",
+    "target": "/tools/batch-yield/"
+  },
+  {
+    "legacy": "pages/input-finder.html",
+    "target": "/tools/thc-to-thca/"
+  },
+  {
+    "legacy": "pages/rosin-thca-finder.html",
+    "target": "/tools/thca-percentage/"
+  },
+  {
+    "legacy": "pages/iso-calc.html",
+    "target": "/tools/cartridge-formulation/"
+  },
+  {
+    "legacy": "pages/max-pressure.html",
+    "target": "/tools/max-pressure/"
+  },
+  {
+    "legacy": "pages/progress-tracker.html",
+    "target": "/tools/decarb-tracker/"
+  }
+]

@@ -1,0 +1,39 @@
+.install-layer { align-items: flex-start; }
+.install-dialog {
+  position: relative; width: min(100%, 440px); max-height: 100%;
+  display: flex; flex-direction: column; min-height: 0;
+  overflow: hidden; background: var(--panel); color: var(--ink);
+  border: 1px solid var(--border); border-radius: 9px;
+  box-shadow: 0 16px 50px #09090b30;
+}
+.install-header { flex: 0 0 auto; display: flex; align-items: center; gap: 11px; padding: 13px 14px; border-bottom: 1px solid var(--border); }
+.install-mark { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; background: #18181b; border-radius: 7px; }
+.install-mark .activation-delta-mark { width: 31px; height: 31px; }
+.install-header-copy { display: grid; gap: 4px; flex: 1; min-width: 0; }
+.install-header-copy strong { font-size: 15px; font-weight: 705; letter-spacing: -.38px; color: var(--strong); }
+.install-eyebrow { font-size: 9px; font-weight: 660; color: var(--muted); letter-spacing: .5px; }
+.install-icon-button { display: grid; place-items: center; width: 29px; height: 29px; border: 1px solid var(--border); background: var(--panel); border-radius: 5px; color: var(--muted); }
+.install-icon-button:hover { background: var(--hover); color: var(--strong); }
+.install-content.scroll-view { flex: 0 1 auto; min-height: 0; overflow: hidden; padding: 0; }
+.install-content > .scroll-view__viewport { padding: 14px; }
+.install-intro { display: flex; align-items: flex-start; gap: 10px; padding-bottom: 14px; }
+.install-intro-icon { flex: 0 0 34px; height: 34px; display: grid; place-items: center; color: var(--accent-ink); background: var(--accent-wash); border: 1px solid var(--border); border-radius: 6px; }
+.install-intro p { margin: 0; color: var(--ink); font-size: 11.5px; line-height: 1.6; padding-top: 1px; }
+.install-security-note { border: 1px solid var(--warning-border); background: var(--warning-bg); color: var(--warning-ink); border-radius: 5px; margin-bottom: 12px; padding: 10px 11px; font-size: 10.5px; line-height: 1.55; }
+.install-steps { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.install-step { display: flex; align-items: center; min-height: 48px; gap: 10px; padding: 10px 11px; font-size: 11px; line-height: 1.5; color: var(--ink); }
+.install-step + .install-step { border-top: 1px solid var(--border-subtle); }
+.install-step-number { color: var(--subtle); font-size: 9px; font-weight: 650; font-variant-numeric: tabular-nums; flex: 0 0 16px; }
+.install-step-icon { color: var(--accent-ink); display: inline-flex; flex: 0 0 17px; }
+.install-copy { margin-top: 12px; min-height: 31px; padding: 0 10px; display: inline-flex; align-items: center; gap: 7px; background: var(--panel); border: 1px solid var(--border); border-radius: 5px; color: var(--strong); font-size: 11px; font-weight: 600; }
+.install-copy:hover { background: var(--hover); }
+.install-footer { flex: 0 0 auto; min-height: 54px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 9px; background: var(--sidebar); border-top: 1px solid var(--border); color: var(--muted); font-size: 10px; }
+.install-primary,.install-secondary { min-height: 31px; padding: 0 12px; display: inline-flex; justify-content: center; align-items: center; gap: 6px; border-radius: 5px; font-size: 11px; font-weight: 640; }
+.install-primary { background: var(--accent); color: #18181b; border: 1px solid var(--accent); }
+.install-secondary { background: var(--panel); color: var(--strong); border: 1px solid var(--border); }
+.install-secondary:hover { background: var(--hover); }
+@media (max-width: 760px) {
+  .install-dialog { width: 100%; }
+  .install-header { padding: 12px; }
+  .install-content > .scroll-view__viewport { padding: 12px; }
+}
