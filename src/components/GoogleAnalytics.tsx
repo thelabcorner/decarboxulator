@@ -1,9 +1,9 @@
 import { useRouter } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { analyticsPageUrl, GA4_MEASUREMENT_ID, isAnalyticsHost } from '../lib/googleAnalytics';
+import { analyticsPageUrl, createGtag, GA4_MEASUREMENT_ID, isAnalyticsHost } from '../lib/googleAnalytics';
 
 type GoogleTag = (...args: unknown[]) => void;
-type AnalyticsWindow = Window & { dataLayer?: unknown[][]; gtag?: GoogleTag };
+type AnalyticsWindow = Window & { dataLayer?: unknown[]; gtag?: GoogleTag };
 
 let lastTrackedPage: string | undefined;
 
@@ -12,7 +12,7 @@ function ensureGoogleTag(): GoogleTag {
   if (target.gtag) return target.gtag;
 
   target.dataLayer ??= [];
-  target.gtag = (...args: unknown[]) => { target.dataLayer!.push(args); };
+  target.gtag = createGtag(target.dataLayer);
   target.gtag('js', new Date());
   // Route changes are tracked manually; never submit entire share-link URLs.
   target.gtag('config', GA4_MEASUREMENT_ID, {
