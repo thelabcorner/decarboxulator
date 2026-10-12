@@ -73,7 +73,15 @@ Both browser suites take an immutable snapshot of `dist/client` and start a temp
 | `scripts/generate-offline.mjs` | Generate a scoped, versioned offline cache for prerendered calculators and assets |
 | `scripts/qa-snapshot-server.mjs` | Isolate production browser QA from concurrent builds |
 
-The `Inter Variable` font is self-hosted through the package build. Theme settings are persisted in browser localStorage; no analytics or user accounts are required.
+The `Inter Variable` font is self-hosted through the package build. Theme settings are persisted in browser localStorage; no user accounts are required. Production visits are measured with the historical Decarboxulator GA4 stream (details below); calculator and tracker data remain on-device unless explicitly shared/exported.
+
+## Google Analytics continuity
+
+V4 deliberately reuses V3's existing Google Analytics 4 measurement ID, `G-LK9VC1VS8P`, so the property retains its historical reporting continuity. `src/components/GoogleAnalytics.tsx` initializes the Google tag **only on production hosts** (`thelabcorner.github.io`, `dcxr.thedabcorner.site`, `decarboxulator.thedabcorner.site`), never during local development. The TanStack Router `onRendered` event records the first page and actual route transitions, with a duplicate guard for React remounts and query-only changes.
+
+To prevent calculator share-link data from being sent as page URLs, the app explicitly sends **pathname-only** `page_location` and `page_referrer` values. No calculation inputs, tracker samples, or saved sessions are included in the application's GA4 event payload. `send_page_view: false` disables the automatic page view from the Google tag's `config` call.
+
+**Required GA4 property configuration:** Google Analytics → Admin → Data Streams → the Decarboxulator Web stream → Enhanced measurement → Page views → Advanced settings → **turn OFF “Page changes based on browser history events.”** Google documents that this setting independently emits history-based page views *even when* `send_page_view: false` is configured. Leaving it enabled can cause duplicate page views and may send full share-link query strings via Google's automatic events. The site code cannot reliably override that property-level setting. Other Enhanced Measurement options can remain enabled according to your privacy policy. Verify the resulting single `page_view` per route transition in GA4 DebugView or the browser's network inspector. The site needs no new Analytics property, API secret or repository secret.
 
 ## Progress tracker laboratory sessions
 

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link, createRootRoute, HeadContent, Scripts } from '@tanstack/react-router';
 import { StudioLayout } from '../components/StudioLayout';
+import { GoogleAnalytics } from '../components/GoogleAnalytics';
 import '../index.css';
 import '../components/workbench.css';
 
@@ -30,5 +31,5 @@ function Root() {
 }
 
 function RootDocument({children}: {children:ReactNode}) {
-  return <html lang="en"><head><HeadContent/></head><body>{children}<Scripts/></body></html>;
+  return <html lang="en"><head><HeadContent/></head><body>{children}<GoogleAnalytics/><Scripts/></body></html>;
 }
