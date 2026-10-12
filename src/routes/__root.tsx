@@ -16,7 +16,7 @@ export const Route = createRootRoute({
        { rel:'icon', href: `${import.meta.env.BASE_URL}favicon.ico?v=dcxr-v4-2`, sizes: 'any' },
        { rel:'icon', type:'image/svg+xml', href: `${import.meta.env.BASE_URL}favicon.svg?v=dcxr-v4-2` },
        { rel:'apple-touch-icon', sizes:'180x180', href: `${import.meta.env.BASE_URL}apple-touch-icon.png?v=dcxr-v4-1` },
-       { rel:'manifest', href: `${import.meta.env.BASE_URL}site.webmanifest?v=dcxr-v4-1` }
+       { rel:'manifest', href: `${import.meta.env.BASE_URL}site.webmanifest?v=dcxr-pwa-2` }
     ],
   }),
   component: Root,

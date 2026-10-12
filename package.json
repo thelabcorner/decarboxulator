@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:ui": "node scripts/run-ui-qa.mjs",
     "test:webkit": "node scripts/qa-webkit-mobile.mjs",
+    "test:pwa": "node scripts/qa-pwa-installation.mjs",
     "test:offline": "node scripts/qa-navigation-offline.mjs",
     "test:tracker-ui": "node scripts/qa-tracker-backup.mjs",
     "test:calculators": "node scripts/qa-calculator-studio.mjs",

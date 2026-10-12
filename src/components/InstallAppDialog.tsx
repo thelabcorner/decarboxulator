@@ -3,6 +3,7 @@ import { ArrowUpRight, Check, Copy, Download, Ellipsis, ExternalLink, MonitorDow
 import { DcxrMark } from './DcxrMark';
 import { useDialogFocus } from '../lib/useDialogFocus';
 import { ScrollView } from './ScrollView';
+import { isAppWindow, isOurAppWindow, verifyRelatedInstallation, type InstallationEvidence, LAUNCH_PARAM } from '../lib/pwaInstallation';
 import './InstallAppDialog.css';
 
 interface InstallPromptEvent extends Event {
@@ -18,34 +19,37 @@ function detectPlatform(): Platform {
   if (ios) return /CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo/i.test(ua) ? 'ios-other' : 'ios-safari';
   return /Android/i.test(ua) ? 'android' : 'desktop';
 }
-function isInstalled() {
-  return window.matchMedia('(display-mode: standalone)').matches ||
-    Boolean((navigator as Navigator & { standalone?: boolean }).standalone);
-}
 
 /** Always mounted to retain beforeinstallprompt, but visible only after an explicit rail click. */
 export function InstallAppDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const ref = useDialogFocus<HTMLElement>(open, onClose);
   const nativePrompt = useRef<InstallPromptEvent | null>(null);
   const [canPrompt, setCanPrompt] = useState(false);
-  const [installed, setInstalled] = useState(false);
-  const [secureOrigin, setSecureOrigin] = useState(true);
-  const [platform, setPlatform] = useState<Platform>('desktop');
+  const [evidence, setEvidence] = useState<InstallationEvidence>(() =>
+    typeof window !== 'undefined' && isOurAppWindow(window, navigator, import.meta.env.BASE_URL) ? 'current-app' : 'unknown');
+  const [appWindow] = useState(() => typeof window !== 'undefined' && isAppWindow(window, navigator));
+  const [secureOrigin] = useState(() => typeof window === 'undefined' || window.isSecureContext);
+  const [platform] = useState<Platform>(() => typeof navigator === 'undefined' ? 'desktop' : detectPlatform());
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    setPlatform(detectPlatform());
-    setInstalled(isInstalled());
-    setSecureOrigin(window.isSecureContext);
+    // Browsers that implement getInstalledRelatedApps report THIS manifest's ID,
+    // unlike display-mode, which can describe an unrelated PWA's host window.
+    let cancelled = false;
+    void verifyRelatedInstallation(navigator, import.meta.env.BASE_URL, location.origin)
+      .then(found => {
+        if (found && !cancelled) setEvidence(prev => prev === 'current-app' ? prev : 'device-installed');
+      });
     const onPrompt = (event: Event) => {
       event.preventDefault(); // Defer the native dialog until a deliberate click.
       nativePrompt.current = event as InstallPromptEvent;
       setCanPrompt(true);
     };
-    const onInstalled = () => { setInstalled(true); setCanPrompt(false); nativePrompt.current = null; };
+    const onInstalled = () => { setEvidence('device-installed'); setCanPrompt(false); nativePrompt.current = null; };
     window.addEventListener('beforeinstallprompt', onPrompt);
     window.addEventListener('appinstalled', onInstalled);
     return () => {
+      cancelled = true;
       window.removeEventListener('beforeinstallprompt', onPrompt);
       window.removeEventListener('appinstalled', onInstalled);
     };
@@ -64,14 +68,22 @@ export function InstallAppDialog({ open, onClose }: { open: boolean; onClose: ()
   }
   async function copyAddress() {
     try {
-      await navigator.clipboard.writeText(location.href);
+      const url = new URL(location.href);
+      url.searchParams.delete(LAUNCH_PARAM);
+      await navigator.clipboard.writeText(url.href);
       setCopied(true);
     } catch { setCopied(false); }
   }
 
   if (!open) return null;
+  const installed = evidence !== 'unknown';
   const isIOS = platform === 'ios-safari' || platform === 'ios-other';
-  const steps = installed ? [] : platform === 'embedded' ? [
+  const foreignAppWindow = appWindow && evidence !== 'current-app';
+  const steps = installed ? [] : foreignAppWindow ? [
+    { icon: <Copy size={15}/>, text: 'Copy the Decarboxulator link below.' },
+    { icon: <ExternalLink size={15}/>, text: isIOS ? 'Open Safari directly, then paste the link in its address bar.' : 'Open your system browser directly, then paste the link in its address bar.' },
+    { icon: <Plus size={15}/>, text: isIOS ? 'Use Share → Add to Home Screen, then confirm Add.' : 'Use the browser menu to install Decarboxulator.' },
+  ] : platform === 'embedded' ? [
     { icon: <Ellipsis size={15}/>, text: 'Open the browser menu in this app.' },
     { icon: <ExternalLink size={15}/>, text: 'Choose Open in Browser, Safari, or Chrome, then return here.' },
   ] : platform === 'ios-other' ? [
@@ -101,7 +113,9 @@ export function InstallAppDialog({ open, onClose }: { open: boolean; onClose: ()
       <ScrollView className="install-content" viewportLabel="Installation instructions">
          <div className="install-intro">
           <span className="install-intro-icon">{installed ? <Check size={19}/> : isIOS || platform === 'android' ? <Smartphone size={19}/> : <Download size={19}/>}</span>
-          <p>{installed ? 'Decarboxulator is already running as an installed app.' :
+          <p>{evidence === 'current-app' ? 'Decarboxulator is running in its own installed app window.' :
+            evidence === 'device-installed' ? 'Decarboxulator is installed on this device. Open it from its app icon.' :
+            foreignAppWindow ? 'This window may belong to another installed app. It does not mean Decarboxulator is installed. Open the link in your browser to install it.' :
             platform === 'embedded' ? 'Open Decarboxulator in your system browser before adding it to your device.' :
             'Keep the calculator studio one tap away in its own app window.'}</p>
         </div>
@@ -115,7 +129,7 @@ export function InstallAppDialog({ open, onClose }: { open: boolean; onClose: ()
          {!installed && !secureOrigin && <div className="install-security-note" role="note">
            This HTTP network address may not support full app installation. Open the HTTPS-hosted version of Decarboxulator for reliable PWA installation.
          </div>}
-        {!installed && (platform === 'ios-other' || platform === 'embedded') &&
+        {!installed && (foreignAppWindow || platform === 'ios-other' || platform === 'embedded') &&
           <button type="button" className="install-copy" onClick={() => void copyAddress()}>
             {copied ? <Check size={14}/> : <Copy size={14}/>}
             {copied ? 'Link copied' : 'Copy page link'}

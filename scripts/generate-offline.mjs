@@ -11,6 +11,22 @@ import { getOgPages } from './og-registry.mjs';
 const root = join(process.cwd(), 'dist', 'client');
 if (!existsSync(join(root, 'index.html'))) throw new Error('Build the prerendered site before generating offline assets');
 
+// Give each deployment a stable, origin-specific PWA identity. Historically the
+// computed app ID came from the start_url (with no query string). Preserve that
+// identity as start_url gains its own launch marker. Chromium can then check
+// this exact installed PWA via getInstalledRelatedApps on supported platforms.
+const deployment = new URL(process.env.VITE_SITE_URL || 'https://dcxr.thedabcorner.site/');
+const manifestPath = join(root, 'site.webmanifest');
+const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+manifest.id = deployment.pathname;
+// Keep both current and pre-migration manifest URLs discoverable. Chrome's
+// identity-aware related-app check can match either existing installation.
+manifest.related_applications = [
+  { platform: 'webapp', url: './site.webmanifest?v=pwa-identity-2', id: deployment.href },
+  { platform: 'webapp', url: './site.webmanifest?v=lime-chrome-1', id: deployment.href },
+];
+writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+
 function walk(directory, files = []) {
   for (const item of readdirSync(directory, { withFileTypes: true })) {
     const full = join(directory, item.name);
