@@ -406,9 +406,6 @@ pre, code, kbd, output, input { font-family: var(--numeric-font); font-variant-n
 }
 .dcxr-mark { display: inline-block; position: relative; flex-shrink: 0; width: 32px; height: 32px; }
 .dcxr-mark img { display: block; width: 100%; height: 100%; }
-.dcxr-mark-dark { display: none !important; }
-:root.dark .dcxr-mark-light { display: none !important; }
-:root.dark .dcxr-mark-dark { display: block !important; }
 .rail-brand {
   flex: 0 0 36px; width: 36px; height: 36px; background: transparent;
   border-radius: 7px; display: grid; place-items: center;

@@ -20,8 +20,6 @@ const svg = inner => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + viewB
 // platform applies its own rounded-rectangle mask.
 const opaqueDark = dark.replace(/<rect class="cls-3"[^>]*\/>/,
   '<rect width="652.24" height="652.24" fill="#212121"/>');
-const opaqueLight = light.replace(/<rect class="cls-1"[^>]*\/>/,
-  '<rect width="652.24" height="652.24" fill="#ffffff"/>');
 const maskable = svg(
   '<rect width="652.24" height="652.24" fill="#212121"/>' +
   '<g transform="translate(97.836 97.836) scale(0.7)">' +
@@ -52,7 +50,8 @@ function faviconIco(source) {
 export function generateBrandIcons() {
   writeFileSync(asset('favicon.svg'), dark);
   writeFileSync(asset('favicon-dark.svg'), dark);
-  writeFileSync(asset('favicon-light.svg'), light);
+  // Preserve the old light favicon URL, but serve the same dark artwork.
+  writeFileSync(asset('favicon-light.svg'), dark);
   writeFileSync(asset('favicon.ico'), faviconIco(opaqueDark));
   writeFileSync(asset('icon-maskable.svg'), maskable);
   for (const size of [180, 192, 512]) {
@@ -60,8 +59,8 @@ export function generateBrandIcons() {
     writeFileSync(asset(name), raster(opaqueDark, size));
   }
   writeFileSync(asset('icon-maskable-512.png'), raster(maskable, 512));
-  // A high resolution light asset is retained for other native icon consumers.
-  writeFileSync(asset('icon-light-512.png'), raster(opaqueLight, 512));
+  // Retain the legacy filename as an identical dark-mode asset alias.
+  writeFileSync(asset('icon-light-512.png'), raster(opaqueDark, 512));
   const ogPath = asset('og-card.svg');
   const oldOg = readFileSync(ogPath, 'utf8');
   const framedMark = '<svg x="58" y="54" width="43" height="43" viewBox="' + viewBox + '">' + contents(dark) + '</svg>';
@@ -70,5 +69,5 @@ export function generateBrandIcons() {
     throw new Error('Static OG symbol anchor missing; cannot update without overwriting other art');
   }
   writeFileSync(ogPath, result);
-  console.log('DCXR light/dark source vectors -> favicons, touch icon, PWA masks and PNGs');
+  console.log('DCXR dark source vector -> theme-independent favicons, touch icon and PWA icons');
 }

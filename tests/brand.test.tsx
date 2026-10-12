@@ -14,7 +14,7 @@ const pathGeometry = (svg: string) =>
   [...svg.matchAll(/<path\b[^>]*\bd="([^"]+)"/g)].map(match => match[1]);
 
 describe('Designer-authored Decarboxulator v4 identity', () => {
-  it('preserves both uploaded vectors and switches application branding by theme', () => {
+  it('preserves both supplied source vectors but uses the dark logo in every app theme', () => {
     const light = asset('brand/SVG/dcxr-light.svg');
     const dark = asset('brand/SVG/dcxr-dark.svg');
     expect(light).toContain('viewBox="0 0 652.24 652.24"');
@@ -27,11 +27,11 @@ describe('Designer-authored Decarboxulator v4 identity', () => {
     expect(pathGeometry(light)).toHaveLength(6);
 
     const rendered = renderToStaticMarkup(<DcxrMark />);
-    expect(rendered).toContain('brand/SVG/dcxr-light.svg');
     expect(rendered).toContain('brand/SVG/dcxr-dark.svg');
+    expect(rendered).not.toContain('brand/SVG/dcxr-light.svg');
     const css = asset('../src/index.css');
-    expect(css).toContain(':root.dark .dcxr-mark-light { display: none !important; }');
-    expect(css).toContain(':root.dark .dcxr-mark-dark { display: block !important; }');
+    expect(css).not.toContain('dcxr-mark-light');
+    expect(css).not.toContain(':root.dark .dcxr-mark-dark');
     const ogSource = asset('og-card.svg');
     // Editable OG composition reuses the original path shapes, not a re-trace.
     for (const path of pathGeometry(dark)) expect(ogSource).toContain(path);
@@ -39,10 +39,9 @@ describe('Designer-authored Decarboxulator v4 identity', () => {
     expect(ogGenerator).toContain("brand/SVG/dcxr-dark.svg");
   });
 
-  it('regenerates browser, touch, and PWA icons from the authored source', () => {
-    const light = asset('brand/SVG/dcxr-light.svg');
+  it('regenerates browser, touch, and PWA icons from the dark authored source', () => {
     const dark = asset('brand/SVG/dcxr-dark.svg');
-    expect(asset('favicon-light.svg')).toBe(light);
+    expect(asset('favicon-light.svg')).toBe(dark);
     expect(asset('favicon-dark.svg')).toBe(dark);
     expect(asset('favicon.svg')).toBe(dark);
     const maskable = asset('icon-maskable.svg');
@@ -57,14 +56,17 @@ describe('Designer-authored Decarboxulator v4 identity', () => {
     expect(ico.readUInt16LE(2)).toBe(1);
     expect(ico.readUInt16LE(4)).toBe(3);
     expect([ico[6], ico[22], ico[38]]).toEqual([16, 32, 48]);
+    expect(readFileSync(new URL('../public/icon-light-512.png', import.meta.url)))
+      .toEqual(readFileSync(new URL('../public/icon-512.png', import.meta.url)));
   });
 
-  it('declares new light/dark favicons, iOS touch artwork, and versioned PWA assets', () => {
+  it('declares one theme-independent SVG favicon, iOS touch artwork and PWA assets', () => {
     const root = readFileSync(new URL('../src/routes/__root.tsx', import.meta.url), 'utf8');
     const manifest = JSON.parse(asset('site.webmanifest'));
-    expect(root).toContain('favicon-light.svg?v=dcxr-v4-1');
-    expect(root).toContain('favicon-dark.svg?v=dcxr-v4-1');
-    expect(root).toContain('favicon.ico?v=dcxr-v4-1');
+    expect(root).toContain('favicon.svg?v=dcxr-v4-2');
+    expect(root).toContain('favicon.ico?v=dcxr-v4-2');
+    expect(root).not.toContain('prefers-color-scheme');
+    expect(root).not.toContain('favicon-light.svg');
     expect(root).toContain('apple-touch-icon.png?v=dcxr-v4-1');
     expect(root).toContain('site.webmanifest?v=dcxr-v4-1');
     expect(manifest.icons).toContainEqual(expect.objectContaining({
