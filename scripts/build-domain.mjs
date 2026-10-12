@@ -13,6 +13,7 @@ for(const args of [
   ['scripts/generate-seo.mjs'],
   ['scripts/generate-offline.mjs'],
   ['scripts/verify-seo.mjs'],
+  ['scripts/verify-seo-links.mjs'],
   ['scripts/verify-faq-parity.mjs'],
 ])execFileSync(process.execPath,args,{env,stdio:'inherit'});
 const dist=join(process.cwd(),'dist','client');

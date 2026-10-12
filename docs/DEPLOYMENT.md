@@ -66,6 +66,9 @@ Keep the legacy `decarboxulator` branch as an archival/rollback record; `main` h
 
 - Don't collapse all historical paths onto the homepage.
 - Keep a 1:1 conceptual destination for the historical calculators; the time predictor remains explicitly retired rather than pretending its forecast was valid.
-- Keep the existing GitHub Pages URLs responding (GitHub may automatically redirect them to the custom domain after cutover). For existing HTML aliases, preserve the zero-second meta refresh, `noindex,follow`, target canonical, and JavaScript `location.replace`.
+- Keep the existing GitHub Pages URLs responding (GitHub may automatically redirect them to the custom domain after cutover). For existing HTML aliases, preserve the zero-second meta refresh, target canonical, and JavaScript `location.replace`. Do **not** put `noindex` on actively migrating pages: it competes with the canonicalization/redirect signals. The retired time predictor is intentionally different: its explanatory notice remains `noindex,follow`.
+- Keep the original `index-old.html` destination and `resources/assets/sitemap.xml` endpoint in every deploy. The historical sitemap URL now serves the same 11 canonical destinations as `sitemap.xml`, maintaining Search Console continuity.
+- The original Google Search Console HTML-verification meta tag is retained on all indexable V4 routes. If you change verification methods later, confirm the original property is still verified first.
+- The build-time SEO crawl checks real SSR links for mount escapes and missing destinations, alongside the 1:1 redirect checks and FAQ parity. Do not relax this guard to make an invalid release pass.
 - Do not publish two separate canonical domains. The secondary hostname returns 301; only `dcxr` is included in the future sitemap.
 - After cutover, submit the new `https://dcxr.thedabcorner.site/sitemap.xml` in Google Search Console. Track indexed URL transitions and 404s; do not delete older mappings prematurely.

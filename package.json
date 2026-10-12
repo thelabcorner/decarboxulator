@@ -23,7 +23,7 @@
     "test:tracker-kinetics": "node scripts/qa-tracker-kinetics.mjs",
     "test:tracker": "node scripts/qa-tracker-sessions.mjs",
     "test:pages": "npm run build:pages && node scripts/verify-pages.mjs",
-    "seo:verify": "node scripts/verify-seo.mjs && node scripts/verify-faq-parity.mjs",
+    "seo:verify": "node scripts/verify-seo.mjs && node scripts/verify-seo-links.mjs && node scripts/verify-faq-parity.mjs",
     "lint": "oxlint",
     "preview": "vite preview",
     "build:domain": "node scripts/build-domain.mjs"

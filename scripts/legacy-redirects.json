@@ -1,5 +1,9 @@
 [
   {
+    "legacy": "index-old.html",
+    "target": "/"
+  },
+  {
     "legacy": "pages/v2/index.html",
     "target": "/"
   },

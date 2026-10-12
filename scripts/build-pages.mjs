@@ -12,4 +12,5 @@ execFileSync(process.execPath, ['scripts/generate-legacy-redirects.mjs'], {env,s
 execFileSync(process.execPath, ['scripts/generate-seo.mjs'], {env,stdio:'inherit'});
 execFileSync(process.execPath, ['scripts/generate-offline.mjs'], {env,stdio:'inherit'});
 execFileSync(process.execPath, ['scripts/verify-seo.mjs'], {env,stdio:'inherit'});
+execFileSync(process.execPath, ['scripts/verify-seo-links.mjs'], {env,stdio:'inherit'});
 execFileSync(process.execPath, ['scripts/verify-faq-parity.mjs'], {env,stdio:'inherit'});

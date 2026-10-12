@@ -43,6 +43,7 @@ try {
   }
   // Old indexed URLs must work after replacing the legacy static site.
   for (const [legacy, target] of [
+    ['index-old.html', ''],
     ['pages/v2/index.html', ''],
     ['pages/v2/thca-thc-calculator.html', 'tools/thca-to-thc/'],
     ['pages/v2/thca-thc-calculator/', 'tools/thca-to-thc/'],

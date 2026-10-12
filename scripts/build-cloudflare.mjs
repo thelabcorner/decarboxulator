@@ -16,6 +16,7 @@ run(['scripts/generate-legacy-redirects.mjs']);
 run(['scripts/generate-seo.mjs']);
 run(['scripts/generate-offline.mjs']);
 run(['scripts/verify-seo.mjs']);
+run(['scripts/verify-seo-links.mjs']);
 run(['scripts/verify-faq-parity.mjs']);
 
 const output = join(process.cwd(), 'dist', 'client');

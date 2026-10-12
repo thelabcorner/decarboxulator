@@ -36,7 +36,7 @@ const shell=(title,detail,destination,action='Open the updated calculator')=>
 if(!existsSync(join(root,'index.html')))throw new Error('Build prerendered pages before generating redirects');
 const targetExists=target=>existsSync(target==='/'?join(root,'index.html'):join(root,target.slice(1),'index.html'));
 for(const {legacy,target,reverseHash} of redirects){
-  if(!/^pages\/[a-z0-9/.-]+\.html$/.test(legacy)||legacy.includes('..'))throw new Error('Unsafe legacy path: '+legacy);
+  if(!/^(?:index-old|pages\/[a-z0-9/.-]+)\.html$/.test(legacy)||legacy.includes('..'))throw new Error('Unsafe legacy path: '+legacy);
   if(!/^\/(?:[a-z0-9-]+\/)*$/.test(target))throw new Error('Unsafe target: '+target);
   if(!targetExists(target))throw new Error('Redirect target is not prerendered: '+target);
   const destination=publicBase+target.replace(/^\//,'');
@@ -45,7 +45,8 @@ for(const {legacy,target,reverseHash} of redirects){
   const markup=[
     '<!doctype html><html lang="en"><head><meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width,initial-scale=1">',
-    '<meta name="robots" content="noindex,follow">',
+    // Do not put noindex on moving URLs. The instant meta refresh and matching
+    // canonical signal consolidation; noindex is a competing exclusion signal.
     '<meta name="theme-color" content="#aaff00">',
     '<title>Calculator moved | Decarboxulator V4</title>',
     '<link rel="canonical" href="'+esc(canonical)+'">',
@@ -62,7 +63,8 @@ for(const {legacy,target,reverseHash} of redirects){
     '</body></html>',
   ].join('\n');
   const variants=[legacy];
-  if(!legacy.endsWith('/index.html'))variants.push(legacy.replace(/\.html$/,'/index.html'));
+  // Only calculator paths had legacy extensionless URLs. index-old.html did not.
+  if(legacy.startsWith('pages/')&&!legacy.endsWith('/index.html'))variants.push(legacy.replace(/\.html$/,'/index.html'));
   for(const path of variants){const full=join(root,path);mkdirSync(dirname(full),{recursive:true});writeFileSync(full,markup+'\n');}
 }
 // The retired V1 time predictor was not functional. Do not map it to a different model.
@@ -82,5 +84,5 @@ const retired=[
 for(const path of ['pages/time-predictor.html','pages/time-predictor/index.html']){
   const full=join(root,path);mkdirSync(dirname(full),{recursive:true});writeFileSync(full,retired+'\n');
 }
-console.log('Generated '+redirects.length+' historical calculator redirects, '+redirects.filter(x=>!x.legacy.endsWith('/index.html')).length+
+console.log('Generated '+redirects.length+' historical page redirects, '+redirects.filter(x=>x.legacy.startsWith('pages/')&&!x.legacy.endsWith('/index.html')).length+
   ' directory aliases, and two retired predictor notices.');

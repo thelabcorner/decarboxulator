@@ -48,6 +48,8 @@ for(const file of files) {
   seenUrls.add(expected);
   assert(/<meta[^>]+name="viewport"/.test(html),`${route || '/'}: missing responsive viewport`);
   assert(/<meta[^>]+name="robots"[^>]+content="index, follow/.test(html),`${route || '/'}: unexpected crawler policy`);
+  assert(html.includes('name="google-site-verification" content="zehT3yCzGEa80mOM6j42f99nbI5144vL1prN8kHSaJc"'),
+    `${route || '/'}: historical Search Console verification token missing`);
   assert(/property="og:image"/.test(html) && /property="og:image:alt"/.test(html),`${route || '/'}: OG metadata missing`);
   assert(html.includes('name="twitter:img:src"'),`${route || '/'}: Snapchat/Twitter preview fallback missing`);
   assert(html.includes('property="og:image:secure_url"'),`${route || '/'}: HTTPS preview metadata missing`);
@@ -149,7 +151,35 @@ const sitemapUrls=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match=>match
 assert(sitemapUrls.length===files.length,`Sitemap count ${sitemapUrls.length} mismatches ${files.length} prerendered pages`);
 for(const url of seenUrls) assert(sitemap.includes(`<loc>${url}</loc>`),`Sitemap missing ${url}`);
 assert(readFileSync(join(root,'robots.txt'),'utf8').includes(`Sitemap: ${origin}sitemap.xml`),'Robots sitemap mismatch');
+const oldSitemap=join(root,'resources','assets','sitemap.xml');
+assert(existsSync(oldSitemap),'V3 submitted sitemap endpoint is missing');
+assert(readFileSync(oldSitemap,'utf8')===sitemap,'V3 sitemap endpoint must use current canonical URLs, not stale V3 URLs');
 const redirects = JSON.parse(readFileSync(new URL('./legacy-redirects.json', import.meta.url), 'utf8'));
+// Independently pinned against V3's published HTML inventory. Checking only
+// manifest entries would silently allow a future edit to delete a ranked URL.
+const requiredLegacyTargets = {
+  'index-old.html': '/',
+  'pages/v2/index.html': '/',
+  'pages/v2/thca-thc-calculator.html': '/tools/thca-to-thc/',
+  'pages/v2/thca-content-analyzer.html': '/tools/thca-percentage/',
+  'pages/v2/thca-decarb-tracker.html': '/tools/decarb-tracker/',
+  'pages/v2/edible-calculator.html': '/tools/edible-dosage/',
+  'pages/v2/max-pressure.html': '/tools/max-pressure/',
+  'pages/v2/isolate-calculator.html': '/tools/cartridge-formulation/',
+  'pages/v2/decarboxylation-faq.html': '/learn/decarboxylation-math/',
+  'pages/dcx-yield.html': '/tools/batch-yield/',
+  'pages/input-finder.html': '/tools/thc-to-thca/',
+  'pages/rosin-thca-finder.html': '/tools/thca-percentage/',
+  'pages/iso-calc.html': '/tools/cartridge-formulation/',
+  'pages/max-pressure.html': '/tools/max-pressure/',
+  'pages/progress-tracker.html': '/tools/decarb-tracker/',
+};
+for (const [legacy, target] of Object.entries(requiredLegacyTargets)) {
+  assert(redirects.some(entry => entry.legacy === legacy && entry.target === target),
+    `V3 SEO regression: missing or remapped historical URL ${legacy} => ${target}`);
+}
+assert(redirects.find(entry => entry.legacy === 'pages/v2/thca-thc-calculator.html')?.reverseHash === true,
+  'V3 reverse hash direction must survive the migration');
 const mount = '/' + (process.env.VITE_BASE_PATH || '/').split('/').filter(Boolean).join('/') + '/';
 const publicMount = mount === '//' ? '/' : mount;
 const historicalPaths = new Set();
@@ -157,7 +187,7 @@ const historicalAliases = new Set();
 for (const {legacy, target, reverseHash} of redirects) {
   assert(!historicalPaths.has(legacy), `Duplicate legacy redirect: ${legacy}`);
   historicalPaths.add(legacy);
-  assert(/^pages\/[a-z0-9/.-]+\.html$/.test(legacy) && !legacy.includes('..'),
+  assert(/^(?:index-old|pages\/[a-z0-9/.-]+)\.html$/.test(legacy) && !legacy.includes('..'),
     `Unsafe historical redirect path: ${legacy}`);
   const filename = join(root, legacy);
   assert(existsSync(filename), `Historical URL missing from output: ${legacy}`);
@@ -167,10 +197,10 @@ for (const {legacy, target, reverseHash} of redirects) {
   assert(redirect.includes(`<link rel="canonical" href="${canonical}">`), `${legacy}: incorrect target canonical`);
   assert(redirect.includes(`content="0;url=${to}"`), `${legacy}: missing zero-second HTML redirect`);
   assert(redirect.includes('location.replace('), `${legacy}: missing history-replacing JavaScript redirect`);
-  assert(redirect.includes('name="robots" content="noindex,follow"'), `${legacy}: redirect must not be indexed`);
+  assert(!/name="robots"[^>]+noindex/i.test(redirect), `${legacy}: noindex competes with migration redirect signal`);
   if(reverseHash) assert(redirect.includes('tools/thc-to-thca/'), `${legacy}: reverse hash mapping missing`);
   assert(!seenUrls.has(new URL(legacy,origin).toString()), `${legacy}: historical route included in canonical sitemap`);
-  if (!legacy.endsWith('/index.html')) {
+  if (legacy.startsWith('pages/') && !legacy.endsWith('/index.html')) {
     const alias = legacy.replace(/\.html$/, '/index.html');
     assert(!historicalAliases.has(alias), `Duplicate extensionless redirect: ${alias}`);
     historicalAliases.add(alias);
@@ -194,5 +224,7 @@ const historicalEquivalents = {
 for (const [legacy,target] of Object.entries(historicalEquivalents))
   assert(redirects.some(entry => entry.legacy===legacy && entry.target===target),
     `Missing verified V1 tool continuity: ${legacy}`);
+assert(redirects.some(entry=>entry.legacy==='index-old.html' && entry.target==='/'),
+  'The original pre-V3 landing page must continue to redirect to V4');
 console.log(`Legacy redirects validated: ${redirects.length} source URLs, ${historicalAliases.size} extensionless aliases and 2 retired-tool notices.`);
 console.log(`SEO validated: ${files.length} prerendered, canonicalized pages including all ${required.length} required routes.`);

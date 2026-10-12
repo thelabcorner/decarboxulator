@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 
 const base = join(process.cwd(), 'dist', 'client');
@@ -38,11 +38,17 @@ const canonicals = routeFiles.map(path => {
   return expected;
 });
 
-writeFileSync(join(base, 'sitemap.xml'),
+const sitemap =
   '<?xml version="1.0" encoding="UTF-8"?>\n' +
   '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
   canonicals.map(url => `  <url><loc>${escapeXml(url)}</loc></url>`).join('\n') +
-  '\n</urlset>\n'
-);
+  '\n</urlset>\n';
+writeFileSync(join(base, 'sitemap.xml'), sitemap);
+// Preserve the sitemap URL published in V3 and potentially registered in
+// Search Console. Both locations must advertise the SAME current canonicals,
+// never stale historical routes.
+const historicalSitemap = join(base, 'resources', 'assets', 'sitemap.xml');
+mkdirSync(join(base, 'resources', 'assets'), { recursive: true });
+writeFileSync(historicalSitemap, sitemap);
 writeFileSync(join(base, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}sitemap.xml\n`);
 console.log(`Generated sitemap and robots from ${canonicals.length} distinct, prerendered routes.`);

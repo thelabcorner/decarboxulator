@@ -65,6 +65,9 @@ export function pageHead(page: Page) {
     meta: [
       { title: page.title + ' | Decarboxulator' },
       { name: 'description', content: page.description },
+      // Retain the original V3 Search Console HTML-tag verification across the
+      // GitHub Pages migration. This was present in the historical site source.
+      { name: 'google-site-verification', content: 'zehT3yCzGEa80mOM6j42f99nbI5144vL1prN8kHSaJc' },
       { name: 'robots', content: 'index, follow, max-image-preview:large' },
       { property: 'og:type', content: 'website' },
       { property: 'og:locale', content: 'en_US' },
