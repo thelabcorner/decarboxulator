@@ -9,7 +9,8 @@
   "background_color": "#fafafa",
   "theme_color": "#aaff00",
   "related_applications": [
-    { "platform": "webapp", "url": "./site.webmanifest?v=pwa-identity-2", "id": "https://dcxr.thedabcorner.site/" },
+    { "platform": "webapp", "url": "./site.webmanifest?v=dcxr-pwa-2", "id": "https://dcxr.thedabcorner.site/" },
+    { "platform": "webapp", "url": "./site.webmanifest?v=dcxr-v4-1", "id": "https://dcxr.thedabcorner.site/" },
     { "platform": "webapp", "url": "./site.webmanifest?v=lime-chrome-1", "id": "https://dcxr.thedabcorner.site/" }
   ],
   "icons": [

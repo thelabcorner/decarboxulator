@@ -68,7 +68,7 @@ describe('Designer-authored Decarboxulator v4 identity', () => {
     expect(root).not.toContain('prefers-color-scheme');
     expect(root).not.toContain('favicon-light.svg');
     expect(root).toContain('apple-touch-icon.png?v=dcxr-v4-1');
-    expect(root).toContain('site.webmanifest?v=dcxr-v4-1');
+    expect(root).toContain('site.webmanifest?v=dcxr-pwa-2');
     expect(manifest.icons).toContainEqual(expect.objectContaining({
       src: 'icon-maskable-512.png?v=dcxr-v4-1', purpose: 'maskable',
     }));

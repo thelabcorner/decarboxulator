@@ -47,7 +47,8 @@ describe('Decarboxulator installed-app identity', () => {
     expect(isOurRelatedApp({ platform: 'play', id: ROOT }, ROOT, MANIFEST)).toBe(false);
     expect(isOurRelatedApp({ platform: 'webapp', id: ROOT }, ROOT, MANIFEST)).toBe(true);
     expect(isOurRelatedApp({ platform: 'webapp', url: MANIFEST }, ROOT, MANIFEST)).toBe(true);
-    expect(isOurRelatedApp({ platform: 'webapp', url: MANIFEST + '?v=pwa-identity-2' }, ROOT, MANIFEST)).toBe(true);
+    expect(isOurRelatedApp({ platform: 'webapp', url: MANIFEST + '?v=dcxr-pwa-2' }, ROOT, MANIFEST)).toBe(true);
+    expect(isOurRelatedApp({ platform: 'webapp', url: MANIFEST + '?v=dcxr-v4-1' }, ROOT, MANIFEST)).toBe(true);
     expect(isOurRelatedApp({ platform: 'webapp', url: MANIFEST + '?v=lime-chrome-1' }, ROOT, MANIFEST)).toBe(true);
     expect(isOurRelatedApp({ platform: 'webapp', url: MANIFEST + '?v=unrelated' }, ROOT, MANIFEST)).toBe(false);
     expect(isOurRelatedApp({ platform: 'webapp', id: 'https://other.example/', url: MANIFEST }, ROOT, MANIFEST)).toBe(false);

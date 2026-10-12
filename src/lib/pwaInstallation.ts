@@ -42,7 +42,7 @@ export function isOurRelatedApp(app: RelatedApp, id: string, manifest: string): 
     const url = new URL(app.url);
     const expected = new URL(manifest);
     return url.origin === expected.origin && url.pathname === expected.pathname &&
-      (!url.search || url.search === '?v=pwa-identity-2' || url.search === '?v=lime-chrome-1');
+      (!url.search || ['?v=dcxr-pwa-2', '?v=dcxr-v4-1', '?v=lime-chrome-1'].includes(url.search));
   } catch { return false; }
 }
 

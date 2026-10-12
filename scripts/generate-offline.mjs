@@ -22,7 +22,8 @@ manifest.id = deployment.pathname;
 // Keep both current and pre-migration manifest URLs discoverable. Chrome's
 // identity-aware related-app check can match either existing installation.
 manifest.related_applications = [
-  { platform: 'webapp', url: './site.webmanifest?v=pwa-identity-2', id: deployment.href },
+  { platform: 'webapp', url: './site.webmanifest?v=dcxr-pwa-2', id: deployment.href },
+  { platform: 'webapp', url: './site.webmanifest?v=dcxr-v4-1', id: deployment.href },
   { platform: 'webapp', url: './site.webmanifest?v=lime-chrome-1', id: deployment.href },
 ];
 writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
