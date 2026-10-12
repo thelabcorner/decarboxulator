@@ -25,18 +25,18 @@ function ScienceGuide(){
       <div className="science-studio-main">
         <section className="studio-panel science-method-panel">
           <div className="panel-heading"><div className="panel-heading-copy"><h2>Mass balance</h2>
-            <p>THCa → THC + CO₂, by mass</p></div><span className="small-label">Reference 01</span></div>
+            <p>THCa → THC + CO2, by mass</p></div><span className="small-label">Reference 01</span></div>
           <div className="panel-content">
-            <Formula>THCa → THC + CO₂</Formula>
+            <Formula>THCa → THC + CO2</Formula>
             <div className="science-constants">
               <div><small>THCa</small><strong>{MW_THCA} <em>g/mol</em></strong></div>
               <div><small>THC</small><strong>{MW_THC} <em>g/mol</em></strong></div>
-              <div><small>CO₂ lost</small><strong>{MW_CO2.toFixed(2)} <em>g/mol</em></strong></div>
+              <div><small>CO2 lost</small><strong>{MW_CO2.toFixed(2)} <em>g/mol</em></strong></div>
               <div><small>Retained mass</small><strong>{(CONVERSION_RATIO*100).toFixed(3)}<em>%</em></strong></div>
             </div>
             <p className="science-method-footnote">
-              One mole of THCa produces one mole each of THC and CO₂ in the stoichiometric model.
-              THC equivalence is input THCa mass × {CONVERSION_RATIO.toFixed(6)}; the expected CO₂
+              One mole of THCa produces one mole each of THC and CO2 in the stoichiometric model.
+              THC equivalence is input THCa mass × {CONVERSION_RATIO.toFixed(6)}; the expected CO2
               fraction is {(CO2_RATIO*100).toFixed(3)}%. Neither number represents real-world conversion efficiency.
             </p>
           </div>
@@ -87,7 +87,7 @@ function ScienceGuide(){
           <div className="science-sources">
             <a href="https://pubchem.ncbi.nlm.nih.gov/compound/98523" target="_blank" rel="noreferrer">PubChem · THCa</a>
             <a href="https://pubchem.ncbi.nlm.nih.gov/compound/16078" target="_blank" rel="noreferrer">PubChem · THC</a>
-            <a href="https://pubchem.ncbi.nlm.nih.gov/compound/280" target="_blank" rel="noreferrer">PubChem · CO₂</a>
+            <a href="https://pubchem.ncbi.nlm.nih.gov/compound/280" target="_blank" rel="noreferrer">PubChem · CO2</a>
             <a href="https://www.ams.usda.gov/rules-regulations/hemp" target="_blank" rel="noopener noreferrer">USDA · Total THC context</a>
             <a href="https://pubmed.ncbi.nlm.nih.gov/28861498/" target="_blank" rel="noopener noreferrer">Wang et al. (2016) · Decarboxylation kinetics</a>
             <a href="https://pubmed.ncbi.nlm.nih.gov/15734104/" target="_blank" rel="noopener noreferrer">Dussy et al. (2005) · THCa conversion and recovery</a>

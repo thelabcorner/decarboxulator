@@ -86,7 +86,7 @@ export function PressureWorkbench(){
       </div>
       <div className="pressure-kpi-secondary">
         <div><span>Absolute pressure</span><strong>{result?value(result.pAbsPsi):'—'} <small>PSIA</small></strong></div>
-        <div><span>CO₂ contribution</span><strong>{result?value(result.pCo2Psi):'—'} <small>PSI</small></strong></div>
+        <div><span>CO2 contribution</span><strong>{result?value(result.pCo2Psi):'—'} <small>PSI</small></strong></div>
         <div><span>Trapped gas contribution</span><strong>{result?value(result.pAirPsi):'—'} <small>PSIA</small></strong></div>
       </div>
     </div>
@@ -170,7 +170,7 @@ export function PressureWorkbench(){
         <h2>What drives the estimate?</h2></div>
       <div className="pressure-analysis-metrics">
         <div><span>THCa mass</span><strong>{result?value(result.thcaG,3):'—'} <small>g</small></strong></div>
-        <div><span>Theoretical CO₂ evolved</span><strong>{result?value(result.co2G,3):'—'} <small>g</small></strong></div>
+        <div><span>Theoretical CO2 evolved</span><strong>{result?value(result.co2G,3):'—'} <small>g</small></strong></div>
         <div><span>Heating contribution</span><strong>{result?value(result.pThermalGaugePsi):'—'} <small>PSI</small></strong></div>
         <div><span>At 0% conversion</span><strong>{reducedConversion?value(reducedConversion.pGaugePsi):'—'} <small>PSIG</small></strong></div>
       </div>
@@ -187,7 +187,7 @@ export function PressureWorkbench(){
           <div>Temperatures in kelvin; volumes in cubic metres; η is the assumed conversion fraction. Ideal gas mixture via Dalton's law; fixed free-gas volume and no other volatile contributions.</div>
         </Formula>
       </div>
-      <Notice variant="warning">Not a worst-case estimate: evaporation, changing volume, partial CO₂ dissolution, thermal gradients, leakage, and vessel mechanics can shift the actual pressure in either direction. Do not use this calculation to certify or select a sealed vessel.</Notice>
+      <Notice variant="warning">Not a worst-case estimate: evaporation, changing volume, partial CO2 dissolution, thermal gradients, leakage, and vessel mechanics can shift the actual pressure in either direction. Do not use this calculation to certify or select a sealed vessel.</Notice>
     </section>
   </div>;
 }

@@ -131,7 +131,7 @@ export function CartridgeWorkbench() {
         <Metrics>
           <Metric label="Starting material" value={formatNumber(result.totalInputWeightG,3)} suffix="g"/>
           <Metric label="Finished mass" value={formatNumber(result.totalFinalWeightG,3)} suffix="g" accent/>
-          <Metric label="CO₂ released" value={formatNumber(co2Loss,3)} suffix="g"/>
+          <Metric label="CO2 released" value={formatNumber(co2Loss,3)} suffix="g"/>
           <Metric label="Complete cartridges" value={String(result.effectiveCarts)}/>
           <Metric label="Unfilled remainder" value={formatNumber(remaining,3)} suffix="g"/>
           {result.thcaOnlyMode&&<>

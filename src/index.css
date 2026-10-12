@@ -723,3 +723,49 @@ pre, code, kbd, output, input { font-family: var(--numeric-font); font-variant-n
   .calculator-studio .field-heading label,
   .calculator-studio .selector-field > label { font-size: 12px; }
 }
+
+/* Search-first scientific explainer: informative, compact, and below the
+   interactive tools so first-paint and calculation flow stay unchanged. */
+.workbench-explainer {
+  border: 1px solid var(--border-subtle);
+  border-radius: 7px;
+  background: var(--panel);
+  margin: 18px 0 10px;
+  overflow: hidden;
+}
+.workbench-explainer-intro { padding: 18px 18px 14px; }
+.workbench-explainer h2 {
+  margin: 8px 0 9px;
+  color: var(--strong);
+  font-size: 18px;
+  font-weight: 690;
+  letter-spacing: -.45px;
+  line-height: 1.3;
+}
+.workbench-explainer h3 {
+  color: var(--strong);
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 650;
+  margin: 0 0 7px;
+}
+.workbench-explainer p { margin: 0; font-size: 13px; line-height: 1.72; color: var(--muted); }
+.workbench-explainer a { color: var(--ink); font-weight: 620; text-decoration: underline; text-underline-offset: 3px; }
+.workbench-explainer a:hover { color: var(--strong); }
+.workbench-explainer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--border-subtle);
+}
+.workbench-explainer-grid > div { min-width: 0; padding: 16px 18px 18px; }
+.workbench-explainer-grid > div + div { border-left: 1px solid var(--border-subtle); }
+@media (max-width: 760px) {
+  .workbench-explainer { margin-top: 14px; }
+  .workbench-explainer-intro { padding: 17px 15px 14px; }
+  .workbench-explainer h2 { font-size: 18px; }
+  .workbench-explainer h3 { font-size: 15px; }
+  .workbench-explainer p { font-size: 14px; }
+  .workbench-explainer-grid { grid-template-columns: 1fr; }
+  .workbench-explainer-grid > div { padding: 14px 15px 16px; }
+  .workbench-explainer-grid > div + div { border-left: 0; border-top: 1px solid var(--border-subtle); }
+}

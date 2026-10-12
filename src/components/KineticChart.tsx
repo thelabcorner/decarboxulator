@@ -67,7 +67,7 @@ export function KineticChart({points,startedAt,fit,compact=false,flagged=[]}:{
     aria-label="Time-resolved apparent conversion graph">
     <div className="kinetic-chart-top">
       <div className="kinetic-chart-title"><strong>Conversion trajectory</strong>
-        <span>Time elapsed · CO₂-only apparent conversion</span></div>
+        <span>Time elapsed · CO2-only apparent conversion</span></div>
       <div className="kinetic-chart-legend">
         <span><i className="kinetic-legend-measured"/>Measurements</span>
         {fit?.status==='fitted'&&<span><i className="kinetic-legend-fit"/>Empirical fit</span>}
@@ -122,7 +122,7 @@ export function KineticChart({points,startedAt,fit,compact=false,flagged=[]}:{
             return <path key={i} className="kinetic-flagged-dot"
               d={'M'+xx+' '+(yy-6)+'l6 11h-12Z'}>
               <title>Uninterpretable raw mass: {formatNumber(p.weight,4)} g.
-                Apparent loss is outside the CO₂-only range and excluded from fitting.</title>
+                Apparent loss is outside the CO2-only range and excluded from fitting.</title>
             </path>;
           })}
         </g>

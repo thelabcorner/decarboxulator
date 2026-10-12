@@ -30,7 +30,7 @@ function SeriesChart({points, mode, expectedLoss}: {points:TrackerPoint[];mode:T
     ? [{label:'THCa %',color:'var(--accent)',values:points.map(p=>p.snapshot.thcaPct)},
        {label:'THC %',color:'#579bcc',values:points.map(p=>p.snapshot.thcPct)}] :
     mode === 'loss'
-    ? [{label:'CO₂-only inferred loss (g)',color:'var(--accent)',values:points.map(p=>p.snapshot.weightLossG)},
+    ? [{label:'CO2-only inferred loss (g)',color:'var(--accent)',values:points.map(p=>p.snapshot.weightLossG)},
        {label:'Expected maximum (g)',color:'#a18e5a',values:points.map(()=>expectedLoss)}] :
     [{label:'THC rate (g/h)',color:'var(--accent)',values:points.map((p,i)=>{
       if (!i || p.timestamp <= points[i-1].timestamp) return 0;
@@ -227,8 +227,8 @@ export function TrackerWorkbench() {
           {last?<span>%</span>:<span className="tracker-awaiting">Awaiting first reading</span>}
         </div>
         <div className="tracker-hero-caption">{last
-          ? `${formatNumber(last.snapshot.weightLossG,4)} g inferred CO₂ loss · ${points.length} measured`
-          : 'No readings yet · CO₂-only estimate, not an assay'}</div>
+          ? `${formatNumber(last.snapshot.weightLossG,4)} g inferred CO2 loss · ${points.length} measured`
+          : 'No readings yet · CO2-only estimate, not an assay'}</div>
         <div className="tracker-progress-bar" role="progressbar" aria-valuemin={0}
           aria-valuemax={100} aria-valuenow={last?.snapshot.completion}
           aria-label="Apparent decarboxylation completion">
@@ -237,14 +237,14 @@ export function TrackerWorkbench() {
         <div className="tracker-monitor-metrics">
           <div><span>Initial vessel</span><strong>{setup?formatNumber(setup.initialTotalG,3):'—'} <small>g</small></strong></div>
           <div><span>Last reading</span><strong>{last?formatNumber(last.weightG,3):'—'} <small>g</small></strong></div>
-          <div><span>Expected CO₂</span><strong>{setup?formatNumber(setup.expectedCo2LossG,3):'—'} <small>g</small></strong></div>
+          <div><span>Expected CO2</span><strong>{setup?formatNumber(setup.expectedCo2LossG,3):'—'} <small>g</small></strong></div>
         </div>
       </div>
       {setup&&session?.startedAt&&<KineticChart points={points} startedAt={session.startedAt}
         fit={kinetics} compact flagged={flagged.map(p=>({timestamp:p.timestamp,weight:p.weightG,
           percent:100*(setup.initialTotalG-p.weightG)/setup.expectedCo2LossG}))}/>}
       {newestOutside&&setup&&<Notice variant="warning">Latest measured vessel mass is outside
-        the CO₂-only range. The raw value remains in the log and CSV, but no chemical
+        the CO2-only range. The raw value remains in the log and CSV, but no chemical
         conversion is assigned and it is excluded from the kinetic fit.</Notice>}
       {kinetics?.status==='fitted'&&<div className="kinetic-monitor-outlook">
         <span><strong>Empirical forecast</strong><small>Conditional on the observed run · not chemical completion</small></span>
@@ -297,10 +297,10 @@ export function TrackerWorkbench() {
         </div>}
          {currentSnapshot && setup && isTracking && <Notice>
            Preview: {formatNumber(currentSnapshot.completion,2)}% apparent ·
-           {formatNumber(currentSnapshot.weightLossG,4)} g attributed to CO₂. Tap Record to save this reading.
+           {formatNumber(currentSnapshot.weightLossG,4)} g attributed to CO2. Tap Record to save this reading.
          </Notice>}
          {isTracking&&numbers.current.value!==null&&!currentSnapshot&&setup&&<Notice variant="warning">
-           This measurement is outside the ideal CO₂-only range ({formatNumber(setup.initialTotalG-setup.expectedCo2LossG,4)}–{formatNumber(setup.initialTotalG,4)} g).
+           This measurement is outside the ideal CO2-only range ({formatNumber(setup.initialTotalG-setup.expectedCo2LossG,4)}–{formatNumber(setup.initialTotalG,4)} g).
            Record the raw value for your lab audit; it will be flagged, not interpreted as conversion.
          </Notice>}
         {last&&<Metrics>
@@ -316,7 +316,7 @@ export function TrackerWorkbench() {
       {storedReadings.length>0&&<button type="button" className="tracker-inline-navigation"
         onClick={()=>setTab('analysis')}><ChartNoAxesCombined size={15}/>
         Review trends & rates <ChevronRight size={14}/></button>}
-      <p className="tracker-model-note">Mass-loss results are theoretical CO₂-only estimates. Volatiles, transfers, and balance drift can affect the reading.</p>
+      <p className="tracker-model-note">Mass-loss results are theoretical CO2-only estimates. Volatiles, transfers, and balance drift can affect the reading.</p>
     </section>}
     {tab==='setup'&&<section className="tracker-tab-content tracker-setup-view"
       id="tracker-panel-setup" role="tabpanel" aria-labelledby="tracker-tab-setup">
@@ -374,7 +374,7 @@ export function TrackerWorkbench() {
         </div>
         {cfg&&setup?<Metrics>
           <Metric label="Initial vessel mass" value={formatNumber(setup.initialTotalG,3)} suffix="g"/>
-          <Metric label="Maximum CO₂ loss" value={formatNumber(setup.expectedCo2LossG,3)} suffix="g"/>
+          <Metric label="Maximum CO2 loss" value={formatNumber(setup.expectedCo2LossG,3)} suffix="g"/>
           <Metric label="Theoretical final vessel mass" value={formatNumber(cfg.tareG+setup.expectedFinalContentG,3)} suffix="g"/>
           <Metric label="Potential THC formed" value={formatNumber(setup.expectedFinalThcG,3)} suffix="g"/>
         </Metrics>:<Unavailable>Complete a physically valid starting composition.</Unavailable>}
@@ -400,13 +400,13 @@ export function TrackerWorkbench() {
           </ol></div>
         </details>
         <details><summary><CircleHelp size={14}/> How apparent conversion is calculated</summary>
-          <div><p>For THCa → THC + CO₂, theoretical CO₂ fraction = (358.47 − 314.46) / 358.47 ≈ 12.28% of starting THCa mass.</p>
-            <p><strong>Apparent conversion %</strong> = (initial vessel mass − current vessel mass) / expected maximum CO₂ mass × 100.</p>
-            <p>Predicted THC formed = initial THCa mass × (314.46 / 358.47) × apparent conversion fraction. All values remain conditional on the CO₂-only mass-loss model.</p>
+          <div><p>For THCa → THC + CO2, theoretical CO2 fraction = (358.47 − 314.46) / 358.47 ≈ 12.28% of starting THCa mass.</p>
+            <p><strong>Apparent conversion %</strong> = (initial vessel mass − current vessel mass) / expected maximum CO2 mass × 100.</p>
+            <p>Predicted THC formed = initial THCa mass × (314.46 / 358.47) × apparent conversion fraction. All values remain conditional on the CO2-only mass-loss model.</p>
           </div>
         </details>
         <details><summary><CircleHelp size={14}/> Why readings can be rejected or misleading</summary>
-           <div><p>A reading above initial mass or below the CO₂-only theoretical final mass cannot be explained by this model. The raw measurement is still retained, but flagged and excluded from conversion estimates; it is never silently converted to 0% or 100%.</p>
+           <div><p>A reading above initial mass or below the CO2-only theoretical final mass cannot be explained by this model. The raw measurement is still retained, but flagged and excluded from conversion estimates; it is never silently converted to 0% or 100%.</p>
              <p>Moisture, solvents and volatile terpenes may produce additional loss; air currents, balance readability, changing equipment, incomplete gas escape or retained material can obscure it. A flat mass curve does not establish reaction completion. Independent assay is needed for measured chemical conversion.</p>
            </div>
         </details>
@@ -487,7 +487,7 @@ export function TrackerWorkbench() {
        {storedReadings.length ? <>
         <ScrollView className="tracker-table-wrap" orientation="horizontal" viewportLabel="Measurement log columns"><table className="readings-table">
           <thead><tr><th scope="col">#</th><th scope="col">Time</th><th scope="col">Vessel mass</th>
-             <th scope="col">Inferred CO₂ loss</th><th scope="col">Apparent %</th><th scope="col">Temp (°C)</th>
+             <th scope="col">Inferred CO2 loss</th><th scope="col">Apparent %</th><th scope="col">Temp (°C)</th>
              <th scope="col">Note</th><th scope="col">Action</th></tr></thead>
            <tbody>{allMeasurements.map((point,i)=><tr key={point.timestamp} data-flagged={!point.snapshot}>
             <td>{i+1}</td>

@@ -20,12 +20,12 @@
       "THCa → THC",
       "conversion"
     ],
-    "description": "Theoretical THC output and CO₂ mass loss from an entered THCa starting mass.",
+    "description": "Theoretical THC output and CO2 mass loss from an entered THCa starting mass.",
     "value": "0.87723",
     "valueLabel": "THC / THCA MASS RATIO",
     "input": "10.000 g THCa",
     "output": "8.772 g THC",
-    "detail": "THCA − CO₂ = THC"
+    "detail": "THCA − CO2 = THC"
   },
   {
     "path": "/tools/thc-to-thca",
@@ -48,7 +48,7 @@
       "Batch yield",
       "calculator"
     ],
-    "description": "Model idealized THC formation, CO₂ release, and final batch mass.",
+    "description": "Model idealized THC formation, CO2 release, and final batch mass.",
     "value": "87.723%",
     "valueLabel": "THCA MASS RETAINED AS THC",
     "input": "Batch mass + THCa %",
@@ -62,9 +62,9 @@
       "THCa content",
       "analyzer"
     ],
-    "description": "Estimate starting THCa from the initial and final weight. Assumes CO₂ is the only mass lost.",
+    "description": "Estimate starting THCa from the initial and final weight. Assumes CO2 is the only mass lost.",
     "value": "12.277%",
-    "valueLabel": "THEORETICAL CO₂ MASS LOSS",
+    "valueLabel": "THEORETICAL CO2 MASS LOSS",
     "input": "Initial / final mass",
     "output": "Estimated THCa fraction",
     "detail": "NOT A POTENCY ASSAY"
@@ -90,7 +90,7 @@
       "Vessel pressure",
       "model"
     ],
-    "description": "Fixed-headspace ideal-gas calculation for decarboxylation-generated CO₂.",
+    "description": "Fixed-headspace ideal-gas calculation for decarboxylation-generated CO2.",
     "value": "nRT/V",
     "valueLabel": "IDEAL-GAS PRESSURE TERM",
     "input": "Mass + °F + volume",
@@ -104,12 +104,12 @@
       "Decarb progress",
       "tracker"
     ],
-    "description": "Log mass readings and calculate apparent conversion from CO₂-only loss.",
+    "description": "Log mass readings and calculate apparent conversion from CO2-only loss.",
     "value": "Δm",
     "valueLabel": "MEASURED MASS CHANGE",
     "input": "Starting / current mass",
     "output": "Apparent conversion %",
-    "detail": "ASSUMES CO₂-ONLY LOSS"
+    "detail": "ASSUMES CO2-ONLY LOSS"
   },
   {
     "path": "/tools/cartridge-formulation",
@@ -145,8 +145,8 @@
     ],
     "description": "Stoichiometric derivations, reference molar masses, and model limitations.",
     "value": "44.01",
-    "valueLabel": "CO₂ MOLAR MASS · g/mol",
-    "input": "THCa → THC + CO₂",
+    "valueLabel": "CO2 MOLAR MASS · g/mol",
+    "input": "THCa → THC + CO2",
     "output": "314.46 / 358.47",
     "detail": "MOLECULAR MASS BASIS"
   }

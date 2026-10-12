@@ -17,7 +17,7 @@ function HomePage() {
         <div className="workbench-heading-title">
           <span className="workbench-eyebrow">Calculator / Conversion</span>
           <h1>THCa to THC</h1>
-          <p>Theoretical THC and CO₂ from a starting THCa mass</p>
+          <p>Theoretical THC and CO2 from a starting THCa mass</p>
         </div>
         <div className="workbench-factor" title="Molar-mass ratio of THC to THCa">
           <span>MW ratio</span><strong>{CONVERSION_RATIO.toFixed(5)}</strong>
@@ -40,6 +40,23 @@ function HomePage() {
             </Link>
           ))}
         </nav>
+      </section>
+      <section className="workbench-explainer" aria-labelledby="decarb-explainer-heading">
+        <div className="workbench-explainer-intro">
+          <span className="workbench-eyebrow">Scientific basis / THCa conversion</span>
+          <h2 id="decarb-explainer-heading">How the THCa to THC calculator works</h2>
+          <p>Decarboxylation releases one molecule of CO2 for every molecule of THCa converted to THC. Because THC has a lower molecular mass, the theoretical conversion factor is 314.46 / 358.47, or approximately 0.87723. Enter the starting THCa mass above to estimate the THC-equivalent mass and CO2 released at complete conversion.</p>
+        </div>
+        <div className="workbench-explainer-grid">
+          <div>
+            <h3>Understanding the 0.877 conversion factor</h3>
+            <p>For 10 g of pure THCa, the theoretical output is approximately 8.772 g THC and 1.228 g CO2. The factor represents stoichiometric mass balance, not reaction efficiency, cannabinoid recovery or a guaranteed laboratory result. <Link to={GUIDE_PATH}>Review the derivation</Link>.</p>
+          </div>
+          <div>
+            <h3>Choosing the right decarboxylation tool</h3>
+            <p>Use the <Link to="/tools/batch-yield">batch yield calculator</Link> for mixed starting material, the <Link to="/tools/thca-percentage">THCa mass-loss analyzer</Link> for weight-based estimates, or the <Link to="/tools/edible-dosage">edible dosage calculator</Link> for modeled THC per serving. Water, solvents and other volatile losses make CO2-only measurements uncertain.</p>
+          </div>
+        </div>
       </section>
       <div className="workbench-methods">
         <Info size={14} aria-hidden="true"/>

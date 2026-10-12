@@ -62,7 +62,7 @@ export function ConversionCalculator({entryDirection}: {entryDirection?: Directi
       value={result ? formatAmount(result.outputGrams,unit) : null} unit={unit}
       note={isDecarb ? 'Assumes complete conversion' : 'Target mass equivalent, not a reverse reaction'}
       metrics={[
-        {label:'CO₂ difference', value:result ? formatAmount(result.co2Grams,unit) : '—',unit},
+        {label:'CO2 difference', value:result ? formatAmount(result.co2Grams,unit) : '—',unit},
         {label:'Conversion factor',value:formatNumber(CONVERSION_RATIO*100,3),unit:'%'},
       ]}
       input={<Panel title="Input parameters" detail="Starting or target mass" action={<WorkspaceActions onReset={workspace.reset} shareUrl={workspace.shareUrl} tool={isDecarb ? 'THCa → THC conversion' : 'THC → THCa planning'} result={result ? `${formatAmount(result.outputGrams,unit)} ${unit}` : null}/>}>
@@ -94,11 +94,11 @@ export function ConversionCalculator({entryDirection}: {entryDirection?: Directi
           <PrimaryResult label={isDecarb ? 'Theoretical THC produced' : 'Equivalent starting THCa'} value={formatAmount(result.outputGrams,unit)} unit={unit}
             note={isDecarb ? 'Assumes complete stoichiometric conversion' : 'Mass-equivalence calculation, not a reverse chemical reaction'}/>
           <MassBalance retained={isDecarb ? result.outputGrams : grams!} released={result.co2Grams}
-            retainedLabel="THC-equivalent mass" releasedLabel="CO₂ mass fraction"/>
+            retainedLabel="THC-equivalent mass" releasedLabel="CO2 mass fraction"/>
           <Metrics>
-            <Metric label="CO₂ released" value={formatAmount(result.co2Grams,unit)} suffix={unit}/>
+            <Metric label="CO2 released" value={formatAmount(result.co2Grams,unit)} suffix={unit}/>
             <Metric label="THCa mass retained as THC" value={formatNumber(CONVERSION_RATIO*100,3)} suffix="%"/>
-            <Metric label="CO₂ mass fraction" value={formatNumber(CO2_RATIO*100,3)} suffix="%"/>
+            <Metric label="CO2 mass fraction" value={formatNumber(CO2_RATIO*100,3)} suffix="%"/>
             <Metric label="Molar mass difference" value={formatNumber(MW_THCA-MW_THC,4)} suffix="g/mol"/>
           </Metrics>
           <Notice>{isDecarb ? 'Theoretical maximum. Conversion kinetics, side reactions, and process losses are not modeled.' : 'This estimates the THCa mass needed to yield a target THC mass at complete conversion; THC cannot be chemically reverted to THCa by this calculation.'}</Notice>
@@ -118,7 +118,7 @@ export function BatchCalculator() {
   return (
     <CalculatorStudio name="Batch yield" category="Production" summary="Complete conversion model"
       label="Potential THC produced" value={result ? formatAmount(result.thcGrams,unit) : null}
-      unit={unit} note="Starting batch, THCa composition and theoretical CO₂ loss"
+      unit={unit} note="Starting batch, THCa composition and theoretical CO2 loss"
       metrics={[
         {label:'Final batch mass',value:result?formatAmount(result.finalWeightGrams,unit):'—',unit},
         {label:'Final THC fraction',value:result?formatNumber(result.finalThcPercent,2):'—',unit:'%'},
@@ -134,7 +134,7 @@ export function BatchCalculator() {
           <div className="formula-box">
             <span className="small-label">Calculation method</span>
             <Formula>m(THC) = m(batch) × THCa% × {CONVERSION_RATIO.toFixed(5)}</Formula>
-            <span className="fine-print">Only the CO₂ released from THCa conversion is subtracted.</span>
+            <span className="fine-print">Only the CO2 released from THCa conversion is subtracted.</span>
           </div>
         </div>
       </Panel>}
@@ -142,10 +142,10 @@ export function BatchCalculator() {
         {result ? <>
           <PrimaryResult label="Potential THC produced" value={formatAmount(result.thcGrams,unit)} unit={unit}/>
           <MassBalance retained={result.finalWeightGrams} released={result.co2Grams}
-            retainedLabel="Final batch" releasedLabel="CO₂ released"/>
+            retainedLabel="Final batch" releasedLabel="CO2 released"/>
           <Metrics>
             <Metric label="THCa before heating" value={formatAmount(result.thcaGrams,unit)} suffix={unit}/>
-            <Metric label="CO₂ released" value={formatAmount(result.co2Grams,unit)} suffix={unit}/>
+            <Metric label="CO2 released" value={formatAmount(result.co2Grams,unit)} suffix={unit}/>
             <Metric label="Final batch mass" value={formatAmount(result.finalWeightGrams,unit)} suffix={unit}/>
             <Metric label="Final THC concentration" value={formatNumber(result.finalThcPercent,2)} suffix="%" accent/>
           </Metrics>
@@ -167,7 +167,7 @@ export function AnalyzerCalculator() {
   const impossible = grams!==null && finalGrams!==null && !result;
   return (
     <CalculatorStudio name="THCa analyzer" category="Analytical estimate"
-      summary="CO₂-only loss assumption" label="Estimated initial THCa"
+      summary="CO2-only loss assumption" label="Estimated initial THCa"
       value={result?formatNumber(result.thcaPercent,2):null} unit="%"
       note="Mass-loss estimate only; not a measured potency assay"
       metrics={[
@@ -184,11 +184,11 @@ export function AnalyzerCalculator() {
           <div className="formula-box">
             <span className="small-label">Mass balance</span>
             <Formula>THCa = (initial mass − final mass) ÷ {CO2_RATIO.toFixed(5)}</Formula>
-            <span className="fine-print">Valid only when the measured loss is attributable to CO₂ from THCa.</span>
+            <span className="fine-print">Valid only when the measured loss is attributable to CO2 from THCa.</span>
           </div>
         </div>
       </Panel>}
-      output={<Panel title="Composition estimate" detail="Assumes all lost mass was CO₂">
+      output={<Panel title="Composition estimate" detail="Assumes all lost mass was CO2">
         {result ? <>
           <PrimaryResult label="Estimated original THCa" value={formatNumber(result.thcaPercent,2)} unit="%"/>
           <Metrics>
@@ -197,7 +197,7 @@ export function AnalyzerCalculator() {
             <Metric label="Observed mass loss" value={formatAmount(result.lossGrams,unit)} suffix={unit}/>
             <Metric label="Estimated final THC %" value={formatNumber(result.thcPercentAfter,2)} suffix="%"/>
           </Metrics>
-          <Notice variant="warning">This is not a validated potency assay. Water, terpenes, solvents, other acidic cannabinoids, and incomplete reaction all confound a mass-loss estimate. Never assume all lost mass is CO₂.</Notice>
+          <Notice variant="warning">This is not a validated potency assay. Water, terpenes, solvents, other acidic cannabinoids, and incomplete reaction all confound a mass-loss estimate. Never assume all lost mass is CO2.</Notice>
         </> : <Unavailable>{impossible ? 'The mass change cannot be explained by the THCa → THC reaction alone. Check sample values and other volatile losses.' : 'Enter initial and final sample weights to estimate composition.'}</Unavailable>}
       </Panel>}
     />

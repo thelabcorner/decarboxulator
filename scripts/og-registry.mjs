@@ -36,7 +36,7 @@ function discover(dir = ROOT, paths = new Set()) {
 function humanize(path) {
   return path.split('/').filter(Boolean).at(-1)
     .split('-').map(part => part === 'thca' ? 'THCa' :
-      part === 'thc' ? 'THC' : part === 'co2' ? 'CO₂' :
+      part === 'thc' ? 'THC' : part === 'co2' ? 'CO2' :
       part[0].toUpperCase() + part.slice(1)).join(' ');
 }
 

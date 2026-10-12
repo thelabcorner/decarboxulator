@@ -37,6 +37,12 @@ for(const file of files) {
   const html=readFileSync(file,'utf8');
   const title=html.match(/<title>([^<]+)<\/title>/)?.[1];
   const description=html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/)?.[1];
+  // Search snippets use literal CO2, not a typographic Unicode subscript.
+  // Count visible title glyphs instead of encoded HTML entities.
+  const visibleTitle=title?.replace(/&amp;/g,'&').replace(/&quot;/g,'"');
+  assert(!html.includes('CO₂'),`${route || '/'}: non-searchable CO2 subscript in public HTML`);
+  assert(visibleTitle?.length<=60,`${route || '/'}: title exceeds 60 characters`);
+  assert(description?.length<=160,`${route || '/'}: meta description exceeds 160 characters`);
   const canonicals=[...html.matchAll(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/g)].map(item=>item[1]);
   assert(title?.length>=15,`${route || '/'}: missing meaningful title`);
   assert(description?.length>=80 && description.length<=250,`${route || '/'}: missing or abnormal meta description`);

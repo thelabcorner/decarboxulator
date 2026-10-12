@@ -74,6 +74,15 @@ describe('scientific editorial and search copy', () => {
   });
 
   it('provides Snapchat-compatible and general Open Graph preview metadata for every route', () => {
+    // Preserve the user's required plain-text chemical notation in snippets
+    // and generated previews; Unicode subscripts are harder to search for.
+    const searchable = [HOME, ...TOOLS, FAQ, GUIDE];
+    for (const route of searchable) {
+      const head = pageHead(route);
+      const authored = [route.title, route.description,
+        ...head.meta.map(item => item.content ?? '')];
+      expect(authored.join(' '), route.path).not.toContain('CO₂');
+    }
     const routes = [HOME, ...TOOLS, FAQ, GUIDE];
     for (const route of routes) {
       const head = pageHead(route);

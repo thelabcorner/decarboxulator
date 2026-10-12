@@ -1,7 +1,7 @@
 import { formatNumber } from '../lib/decarb';
 
 /** A measured, proportional readout. All values are masses in the same unit. */
-export function MassBalance({ retained, released, retainedLabel = 'Retained mass', releasedLabel = 'CO₂ released' }: {
+export function MassBalance({ retained, released, retainedLabel = 'Retained mass', releasedLabel = 'CO2 released' }: {
   retained: number;
   released: number;
   retainedLabel?: string;
