@@ -149,5 +149,38 @@
     "input": "THCa → THC + CO2",
     "output": "314.46 / 358.47",
     "detail": "MOLECULAR MASS BASIS"
+  },
+  {
+    "path": "/learn/thca-mass-loss",
+    "section": "RESEARCH / GRAVIMETRY",
+    "title": ["THCa from", "observed CO2 loss"],
+    "description": "Reverse the THCa-to-CO2 mass relation and inspect where the gravimetric assumption breaks down.",
+    "value": "12.277%",
+    "valueLabel": "THCA MASS LOST AS CO2",
+    "input": "Before and after mass",
+    "output": "Inferred starting THCa",
+    "detail": "CO2-ONLY LOSS ASSUMPTION"
+  },
+  {
+    "path": "/learn/total-thc-formula",
+    "section": "RESEARCH / POTENCY",
+    "title": ["Total THC", "from THC + THCa"],
+    "description": "Combine laboratory THC and THCa percentages on the same sample-mass basis.",
+    "value": "0.87723",
+    "valueLabel": "THCA-TO-THC MASS FACTOR",
+    "input": "THCa % + THC %",
+    "output": "Potential total THC",
+    "detail": "NOT A PROCESS RECOVERY"
+  },
+  {
+    "path": "/learn/decarb-vessel-pressure",
+    "section": "RESEARCH / GAS PRESSURE",
+    "title": ["THCa decarb", "vessel pressure"],
+    "description": "Inspect trapped-air heating, CO2 generation, headspace assumptions and missing vapor physics.",
+    "value": "nRT/V",
+    "valueLabel": "IDEAL GAS RELATIONSHIP",
+    "input": "Mass + T + headspace",
+    "output": "Modeled gauge pressure",
+    "detail": "NOT A JAR SAFETY RATING"
   }
 ]

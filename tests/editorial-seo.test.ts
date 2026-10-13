@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { CREATOR_NAME, CREATOR_URL, FAQ, GUIDE, HOME, PUBLISHER_NAME, PUBLISHER_URL, SOURCE_URL, TOOLS, canonical, pageHead } from '../src/lib/site';
 import { SCIENCE_FAQ } from '../src/lib/scienceFaq';
 import { TOOL_QUESTIONS } from '../src/lib/toolFaq';
+import { ARTICLES } from '../src/lib/articles';
 
 type OgPage = {
   path: string;
@@ -51,6 +52,9 @@ describe('scientific editorial and search copy', () => {
     const passages = [
       HOME.title, HOME.description, GUIDE.title, GUIDE.description,
       ...TOOLS.flatMap(tool => [tool.title, tool.heading, tool.summary, tool.description]),
+      ...ARTICLES.flatMap(article => [article.title, article.description, article.dek,
+        ...article.intro, ...article.sections.flatMap(section => [section.heading, ...section.paragraphs]),
+        ...article.questions.flatMap(question => [question.question, question.answer])]),
       ...SCIENCE_FAQ.flatMap(faq => [faq.question, faq.answer]),
       ...Object.values(TOOL_QUESTIONS).flatMap(items => items.flatMap(item => [item.question, item.answer])),
       ...OG_PAGES.flatMap(page => [page.description, ...page.title]),
@@ -63,7 +67,7 @@ describe('scientific editorial and search copy', () => {
   });
 
   it('keeps static OG copy in step with the actual routes, not fabricated page counts', () => {
-    const routes = [HOME, ...TOOLS, FAQ, GUIDE];
+    const routes = [HOME, ...TOOLS, FAQ, GUIDE, ...ARTICLES];
     expect(OG_PAGES.map(page => page.path)).toEqual(routes.map(page => page.path));
     expect(OG_PAGES[0].value).toBe(String(TOOLS.length).padStart(2, '0'));
     expect(OG_PAGES[0].valueLabel).toBe('CALCULATOR ROUTES');
@@ -76,14 +80,14 @@ describe('scientific editorial and search copy', () => {
   it('provides Snapchat-compatible and general Open Graph preview metadata for every route', () => {
     // Preserve the user's required plain-text chemical notation in snippets
     // and generated previews; Unicode subscripts are harder to search for.
-    const searchable = [HOME, ...TOOLS, FAQ, GUIDE];
+    const searchable = [HOME, ...TOOLS, FAQ, GUIDE, ...ARTICLES];
     for (const route of searchable) {
       const head = pageHead(route);
       const authored = [route.title, route.description,
         ...head.meta.map(item => item.content ?? '')];
       expect(authored.join(' '), route.path).not.toContain('CO₂');
     }
-    const routes = [HOME, ...TOOLS, FAQ, GUIDE];
+    const routes = [HOME, ...TOOLS, FAQ, GUIDE, ...ARTICLES];
     for (const route of routes) {
       const head = pageHead(route);
       const get = (name: string) => head.meta.find(item => 'property' in item

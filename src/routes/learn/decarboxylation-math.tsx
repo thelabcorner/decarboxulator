@@ -6,6 +6,7 @@ import { MW_THCA, MW_THC, MW_CO2, CONVERSION_RATIO, CO2_RATIO } from '../../lib/
 import { SCIENCE_FAQ, SCIENCE_CATEGORIES, type ScienceCategory } from '../../lib/scienceFaq';
 import { GUIDE, TOOLS, pageHead } from '../../lib/site';
 import './ScienceGuide.css';
+import { ARTICLES } from '../../lib/articles';
 
 export const Route=createFileRoute('/learn/decarboxylation-math')({
   head:()=>pageHead(GUIDE),component:ScienceGuide,
@@ -93,6 +94,11 @@ function ScienceGuide(){
             <p>Choose a calculation</p></div></div>
           <div className="science-links">{TOOLS.map(tool=><Link to={tool.path} key={tool.id}>
             <span>{tool.name}</span><ArrowRight size={14}/></Link>)}</div>
+        </section>
+        <section className="studio-panel">
+          <div className="panel-heading"><div className="panel-heading-copy"><h2>Methods and examples</h2></div></div>
+          <div className="science-links">{ARTICLES.map(article =>
+            <Link to={article.path} key={article.path}><span>{article.title}</span><ArrowRight size={14}/></Link>)}</div>
         </section>
         <section className="studio-panel">
           <div className="panel-heading"><div className="panel-heading-copy"><h2>Scientific sources</h2></div></div>

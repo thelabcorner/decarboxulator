@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FAQ, GUIDE, HOME, SITE_URL, TOOLS, canonical, ogImagePath, pageHead, searchTitle } from '../src/lib/site';
+import { ARTICLES } from '../src/lib/articles';
 
 type Entity = {
   '@type': string;
@@ -21,7 +22,7 @@ describe('prerendered SEO contract', () => {
   const pages = [HOME, ...TOOLS, GUIDE];
 
   it('publishes one consistent, unique, branded title across search and social metadata', () => {
-    const routes = [HOME, ...TOOLS, FAQ, GUIDE];
+    const routes = [HOME, ...TOOLS, FAQ, GUIDE, ...ARTICLES];
     const seen = new Set<string>();
     for (const page of routes) {
       const fullTitle = searchTitle(page);
@@ -79,6 +80,20 @@ describe('prerendered SEO contract', () => {
       'https://pubmed.ncbi.nlm.nih.gov/28861498/',
       'https://pubmed.ncbi.nlm.nih.gov/15734104/',
     ]));
+  });
+
+  it('registers separate research articles with sources and FAQ answers', () => {
+    for (const article of ARTICLES) {
+      const { head, graph, webpage } = metadata(article);
+      const subject = graph.find(entity => entity['@type'] === 'TechArticle') as Entity & { citation?: string[] };
+      const faq = graph.find(entity => entity['@type'] === 'FAQPage');
+      expect(subject?.['@id']).toBe(canonical(article.path) + '#reference');
+      expect(webpage.mainEntity?.['@id']).toBe(subject['@id']);
+      expect(subject.citation).toEqual(article.references.map(source => source.url));
+      expect(faq?.['@id']).toBe(canonical(article.path) + '#faq');
+      expect(graph.some(entity => entity['@type'] === 'WebApplication')).toBe(false);
+      expect(head.links).toEqual([{rel: 'canonical', href: canonical(article.path)}]);
+    }
   });
 
   it('keeps both direction entries separate while sharing the underlying calculator', () => {

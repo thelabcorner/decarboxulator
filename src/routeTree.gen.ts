@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as LearnDecarbVesselPressureRouteImport } from './routes/learn/decarb-vessel-pressure'
 import { Route as LearnDecarboxylationMathRouteImport } from './routes/learn/decarboxylation-math'
+import { Route as LearnThcaMassLossRouteImport } from './routes/learn/thca-mass-loss'
+import { Route as LearnTotalThcFormulaRouteImport } from './routes/learn/total-thc-formula'
 import { Route as ToolsBatchYieldRouteImport } from './routes/tools/batch-yield'
 import { Route as ToolsCartridgeFormulationRouteImport } from './routes/tools/cartridge-formulation'
 import { Route as ToolsDecarbTrackerRouteImport } from './routes/tools/decarb-tracker'
@@ -31,12 +34,28 @@ const FaqRoute = FaqRouteImport.update({
   path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LearnDecarbVesselPressureRoute =
+  LearnDecarbVesselPressureRouteImport.update({
+    id: '/learn/decarb-vessel-pressure',
+    path: '/learn/decarb-vessel-pressure',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LearnDecarboxylationMathRoute =
   LearnDecarboxylationMathRouteImport.update({
     id: '/learn/decarboxylation-math',
     path: '/learn/decarboxylation-math',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LearnThcaMassLossRoute = LearnThcaMassLossRouteImport.update({
+  id: '/learn/thca-mass-loss',
+  path: '/learn/thca-mass-loss',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LearnTotalThcFormulaRoute = LearnTotalThcFormulaRouteImport.update({
+  id: '/learn/total-thc-formula',
+  path: '/learn/total-thc-formula',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ToolsBatchYieldRoute = ToolsBatchYieldRouteImport.update({
   id: '/tools/batch-yield',
   path: '/tools/batch-yield',
@@ -82,7 +101,10 @@ const ToolsThcaToThcRoute = ToolsThcaToThcRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/faq': typeof FaqRoute
+  '/learn/decarb-vessel-pressure': typeof LearnDecarbVesselPressureRoute
   '/learn/decarboxylation-math': typeof LearnDecarboxylationMathRoute
+  '/learn/thca-mass-loss': typeof LearnThcaMassLossRoute
+  '/learn/total-thc-formula': typeof LearnTotalThcFormulaRoute
   '/tools/batch-yield': typeof ToolsBatchYieldRoute
   '/tools/cartridge-formulation': typeof ToolsCartridgeFormulationRoute
   '/tools/decarb-tracker': typeof ToolsDecarbTrackerRoute
@@ -95,7 +117,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/faq': typeof FaqRoute
+  '/learn/decarb-vessel-pressure': typeof LearnDecarbVesselPressureRoute
   '/learn/decarboxylation-math': typeof LearnDecarboxylationMathRoute
+  '/learn/thca-mass-loss': typeof LearnThcaMassLossRoute
+  '/learn/total-thc-formula': typeof LearnTotalThcFormulaRoute
   '/tools/batch-yield': typeof ToolsBatchYieldRoute
   '/tools/cartridge-formulation': typeof ToolsCartridgeFormulationRoute
   '/tools/decarb-tracker': typeof ToolsDecarbTrackerRoute
@@ -109,7 +134,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/faq': typeof FaqRoute
+  '/learn/decarb-vessel-pressure': typeof LearnDecarbVesselPressureRoute
   '/learn/decarboxylation-math': typeof LearnDecarboxylationMathRoute
+  '/learn/thca-mass-loss': typeof LearnThcaMassLossRoute
+  '/learn/total-thc-formula': typeof LearnTotalThcFormulaRoute
   '/tools/batch-yield': typeof ToolsBatchYieldRoute
   '/tools/cartridge-formulation': typeof ToolsCartridgeFormulationRoute
   '/tools/decarb-tracker': typeof ToolsDecarbTrackerRoute
@@ -124,7 +152,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/faq'
+    | '/learn/decarb-vessel-pressure'
     | '/learn/decarboxylation-math'
+    | '/learn/thca-mass-loss'
+    | '/learn/total-thc-formula'
     | '/tools/batch-yield'
     | '/tools/cartridge-formulation'
     | '/tools/decarb-tracker'
@@ -137,7 +168,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/faq'
+    | '/learn/decarb-vessel-pressure'
     | '/learn/decarboxylation-math'
+    | '/learn/thca-mass-loss'
+    | '/learn/total-thc-formula'
     | '/tools/batch-yield'
     | '/tools/cartridge-formulation'
     | '/tools/decarb-tracker'
@@ -150,7 +184,10 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/faq'
+    | '/learn/decarb-vessel-pressure'
     | '/learn/decarboxylation-math'
+    | '/learn/thca-mass-loss'
+    | '/learn/total-thc-formula'
     | '/tools/batch-yield'
     | '/tools/cartridge-formulation'
     | '/tools/decarb-tracker'
@@ -164,7 +201,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FaqRoute: typeof FaqRoute
+  LearnDecarbVesselPressureRoute: typeof LearnDecarbVesselPressureRoute
   LearnDecarboxylationMathRoute: typeof LearnDecarboxylationMathRoute
+  LearnThcaMassLossRoute: typeof LearnThcaMassLossRoute
+  LearnTotalThcFormulaRoute: typeof LearnTotalThcFormulaRoute
   ToolsBatchYieldRoute: typeof ToolsBatchYieldRoute
   ToolsCartridgeFormulationRoute: typeof ToolsCartridgeFormulationRoute
   ToolsDecarbTrackerRoute: typeof ToolsDecarbTrackerRoute
@@ -191,11 +231,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/learn/decarb-vessel-pressure': {
+      id: '/learn/decarb-vessel-pressure'
+      path: '/learn/decarb-vessel-pressure'
+      fullPath: '/learn/decarb-vessel-pressure'
+      preLoaderRoute: typeof LearnDecarbVesselPressureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/learn/decarboxylation-math': {
       id: '/learn/decarboxylation-math'
       path: '/learn/decarboxylation-math'
       fullPath: '/learn/decarboxylation-math'
       preLoaderRoute: typeof LearnDecarboxylationMathRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learn/thca-mass-loss': {
+      id: '/learn/thca-mass-loss'
+      path: '/learn/thca-mass-loss'
+      fullPath: '/learn/thca-mass-loss'
+      preLoaderRoute: typeof LearnThcaMassLossRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learn/total-thc-formula': {
+      id: '/learn/total-thc-formula'
+      path: '/learn/total-thc-formula'
+      fullPath: '/learn/total-thc-formula'
+      preLoaderRoute: typeof LearnTotalThcFormulaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tools/batch-yield': {
@@ -260,7 +321,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FaqRoute: FaqRoute,
+  LearnDecarbVesselPressureRoute: LearnDecarbVesselPressureRoute,
   LearnDecarboxylationMathRoute: LearnDecarboxylationMathRoute,
+  LearnThcaMassLossRoute: LearnThcaMassLossRoute,
+  LearnTotalThcFormulaRoute: LearnTotalThcFormulaRoute,
   ToolsBatchYieldRoute: ToolsBatchYieldRoute,
   ToolsCartridgeFormulationRoute: ToolsCartridgeFormulationRoute,
   ToolsDecarbTrackerRoute: ToolsDecarbTrackerRoute,

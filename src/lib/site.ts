@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, ChartNoAxesColumnIncreasing, FlaskConical, Scale
 import appManifest from '../../package.json';
 import { SCIENCE_FAQ } from './scienceFaq';
 import { TOOL_QUESTIONS, type ToolId } from './toolFaq';
+import { ARTICLES } from './articles';
 
 /** The current suite release, not an invented independent version per tool. */
 export const APP_MAJOR_VERSION = `v${appManifest.version.split('.')[0]}`;
@@ -63,9 +64,11 @@ export function pageHead(page: Page) {
   const fullTitle = searchTitle(page);
   const isGuide = page.path === GUIDE_PATH;
   const isFaq = page.path === FAQ_PATH;
+  const article = ARTICLES.find(item => item.path === page.path);
+  const isReference = isGuide || Boolean(article);
   const matchedTool = TOOLS.find(tool => tool.path === page.path);
   const faqToolId: ToolId | undefined = matchedTool?.id;
-  const faqs = isGuide || isFaq ? SCIENCE_FAQ : faqToolId ? TOOL_QUESTIONS[faqToolId] : [];
+  const faqs = article ? article.questions : isGuide || isFaq ? SCIENCE_FAQ : faqToolId ? TOOL_QUESTIONS[faqToolId] : [];
   return {
     meta: [
       { title: fullTitle },
@@ -74,7 +77,7 @@ export function pageHead(page: Page) {
       // GitHub Pages migration. This was present in the historical site source.
       { name: 'google-site-verification', content: 'zehT3yCzGEa80mOM6j42f99nbI5144vL1prN8kHSaJc' },
       { name: 'robots', content: 'index, follow, max-image-preview:large' },
-      { property: 'og:type', content: 'website' },
+      { property: 'og:type', content: isReference ? 'article' : 'website' },
       { property: 'og:locale', content: 'en_US' },
       { property: 'og:site_name', content: SITE_NAME },
       { property: 'og:title', content: fullTitle },
@@ -107,21 +110,21 @@ export function pageHead(page: Page) {
           { '@type': 'WebPage', '@id': `${url}#webpage`, url, name: fullTitle,
             description: page.description, inLanguage: 'en',
             isPartOf: { '@id': `${SITE_URL}#website` },
-            mainEntity: { '@id': isGuide ? `${url}#reference` : isFaq ? `${url}#faq` : `${url}#calculator` },
+            mainEntity: { '@id': isReference ? `${url}#reference` : isFaq ? `${url}#faq` : `${url}#calculator` },
             ...(faqs.length ? { hasPart: { '@id': `${url}#faq` } } : {}),
             ...(page.path === '/' ? {} : { breadcrumb: { '@id': `${url}#breadcrumbs` } }),
           },
-          ...(isGuide ? [{
+          ...(isReference ? [{
             '@type': 'TechArticle', '@id': `${url}#reference`,
             headline: page.title, description: page.description, inLanguage: 'en',
             mainEntityOfPage: { '@id': `${url}#webpage` },
             publisher: { '@id': `${SITE_URL}#publisher` },
             author: { '@id': `${SITE_URL}#creator` },
-            about: [
+            about: article ? [{ '@type': 'Thing', name: article.topic }] : [
               { '@type': 'Thing', name: 'Tetrahydrocannabinolic acid decarboxylation' },
               { '@type': 'Thing', name: 'Cannabinoid mass balance' },
             ],
-            citation: [
+            citation: article ? article.references.map(ref => ref.url) : [
               'https://pubchem.ncbi.nlm.nih.gov/compound/98523',
               'https://pubchem.ncbi.nlm.nih.gov/compound/16078',
               'https://pubchem.ncbi.nlm.nih.gov/compound/280',
@@ -141,8 +144,8 @@ url, description: page.description, inLanguage: 'en',
           }]),
           ...(faqs.length ? [{
             '@type': 'FAQPage', '@id': `${url}#faq`,
-            url: isGuide || isFaq ? `${url}#science-questions` : `${url}#tool-questions`,
-            name: isGuide || isFaq ? 'Decarboxylation science questions' : `${page.title} questions and limitations`,
+            url: isReference || isFaq ? `${url}#science-questions` : `${url}#tool-questions`,
+            name: isReference || isFaq ? `${page.title} questions` : `${page.title} questions and limitations`,
             isPartOf: { '@id': `${url}#webpage` },
             mainEntity: faqs.map(faq => ({
               '@type': 'Question',

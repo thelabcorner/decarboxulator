@@ -4,6 +4,7 @@ import { ConversionCalculator } from '../components/Calculators';
 import { CONVERSION_RATIO } from '../lib/decarb';
 import { APP_MAJOR_VERSION, CREATOR_NAME, CREATOR_URL, FAQ_PATH, GUIDE_PATH, HOME, SOURCE_URL, TOOLS, pageHead } from '../lib/site';
 import { VersionBadge } from '../components/VersionBadge';
+import { ARTICLES } from '../lib/articles';
 
 export const Route = createFileRoute('/')({
   head: () => pageHead(HOME),
@@ -39,6 +40,20 @@ function HomePage() {
                <ArrowUpRight size={14} aria-hidden="true"/>
             </Link>
           ))}
+        </nav>
+      </section>
+      <section className="workbench-tools" aria-labelledby="research-directory-heading">
+        <div className="workbench-section-heading">
+          <div><h2 id="research-directory-heading">Methods and explanations</h2><p>Scientific notes with working calculators</p></div>
+          <span className="section-count">{String(ARTICLES.length).padStart(2, '0')} articles</span>
+        </div>
+        <nav className="workbench-tool-directory" aria-label="Scientific articles">
+          {ARTICLES.map((article, index) => <Link to={article.path} className="workbench-tool-row" key={article.path}>
+            <span className="workbench-tool-ordinal">{String(index + 1).padStart(2, '0')}</span>
+            <span className="workbench-tool-icon"><Info size={16}/></span>
+            <span className="workbench-tool-name"><strong>{article.title}</strong><small>{article.topic}</small></span>
+            <ArrowUpRight size={14} aria-hidden="true"/>
+          </Link>)}
         </nav>
       </section>
       <section className="workbench-explainer" aria-labelledby="decarb-explainer-heading">

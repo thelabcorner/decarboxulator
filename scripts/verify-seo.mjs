@@ -8,7 +8,9 @@ const origin = (process.env.VITE_SITE_URL || 'https://dcxr.thedabcorner.site/').
 const required = [
   '', 'tools/thca-to-thc/', 'tools/thc-to-thca/', 'tools/batch-yield/', 'tools/thca-percentage/',
   'tools/edible-dosage/', 'tools/max-pressure/', 'tools/decarb-tracker/',
-  'tools/cartridge-formulation/', 'learn/decarboxylation-math/', 'faq/',
+  'tools/cartridge-formulation/', 'learn/decarboxylation-math/',
+  'learn/thca-mass-loss/', 'learn/total-thc-formula/',
+  'learn/decarb-vessel-pressure/', 'faq/',
 ];
 function assert(condition, message) { if (!condition) throw new Error(message); }
 function collect(directory, items = []) {
@@ -88,34 +90,54 @@ for(const file of files) {
   assert(html.includes('/tools/thc-to-thca'),`${route || '/'}: navigation lacks reverse calculator route`);
   const graph=structuredData(html);
   const isGuide=route==='learn/decarboxylation-math/';
+  const isArticle=route.startsWith('learn/');
   const isFaq=route==='faq/';
   for(const type of ['Organization','Person','WebSite','WebPage']) {
     assert(graph.some(entry=>entry['@type']===type),`${route || '/'}: missing ${type} schema`);
   }
   const webpage=graph.find(entry=>entry['@type']==='WebPage');
   assert(webpage?.name===visibleTitle,`${route || '/'}: WebPage name disagrees with HTML title`);
-  const entityType=isGuide?'TechArticle':isFaq?'FAQPage':'WebApplication';
+  const entityType=isArticle?'TechArticle':isFaq?'FAQPage':'WebApplication';
   const entity=graph.find(entry=>entry['@type']===entityType);
   assert(webpage?.url===expected,`${route || '/'}: WebPage JSON-LD URL mismatch`);
-  assert(entity?.['@id']===`${expected}${isGuide?'#reference':isFaq?'#faq':'#calculator'}`,
+  assert(entity?.['@id']===`${expected}${isArticle?'#reference':isFaq?'#faq':'#calculator'}`,
     `${route || '/'}: wrong primary schema entity`);
   assert(webpage.mainEntity?.['@id']===entity['@id'],
     `${route || '/'}: WebPage mainEntity does not resolve to its content`);
-  assert(entity.mainEntityOfPage?.['@id']===`${expected}#webpage` || !isGuide,
+  assert(entity.mainEntityOfPage?.['@id']===`${expected}#webpage` || !isArticle,
     `${route}: article is not connected to its canonical WebPage`);
-  if(isGuide) {
+  if(isArticle) {
     assert(!graph.some(item=>item['@type']==='WebApplication'),
       'The scientific reference must not pretend to be a calculator');
-    const researchSources=[
-      'https://pubchem.ncbi.nlm.nih.gov/compound/98523',
-      'https://pubchem.ncbi.nlm.nih.gov/compound/16078',
-      'https://pubchem.ncbi.nlm.nih.gov/compound/280',
-      'https://pubmed.ncbi.nlm.nih.gov/28861498/',
-      'https://pubmed.ncbi.nlm.nih.gov/15734104/',
-    ];
-    for(const source of researchSources) {
-      assert(entity.citation?.includes(source),`Missing reference citation: ${source}`);
-      assert(html.includes(`href="${source}"`),`Citation is not visibly linked in prerendered page: ${source}`);
+    assert(Array.isArray(entity.citation) && entity.citation.length >= 2,
+      `${route}: scientific references missing citations`);
+    for(const source of entity.citation) {
+      assert(html.includes(`href="${source}"`),`${route}: cited source not visibly linked: ${source}`);
+    }
+    if(isGuide) {
+      const researchSources=[
+        'https://pubchem.ncbi.nlm.nih.gov/compound/98523',
+        'https://pubchem.ncbi.nlm.nih.gov/compound/16078',
+        'https://pubchem.ncbi.nlm.nih.gov/compound/280',
+        'https://pubmed.ncbi.nlm.nih.gov/28861498/',
+        'https://pubmed.ncbi.nlm.nih.gov/15734104/',
+      ];
+      for(const source of researchSources) {
+        assert(entity.citation?.includes(source),`Missing reference citation: ${source}`);
+        assert(html.includes(`href="${source}"`),`Citation is not visibly linked in prerendered page: ${source}`);
+      }
+    }
+    const articleInputs = {
+      'learn/thca-mass-loss/': ['analyzer-start', 'analyzer-final'],
+      'learn/total-thc-formula/': ['article-thca', 'article-thc'],
+      'learn/decarb-vessel-pressure/': ['pressure-temp', 'pressure-vol'],
+    }[route];
+    if (articleInputs) {
+      assert(html.includes('id="calculator"'), `${route}: embedded calculator section missing`);
+      assert(/class="[^"]*research-tool/.test(html), `${route}: calculator workbench missing`);
+      for (const inputId of articleInputs) {
+        assert(html.includes(`id="${inputId}"`), `${route}: model input ${inputId} absent from server HTML`);
+      }
     }
   } else if(isFaq) {
     assert(Array.isArray(entity.mainEntity) && entity.mainEntity.length >= 20,

@@ -10,6 +10,12 @@ export const MW_CO2 = MW_THCA - MW_THC;
 export const CONVERSION_RATIO = MW_THC / MW_THCA;
 export const CO2_RATIO = 1 - CONVERSION_RATIO;
 export const MAX_INPUT = 1e9;
+/** THC-equivalent fraction reported on the same mass basis, without recovery assumptions. */
+export function potentialTotalThcPercent(thcPercent: number, thcaPercent: number): number | null {
+  if (![thcPercent, thcaPercent].every(Number.isFinite) ||
+      thcPercent < 0 || thcaPercent < 0 || thcPercent + thcaPercent > 100) return null;
+  return thcPercent + thcaPercent * CONVERSION_RATIO;
+}
 
 export type Direction = 'decarb' | 'reverse';
 export type UnitKey = 'mg' | 'g' | 'kg';

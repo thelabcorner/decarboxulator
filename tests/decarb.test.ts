@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   CO2_RATIO, CONVERSION_RATIO, MW_CO2, MW_THCA, MW_THC,
   analyzeMassLoss, calculateBatch, calculateEdibles, convert, formatAmount, parseAmount,
+  potentialTotalThcPercent,
 } from '../src/lib/decarb';
 import { rescaleMassInput } from '../src/lib/massUnits';
 
@@ -39,6 +40,14 @@ describe('THCa stoichiometry', () => {
     expect(result.servingThcMg*12).toBeCloseTo(result.totalThcMg,10);
     expect(calculateEdibles(1,60,50,1,100)).toBeNull();
     expect(calculateEdibles(1,18,0,0,100)).toBeNull();
+  });
+  it('calculates potential total THC from fractions on the same mass basis', () => {
+    expect(potentialTotalThcPercent(1,20)).toBeCloseTo(1+20*CONVERSION_RATIO,12);
+    expect(potentialTotalThcPercent(0,0)).toBe(0);
+    expect(potentialTotalThcPercent(0,100)).toBeCloseTo(100*CONVERSION_RATIO,12);
+    for (const [thc,thca] of [[-1,1],[1,-1],[60,50],[NaN,4],[Infinity,1]]) {
+      expect(potentialTotalThcPercent(thc,thca)).toBeNull();
+    }
   });
   it('rejects invalid and hostile numeric input', () => {
     for (const input of ['', ' ', '-1', 'NaN', 'Infinity', '1e309', '0x10','12dogs','2,000']) {
