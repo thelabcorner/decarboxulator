@@ -20,7 +20,7 @@ export const TOOLS = [
   { id: 'conversion', path: '/tools/thca-to-thc', name: 'THCa → THC', short: 'Forward conversion', eyebrow: 'Stoichiometry', heading: 'THCa to THC', summary: 'Enter a THCa mass to calculate potential THC and CO2 released.', title: 'THCa to THC Calculator: Yield & CO2', description: 'Enter a THCa mass to calculate theoretical THC yield, CO2 released and retained mass using the 314.46/358.47 molar-mass ratio. Actual recovery may be lower.', icon: ArrowRight },
   { id: 'reverse-conversion', path: '/tools/thc-to-thca', name: 'THC → THCa', short: 'Reverse planning', eyebrow: 'Stoichiometry', heading: 'THC to THCa', summary: 'Enter your target THC mass to find the equivalent starting THCa.', title: 'THC to THCa Calculator: Starting Mass', description: 'Calculate starting THCa for a target THC mass with the 0.877 conversion factor. This inverse mass calculation does not convert THC back into THCa.', icon: ArrowLeft },
   { id: 'batch', path: '/tools/batch-yield', name: 'Batch yield', short: 'Batch yield', eyebrow: 'Production', heading: 'Batch yield', summary: 'Calculate THC, CO2 loss and remaining mass from batch weight and THCa percentage.', title: 'THCa Batch Yield Calculator', description: 'Estimate THC, CO2 loss and final sample weight from batch mass and THCa percentage. Other components are assumed unchanged in this theoretical model.', icon: Scale },
-  { id: 'analysis', path: '/tools/thca-percentage', name: 'THCa analyzer', short: 'Mass-loss analysis', eyebrow: 'Analytical', heading: 'THCa from mass loss', summary: 'Compare initial and final weights to estimate starting THCa under a CO2-only loss model.', title: 'THCa Percentage from Mass Loss', description: 'Estimate starting THCa percentage from before-and-after mass loss. Water, solvents and other volatile losses can make the CO2-based result inaccurate.', icon: ChartNoAxesColumnIncreasing },
+  { id: 'analysis', path: '/tools/thca-percentage', name: 'THCa analyzer', short: 'Mass-loss analysis', eyebrow: 'Analytical', heading: 'THCa from mass loss', summary: 'Compare initial and final weights to estimate starting THCa under a CO2-only loss model.', title: 'THCa Percent Analyzer (Mass Loss)', description: 'Estimate starting THCa percentage from before-and-after mass loss. Water, solvents and other volatile losses can make the CO2-based result inaccurate.', icon: ChartNoAxesColumnIncreasing },
   { id: 'edibles', path: '/tools/edible-dosage', name: 'Edible formulation', short: 'Edible dosage', eyebrow: 'Formulation', heading: 'Edible formulation', summary: 'Build a multi-ingredient recipe and calculate potential THC per serving.', title: 'Edible THC Dosage Calculator', description: 'Estimate THC mg per serving from ingredient weights and potency. Adjust THCa conversion, THC recovery and serving count independently for your recipe.', icon: FlaskConical },
   { id: 'pressure', path: '/tools/max-pressure', name: 'Vessel pressure', short: 'Gas pressure model', eyebrow: 'Physical model', heading: 'Vessel pressure', summary: 'Model trapped-air heating and CO2 pressure in a fixed headspace.', title: 'THCa CO2 Pressure Calculator', description: 'Model ideal-gas pressure from trapped air and CO2 released by THCa in a fixed headspace. This estimate is not a vessel rating or safe operating limit.', icon: Gauge },
   { id: 'tracker', path: '/tools/decarb-tracker', name: 'Progress tracker', short: 'Decarb tracker', eyebrow: 'Measurement', heading: 'Decarboxylation tracker', summary: 'Record vessel weight over time and inspect apparent CO2-based conversion.', title: 'Decarboxylation Progress Tracker', description: 'Log vessel weights, estimate CO2-based conversion and export decarb sessions. Weight loss alone cannot confirm chemical conversion or completed processing.', icon: ListChecks },
@@ -38,7 +38,7 @@ export const GUIDE_PATH = '/learn/decarboxylation-math';
 export const FAQ_PATH = '/faq';
 export const HOME = { path: '/', title: 'THCa to THC Calculator & Decarb Tools', description: SITE_DESCRIPTION };
 export const FAQ = { path: FAQ_PATH, title: 'Decarboxylation FAQ: Chemistry & Safety', description: `Answers to ${SCIENCE_FAQ.length} questions about chemistry, processing, measurement, formulation and safe interpretation of decarboxylation models.` };
-export const GUIDE = { path: GUIDE_PATH, title: 'THCa Decarboxylation Math & CO2', description: `Reference the THCa → THC + CO2 reaction, molar masses, the 0.87723 factor, mass-loss assumptions and headspace limits. Explore ${SCIENCE_FAQ.length} chemistry questions.` };
+export const GUIDE = { path: GUIDE_PATH, title: 'THCa to THC Conversion Rate & Formula', description: `Calculate the theoretical THCa to THC mass conversion using 0.87723 (314.46/358.47), understand CO2 loss, and distinguish mass yield from reaction completion.` };
 
 export function canonical(path: string) {
   const route = path.replace(/^\/+|\/+$/g, '');
@@ -52,10 +52,15 @@ export function ogImagePath(path: string) {
 }
 
 type Page = { path: string; title: string; description: string };
+/** Single branded search title for the HTML title, social previews, and WebPage identity. */
+export function searchTitle(page: Pick<Page, 'title'>) {
+  return `${page.title} | ${SITE_NAME}™`;
+}
 export function pageHead(page: Page) {
   const url = canonical(page.path);
   const ogUrl = new URL(ogImagePath(page.path), SITE_URL).toString();
   const ogAlt = page.title + ' | Decarboxulator scientific calculation studio';
+  const fullTitle = searchTitle(page);
   const isGuide = page.path === GUIDE_PATH;
   const isFaq = page.path === FAQ_PATH;
   const matchedTool = TOOLS.find(tool => tool.path === page.path);
@@ -63,7 +68,7 @@ export function pageHead(page: Page) {
   const faqs = isGuide || isFaq ? SCIENCE_FAQ : faqToolId ? TOOL_QUESTIONS[faqToolId] : [];
   return {
     meta: [
-      { title: page.title + ' | Decarboxulator' },
+      { title: fullTitle },
       { name: 'description', content: page.description },
       // Retain the original V3 Search Console HTML-tag verification across the
       // GitHub Pages migration. This was present in the historical site source.
@@ -72,7 +77,7 @@ export function pageHead(page: Page) {
       { property: 'og:type', content: 'website' },
       { property: 'og:locale', content: 'en_US' },
       { property: 'og:site_name', content: SITE_NAME },
-      { property: 'og:title', content: page.title },
+      { property: 'og:title', content: fullTitle },
       { property: 'og:description', content: page.description },
       { property: 'og:url', content: url },
       { property: 'og:image', content: ogUrl },
@@ -82,7 +87,7 @@ export function pageHead(page: Page) {
       { property: 'og:image:width', content: '1200' },
       { property: 'og:image:height', content: '630' },
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:title', content: page.title },
+      { name: 'twitter:title', content: fullTitle },
       { name: 'twitter:description', content: page.description },
       { name: 'twitter:image', content: ogUrl },
       { name: 'twitter:image:alt', content: ogAlt },
@@ -99,7 +104,7 @@ export function pageHead(page: Page) {
           { '@type': 'Person', '@id': `${SITE_URL}#creator`, name: CREATOR_NAME, url: CREATOR_URL },
           { '@type': 'WebSite', '@id': `${SITE_URL}#website`, name: SITE_NAME,
             url: SITE_URL, publisher: { '@id': `${SITE_URL}#publisher` }, creator: { '@id': `${SITE_URL}#creator` }, inLanguage: 'en' },
-          { '@type': 'WebPage', '@id': `${url}#webpage`, url, name: page.title,
+          { '@type': 'WebPage', '@id': `${url}#webpage`, url, name: fullTitle,
             description: page.description, inLanguage: 'en',
             isPartOf: { '@id': `${SITE_URL}#website` },
             mainEntity: { '@id': isGuide ? `${url}#reference` : isFaq ? `${url}#faq` : `${url}#calculator` },

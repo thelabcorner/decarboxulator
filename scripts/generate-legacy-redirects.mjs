@@ -76,6 +76,11 @@ for(const {legacy,target,reverseHash} of redirects){
   if(!targetExists(target))throw new Error('Redirect target is not prerendered: '+target);
   const destination=publicBase+target.replace(/^\//,'');
   const canonical=new URL(target.replace(/^\//,''),site).toString();
+  // Inherit the canonical page's actual SSR title; indexed V3 URLs must not
+  // advertise a stale brand, a competing title, or independent search intent.
+  const targetFile=target==='/'?join(root,'index.html'):join(root,target.slice(1),'index.html');
+  const canonicalTitle=readFileSync(targetFile,'utf8').match(/<title>([^<]+)<\/title>/)?.[1];
+  if(!canonicalTitle?.endsWith(' | Decarboxulator™'))throw new Error('Invalid canonical page title: '+target);
   const reverse=reverseHash?publicBase+'tools/thc-to-thca/':null;
   const markup=[
     '<!doctype html><html lang="en"><head><meta charset="utf-8">',
@@ -83,7 +88,7 @@ for(const {legacy,target,reverseHash} of redirects){
     // Do not put noindex on moving URLs. The instant meta refresh and matching
     // canonical signal consolidation; noindex is a competing exclusion signal.
     '<meta name="theme-color" content="#aaff00">',
-    '<title>'+esc(toolNames[target]||'Calculator')+' moved | Decarboxulator V4</title>',
+    '<title>'+canonicalTitle+'</title>',
     '<meta name="description" content="This historic Decarboxulator calculator URL has moved to the corresponding V4 scientific calculation tool.">',
     '<link rel="canonical" href="'+esc(canonical)+'">',
     style,
@@ -108,7 +113,7 @@ const retired=[
   '<!doctype html><html lang="en"><head><meta charset="utf-8">',
   '<meta name="viewport" content="width=device-width,initial-scale=1">',
   '<meta name="robots" content="noindex,follow">',
-  '<title>Time predictor retired | Decarboxulator</title>',style,
+  '<title>Time Predictor Retired | Decarboxulator™</title>',style,
   '</head><body>',
   shell('The time predictor was retired.',
     'The historical time predictor was not a working calculator. No processing time can be inferred from its former inputs. The V4 tracker records actual measured weight change.',

@@ -42,6 +42,12 @@ for(const file of files) {
   const visibleTitle=title?.replace(/&amp;/g,'&').replace(/&quot;/g,'"');
   assert(!html.includes('CO₂'),`${route || '/'}: non-searchable CO2 subscript in public HTML`);
   assert(visibleTitle?.length<=60,`${route || '/'}: title exceeds 60 characters`);
+  assert(visibleTitle?.endsWith(' | Decarboxulator™'),`${route || '/'}: missing canonical branded search title`);
+  for (const key of ['og:title', 'twitter:title']) {
+    const pattern = key.startsWith('og:') ? /<meta[^>]+property="og:title"[^>]+content="([^"]+)"/ :
+      /<meta[^>]+name="twitter:title"[^>]+content="([^"]+)"/;
+    assert(html.match(pattern)?.[1] === title,`${route || '/'}: ${key} disagrees with HTML title`);
+  }
   assert(description?.length<=160,`${route || '/'}: meta description exceeds 160 characters`);
   const canonicals=[...html.matchAll(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/g)].map(item=>item[1]);
   assert(title?.length>=15,`${route || '/'}: missing meaningful title`);
@@ -87,6 +93,7 @@ for(const file of files) {
     assert(graph.some(entry=>entry['@type']===type),`${route || '/'}: missing ${type} schema`);
   }
   const webpage=graph.find(entry=>entry['@type']==='WebPage');
+  assert(webpage?.name===visibleTitle,`${route || '/'}: WebPage name disagrees with HTML title`);
   const entityType=isGuide?'TechArticle':isFaq?'FAQPage':'WebApplication';
   const entity=graph.find(entry=>entry['@type']===entityType);
   assert(webpage?.url===expected,`${route || '/'}: WebPage JSON-LD URL mismatch`);
@@ -198,6 +205,10 @@ for (const {legacy, target, reverseHash} of redirects) {
   const filename = join(root, legacy);
   assert(existsSync(filename), `Historical URL missing from output: ${legacy}`);
   const redirect = readFileSync(filename, 'utf8');
+  const canonicalHtml = readFileSync(target==='/'?join(root,'index.html'):join(root,target.slice(1),'index.html'),'utf8');
+  const canonicalTitle = canonicalHtml.match(/<title>([^<]+)<\/title>/)?.[1];
+  assert(redirect.match(/<title>([^<]+)<\/title>/)?.[1]===canonicalTitle,
+    `${legacy}: legacy SERP title must match its canonical replacement`);
   const to = publicMount + target.slice(1);
   const canonical = new URL(target.slice(1), origin).toString();
   assert(redirect.includes(`<link rel="canonical" href="${canonical}">`), `${legacy}: incorrect target canonical`);
@@ -221,6 +232,8 @@ for (const path of ['pages/time-predictor.html','pages/time-predictor/index.html
   assert(notice.includes('name="robots" content="noindex,follow"') &&
     notice.includes('not a working calculator') && notice.includes('tools/decarb-tracker/'),
     `${path}: retired predictor needs a truthful, unindexed explanation`);
+  assert(notice.includes('<title>Time Predictor Retired | Decarboxulator™</title>'),
+    `${path}: retired historical page is missing consistent branded title`);
   assert(!sitemap.includes(path), `${path}: retired tool must not be in sitemap`);
 }
 const historicalEquivalents = {

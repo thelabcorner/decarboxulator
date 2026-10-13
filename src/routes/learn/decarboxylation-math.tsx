@@ -41,6 +41,18 @@ function ScienceGuide(){
             </p>
           </div>
         </section>
+        <section className="studio-panel science-method-panel" id="thca-to-thc-conversion-formula">
+          <div className="panel-heading"><div className="panel-heading-copy">
+            <h2>THCa to THC conversion rate and formula</h2>
+            <p>Mass retained after CO2 leaves the molecule</p>
+          </div><span className="small-label">Reference 02</span></div>
+          <div className="panel-content">
+            <p><strong>Theoretical THC mass = starting THCa mass × 0.87723.</strong> The factor comes from the molecular mass ratio, 314.46 g/mol THC divided by 358.47 g/mol THCa. It applies when one mole of THCa loses CO2 and forms one mole of THC.</p>
+            <p>For 10 g of pure THCa, the stoichiometric result is approximately 8.772 g of THC and 1.228 g of CO2. The corresponding CO2 mass fraction is 44.01 / 358.47, or about 12.277% of the starting THCa mass.</p>
+            <p><strong>87.723% is the theoretical retained mass, not the chemical conversion rate.</strong> It does not mean that only 87.723% of THCa reacts. Actual conversion, degradation, handling losses, and evaporation of water, solvents or terpenes are separate effects; observed weight loss alone cannot distinguish them.</p>
+            <p><Link to="/tools/thca-to-thc">Calculate THCa to THC mass</Link> or use the <Link to="/tools/thca-percentage">THCa percent analyzer</Link> to explore the assumptions behind a CO2-based mass-loss estimate.</p>
+          </div>
+        </section>
         <section className="studio-panel science-faq-panel" id="science-questions">
           <div className="panel-heading"><div className="panel-heading-copy">
             <h2>Questions &amp; answers</h2>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GUIDE, HOME, SITE_URL, TOOLS, canonical, ogImagePath, pageHead } from '../src/lib/site';
+import { FAQ, GUIDE, HOME, SITE_URL, TOOLS, canonical, ogImagePath, pageHead, searchTitle } from '../src/lib/site';
 
 type Entity = {
   '@type': string;
@@ -19,6 +19,26 @@ function metadata(page: { path: string; title: string; description: string }) {
 
 describe('prerendered SEO contract', () => {
   const pages = [HOME, ...TOOLS, GUIDE];
+
+  it('publishes one consistent, unique, branded title across search and social metadata', () => {
+    const routes = [HOME, ...TOOLS, FAQ, GUIDE];
+    const seen = new Set<string>();
+    for (const page of routes) {
+      const fullTitle = searchTitle(page);
+      const { head, webpage } = metadata(page);
+      const title = head.meta.find(tag => 'title' in tag);
+      const ogTitle = head.meta.find(tag => 'property' in tag && tag.property === 'og:title');
+      const twitterTitle = head.meta.find(tag => 'name' in tag && tag.name === 'twitter:title');
+      expect(fullTitle, page.path).toBe(`${page.title} | Decarboxulator™`);
+      expect(fullTitle.length, page.path).toBeLessThanOrEqual(60);
+      expect(seen.has(fullTitle), page.path).toBe(false);
+      seen.add(fullTitle);
+      expect(title?.title).toBe(fullTitle);
+      expect(ogTitle?.content).toBe(fullTitle);
+      expect(twitterTitle?.content).toBe(fullTitle);
+      expect((webpage as Entity & { name?: string }).name).toBe(fullTitle);
+    }
+  });
 
   it('provides ten distinct stable canonicals and route OG images', () => {
     expect(pages).toHaveLength(10);

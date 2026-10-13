@@ -50,7 +50,7 @@ function HomePage() {
         <div className="workbench-explainer-grid">
           <div>
             <h3>Understanding the 0.877 conversion factor</h3>
-            <p>For 10 g of pure THCa, the theoretical output is approximately 8.772 g THC and 1.228 g CO2. The factor represents stoichiometric mass balance, not reaction efficiency, cannabinoid recovery or a guaranteed laboratory result. <Link to={GUIDE_PATH}>Review the derivation</Link>.</p>
+            <p>For 10 g of pure THCa, the theoretical output is approximately 8.772 g THC and 1.228 g CO2. The factor represents stoichiometric mass balance, not reaction efficiency, cannabinoid recovery or a guaranteed laboratory result. <Link to={GUIDE_PATH}>See the conversion formula and derivation</Link>.</p>
           </div>
           <div>
             <h3>Choosing the right decarboxylation tool</h3>
