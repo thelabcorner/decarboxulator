@@ -1,6 +1,7 @@
 import { COMPOUND_TYPES, type CompoundRow } from './cartridge';
 import { parseEdibleRows, type EdibleRow } from './edibleFormula';
 import { MAX_INPUT, parseAmount, UNIT_KEYS } from './decarb';
+import { isAcidCannabinoid } from './cannabinoids';
 
 export const MAX_COMPOUND_ROWS = 20;
 // IndexedDB-backed runs support extended multi-hour/multi-day campaigns.
@@ -54,6 +55,7 @@ export function parseTrackerReadings(raw: string): TrackerReading[] | null {
 export function validWorkspaceValue(key: string, proposed: unknown, initial: string) {
   if (typeof proposed !== 'string') return false;
   if (key === 'unit') return UNIT_KEYS.includes(proposed as typeof UNIT_KEYS[number]);
+  if (key === 'cannabinoid') return isAcidCannabinoid(proposed);
   if (key === 'direction') return proposed === 'decarb' || proposed === 'reverse';
   if (key === 'tempUnit') return proposed === 'C' || proposed === 'F';
   if (key === 'tracking' || key === 'autoBalance') return proposed === 'yes' || proposed === 'no';

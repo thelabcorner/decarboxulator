@@ -1,7 +1,8 @@
-import { CONVERSION_RATIO } from './decarb';
+import { cannabinoidChemistry, isAcidCannabinoid, type AcidCannabinoid } from './cannabinoids';
 
-/** Original V3 v2.3 modes, with explicit recovery and independent cannabinoids. */
-export const EDIBLE_COMPOUNDS = ['THCa', 'THC', 'CBD', 'CBN', 'CBG', 'Other'] as const;
+export const EDIBLE_COMPOUNDS = [
+  'THCa', 'THC', 'CBDa', 'CBD', 'CBGa', 'CBG', 'CBCa', 'CBC', 'CBNa', 'CBN', 'Other',
+] as const;
 export type EdibleCompound = typeof EDIBLE_COMPOUNDS[number];
 export type EdibleMode = 'weight' | 'concentration' | 'desired';
 export const EDIBLE_UNITS = {mg: 1, g: 1000, oz: 28349.523125, lb: 453592.37, kg: 1e6} as const;
@@ -17,26 +18,32 @@ export const MAX_EDIBLE_ROWS = 24;
 export const DEFAULT_EDIBLE_ROWS: Record<EdibleMode, EdibleRow[]> = {
   weight: [{type: 'THCa', weight: 3.5, unit: 'g', percent: 100, target: 10}],
   concentration: [{type: 'THCa', weight: 3.5, unit: 'g', percent: 18, target: 10}],
-  desired: [{type: 'THC', weight: 0, unit: 'g', percent: 100, target: 10}],
+  desired: [{type: 'THCa', weight: 0, unit: 'g', percent: 100, target: 10}],
 };
 export interface EdibleRowResult {
   type: EdibleCompound;
+  /** The neutral compound this row produces. For acids: e.g. CBDa → CBD. Same as type for neutrals/Other. */
+  outputType: string;
   rawMg: number;
   /** Input amount needed. Defined in target mode, otherwise matches the input mass. */
   inputMaterialMg: number;
-  /** THCa-derived THC after conversion and downstream recovery; raw mg for other compounds. */
+  /** Stoichiometric neutral output for acid rows; raw mg for neutral/Other rows. */
   outputMg: number;
 }
 export interface EdibleFormulaResult {
+  /** Total modeled active THC mg per batch (backward compat). */
   totalThcMg: number;
+  /** Per-serving modeled THC (backward compat). */
   perServingThcMg: number;
   thcaDerivedThcMg: number;
   directThcMg: number;
   rawThcaMg: number;
+  /** Raw input mg per compound type (before any conversion). */
   totals: Record<EdibleCompound, number>;
+  /** Stoichiometric neutral output mg keyed by neutral compound symbol. */
+  outputTotals: Record<string, number>;
   rows: EdibleRowResult[];
   servings: number;
-  /** A target is an amount of active cannabinoid per serving, not a raw THCa mass. */
   mode: EdibleMode;
 }
 export const edibleRow = (type: EdibleCompound = 'THCa'): EdibleRow =>
@@ -57,6 +64,22 @@ export function parseEdibleRows(raw: string): EdibleRow[] | null {
   }));
 }
 
+function rowMultiplier(type: EdibleCompound, conversion: number, recovery: number): number {
+  if (isAcidCannabinoid(type)) {
+    // Conversion fraction is a user-supplied *assumption*, not transferable kinetics.
+    // Preserve legacy THC-specific downstream recovery; other neutral products
+    // are not automatically assigned THC's retention factor.
+    return cannabinoidChemistry(type as AcidCannabinoid).ratio * conversion * (type === 'THCa' ? recovery : 1);
+  }
+  if (type === 'THC') return recovery;
+  return 1;
+}
+
+function outputTypeForCompound(type: EdibleCompound): string {
+  if (isAcidCannabinoid(type)) return cannabinoidChemistry(type as AcidCannabinoid).neutral;
+  return type;
+}
+
 /** Pure calculations; no rounding until display. Reject rather than hide unachievable targets. */
 export function calculateEdibleFormula(
   mode: EdibleMode, rows: EdibleRow[], servings: number,
@@ -71,14 +94,13 @@ export function calculateEdibleFormula(
 
   const conversion = conversionPercent / 100;
   const recovery = recoveryPercent / 100;
-  const totals: Record<EdibleCompound, number> = {THCa: 0, THC: 0, CBD: 0, CBN: 0, CBG: 0, Other: 0};
+  const totals = Object.fromEntries(EDIBLE_COMPOUNDS.map(c => [c, 0])) as Record<EdibleCompound, number>;
+  const outputTotals: Record<string, number> = {};
   let directThcMg = 0, thcaDerivedThcMg = 0;
   const outputs: EdibleRowResult[] = [];
+
   for (const row of rows) {
-    // In desired mode targets are recovered active mg/serving. THCa must be
-    // back-solved through both conversion and recovery; the legacy page did not.
-    const multiplier = row.type === 'THCa' ? CONVERSION_RATIO * conversion * recovery :
-      row.type === 'THC' ? recovery : 1;
+    const multiplier = rowMultiplier(row.type, conversion, recovery);
     if (mode === 'desired' && row.target > 0 && multiplier === 0) return null;
     const inputMaterialMg = mode === 'desired'
       ? (multiplier > 0 ? row.target * servings / multiplier : 0)
@@ -87,12 +109,17 @@ export function calculateEdibleFormula(
     const outputMg = rawMg * multiplier;
     if (![rawMg, inputMaterialMg, outputMg].every(Number.isFinite)) return null;
     totals[row.type] += rawMg;
+    const outType = outputTypeForCompound(row.type);
+    outputTotals[outType] = (outputTotals[outType] ?? 0) + outputMg;
     if (row.type === 'THCa') thcaDerivedThcMg += outputMg;
     if (row.type === 'THC') directThcMg += outputMg;
-    outputs.push({type:row.type, rawMg, inputMaterialMg, outputMg});
+    outputs.push({type: row.type, outputType: outType, rawMg, inputMaterialMg, outputMg});
   }
   const totalThcMg = directThcMg + thcaDerivedThcMg;
   if (!Number.isFinite(totalThcMg)) return null;
-  return {totalThcMg, perServingThcMg: totalThcMg / servings, directThcMg,
-    thcaDerivedThcMg, rawThcaMg: totals.THCa, totals, rows: outputs, servings, mode};
+  return {
+    totalThcMg, perServingThcMg: totalThcMg / servings, directThcMg,
+    thcaDerivedThcMg, rawThcaMg: totals.THCa, totals, outputTotals,
+    rows: outputs, servings, mode,
+  };
 }

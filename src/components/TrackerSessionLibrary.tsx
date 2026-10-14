@@ -5,6 +5,7 @@ import type { TrackerSession } from '../lib/trackerSessions';
 import { encodeTrackerArchive, encodeTrackerSession, TRACKER_BACKUP_MAX_BYTES, type TrackerImportReport } from '../lib/trackerBackup';
 import { trackerConfigFromPercent, validatedTrackerConfig, restoreTrackerPoints, trackerRawCSV } from '../lib/trackerAnalytics';
 import { trackerSetup, formatNumber } from '../lib/decarb';
+import { isAcidCannabinoid } from '../lib/cannabinoids';
 import './TrackerSessions.css';
 
 function downloadFile(filename:string,body:string,mime:string) {
@@ -17,9 +18,10 @@ function downloadFile(filename:string,body:string,mime:string) {
 function getProgress(s:TrackerSession) {
   const f=s.fields;
   const t=Number(f.tare),a=Number(f.thca),o=Number(f.other);
+  const cannabinoid=isAcidCannabinoid(f.cannabinoid)?f.cannabinoid:'THCa';
   const cfg=f.trackerMode==='percentage'
-    ? trackerConfigFromPercent(t,Number(f.totalContent),Number(f.acidPercent),Number(f.otherPercent))
-    : validatedTrackerConfig({tareG:t,thcaG:a,otherG:o});
+    ? trackerConfigFromPercent(t,Number(f.totalContent),Number(f.acidPercent),Number(f.otherPercent),cannabinoid)
+    : validatedTrackerConfig({tareG:t,thcaG:a,otherG:o,cannabinoid});
   if (!cfg) return null;
   const points=restoreTrackerPoints(s.readings,cfg);
   return {points,cfg,expected:trackerSetup(cfg).expectedCo2LossG};

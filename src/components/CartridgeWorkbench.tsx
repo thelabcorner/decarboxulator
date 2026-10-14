@@ -7,6 +7,7 @@ import { CalculatorStudio } from './CalculatorStudio';
 import { FieldGrid, Metric, Metrics, Notice, Panel, PrimaryResult, Selector, Unavailable } from './ui';
 import { useCalculatorWorkspace } from '../lib/useCalculatorWorkspace';
 import { formatNumber, parseAmount } from '../lib/decarb';
+import { isAcidCannabinoid, cannabinoidChemistry } from '../lib/cannabinoids';
 import { calculateCartridge, calculateCartridgeFromInput, consolidateCompounds,
   COMPOUND_TYPES, type CompoundType, type AcidTreatment, type CompoundRow } from '../lib/cartridge';
 import { parseCompoundRows, MAX_COMPOUND_ROWS } from '../lib/workspacePayload';
@@ -18,13 +19,14 @@ const PROFILES: Record<string,CompoundRow[]> = {
   'CBD blend':[{type:'CBD',parts:80},{type:'THC',parts:10},{type:'Terpenes',parts:10}],
   'Mixed cannabinoids':[{type:'THCa',parts:50},{type:'THC',parts:30},{type:'CBD',parts:15},{type:'Terpenes',parts:5}],
 };
-const ORIGINAL_DEFAULT = [{type:'THC',parts:85},{type:'Terpenes',parts:10},{type:'CBN',parts:5}] as CompoundRow[];
+const ORIGINAL_DEFAULT = [{type:'THCa',parts:85},{type:'Terpenes',parts:10},{type:'CBN',parts:5}] as CompoundRow[];
 const DEFAULTS = {unit:'g' as const,cartCount:'10',cartCapacity:'1',
   rows:JSON.stringify(ORIGINAL_DEFAULT),acidTreatment:'convert' as AcidTreatment,
   batchMode:'target',startingBatch:'10'};
 const COLORS: Record<CompoundType,string> = {
-  THC:'#74aa42',THCa:'#aaff00',CBD:'#589ac7',CBN:'#a184c2',
-  CBG:'#d2a74e',THCV:'#c583a8',Terpenes:'#47aba0',Other:'#9da2a9',
+  THC:'#74aa42',THCa:'#aaff00',CBD:'#589ac7',CBDa:'#79b7dd',
+  CBN:'#a184c2',CBNa:'#baa1d5',CBG:'#d2a74e',CBGa:'#edc675',
+  CBC:'#629f78',CBCa:'#92b69c',THCV:'#c583a8',Terpenes:'#47aba0',Other:'#9da2a9',
 };
 export function CartridgeWorkbench() {
   const ws=useCalculatorWorkspace('cartridge',DEFAULTS);
@@ -90,10 +92,10 @@ export function CartridgeWorkbench() {
           <div className="preset-row">{[0.5,1,2].map(n=><button type="button"
             className="preset" key={n} onClick={()=>ws.setField('cartCapacity',String(n))}>{n} g</button>)}</div>
         </div>
-        {rows.some(r=>r.type==='THCa'&&r.parts>0)&&
-          <Selector label="THCa mass behavior" value={acidTreatment}
+        {rows.some(r=>isAcidCannabinoid(r.type)&&r.parts>0)&&
+          <Selector label="Acidic cannabinoid behavior" value={acidTreatment}
             onChange={v=>ws.setField('acidTreatment',v)}
-            options={[{value:'convert',label:'Model full decarb'}, {value:'retain',label:'Retain THCa'}]}/>}
+            options={[{value:'convert',label:'Model full decarb'}, {value:'retain',label:'Retain acids'}]}/>}
         <div className="studio-builder-title"><span className="small-label">Blend recipe / relative input parts</span>
           <span className="small-label">{formatNumber(partsTotal,2)} parts</span></div>
         <div className="preset-section"><span className="small-label">Start with a recipe</span>
@@ -112,7 +114,8 @@ export function CartridgeWorkbench() {
               <div className="studio-builder-select-field">
                 <CompactSelect id={`cart-type-${i}`} label="Compound" value={row.type}
                   onChange={type=>setRows(rows.map((r,j)=>i===j?{...r,type}:r))}
-                  options={COMPOUND_TYPES.map(type=>({value:type,label:type}))}/>
+                  options={COMPOUND_TYPES.map(type=>({value:type,label:isAcidCannabinoid(type)
+                    ? `${type} → ${cannabinoidChemistry(type).neutral}` : type}))}/>
               </div>
               <NumberField id={`cart-parts-${i}`} label="Parts" suffix="pts" value={String(row.parts)}
                 onChange={v=>setRows(rows.map((r,j)=>i===j?{...r,parts:Number(v)||0}:r))}/>
@@ -120,7 +123,7 @@ export function CartridgeWorkbench() {
           </div>)}
         </div>
         <button type="button" className="action-button action-button-secondary" disabled={rows.length>=MAX_COMPOUND_ROWS}
-          onClick={()=>setRows([...rows,{type:'Other',parts:0}])}><Plus size={14}/> Add compound</button>
+          onClick={()=>setRows([...rows,{type:'THCa',parts:0}])}><Plus size={14}/> Add compound</button>
         <Notice>Parts specify relative starting blend masses; they need not total 100. Repeated compound types are consolidated in the output.</Notice>
       </div>
     </Panel>}
@@ -134,9 +137,9 @@ export function CartridgeWorkbench() {
           <Metric label="CO2 released" value={formatNumber(co2Loss,3)} suffix="g"/>
           <Metric label="Complete cartridges" value={String(result.effectiveCarts)}/>
           <Metric label="Unfilled remainder" value={formatNumber(remaining,3)} suffix="g"/>
-          {result.thcaOnlyMode&&<>
-            <Metric label="THCa input" value={formatNumber(result.thcaInputG,3)} suffix="g"/>
-            <Metric label="THC from THCa" value={formatNumber(result.thcFromThcaG,3)} suffix="g"/></>}
+          {result.acidBreakdown.map(entry=><Metric key={entry.acidType}
+            label={`${entry.neutralType} from ${entry.acidType}`}
+            value={formatNumber(entry.outputG,3)} suffix="g"/>)}
         </Metrics>
         <div className="studio-builder-title"><span className="small-label">Final composition</span></div>
         <div className="composition-bar" role="img" aria-label="Final formulation distribution">
@@ -155,7 +158,7 @@ export function CartridgeWorkbench() {
         {result.warnings.crystallization&&<Notice variant="warning">THCa percentage is above the screening threshold. Actual crystallization is dependent on thermodynamics, composition, temperature and time; this calculator cannot predict solubility.</Notice>}
         {result.warnings.cbdCryst&&<Notice variant="warning">CBD percentage is above a qualitative screening threshold, not a measured solubility limit.</Notice>}
         {result.warnings.terpenes&&<Notice variant="warning">High terpene fraction: verify material compatibility and measured formulation properties independently.</Notice>}
-        <Notice>Complete decarboxylation is a theoretical mass-balance option, not an instruction or guarantee of conversion. A formulation percentage alone cannot establish cartridge stability, safety or suitability for inhalation.</Notice>
+        <Notice>Each selected acid follows its own theoretical acid-to-neutral molecular ratio. Complete decarboxylation is a mass-balance assumption, not a predicted reaction rate, guaranteed yield, or evidence of inhalation suitability.</Notice>
       </>:<Unavailable>Provide a valid positive capacity, batch quantity, and recipe with at least one positive part.</Unavailable>}
     </Panel>}
   />;

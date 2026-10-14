@@ -19,6 +19,7 @@
     "test:offline": "node scripts/qa-navigation-offline.mjs",
     "test:tracker-ui": "node scripts/qa-tracker-backup.mjs",
     "test:calculators": "node scripts/qa-calculator-studio.mjs",
+    "test:acids": "node scripts/qa-acidic-cannabinoids.mjs",
     "test:tracker-studio": "node scripts/qa-tracker-studio.mjs",
     "test:tracker-kinetics": "node scripts/qa-tracker-kinetics.mjs",
     "test:tracker": "node scripts/qa-tracker-sessions.mjs",

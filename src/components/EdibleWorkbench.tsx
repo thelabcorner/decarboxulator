@@ -7,6 +7,7 @@ import { CalculatorStudio } from './CalculatorStudio';
 import { FieldGrid, Formula, Metric, Metrics, Notice, Panel, PrimaryResult, Selector, Unavailable } from './ui';
 import { useCalculatorWorkspace } from '../lib/useCalculatorWorkspace';
 import { formatNumber, parseAmount } from '../lib/decarb';
+import { isAcidCannabinoid, cannabinoidChemistry } from '../lib/cannabinoids';
 import { calculateEdibleFormula, DEFAULT_EDIBLE_ROWS, EDIBLE_COMPOUNDS, EDIBLE_UNITS,
   edibleRow, MAX_EDIBLE_ROWS, parseEdibleRows, type EdibleMode, type EdibleRow, type EdibleCompound, type EdibleUnit,
 } from '../lib/edibleFormula';
@@ -20,7 +21,9 @@ const DEFAULTS = {
   edibleRows: JSON.stringify(DEFAULT_EDIBLE_ROWS.concentration),
 };
 const COLORS: Record<EdibleCompound,string> = {
-  THCa:'#aaff00', THC:'#76a443', CBD:'#579bcc', CBN:'#a684cb', CBG:'#dbaf52', Other:'#99999e',
+  THCa:'#aaff00', THC:'#76a443', CBDa:'#79b7dd', CBD:'#579bcc',
+  CBGa:'#edc675', CBG:'#dbaf52', CBCa:'#92b69c', CBC:'#629f78',
+  CBNa:'#baa1d5', CBN:'#a684cb', Other:'#99999e',
 };
 const numberText = (n: number) => Number.isFinite(n) ? String(n) : '0';
 
@@ -43,10 +46,20 @@ export function EdibleWorkbench() {
     [mode,rows,count.value,conversion.value,downstream.value]);
   const valid = result !== null;
   const byCompound = result ? EDIBLE_COMPOUNDS.filter(type => result.totals[type] > 0) : [];
+  const singleType = rows.length === 1 ? rows[0].type : null;
+  const primaryNeutral = singleType && isAcidCannabinoid(singleType)
+    ? cannabinoidChemistry(singleType).neutral
+    : singleType && singleType !== 'Other' ? singleType
+    : result && result.totalThcMg === 0 ? 'total cannabinoids' : 'THC';
+  const combinedNeutralMg = result ? (['THC','CBD','CBG','CBC','CBN'] as const)
+    .reduce((sum,key)=>sum+(result.outputTotals[key] ?? 0),0) : 0;
+  const primaryMg = result ? (primaryNeutral === 'THC' ? result.perServingThcMg
+    : primaryNeutral === 'total cannabinoids' ? combinedNeutralMg/result.servings
+    : (result.outputTotals[primaryNeutral] ?? 0) / result.servings) : null;
 
   return <CalculatorStudio name="Edible formulation" category="Recipe planning"
-    summary="THC yield per serving" label={mode==='desired'?'Target active THC per serving':'Potential active THC per serving'}
-    value={result?formatNumber(result.perServingThcMg,2):null} unit="mg"
+    summary="Compound yield per serving" label={mode==='desired'?`Target ${primaryNeutral} per serving`:`Potential ${primaryNeutral} per serving`}
+    value={primaryMg!==null?formatNumber(primaryMg,2):null} unit="mg"
     note="Calculated from ingredient assay, conversion and downstream recovery"
     metrics={[
       {label:'Total THC / batch',value:result?formatNumber(result.totalThcMg,2):'—',unit:'mg'},
@@ -54,7 +67,7 @@ export function EdibleWorkbench() {
     ]}
     input={<Panel title="Formulation builder" detail="Set cannabinoid content, conversion, and servings"
       action={<WorkspaceActions onReset={ws.reset} shareUrl={ws.shareUrl} tool="Edible formulation"
-        result={result ? `${formatNumber(result.perServingThcMg,2)} mg THC / serving` : null}/>}>
+        result={primaryMg!==null ? `${formatNumber(primaryMg,2)} mg ${primaryNeutral} / serving` : null}/>}>
       <div className="input-stack">
         <Selector label="Input method" value={mode} onChange={next => ws.setFields({
           edibleMode:next, edibleRows:JSON.stringify(DEFAULT_EDIBLE_ROWS[next]),
@@ -67,12 +80,12 @@ export function EdibleWorkbench() {
             onChange={v => ws.setField('servings',v)} min={1}
             error={count.error || (count.value !== null && !Number.isSafeInteger(count.value) ? 'Whole servings only' : null)}
             prominent/>
-          <NumberField id="edible-conversion" label="THCa conversion" value={recovery}
+          <NumberField id="edible-conversion" label="Assumed acid conversion" value={recovery}
             onChange={v => ws.setField('recovery',v)} suffix="%" max={100} error={conversion.error}/>
         </FieldGrid>
         <NumberField id="edible-retention" label="Downstream THC recovery" value={postRecovery}
           onChange={v => ws.setField('postRecovery',v)} suffix="%" max={100}
-          error={downstream.error} hint="Separate processing/transfer retention; does not alter CBD, CBN or CBG estimates."/>
+          error={downstream.error} hint="Historical THC-specific transfer recovery. Other neutral cannabinoid recoveries are not inferred."/>
         <div className="studio-builder-title">
           <span className="small-label">Ingredients / compounds</span>
           <span className="small-label">{rows.length} of {MAX_EDIBLE_ROWS}</span>
@@ -88,10 +101,11 @@ export function EdibleWorkbench() {
             </div>
             <CompactSelect id={`edible-type-${i}`} label="Compound" value={row.type}
               onChange={type=>changeRow(i,{type})}
-              options={EDIBLE_COMPOUNDS.map(type=>({value:type,label:type}))}/>
+              options={EDIBLE_COMPOUNDS.map(type=>({value:type,label:isAcidCannabinoid(type)
+                ? `${type} → ${cannabinoidChemistry(type).neutral}` : type}))}/>
             {mode === 'desired' ?
               <NumberField id={`edible-target-${i}`}
-                label={row.type === 'THCa' ? 'Target active THC per serving (from THCa)' : `Target ${row.type} per serving`}
+                label={isAcidCannabinoid(row.type) ? `Target ${cannabinoidChemistry(row.type).neutral} per serving (from ${row.type})` : `Target ${row.type} per serving`}
                 suffix="mg" value={numberText(row.target)}
                 onChange={v=>changeRow(i,{target:Number(v)})}/> :
               <div className="studio-builder-fields">
@@ -112,20 +126,21 @@ export function EdibleWorkbench() {
         </div>
         <button type="button" className="action-button action-button-secondary" disabled={rows.length>=MAX_EDIBLE_ROWS}
           onClick={()=>setRows([...rows,edibleRow()])}><Plus size={15}/> Add ingredient</button>
-        <Formula>THCa × 0.877 × conversion × THC recovery + existing THC × recovery</Formula>
+        <Formula>Selected acid input × (neutral molar mass / acid molar mass) × assumed acid conversion; THCa and starting THC additionally use the THC recovery percentage.</Formula>
       </div>
     </Panel>}
     output={<Panel title="Recipe output" detail={mode === 'desired' ? 'Required starting material to meet the target' : 'Modeled batch totals and per-serving profile'}>
       {valid && result ? <>
-        <PrimaryResult label={mode === 'desired' ? 'Target active THC per serving' : 'Potential active THC per serving'}
-          value={formatNumber(result.perServingThcMg,2)} unit=" mg"/>
+        <PrimaryResult label={mode === 'desired' ? `Target ${primaryNeutral} per serving` : `Potential ${primaryNeutral} per serving`}
+          value={formatNumber(primaryMg ?? 0,2)} unit=" mg"/>
         <Metrics>
-          <Metric label="THC per batch" value={formatNumber(result.totalThcMg,2)} suffix="mg" accent/>
+          <Metric label="Combined neutral cannabinoids / batch" value={formatNumber(combinedNeutralMg,2)} suffix="mg" accent/>
+          <Metric label="THC per batch" value={formatNumber(result.totalThcMg,2)} suffix="mg"/>
           <Metric label="THC from THCa" value={formatNumber(result.thcaDerivedThcMg,2)} suffix="mg"/>
           <Metric label="THC already neutral" value={formatNumber(result.directThcMg,2)} suffix="mg"/>
           <Metric label="Servings" value={result.servings}/>
-          {(['CBD','CBN','CBG'] as const).filter(t=>result.totals[t]>0).map(t=>
-            <Metric key={t} label={`${t} per serving`} value={formatNumber(result.totals[t]/result.servings,2)} suffix="mg"/>)}
+          {(['CBD','CBG','CBC','CBN'] as const).filter(t=>(result.outputTotals[t] ?? 0)>0).map(t=>
+            <Metric key={t} label={`${t} per serving`} value={formatNumber(result.outputTotals[t]/result.servings,2)} suffix="mg"/>)}
         </Metrics>
         <div className="studio-builder-title"><span className="small-label">Compound mass distribution · before conversion</span></div>
         <div className="composition-bar" role="img" aria-label="Starting cannabinoid mass distribution">
@@ -147,7 +162,7 @@ export function EdibleWorkbench() {
               {mode==='desired' ? ' input' : ' compound'}</span>
           </div>)}
         </div>
-        {mode==='desired' && <Notice>Targets are back-solved through conversion and THC recovery, not interpreted as raw THCa mass. Every row is independently specified.</Notice>}
+        {mode==='desired' && <Notice>Targets are back-solved through the selected acid's molecular ratio and the assumed conversion fraction. THC-specific recovery applies only to THC-producing or direct THC rows.</Notice>}
         <Notice variant="warning">An analytical planning estimate, not a measured serving dose. Assumes uniform mixing and the stated composition. Actual concentrations and individual servings can differ. CBN is not CBD and is never counted toward CBD totals.</Notice>
       </> : <Unavailable>Enter valid material amounts, whole-number servings, and attainable conversion/recovery targets.</Unavailable>}
     </Panel>}

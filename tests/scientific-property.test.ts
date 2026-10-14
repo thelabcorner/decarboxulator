@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { calculateBatch, analyzeMassLoss, calculateEdibles, trackerSetup, trackerSnapshot, CO2_RATIO, CONVERSION_RATIO } from '../src/lib/decarb';
+import { calculateBatch, analyzeMassLoss, calculateEdibles, trackerSetup, trackerSnapshot, CONVERSION_RATIO } from '../src/lib/decarb';
 import { calculateCartridge, type CompoundRow, COMPOUND_TYPES, type AcidTreatment } from '../src/lib/cartridge';
+import {isAcidCannabinoid,cannabinoidChemistry} from '../src/lib/cannabinoids';
 import { computePressure, convertTemp } from '../src/lib/pressure';
 
 // Deterministic, bounded property sweeps prevent fixture overfitting.
@@ -68,7 +69,10 @@ describe('bounded deterministic physical-model property sweeps', () => {
       close(c.compounds.reduce((total,r) => total + r.finalWeightG,0),c.totalFinalWeightG);
       close(c.compounds.reduce((total,r) => total + r.inputWeightG,0),c.totalInputWeightG);
       close(c.compounds.reduce((total,r) => total + r.finalPct,0),100);
-      close(c.totalInputWeightG-c.totalFinalWeightG,c.thcaInputG*CO2_RATIO);
+      const expectedCo2=c.compounds.reduce((loss,row)=>loss+(
+        mode==='convert'&&isAcidCannabinoid(row.type)
+          ?row.inputWeightG*cannabinoidChemistry(row.type).co2Ratio:0),0);
+      close(c.totalInputWeightG-c.totalFinalWeightG,expectedCo2);
       expect(c.effectiveCarts).toBe(count);
       if (mode === 'retain') {
         close(c.totalInputWeightG,c.totalFinalWeightG);

@@ -1,4 +1,5 @@
 import { parseTrackerReadings, validWorkspaceValue, type TrackerReading } from './workspacePayload';
+import { DEFAULT_ACID_CANNABINOID, isAcidCannabinoid } from './cannabinoids';
 
 /** Each laboratory run is its own independent, versioned record. */
 export const TRACKER_DEFAULTS = {
@@ -6,6 +7,7 @@ export const TRACKER_DEFAULTS = {
   trackerMode: 'manual', totalContent: '30', acidPercent: '85',
   otherPercent: '15', autoBalance: 'yes', scaleResolution: '0.01',
   measurementTempC: '', measurementNote: '',
+  cannabinoid: DEFAULT_ACID_CANNABINOID,
 } as const;
 export type TrackerFields = { -readonly [K in keyof typeof TRACKER_DEFAULTS]: string };
 export type TrackerStatus = 'draft' | 'running' | 'paused' | 'completed';
@@ -56,8 +58,14 @@ export function parseTrackerSession(raw: unknown): TrackerSession | null {
   const fields = {...TRACKER_DEFAULTS} as TrackerFields;
   for (const key of Object.keys(fields) as (keyof TrackerFields)[]) {
     const value = r.fields[key];
-    // New per-reading optional fields preserve v1 archive compatibility.
-    if (value === undefined && (key==='measurementTempC'||key==='measurementNote')) continue;
+    // New optional fields preserve v1 archive compatibility; absent → default.
+    if (value === undefined && (key==='measurementTempC'||key==='measurementNote'||key==='cannabinoid')) continue;
+    // Validate stored cannabinoid selection.
+    if (key==='cannabinoid') {
+      if (!isAcidCannabinoid(value)) return null;
+      fields[key]=value;
+      continue;
+    }
     if (typeof value !== 'string') return null;
     if (key==='measurementNote') {
       if (value.length>300) return null;

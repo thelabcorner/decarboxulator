@@ -2,8 +2,10 @@
  * Stoichiometric calculations. All internal masses are in grams.
  * These model a theoretical reaction, not empirical conversion kinetics.
  */
-// Mean molar masses in g/mol (NRC Canada CBIS-1 reference material,
-// PubChem CID 98523 / 16078; not monoisotopic exact masses).
+import { cannabinoidChemistry, DEFAULT_ACID_CANNABINOID, type AcidCannabinoid } from './cannabinoids';
+
+// Legacy THCa constants stay stable for SEO, integrations and historical tests.
+// Mean molar masses in g/mol (NRC Canada CBIS-1).
 export const MW_THCA = 358.47;
 export const MW_THC = 314.46;
 export const MW_CO2 = MW_THCA - MW_THC;
@@ -36,11 +38,14 @@ export function parseAmount(raw: string, options: { max?: number; min?: number }
 }
 
 export interface DecarbResult { outputGrams: number; co2Grams: number }
-export function convert(grams: number, direction: Direction): DecarbResult {
+export function convert(
+  grams: number, direction: Direction, cannabinoid: AcidCannabinoid = DEFAULT_ACID_CANNABINOID,
+): DecarbResult {
   if (!Number.isFinite(grams) || grams < 0 || (direction !== 'decarb' && direction !== 'reverse')) {
     throw new RangeError('Conversion requires a nonnegative finite mass and a valid direction');
   }
-  const outputGrams = direction === 'decarb' ? grams * CONVERSION_RATIO : grams / CONVERSION_RATIO;
+  const {ratio} = cannabinoidChemistry(cannabinoid);
+  const outputGrams = direction === 'decarb' ? grams * ratio : grams / ratio;
   return { outputGrams, co2Grams: Math.abs(outputGrams - grams) };
 }
 
@@ -57,16 +62,25 @@ export function formatAmount(grams: number, unit: UnitKey): string {
 }
 
 export interface BatchResult {
-  thcaGrams: number; thcGrams: number; co2Grams: number;
-  finalWeightGrams: number; finalThcPercent: number;
+  /** Acid input mass, historical property retained for API compatibility. */
+  thcaGrams: number;
+  /** Neutral output mass, historical property retained for API compatibility. */
+  thcGrams: number;
+  co2Grams: number;
+  finalWeightGrams: number;
+  /** Neutral product percentage in final blend, legacy property name. */
+  finalThcPercent: number;
 }
-export function calculateBatch(totalGrams: number, thcaPercent: number): BatchResult {
+export function calculateBatch(
+  totalGrams: number, thcaPercent: number, cannabinoid: AcidCannabinoid = DEFAULT_ACID_CANNABINOID,
+): BatchResult {
   if (!Number.isFinite(totalGrams) || totalGrams < 0 || !Number.isFinite(thcaPercent) ||
       thcaPercent < 0 || thcaPercent > 100) {
-    throw new RangeError('Batch requires nonnegative finite mass and THCa percentage from 0 to 100');
+    throw new RangeError('Batch requires nonnegative finite mass and acidic cannabinoid percentage from 0 to 100');
   }
+  const {ratio} = cannabinoidChemistry(cannabinoid);
   const thcaGrams = totalGrams * thcaPercent / 100;
-  const thcGrams = thcaGrams * CONVERSION_RATIO;
+  const thcGrams = thcaGrams * ratio;
   const co2Grams = thcaGrams - thcGrams;
   const finalWeightGrams = totalGrams - co2Grams;
   return {
@@ -76,19 +90,29 @@ export function calculateBatch(totalGrams: number, thcaPercent: number): BatchRe
 }
 
 export interface MassLossResult {
-  lossGrams: number; thcaGrams: number; thcGrams: number;
-  thcaPercent: number; thcPercentAfter: number; maxLossGrams: number;
+  lossGrams: number;
+  /** Acid equivalent, historical property name. */
+  thcaGrams: number;
+  /** Neutral equivalent, historical property name. */
+  thcGrams: number;
+  thcaPercent: number;
+  thcPercentAfter: number;
+  maxLossGrams: number;
 }
-export function analyzeMassLoss(initialGrams: number, finalGrams: number): MassLossResult | null {
+export function analyzeMassLoss(
+  initialGrams: number, finalGrams: number,
+  cannabinoid: AcidCannabinoid = DEFAULT_ACID_CANNABINOID,
+): MassLossResult | null {
   if (![initialGrams, finalGrams].every(Number.isFinite) ||
       !(initialGrams > 0) || finalGrams < 0 || finalGrams > initialGrams) return null;
+  const {ratio,co2Ratio} = cannabinoidChemistry(cannabinoid);
   const lossGrams = initialGrams - finalGrams;
-  const maxLossGrams = initialGrams * CO2_RATIO;
-  // Larger losses cannot be explained by THCa -> THC + CO2 alone.
+  const maxLossGrams = initialGrams * co2Ratio;
+  // Larger losses cannot be explained by the selected acid releasing CO2 alone.
   if (lossGrams > maxLossGrams + maxLossGrams * 1e-10 +
       Number.EPSILON * initialGrams * 8) return null;
-  const thcaGrams = Math.min(initialGrams, lossGrams / CO2_RATIO);
-  const thcGrams = thcaGrams * CONVERSION_RATIO;
+  const thcaGrams = Math.min(initialGrams, lossGrams / co2Ratio);
+  const thcGrams = thcaGrams * ratio;
   return {
     lossGrams, thcaGrams, thcGrams, maxLossGrams,
     thcaPercent: thcaGrams / initialGrams * 100,
@@ -103,6 +127,7 @@ export interface EdibleResult {
 export function calculateEdibles(
   materialGrams: number, thcaPercent: number, thcPercent: number,
   servings: number, acidConversionPercent: number, postProcessRecoveryPercent = 100,
+  cannabinoid: AcidCannabinoid = DEFAULT_ACID_CANNABINOID,
 ): EdibleResult | null {
   if (![materialGrams, thcaPercent, thcPercent, servings, acidConversionPercent,
       postProcessRecoveryPercent].every(Number.isFinite) ||
@@ -110,11 +135,11 @@ export function calculateEdibles(
       thcaPercent < 0 || thcaPercent > 100 || thcPercent < 0 || thcPercent > 100 ||
       thcaPercent + thcPercent > 100 || acidConversionPercent < 0 || acidConversionPercent > 100 ||
       postProcessRecoveryPercent < 0 || postProcessRecoveryPercent > 100) return null;
-  // Separate acid decarboxylation completion from downstream THC recovery.
-  // Pre-existing neutral THC never participates in acid decarboxylation, but
-  // can still be lost during subsequent processing.
+  const {ratio} = cannabinoidChemistry(cannabinoid);
+  // Legacy THC-named fields represent the selected acid and neutral when used
+  // with a non-THCa selection; new formulation APIs expose explicit types.
   const recovered = postProcessRecoveryPercent / 100;
-  const acidThcMg = materialGrams * 1000 * thcaPercent / 100 * CONVERSION_RATIO * acidConversionPercent / 100 * recovered;
+  const acidThcMg = materialGrams * 1000 * thcaPercent / 100 * ratio * acidConversionPercent / 100 * recovered;
   const startingThcMg = materialGrams * 1000 * thcPercent / 100 * recovered;
   const totalThcMg = acidThcMg + startingThcMg;
   return { totalThcMg, servingThcMg: totalThcMg / servings, acidThcMg, startingThcMg };
@@ -123,10 +148,12 @@ export function calculateEdibles(
 export interface TrackerConfig {
   /** Container (tare) weight in grams */
   tareG: number;
-  /** Initial THCa mass in grams */
+  /** Initial selected acid mass (legacy field name retained). */
   thcaG: number;
   /** Other cannabinoids / non-volatile mass in grams */
   otherG: number;
+  /** Defaults to THCa for old tracker runs and API callers. */
+  cannabinoid?: AcidCannabinoid;
 }
 
 export interface TrackerSnapshot {
@@ -148,11 +175,12 @@ export interface TrackerSetup {
 }
 
 export function trackerSetup(cfg: TrackerConfig): TrackerSetup {
+  const {ratio,co2Ratio} = cannabinoidChemistry(cfg.cannabinoid ?? DEFAULT_ACID_CANNABINOID);
   return {
     initialTotalG: cfg.tareG + cfg.thcaG + cfg.otherG,
-    expectedFinalThcG: cfg.thcaG * CONVERSION_RATIO,
-    expectedCo2LossG: cfg.thcaG * CO2_RATIO,
-    expectedFinalContentG: cfg.thcaG * CONVERSION_RATIO + cfg.otherG,
+    expectedFinalThcG: cfg.thcaG * ratio,
+    expectedCo2LossG: cfg.thcaG * co2Ratio,
+    expectedFinalContentG: cfg.thcaG * ratio + cfg.otherG,
   };
 }
 
@@ -169,15 +197,13 @@ export function trackerSnapshot(
       currentWeightG > setup.initialTotalG) return null;
 
   const weightLossG = setup.initialTotalG - currentWeightG;
-  // A loss greater than all possible THCa-derived CO2 cannot be modeled as
-  // additional decarboxylation. Never silently clamp impossible readings.
   if (weightLossG > setup.expectedCo2LossG + setup.expectedCo2LossG * 1e-10 +
       Number.EPSILON * setup.initialTotalG * 8) return null;
+  const {ratio} = cannabinoidChemistry(cfg.cannabinoid ?? DEFAULT_ACID_CANNABINOID);
   const completion = Math.min(100, Math.max(0, (weightLossG / setup.expectedCo2LossG) * 100));
-
   const contentWeightG = currentWeightG - cfg.tareG;
   const remainingThcaG = cfg.thcaG * (1 - completion / 100);
-  const convertedThcG = cfg.thcaG * CONVERSION_RATIO * (completion / 100);
+  const convertedThcG = cfg.thcaG * ratio * (completion / 100);
 
   return {
     completion,
