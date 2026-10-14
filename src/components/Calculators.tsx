@@ -70,23 +70,24 @@ export function ConversionCalculator({entryDirection}: {entryDirection?: Directi
     } else workspace.setField('direction',next);
   }
   return (
-    <CalculatorStudio name={`${from} → ${to}`} category="Stoichiometry"
+    <CalculatorStudio name={isDecarb ? `${chemistry.acid} product yield` : `${chemistry.acid} starting mass`} category="Stoichiometry"
       summary="Molecular mass model" label={isDecarb ? `Theoretical ${to} produced` : `Equivalent starting ${to}`}
       value={result ? formatAmount(result.outputGrams,unit) : null} unit={unit}
       note={isDecarb ? 'Assumes complete conversion' : 'Target mass equivalent, not a reverse reaction'}
       metrics={[
-        {label:'CO2 difference',value:result ? formatAmount(result.co2Grams,unit) : '—',unit},
+        {label:isDecarb ? 'Potential CO2 loss' : 'Associated CO2 fraction',value:result ? formatAmount(result.co2Grams,unit) : '—',unit},
         {label:'Conversion factor',value:formatNumber(chemistry.ratio*100,3),unit:'%'},
       ]}
-      input={<Panel title="Input parameters" detail="Starting or target mass"
+      input={<Panel title={isDecarb ? 'Yield inputs' : 'Target-based planning'} detail={isDecarb ? 'Calculate potential neutral-cannabinoid yield' : 'Determine required starting acid, not reverse chemistry'}
         action={<WorkspaceActions onReset={workspace.reset} shareUrl={workspace.shareUrl}
-          tool={`${from} → ${to} conversion`} result={result ? `${formatAmount(result.outputGrams,unit)} ${unit}` : null}/>}>
+          tool={isDecarb ? `${from} theoretical yield` : `Starting ${to} required for target ${from}`} result={result ? `${formatAmount(result.outputGrams,unit)} ${unit}` : null}/>}>
         <div className="input-stack">
-          <CannabinoidSelector value={cannabinoid} onChange={next=>workspace.setField('cannabinoid',next)}/>
-          <Selector label="Calculation mode" value={direction} onChange={changeDirection} options={[
-            {value:'decarb',label:`${chemistry.acid} → ${chemistry.neutral}`},
-            {value:'reverse',label:`${chemistry.neutral} → ${chemistry.acid}`},
-          ]}/>
+          <Selector label="Solve for" value={direction} onChange={changeDirection} options={[
+             {value:'decarb',label:'Product yield'},
+             {value:'reverse',label:'Starting mass needed'},
+           ]}/>
+           <CannabinoidSelector context="conversion" value={cannabinoid} onChange={next=>workspace.setField('cannabinoid',next)}/>
+           {!isDecarb && <p className="studio-chemical-method-note">Enter a {chemistry.neutral} target. The output is the {chemistry.acid} starting mass equivalent for complete decarboxylation—not {chemistry.neutral} converting into {chemistry.acid}.</p>}
           <FieldGrid>
             <NumberField id="convert-amount" label={isDecarb ? `Starting ${from} mass` : `Target ${from} mass`}
               value={amount} onChange={value=>workspace.setField('amount',value)} error={parsed.error}
@@ -101,9 +102,9 @@ export function ConversionCalculator({entryDirection}: {entryDirection?: Directi
             </div>
           </div>
           <div className="formula-box">
-            <span className="small-label">Molecular ratio</span>
-            <Formula>{`m(${to}) = m(${from}) ${isDecarb?'×':'÷'} `}
-              <strong>{chemistry.ratio.toFixed(5)}</strong></Formula>
+            <span className="small-label">{isDecarb ? 'Theoretical decarboxylation' : 'Required-input calculation'}</span>
+            <Formula>{isDecarb ? `m(${chemistry.neutral}) = m(${chemistry.acid}) × ` : `m(${chemistry.acid} needed) = m(${chemistry.neutral} target) ÷ `}
+               <strong>{chemistry.ratio.toFixed(5)}</strong></Formula>
             <span className="fine-print">{chemistry.acidMw.toFixed(2)} g/mol {chemistry.acid} → {chemistry.neutralMw.toFixed(2)} g/mol {chemistry.neutral} + CO2</span>
           </div>
         </div>
@@ -115,9 +116,9 @@ export function ConversionCalculator({entryDirection}: {entryDirection?: Directi
             value={formatAmount(result.outputGrams,unit)} unit={unit}
             note={isDecarb ? 'Assumes complete stoichiometric conversion' : 'Mass-equivalence calculation, not a reverse chemical reaction'}/>
           <MassBalance retained={isDecarb ? result.outputGrams : grams!} released={result.co2Grams}
-            retainedLabel={`${chemistry.neutral}-equivalent mass`} releasedLabel="CO2 mass fraction"/>
+            retainedLabel={`${chemistry.neutral}-equivalent mass`} releasedLabel="Associated CO2 mass"/>
           <Metrics>
-            <Metric label="CO2 released" value={formatAmount(result.co2Grams,unit)} suffix={unit}/>
+            <Metric label={isDecarb ? 'Potential CO2 released' : 'Potential CO2 at complete conversion'} value={formatAmount(result.co2Grams,unit)} suffix={unit}/>
             <Metric label={`${chemistry.acid} mass retained as ${chemistry.neutral}`}
               value={formatNumber(chemistry.ratio*100,3)} suffix="%"/>
             <Metric label="CO2 mass fraction" value={formatNumber(chemistry.co2Ratio*100,3)} suffix="%"/>
@@ -150,11 +151,11 @@ export function BatchCalculator() {
         {label:'Final batch mass',value:result?formatAmount(result.finalWeightGrams,unit):'—',unit},
         {label:`Final ${chemistry.neutral} fraction`,value:result?formatNumber(result.finalThcPercent,2):'—',unit:'%'},
       ]}
-      input={<Panel title="Batch parameters" detail={`Starting mass and ${chemistry.acid} fraction`}
+      input={<Panel title="Batch parameters" detail={`Starting mass and measured ${chemistry.acid} content`}
         action={<WorkspaceActions onReset={workspace.reset} shareUrl={workspace.shareUrl} tool="Batch yield"
           result={result ? `${formatAmount(result.thcGrams,unit)} ${unit} ${chemistry.neutral}` : null}/>}>
         <div className="input-stack">
-          <CannabinoidSelector value={cannabinoid} onChange={next=>workspace.setField('cannabinoid',next)}/>
+          <CannabinoidSelector context="batch" value={cannabinoid} onChange={next=>workspace.setField('cannabinoid',next)}/>
           <FieldGrid>
             <NumberField id="batch-mass" label="Starting batch mass" value={amount}
               onChange={value=>workspace.setField('amount',value)} error={parsed.error} suffix={unit} prominent/>
@@ -210,12 +211,12 @@ export function AnalyzerCalculator() {
         {label:'Observed loss',value:result?formatAmount(result.lossGrams,unit):'—',unit},
         {label:`${chemistry.neutral} produced`,value:result?formatAmount(result.thcGrams,unit):'—',unit},
       ]}
-      input={<Panel title="Gravimetric inputs" detail="Starting mass and remaining mass"
+      input={<Panel title="Conditional mass-loss estimate" detail="Compare initial and final weights under a single-acid model"
         action={<WorkspaceActions onReset={workspace.reset} shareUrl={workspace.shareUrl}
           tool={`${chemistry.acid} mass-loss analysis`}
           result={result ? `${formatNumber(result.thcaPercent,2)}% ${chemistry.acid}` : null}/>}>
         <div className="input-stack">
-          <CannabinoidSelector value={cannabinoid} onChange={next=>workspace.setField('cannabinoid',next)}/>
+          <CannabinoidSelector context="analysis" value={cannabinoid} onChange={next=>workspace.setField('cannabinoid',next)}/>
           <FieldGrid>
             <NumberField id="analyzer-start" label="Initial sample mass" value={amount}
               onChange={value=>workspace.setField('amount',value)} error={parsed.error} suffix={unit} prominent/>

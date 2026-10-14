@@ -1,13 +1,13 @@
 import { useCallback, useMemo } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { NumberField } from './NumberField';
-import { CompactSelect } from './CompactSelect';
+import { CompoundIdentitySelect } from './CompoundIdentitySelect';
 import { WorkspaceActions } from './WorkspaceActions';
 import { CalculatorStudio } from './CalculatorStudio';
 import { FieldGrid, Metric, Metrics, Notice, Panel, PrimaryResult, Selector, Unavailable } from './ui';
 import { useCalculatorWorkspace } from '../lib/useCalculatorWorkspace';
 import { formatNumber, parseAmount } from '../lib/decarb';
-import { isAcidCannabinoid, cannabinoidChemistry } from '../lib/cannabinoids';
+import { isAcidCannabinoid } from '../lib/cannabinoids';
 import { calculateCartridge, calculateCartridgeFromInput, consolidateCompounds,
   COMPOUND_TYPES, type CompoundType, type AcidTreatment, type CompoundRow } from '../lib/cartridge';
 import { parseCompoundRows, MAX_COMPOUND_ROWS } from '../lib/workspacePayload';
@@ -93,10 +93,10 @@ export function CartridgeWorkbench() {
             className="preset" key={n} onClick={()=>ws.setField('cartCapacity',String(n))}>{n} g</button>)}</div>
         </div>
         {rows.some(r=>isAcidCannabinoid(r.type)&&r.parts>0)&&
-          <Selector label="Acidic cannabinoid behavior" value={acidTreatment}
+          <Selector label="Treat acidic ingredients as" value={acidTreatment}
             onChange={v=>ws.setField('acidTreatment',v)}
-            options={[{value:'convert',label:'Model full decarb'}, {value:'retain',label:'Retain acids'}]}/>}
-        <div className="studio-builder-title"><span className="small-label">Blend recipe / relative input parts</span>
+            options={[{value:'convert',label:'Assume full decarb'}, {value:'retain',label:'Keep acidic forms'}]}/>}
+        <div className="studio-builder-title"><span className="small-label">Starting blend · per-compound parts</span>
           <span className="small-label">{formatNumber(partsTotal,2)} parts</span></div>
         <div className="preset-section"><span className="small-label">Start with a recipe</span>
           <div className="preset-row">{Object.entries(PROFILES).map(([name,recipe])=>
@@ -112,10 +112,8 @@ export function CartridgeWorkbench() {
             </div>
             <div className="studio-builder-fields">
               <div className="studio-builder-select-field">
-                <CompactSelect id={`cart-type-${i}`} label="Compound" value={row.type}
-                  onChange={type=>setRows(rows.map((r,j)=>i===j?{...r,type}:r))}
-                  options={COMPOUND_TYPES.map(type=>({value:type,label:isAcidCannabinoid(type)
-                    ? `${type} → ${cannabinoidChemistry(type).neutral}` : type}))}/>
+<CompoundIdentitySelect id={`cart-type-${i}`} label="Starting compound" value={row.type}
+                   onChange={type=>setRows(rows.map((r,j)=>i===j?{...r,type}:r))} types={COMPOUND_TYPES}/>
               </div>
               <NumberField id={`cart-parts-${i}`} label="Parts" suffix="pts" value={String(row.parts)}
                 onChange={v=>setRows(rows.map((r,j)=>i===j?{...r,parts:Number(v)||0}:r))}/>

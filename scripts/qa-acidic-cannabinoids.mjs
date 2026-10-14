@@ -30,9 +30,13 @@ try {
           const select=page.locator('.studio-cannabinoid-select').first();
           await select.waitFor();
           await page.waitForTimeout(120); // hydration
-          const trigger=select.getByRole('button',{name:'Acidic cannabinoid'});
+          const trigger=select.locator('.studio-compact-trigger');
           assert((await trigger.textContent())?.includes('THCa'),key+' default THCa');
           const oldLabel=await page.locator('.calculator-app-kpi-caption').innerText();
+           if (route.includes('thc-to-thca')) {
+             assert((await page.locator('h1').first().innerText()).includes('Starting THCa for Target THC'),key+' accurate inverse heading');
+             assert(await page.getByRole('button',{name:'Starting mass needed'}).getAttribute('aria-pressed')==='true',key+' inverse solve mode is target planning');
+           }
           await trigger.click();
           const choices=page.getByRole('menuitemradio');
           assert(await choices.count()===5,key+' five choices');
@@ -44,6 +48,8 @@ try {
           await trigger.click();
           await page.getByRole('menuitemradio',{name:/CBGa/}).click();
           assert((await trigger.textContent())?.includes('CBGa'),key+' selector updates');
+           assert((await page.locator('.studio-chemical-product-value strong').first().innerText())==='CBG',key+' contextual product derives from selected acid');
+           assert(!(await trigger.innerText()).includes('→'),key+' compound picker is not a reaction-direction option');
           assert((await page.locator('.calculator-app-kpi-caption').innerText())!==oldLabel,
             key+' live output label reflects compound');
           assert((await page.locator('.calculator-app-copy strong').innerText()).includes('CBG') ||
@@ -71,6 +77,31 @@ try {
             assert((await page.locator('.studio-cannabinoid-select button').first().textContent())?.includes('THCa'),
               key+' reset restores THCa');
           }
+        }
+        // Multi-ingredient tools choose raw material identity, never a reaction direction.
+        for (const route of ['/tools/edible-dosage/','/tools/cartridge-formulation/']) {
+          const key=`${name} ${viewport.width} ${route} ingredients`;
+          await page.goto(base+route,{waitUntil:'networkidle'});
+          await page.waitForTimeout(120);
+          const first=page.locator('.studio-compound-identity').first();
+          await first.waitFor();
+          assert((await first.locator('.studio-compact-trigger').innerText()).includes('THCa'),key+' defaults first compound to THCa');
+          assert((await first.locator('.studio-compound-kind').innerText()).includes('Acidic precursor'),key+' acid identity explained');
+          await first.locator('.studio-compact-trigger').click();
+          assert(!(await page.locator('.studio-compact-menu').innerText()).includes('→'),key+' popup contains ingredient names, not fake reactions');
+          await page.getByRole('menuitemradio',{name:/^CBDa/}).click();
+          assert(await first.getAttribute('data-compound')==='CBDa',key+' select CBDa ingredient');
+          assert((await first.locator('.studio-compound-kind').innerText()).includes('CBD'),key+' CBDa explains potential CBD product');
+          const existingCount=await page.locator('.studio-compound-identity').count();
+          await page.getByRole('button',{name:/Add (ingredient|compound)/i}).click();
+          const second=page.locator('.studio-compound-identity').nth(existingCount);
+          assert((await second.locator('.studio-compact-trigger').innerText()).includes('THCa'),key+' added row defaults THCa independently');
+          await second.locator('.studio-compact-trigger').click();
+          await page.getByRole('menuitemradio',{name:/^CBD\b/}).click();
+          assert((await second.locator('.studio-compound-kind').innerText()).includes('Neutral cannabinoid'),key+' neutral compound remains neutral');
+          assert(await first.getAttribute('data-compound')==='CBDa',key+' mixed ingredient identity retained');
+          const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+          assert(overflow<=1,key+' mobile layout avoids horizontal overflow',String(overflow));
         }
         assert(errors.length===0,`${name} ${viewport.width} no page errors`,errors.join(';'));
         await context.close();

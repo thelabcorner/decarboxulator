@@ -135,9 +135,9 @@ export function PressureWorkbench(){
             <NumberField id="pressure-thca" label={`${chem.acid} fraction`} value={thcaPct}
               onChange={v=>ws.setField('thcaPct',v)} suffix="%" error={parsed.acid.error} max={100}/>
           </FieldGrid>
-          <CannabinoidSelector value={validCannabinoid}
-            onChange={v=>ws.setField('cannabinoid',v)} label="Acidic cannabinoid (stoichiometry)"/>
-          {validCannabinoid!=='THCa'&&<Notice>Stoichiometry uses {chem.acid} → {chem.neutral} + CO2 (Mᴀ {chem.acidMw} g/mol). This changes CO2 mass only; the kinetic model is not specific to {chem.acid}.</Notice>}
+          <CannabinoidSelector context="pressure" value={validCannabinoid}
+             onChange={v=>ws.setField('cannabinoid',v)}/>
+          {validCannabinoid!=='THCa'&&<Notice>Stoichiometry uses {chem.acid} → {chem.neutral} + CO2 (Mᴀ {chem.acidMw} g/mol). This changes the assumed CO2 amount; the model does not predict the conversion rate of {chem.acid}.</Notice>}
           <div className="pressure-presets">
             <span className="pressure-small-caption"><Thermometer size={12}/> Process presets</span>
             <div>

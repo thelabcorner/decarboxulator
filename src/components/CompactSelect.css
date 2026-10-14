@@ -59,6 +59,4 @@
   .studio-compact-trigger { transition: none; }
 }
 
-/* Acid selectors share the existing Task-inspired context-menu grammar. */
-.studio-cannabinoid-select { max-width: 330px; }
-@media (max-width: 520px) { .studio-cannabinoid-select { max-width: none; } }
+/* Menu identity is supplied by contextual controls, not chemical reaction arrows. */

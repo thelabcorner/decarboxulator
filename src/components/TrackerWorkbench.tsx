@@ -174,7 +174,7 @@ export function TrackerWorkbench() {
         <span className="tracker-status-dot" data-status={session?.status??'draft'}/>
         <div className="tracker-run-copy">
           <strong title={session?.title}>{session?.title??'Loading run...'}</strong>
-          <span><b>{session?.status??'loading'}</b><i/> {session?.readings.length??0} readings</span>
+          <span><b>{session?.status??'loading'}</b><i/> {chem.acid} · {session?.readings.length??0} readings</span>
         </div>
       </div>
       <div className="tracker-runbar-actions">
@@ -333,7 +333,7 @@ export function TrackerWorkbench() {
           onClick={()=>setShowLockedSetup(true)}>Review original baseline inputs</button>}
         {(!locked||showLockedSetup)&&
         <fieldset className="studio-fieldset" disabled={locked}>
-          <CannabinoidSelector value={validCannabinoid} disabled={locked}
+          <CannabinoidSelector context="tracker" value={validCannabinoid} disabled={locked}
              onChange={next=>ws.setField('cannabinoid',next)}/>
            <Selector label="Starting material definition" value={mode}
             onChange={v=>ws.setField('trackerMode',v)}
@@ -368,7 +368,7 @@ export function TrackerWorkbench() {
         </fieldset>}
         <div className="tracker-session-form">
           <label className="tracker-text-field">Run name / batch identifier
-            <input type="text" maxLength={120} placeholder="e.g. Batch A · THCa isolate · Run 03"
+            <input type="text" maxLength={120} placeholder={`e.g. Batch A · ${chem.acid} isolate · Run 03`}
               value={session?.title??''} disabled={!ws.ready} onChange={e=>ws.updateActive({title:e.target.value})}/></label>
           <label className="tracker-text-field">Technician notes (optional)
             <textarea rows={2} maxLength={4000} placeholder="Record preparation, apparatus, sample changes, balance conditions, or anomalies."

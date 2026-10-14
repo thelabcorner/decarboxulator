@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { NumberField } from './NumberField';
+import { CompoundIdentitySelect } from './CompoundIdentitySelect';
 import { CompactSelect } from './CompactSelect';
 import { WorkspaceActions } from './WorkspaceActions';
 import { CalculatorStudio } from './CalculatorStudio';
@@ -83,11 +84,11 @@ export function EdibleWorkbench() {
           <NumberField id="edible-conversion" label="Assumed acid conversion" value={recovery}
             onChange={v => ws.setField('recovery',v)} suffix="%" max={100} error={conversion.error}/>
         </FieldGrid>
-        <NumberField id="edible-retention" label="Downstream THC recovery" value={postRecovery}
+        <NumberField id="edible-retention" label="THC-specific downstream retention" value={postRecovery}
           onChange={v => ws.setField('postRecovery',v)} suffix="%" max={100}
           error={downstream.error} hint="Historical THC-specific transfer recovery. Other neutral cannabinoid recoveries are not inferred."/>
         <div className="studio-builder-title">
-          <span className="small-label">Ingredients / compounds</span>
+          <span className="small-label">Starting ingredients · per-row identity</span>
           <span className="small-label">{rows.length} of {MAX_EDIBLE_ROWS}</span>
         </div>
         <div className="studio-builder-list">
@@ -99,10 +100,8 @@ export function EdibleWorkbench() {
                 <Trash2 size={14}/> Remove
               </button>
             </div>
-            <CompactSelect id={`edible-type-${i}`} label="Compound" value={row.type}
-              onChange={type=>changeRow(i,{type})}
-              options={EDIBLE_COMPOUNDS.map(type=>({value:type,label:isAcidCannabinoid(type)
-                ? `${type} → ${cannabinoidChemistry(type).neutral}` : type}))}/>
+<CompoundIdentitySelect id={`edible-type-${i}`} label="Input compound" value={row.type}
+               onChange={type=>changeRow(i,{type})} types={EDIBLE_COMPOUNDS}/>
             {mode === 'desired' ?
               <NumberField id={`edible-target-${i}`}
                 label={isAcidCannabinoid(row.type) ? `Target ${cannabinoidChemistry(row.type).neutral} per serving (from ${row.type})` : `Target ${row.type} per serving`}

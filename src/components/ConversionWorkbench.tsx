@@ -20,13 +20,13 @@ export function ConversionWorkbench({direction}: {direction: Direction}) {
       index={reverse ? '02' : '01'} reference/>
     <div className="conversion-companion">
       <ArrowLeftRight size={14} strokeWidth={1.8} aria-hidden="true"/>
-      <span>Shared mass equation · inverse input</span>
+      <span>{reverse ? 'Solve for the acid needed · not a reverse reaction' : 'Solve for the potential neutral-cannabinoid product'}</span>
       <Link to={counterpart.path} aria-label={`Open ${counterpart.name} calculator`}>{counterpart.name}</Link>
     </div>
     <ConversionCalculator entryDirection={direction}/>
     <ToolReference>
       {reverse ? <>
-        <h2>THCa reference example (default selection)</h2>
+        <h2>THCa starting-mass reference (default selection)</h2>
         <p>Planning starts from the desired theoretical THC mass. Because each mole of THCa loses one molecule of CO2 during decarboxylation, divide the target THC mass by the ratio 314.46 ÷ 358.47 (approximately 0.87723) to obtain its THCa mass equivalent. For example, 10 g of target THC corresponds to approximately 11.399 g of pure starting THCa.</p>
         <p>The result assumes complete conversion without additional losses. This is not a chemical conversion of THC into THCa, and practical starting masses depend on assay purity, reaction completion, degradation, and material recovery.</p>
       </> : <>

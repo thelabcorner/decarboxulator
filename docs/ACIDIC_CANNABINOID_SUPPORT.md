@@ -18,10 +18,10 @@ Default is **THCa** for every new calculator and tracker session. Legacy numeric
 
 ## User experience
 
-- Use the V4 `CompactSelect` portal menu through the shared `CannabinoidSelector`, inside each calculator's **existing input panel**, not a global override or detached settings modal.
-- Trigger: dense, theme-aware shadcn-zinc / New York styling, flat surfaces, Inter, lime accent; no gradient, glow or glass. Five choices display acid → neutral and the compound name as a compact subtitle. Reuse the existing menu's flipping/clamping, mouse/touch, arrow/Home/End/typeahead, Escape focus restoration and scroll dismiss.
+- Treat **species identity**, **question being solved**, and **mass-balance assumptions** as separate inputs. The conversion calculator selects `Product yield` or `Starting mass needed` without ever showing a neutral → acid chemical reaction. The inbound legacy URL `/tools/thc-to-thca/` remains, but the visible tool is titled **Starting THCa for Target THC** by default.
+- Each scientific single-species calculator uses a **contextual compound-identity field**: choose the acidic molecule, read its derived neutral product beside it, and read a short application-specific assumption. Its popup lists molecule names rather than mislabeled reactions, while retaining the proven New York/shadcn-zinc portal context-menu navigation (flipping/clamping, mouse/touch, arrows/Home/End/typeahead, Escape focus restoration, scroll dismiss).
 - Each calculator has its own selected acid. A new calculator defaults to THCa. Switching one calculator does not mutate another or rewrite existing tracker history.
-- Edible and cartridge formulations have **per-row compound selection**, already part of the V4 design. Extend those lists rather than adding a global override that would silently change multi-compound recipes.
+- Edible/cartridge formulations use **ingredient identity per row**, not a shared acid-only mode. Acidic precursors explain their prospective neutral product, while neutral species say no decarb is necessary; extra blend components remain unmodeled mass inputs. This preserves mixed recipes without a destructive global cannabinoid toggle. Conversation UI never says `THC → THCa` as if it were a reverse reaction.
 - Inverses are *mass-equivalence planning*, not reverse chemistry. Pressures are idealized scenario screens, **not** safety bounds. Tracker percent completion is **apparent CO₂-only inferred** progress, not analytical proof of conversion.
 - Retain canonical THCa SEO routes and their THCa-focused reference material; in-app mass calculations dynamically use the selected compound.
 
@@ -46,7 +46,7 @@ Mass-loss analysis is conditional on measured weight change consisting solely of
 | Tracker | Per-run acid persisted, THCa migration, no mid-run chemical-identity mutations, measurement history/backup round-trips |
 | Pressure | Selected molecular mass used for CO₂ moles, per-acid field labels, no misleading safety guarantee |
 | Edible/cartridge | Mixed acids independently modeled, neutral products resolved by acid key, per-row selectors and old saved rows survive |
-| UI | Default THCa, active acid reflected in equation/KPI/result, compact menu mobile positioning and keyboard operation |
+| UI | Default THCa, context-aware identity labels and derived product, no reaction arrows in selectors, accurate starting-mass task copy, compact menu mobile positioning and keyboard behavior |
 | State | All workspaces isolate selected acids, reset to THCa, explicit share links faithfully restore selection, unknown acids rejected |
 | Science | No derived temperature/time kinetics or assumed completion rates for non-THCa forms |
 
