@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Activity, Archive, ChartNoAxesCombined, Check, ChevronRight, CircleHelp, CloudOff, Download, HardDrive, ListChecks, Pause, Play, Plus, RotateCcw, SlidersHorizontal, Trash2 } from 'lucide-react';
 import { NumberField } from './NumberField';
+import { CannabinoidSelector } from './CannabinoidSelector';
 import { ScrollView } from './ScrollView';
 import { FieldGrid, Metric, Metrics, Notice, Panel, Selector, Unavailable } from './ui';
 import { useTrackerSessions } from '../lib/useTrackerSessions';
@@ -8,6 +9,7 @@ import { TRACKER_DEFAULTS, canCreateTrackerSession } from '../lib/trackerSession
 import { TrackerSessionLibrary } from './TrackerSessionLibrary';
 import { formatNumber, parseAmount, trackerSetup, trackerSnapshot, type TrackerConfig } from '../lib/decarb';
 import { MAX_TRACKER_READINGS, type TrackerReading } from '../lib/workspacePayload';
+import { cannabinoidChemistry, DEFAULT_ACID_CANNABINOID, isAcidCannabinoid, type AcidCannabinoid } from '../lib/cannabinoids';
 import { useTrackerKinetics } from '../lib/useTrackerKinetics';
 import { KineticChart } from './KineticChart';
 import { analyzeTrackerSeries, restoreTrackerPoints, trackerConfigFromPercent, trackerRawCSV,
@@ -21,18 +23,18 @@ function smallTime(hours: number | null) {
   const minutes = Math.round(hours*60);
   return minutes >= 60 ? `${Math.floor(minutes/60)}h ${minutes%60}m` : `${minutes}m`;
 }
-function SeriesChart({points, mode, expectedLoss}: {points:TrackerPoint[];mode:TrackerGraph;expectedLoss:number}) {
+function SeriesChart({points, mode, expectedLoss, acidLabel='THCa', neutralLabel='THC'}: {points:TrackerPoint[];mode:TrackerGraph;expectedLoss:number;acidLabel?:string;neutralLabel?:string}) {
   if (!points.length) return <Unavailable>Record a measurement to start the chart.</Unavailable>;
   const first = points[0].timestamp, end = points.at(-1)!.timestamp;
   const columns: Array<{label:string;color:string;values:number[]}> = mode === 'completion'
     ? [{label:'Completion',color:'var(--accent)',values:points.map(p=>p.snapshot.completion)}] :
     mode === 'composition'
-    ? [{label:'THCa %',color:'var(--accent)',values:points.map(p=>p.snapshot.thcaPct)},
-       {label:'THC %',color:'#579bcc',values:points.map(p=>p.snapshot.thcPct)}] :
+    ? [{label:`${acidLabel} %`,color:'var(--accent)',values:points.map(p=>p.snapshot.thcaPct)},
+       {label:`${neutralLabel} %`,color:'#579bcc',values:points.map(p=>p.snapshot.thcPct)}] :
     mode === 'loss'
     ? [{label:'CO2-only inferred loss (g)',color:'var(--accent)',values:points.map(p=>p.snapshot.weightLossG)},
        {label:'Expected maximum (g)',color:'#a18e5a',values:points.map(()=>expectedLoss)}] :
-    [{label:'THC rate (g/h)',color:'var(--accent)',values:points.map((p,i)=>{
+    [{label:`${neutralLabel} rate (g/h)`,color:'var(--accent)',values:points.map((p,i)=>{
       if (!i || p.timestamp <= points[i-1].timestamp) return 0;
       return (p.snapshot.convertedThcG-points[i-1].snapshot.convertedThcG) /
         ((p.timestamp-points[i-1].timestamp)/3600000);
@@ -70,7 +72,10 @@ export function TrackerWorkbench() {
   const ws = useTrackerSessions();
   const session=ws.active;
   const {tare,thca,other,current,trackerMode,totalContent,acidPercent,
-    otherPercent,autoBalance,scaleResolution,measurementTempC,measurementNote} = session?.fields ?? TRACKER_DEFAULTS;
+    otherPercent,autoBalance,scaleResolution,measurementTempC,measurementNote,
+    cannabinoid} = session?.fields ?? TRACKER_DEFAULTS;
+  const validCannabinoid: AcidCannabinoid = isAcidCannabinoid(cannabinoid) ? cannabinoid : DEFAULT_ACID_CANNABINOID;
+  const chem = cannabinoidChemistry(validCannabinoid);
   const startedAt=session?.startedAt??0;
   const [libraryOpen,setLibraryOpen]=useState(false);
   const [showLockedSetup,setShowLockedSetup]=useState(false);
@@ -82,7 +87,7 @@ export function TrackerWorkbench() {
   const isTracking = session?.status === 'running';
   const activeSessionId=session?.id;
   const storedReadings = session?.readings ?? EMPTY_READINGS;
-  const locked = storedReadings.length>0 || isTracking || session?.status === 'completed' || session?.status === 'paused';
+  const locked = storedReadings.length>0 || Boolean(session?.startedAt) || isTracking || session?.status === 'completed' || session?.status === 'paused';
   const mode: TrackerInputMode = trackerMode === 'percentage' ? 'percentage' : 'manual';
   useEffect(()=>{
     if (!ws.ready || !activeSessionId || initialHydrationHandled.current) return;
@@ -109,14 +114,14 @@ export function TrackerWorkbench() {
     if(t===null) return null;
     if (mode==='percentage') {
       if(numbers.total.value===null||numbers.acid.value===null||numbers.otherPercent.value===null) return null;
-      return trackerConfigFromPercent(t,numbers.total.value,numbers.acid.value,numbers.otherPercent.value);
+      return trackerConfigFromPercent(t,numbers.total.value,numbers.acid.value,numbers.otherPercent.value,validCannabinoid);
     }
     if(numbers.thca.value===null||numbers.other.value===null) return null;
-    return validatedTrackerConfig({tareG:t,thcaG:numbers.thca.value,otherG:numbers.other.value});
+    return validatedTrackerConfig({tareG:t,thcaG:numbers.thca.value,otherG:numbers.other.value,cannabinoid:validCannabinoid});
   // A new live weight/temperature/note must NOT re-create the entire historical
   // point series or restart bootstrap fitting while a technician is typing.
   },[mode,numbers.tare.value,numbers.total.value,numbers.acid.value,
-    numbers.otherPercent.value,numbers.thca.value,numbers.other.value]);
+    numbers.otherPercent.value,numbers.thca.value,numbers.other.value,validCannabinoid]);
   const setup=useMemo(()=>cfg?trackerSetup(cfg):null,[cfg]);
   const points=useMemo(()=>cfg?restoreTrackerPoints(storedReadings,cfg):[],[cfg,storedReadings]);
   const allMeasurements=useMemo(()=>storedReadings.map(reading=>({
@@ -169,7 +174,7 @@ export function TrackerWorkbench() {
         <span className="tracker-status-dot" data-status={session?.status??'draft'}/>
         <div className="tracker-run-copy">
           <strong title={session?.title}>{session?.title??'Loading run...'}</strong>
-          <span><b>{session?.status??'loading'}</b><i/> {session?.readings.length??0} readings</span>
+          <span><b>{session?.status??'loading'}</b><i/> {chem.acid} · {session?.readings.length??0} readings</span>
         </div>
       </div>
       <div className="tracker-runbar-actions">
@@ -271,7 +276,7 @@ export function TrackerWorkbench() {
       {!isTracking&&<div className="tracker-next-step">
         <span>{session?.status==='completed'?'Run archived':'Baseline'}</span>
         <strong>{cfg&&setup
-          ? `${formatNumber(cfg.thcaG,2)} g THCa · ${formatNumber(cfg.tareG,2)} g tare`
+          ? `${formatNumber(cfg.thcaG,2)} g ${chem.acid} · ${formatNumber(cfg.tareG,2)} g tare`
           : 'Complete the setup to begin'}</strong>
         <button type="button" onClick={()=>setTab('setup')}>Review setup <ChevronRight size={13}/></button>
       </div>}
@@ -304,10 +309,10 @@ export function TrackerWorkbench() {
            Record the raw value for your lab audit; it will be flagged, not interpreted as conversion.
          </Notice>}
         {last&&<Metrics>
-          <Metric label="THCa remaining" value={formatNumber(last.snapshot.remainingThcaG,3)} suffix="g"/>
-          <Metric label="THC formed" value={formatNumber(last.snapshot.convertedThcG,3)} suffix="g" accent/>
-          <Metric label="THCa fraction" value={formatNumber(last.snapshot.thcaPct,2)} suffix="%"/>
-          <Metric label="THC fraction" value={formatNumber(last.snapshot.thcPct,2)} suffix="%"/>
+          <Metric label={`${chem.acid} remaining`} value={formatNumber(last.snapshot.remainingThcaG,3)} suffix="g"/>
+          <Metric label={`${chem.neutral} formed`} value={formatNumber(last.snapshot.convertedThcG,3)} suffix="g" accent/>
+          <Metric label={`${chem.acid} fraction`} value={formatNumber(last.snapshot.thcaPct,2)} suffix="%"/>
+          <Metric label={`${chem.neutral} fraction`} value={formatNumber(last.snapshot.thcPct,2)} suffix="%"/>
         </Metrics>}
 
       </div>
@@ -328,17 +333,19 @@ export function TrackerWorkbench() {
           onClick={()=>setShowLockedSetup(true)}>Review original baseline inputs</button>}
         {(!locked||showLockedSetup)&&
         <fieldset className="studio-fieldset" disabled={locked}>
-          <Selector label="Starting material definition" value={mode}
+          <CannabinoidSelector context="tracker" value={validCannabinoid} disabled={locked}
+             onChange={next=>ws.setField('cannabinoid',next)}/>
+           <Selector label="Starting material definition" value={mode}
             onChange={v=>ws.setField('trackerMode',v)}
             options={[{value:'manual',label:'Masses'},{value:'percentage',label:'Composition %'}]}/>
           {mode==='manual'?<>
             <FieldGrid>
               <NumberField id="tracker-tare" label="Empty vessel + lid tare" value={tare} onChange={v=>ws.setField('tare',v)} suffix="g" error={numbers.tare.error}/>
-              <NumberField id="tracker-thca" label="Initial THCa (acid) mass" value={thca} onChange={v=>ws.setField('thca',v)} suffix="g" error={numbers.thca.error}/>
+              <NumberField id="tracker-thca" label={`Initial ${chem.acid} (acid) mass`} value={thca} onChange={v=>ws.setField('thca',v)} suffix="g" error={numbers.thca.error}/>
             </FieldGrid>
             <NumberField id="tracker-other" label="Other assumed nonvolatile solids" value={other} onChange={v=>ws.setField('other',v)} suffix="g" error={numbers.other.error}/>
             <label className="studio-check"><input type="checkbox" checked={numbers.other.value===0}
-              onChange={e=>e.target.checked&&ws.setField('other','0')}/> Pure THCa isolate (no other mass)</label>
+              onChange={e=>e.target.checked&&ws.setField('other','0')}/> Pure {chem.acid} isolate (no other mass)</label>
           </>:<>
             <FieldGrid>
               <NumberField id="tracker-tare-pct" label="Empty vessel + lid tare" value={tare} onChange={v=>ws.setField('tare',v)} suffix="g" error={numbers.tare.error}/>
@@ -346,7 +353,7 @@ export function TrackerWorkbench() {
                 onChange={v=>ws.setField('totalContent',v)} suffix="g" error={numbers.total.error}/>
             </FieldGrid>
             <FieldGrid>
-              <NumberField id="tracker-acid-pct" label="THCa (% of material mass)" value={acidPercent} onChange={setAcidPercent} suffix="%" max={100} error={numbers.acid.error}/>
+              <NumberField id="tracker-acid-pct" label={`${chem.acid} (% of material mass)`} value={acidPercent} onChange={setAcidPercent} suffix="%" max={100} error={numbers.acid.error}/>
               <NumberField id="tracker-other-pct" label="Remaining compounds" value={otherPercent}
                 onChange={v=>ws.setField('otherPercent',v)} suffix="%" max={100}
                 error={numbers.otherPercent.error}/>
@@ -356,12 +363,12 @@ export function TrackerWorkbench() {
               Balance remaining percentage automatically</label>
             {numbers.acid.value!==null&&numbers.otherPercent.value!==null&&
               Math.abs(numbers.acid.value+numbers.otherPercent.value-100)>1e-7&&
-              <Notice variant="warning">THCa and remaining-compound percentages must equal 100%.</Notice>}
+              <Notice variant="warning">{chem.acid} and remaining-compound percentages must equal 100%.</Notice>}
           </>}
         </fieldset>}
         <div className="tracker-session-form">
           <label className="tracker-text-field">Run name / batch identifier
-            <input type="text" maxLength={120} placeholder="e.g. Batch A · THCa isolate · Run 03"
+            <input type="text" maxLength={120} placeholder={`e.g. Batch A · ${chem.acid} isolate · Run 03`}
               value={session?.title??''} disabled={!ws.ready} onChange={e=>ws.updateActive({title:e.target.value})}/></label>
           <label className="tracker-text-field">Technician notes (optional)
             <textarea rows={2} maxLength={4000} placeholder="Record preparation, apparatus, sample changes, balance conditions, or anomalies."
@@ -376,7 +383,7 @@ export function TrackerWorkbench() {
           <Metric label="Initial vessel mass" value={formatNumber(setup.initialTotalG,3)} suffix="g"/>
           <Metric label="Maximum CO2 loss" value={formatNumber(setup.expectedCo2LossG,3)} suffix="g"/>
           <Metric label="Theoretical final vessel mass" value={formatNumber(cfg.tareG+setup.expectedFinalContentG,3)} suffix="g"/>
-          <Metric label="Potential THC formed" value={formatNumber(setup.expectedFinalThcG,3)} suffix="g"/>
+          <Metric label={`Potential ${chem.neutral} formed`} value={formatNumber(setup.expectedFinalThcG,3)} suffix="g"/>
         </Metrics>:<Unavailable>Complete a physically valid starting composition.</Unavailable>}
         {uncertainty!==null&&<Notice>One balance increment corresponds to approximately
           <strong> ±{formatNumber(uncertainty,2)} percentage points</strong> of apparent conversion.
@@ -393,16 +400,16 @@ export function TrackerWorkbench() {
           <summary><CircleHelp size={14}/> Taking comparable measurements</summary>
           <div><ol>
             <li><strong>Before heating:</strong> use a clean, dry vessel and include every piece that will remain on the balance (lid, liner, etc.) in the tare.</li>
-            <li><strong>Establish the baseline:</strong> enter starting THCa mass or an assay-derived THCa percentage, and material mass excluding tare. The calculator predicts a starting vessel + contents mass.</li>
+            <li><strong>Establish the baseline:</strong> enter starting {chem.acid} mass or an assay-derived {chem.acid} percentage, and material mass excluding tare. The calculator predicts a starting vessel + contents mass.</li>
             <li><strong>At each interval:</strong> record the mass of exactly the same complete vessel + contents arrangement. Use the same balance, tare convention, and weighing conditions.</li>
             <li><strong>Let temperature stabilize:</strong> hot vessels, convection and thermal drift can distort readings. Only weigh with safe procedures appropriate to your apparatus.</li>
             <li><strong>Finish:</strong> review the final trend, document anomalies, and mark the run complete yourself. Sessions and measurements are automatically retained in this device's IndexedDB.</li>
           </ol></div>
         </details>
         <details><summary><CircleHelp size={14}/> How apparent conversion is calculated</summary>
-          <div><p>For THCa → THC + CO2, theoretical CO2 fraction = (358.47 − 314.46) / 358.47 ≈ 12.28% of starting THCa mass.</p>
+          <div><p>For the default THCa reference → THC + CO2, theoretical CO2 fraction = (358.47 − 314.46) / 358.47 ≈ 12.28% of starting THCa mass.</p>
             <p><strong>Apparent conversion %</strong> = (initial vessel mass − current vessel mass) / expected maximum CO2 mass × 100.</p>
-            <p>Predicted THC formed = initial THCa mass × (314.46 / 358.47) × apparent conversion fraction. All values remain conditional on the CO2-only mass-loss model.</p>
+            <p>Default THCa example: THC formed = initial THCa mass × (314.46 / 358.47) × apparent conversion fraction. For the active {chem.acid} selection, the {chem.neutral} equivalent uses {chem.neutralMw.toFixed(2)} / {chem.acidMw.toFixed(2)}. All estimates remain conditional on the CO2-only mass-loss model and do not measure cannabinoid identity or degradation.</p>
           </div>
         </details>
         <details><summary><CircleHelp size={14}/> Why readings can be rejected or misleading</summary>
@@ -455,13 +462,13 @@ export function TrackerWorkbench() {
           ] as [TrackerGraph,string][]).map(([id,label])=>
             <button type="button" key={id} aria-pressed={view===id} onClick={()=>setView(id)}>{label}</button>)}
         </div>
-         {setup&&view!=='completion'?<SeriesChart points={points} mode={view} expectedLoss={setup.expectedCo2LossG}/>:
+         {setup&&view!=='completion'?<SeriesChart points={points} mode={view} expectedLoss={setup.expectedCo2LossG} acidLabel={chem.acid} neutralLabel={chem.neutral}/>:
           view==='completion'?<p className="kinetic-secondary-note">Measured apparent conversion and the conditional kinetic fit appear in the main graph above.</p>:
            <Unavailable>Configure the starting sample to view readings.</Unavailable>}
         <Metrics>
           <Metric label="Elapsed" value={smallTime(analytics?.elapsedHours??durationH)}/>
           <Metric label="Readings (raw)" value={storedReadings.length}/>
-          <Metric label="Average THC formation" value={analytics?.avgThcRateGph==null?'—':formatNumber(analytics.avgThcRateGph,4)} suffix="g/h"/>
+          <Metric label={`Average ${chem.neutral} formation`} value={analytics?.avgThcRateGph==null?'—':formatNumber(analytics.avgThcRateGph,4)} suffix="g/h"/>
           <Metric label="Latest interval rate" value={analytics?.intervalThcRateGph==null?'—':formatNumber(analytics.intervalThcRateGph,4)} suffix="g/h"/>
           <Metric label="Latest interval" value={smallTime(analytics?.lastIntervalHours??null)}/>
           <Metric label="Linear ETA (descriptive only)" value={smallTime(analytics?.estimatedRemainingHours??null)}/>

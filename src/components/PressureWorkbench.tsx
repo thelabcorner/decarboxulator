@@ -1,5 +1,6 @@
 import { AlertTriangle, ArrowDownRight, ArrowUpRight, ChartNoAxesCombined, FlaskConical, Info, RotateCcw, Thermometer, Wind, Grid3x3 } from 'lucide-react';
 import { NumberField } from './NumberField';
+import { CannabinoidSelector } from './CannabinoidSelector';
 import { FieldGrid, Formula, Notice, Selector, Unavailable } from './ui';
 import { WorkspaceActions } from './WorkspaceActions';
 import { PressureHeatmap } from './PressureHeatmap';
@@ -9,11 +10,15 @@ import {
   buildPressureHeatmap, computePressure, convertTemp, P_ATM_PSI,
   parseTemperature, type TempUnit,
 } from '../lib/pressure';
+import {
+  cannabinoidChemistry, DEFAULT_ACID_CANNABINOID, isAcidCannabinoid, type AcidCannabinoid,
+} from '../lib/cannabinoids';
 import './PressureWorkbench.css';
 
 const PRESSURE_DEFAULTS = {
   unit:'g' as const, weight:'28',thcaPct:'85',temp:'240',volume:'16',
   tempUnit:'F' as TempUnit,sealTemp:'70',ambientPsi:'14.6959488',conversionPct:'100',
+  cannabinoid: DEFAULT_ACID_CANNABINOID as AcidCannabinoid,
 };
 const value = (number:number,places=1) => formatNumber(number,places);
 const display = (number:number) => String(Number(number.toPrecision(10)));
@@ -24,8 +29,10 @@ const display = (number:number) => String(Number(number.toPrecision(10)));
  */
 export function PressureWorkbench(){
   const ws=useCalculatorWorkspace('pressure',PRESSURE_DEFAULTS);
-  const {weight,thcaPct,temp,volume,tempUnit,sealTemp,ambientPsi,conversionPct}=ws.values;
+  const {weight,thcaPct,temp,volume,tempUnit,sealTemp,ambientPsi,conversionPct,cannabinoid}=ws.values;
   const unit:TempUnit=tempUnit==='C'?'C':'F';
+  const validCannabinoid: AcidCannabinoid = isAcidCannabinoid(cannabinoid) ? cannabinoid : DEFAULT_ACID_CANNABINOID;
+  const chem = cannabinoidChemistry(validCannabinoid);
   const parsed={
     mass:parseAmount(weight,{max:MAX_INPUT}),
     acid:parseAmount(thcaPct,{max:100}),
@@ -41,6 +48,7 @@ export function PressureWorkbench(){
       tempValue:parsed.temperature.value!,tempUnit:unit,
       headspaceFloz:parsed.volume.value!,sealTempF:convertTemp(parsed.seal.value!,unit,'F'),
       ambientPsi:parsed.ambient.value!,efficiency:parsed.conversion.value!/100,
+      cannabinoid:validCannabinoid,
     }:null;
   // 50 closed-form gas-law evaluations are cheaper than memo machinery; every
   // render is directly traceable to current validated inputs with no stale fit.
@@ -61,21 +69,21 @@ export function PressureWorkbench(){
     weightG:parsed.mass.value!,thcaPct:parsed.acid.value!,
     tempValue:parsed.temperature.value!,tempUnit:unit,headspaceFloz:parsed.volume.value!,
     sealTempF:convertTemp(parsed.seal.value!,unit,'F'),
-    ambientPsi:parsed.ambient.value!,efficiency:0,
+    ambientPsi:parsed.ambient.value!,efficiency:0,cannabinoid:validCannabinoid,
   }):null;
   const higherVolume=result?computePressure({
     weightG:parsed.mass.value!,thcaPct:parsed.acid.value!,
     tempValue:parsed.temperature.value!,tempUnit:unit,
     headspaceFloz:parsed.volume.value!*1.1,
     sealTempF:convertTemp(parsed.seal.value!,unit,'F'),
-    ambientPsi:parsed.ambient.value!,efficiency:parsed.conversion.value!/100,
+    ambientPsi:parsed.ambient.value!,efficiency:parsed.conversion.value!/100,cannabinoid:validCannabinoid,
   }):null;
   const tempPlusTen=result?computePressure({
     weightG:parsed.mass.value!,thcaPct:parsed.acid.value!,
     tempValue:parsed.temperature.value!+(unit==='F'?18:10),
     tempUnit:unit,headspaceFloz:parsed.volume.value!,
     sealTempF:convertTemp(parsed.seal.value!,unit,'F'),
-    ambientPsi:parsed.ambient.value!,efficiency:parsed.conversion.value!/100,
+    ambientPsi:parsed.ambient.value!,efficiency:parsed.conversion.value!/100,cannabinoid:validCannabinoid,
   }):null;
   return <div className="pressure-workbench">
     <div className="pressure-kpi-strip">
@@ -124,9 +132,12 @@ export function PressureWorkbench(){
           <FieldGrid>
             <NumberField id="pressure-weight" label="Sample mass" value={weight}
               onChange={v=>ws.setField('weight',v)} suffix="g" error={parsed.mass.error}/>
-            <NumberField id="pressure-thca" label="THCa fraction" value={thcaPct}
+            <NumberField id="pressure-thca" label={`${chem.acid} fraction`} value={thcaPct}
               onChange={v=>ws.setField('thcaPct',v)} suffix="%" error={parsed.acid.error} max={100}/>
           </FieldGrid>
+          <CannabinoidSelector context="pressure" value={validCannabinoid}
+             onChange={v=>ws.setField('cannabinoid',v)}/>
+          {validCannabinoid!=='THCa'&&<Notice>Stoichiometry uses {chem.acid} → {chem.neutral} + CO2 (Mᴀ {chem.acidMw} g/mol). This changes the assumed CO2 amount; the model does not predict the conversion rate of {chem.acid}.</Notice>}
           <div className="pressure-presets">
             <span className="pressure-small-caption"><Thermometer size={12}/> Process presets</span>
             <div>
@@ -146,7 +157,7 @@ export function PressureWorkbench(){
                 onChange={v=>ws.setField('ambientPsi',v)} suffix="PSIA"
                 error={parsed.ambient.error} min={0.000000001}/>
             </FieldGrid>
-            <NumberField id="pressure-conversion" label="Assumed THCa conversion" value={conversionPct}
+            <NumberField id="pressure-conversion" label={`Assumed ${chem.acid} conversion`} value={conversionPct}
               onChange={v=>ws.setField('conversionPct',v)} suffix="%"
               error={parsed.conversion.error} max={100}
               hint="Fraction converted at the modeled instant, not a measured assay"/>
@@ -169,7 +180,7 @@ export function PressureWorkbench(){
       <div className="pressure-analysis-title"><span className="pressure-eyebrow">DECOMPOSITION / SENSITIVITY</span>
         <h2>What drives the estimate?</h2></div>
       <div className="pressure-analysis-metrics">
-        <div><span>THCa mass</span><strong>{result?value(result.thcaG,3):'—'} <small>g</small></strong></div>
+        <div><span>{chem.acid} mass</span><strong>{result?value(result.thcaG,3):'—'} <small>g</small></strong></div>
         <div><span>Theoretical CO2 evolved</span><strong>{result?value(result.co2G,3):'—'} <small>g</small></strong></div>
         <div><span>Heating contribution</span><strong>{result?value(result.pThermalGaugePsi):'—'} <small>PSI</small></strong></div>
         <div><span>At 0% conversion</span><strong>{reducedConversion?value(reducedConversion.pGaugePsi):'—'} <small>PSIG</small></strong></div>
@@ -180,11 +191,11 @@ export function PressureWorkbench(){
         <p><ArrowUpRight size={13}/> +10°C at fixed conversion ⇒ {value((tempPlusTen?.pGaugePsi??result.pGaugePsi)-result.pGaugePsi,2)} PSI gauge difference</p>
         <small>Exact model recalculations, not uncertainty intervals or safety margins.</small>
       </div>}
-      <div className="pressure-equation">
+        <div className="pressure-equation">
         <Formula>
-          <div>P(abs) = P(seal, abs) × T(process) / T(seal) + [m(THCa) × η / M(THCa)] × R × T(process) / V(gas)</div>
+          <div>P(abs) = P(seal, abs) × T(process) / T(seal) + [m({chem.acid}) × η / M({chem.acid})] × R × T(process) / V(gas)</div>
           <div>P(gauge) = P(abs) − P(ambient)</div>
-          <div>Temperatures in kelvin; volumes in cubic metres; η is the assumed conversion fraction. Ideal gas mixture via Dalton's law; fixed free-gas volume and no other volatile contributions.</div>
+          <div>Temperatures in kelvin; volumes in cubic metres; η is the assumed conversion fraction. M({chem.acid}) = {chem.acidMw} g/mol; M(CO2) = {chem.co2Mw.toFixed(2)} g/mol. Ideal gas mixture via Dalton's law; fixed free-gas volume and no other volatile contributions.</div>
         </Formula>
       </div>
       <Notice variant="warning">Not a worst-case estimate: evaporation, changing volume, partial CO2 dissolution, thermal gradients, leakage, and vessel mechanics can shift the actual pressure in either direction. Do not use this calculation to certify or select a sealed vessel.</Notice>

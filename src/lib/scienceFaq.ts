@@ -13,7 +13,7 @@ export const SCIENCE_FAQ: readonly ScienceQuestion[] = [
   {category:'fundamentals',question:'Why is the THCa-to-THC factor approximately 0.877?',
     answer:'Each THCa molecule (358.47 g/mol) yields one THC molecule (314.46 g/mol) and releases CO2 (44.01 g/mol). Thus 314.46 ÷ 358.47 gives the theoretical retained mass ratio, not a reaction efficiency.'},
   {category:'fundamentals',question:'Can THC turn back into THCa using the reverse calculator?',
-    answer:'No. THC → THCa mode is an inverse mass-equivalence planning calculation, not a physical or chemical method for reversing decarboxylation.'},
+    answer:'No. The starting-mass tool is an inverse mass-equivalence planning calculation, not a physical or chemical method for reversing decarboxylation.'},
   {category:'fundamentals',question:'What is the difference between THCa mass and total THC?',
     answer:'THCa mass refers to the acidic compound before conversion. Potential total THC adds measured neutral THC to the THC-equivalent mass of THCa, often written as THC + 0.877 × THCa. The actual recovered amount may be lower.'},
   {category:'fundamentals',question:'Does the same 0.877 factor apply to CBDa and CBGa?',

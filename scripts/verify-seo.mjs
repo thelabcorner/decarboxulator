@@ -172,7 +172,7 @@ for(const file of files) {
     assert(html.includes(expectedToolQuestion), `${route}: missing visible tool-specific reference questions`);
   }
   if(route==='tools/thc-to-thca/') {
-    assert(/<h1[^>]*>[^<]*THC to THCa/.test(html), 'Reverse entry needs its own server-rendered heading');
+    assert(/<h1[^>]*>[^<]*Starting THCa for Target THC/.test(html), 'Reverse entry needs its own server-rendered heading');
     assert(html.includes('Target THC mass'), 'Reverse entry must SSR the inverse calculator mode');
   }
   console.log('PASS',route || '/');

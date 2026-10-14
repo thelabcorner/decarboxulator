@@ -6,7 +6,7 @@ const root=fileURLToPath(new URL('../dist/client/',import.meta.url));
 const redirects=JSON.parse(readFileSync(new URL('./legacy-redirects.json',import.meta.url),'utf8'));
 const base='/' + (process.env.VITE_BASE_PATH || '/').split('/').filter(Boolean).join('/') + '/';
 const publicBase=base==='//' ? '/' : base;
-const site=(process.env.VITE_SITE_URL || 'https://thelabcorner.github.io/decarboxulator/').replace(/\/?$/,'/');
+const site=(process.env.VITE_SITE_URL || 'https://dcxr.thedabcorner.site/').replace(/\/?$/,'/');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // A dependency-free, responsive migration fallback: the browser normally redirects
 // before painting, but users without working navigation still see a real V4 surface.

@@ -1,19 +1,21 @@
 import { trackerSetup, trackerSnapshot, type TrackerConfig, type TrackerSnapshot } from './decarb';
 import type { TrackerReading } from './workspacePayload';
+import { isAcidCannabinoid, type AcidCannabinoid } from './cannabinoids';
 
 export type TrackerPoint = TrackerReading & { snapshot: TrackerSnapshot };
 export type TrackerInputMode = 'manual' | 'percentage';
 export type TrackerGraph = 'completion' | 'composition' | 'loss' | 'rate';
 
-export function trackerConfigFromPercent(tareG: number, totalContentG: number, thcaPct: number, otherPct: number): TrackerConfig | null {
+export function trackerConfigFromPercent(tareG: number, totalContentG: number, thcaPct: number, otherPct: number, cannabinoid?: AcidCannabinoid): TrackerConfig | null {
   if (![tareG,totalContentG,thcaPct,otherPct].every(Number.isFinite) ||
       tareG < 0 || !(totalContentG > 0) || thcaPct <= 0 || thcaPct > 100 ||
       otherPct < 0 || otherPct > 100 || Math.abs(thcaPct + otherPct - 100) > 1e-7) return null;
-  return {tareG,thcaG:totalContentG*thcaPct/100,otherG:totalContentG*otherPct/100};
+  return {tareG,thcaG:totalContentG*thcaPct/100,otherG:totalContentG*otherPct/100,cannabinoid};
 }
 export function validatedTrackerConfig(cfg: TrackerConfig | null): TrackerConfig | null {
   if (!cfg || ![cfg.tareG,cfg.thcaG,cfg.otherG].every(Number.isFinite) ||
-    cfg.tareG < 0 || !(cfg.thcaG > 0) || cfg.otherG < 0) return null;
+    cfg.tareG < 0 || !(cfg.thcaG > 0) || cfg.otherG < 0 ||
+    (cfg.cannabinoid !== undefined && !isAcidCannabinoid(cfg.cannabinoid))) return null;
   return cfg;
 }
 export function restoreTrackerPoints(readings: TrackerReading[], cfg: TrackerConfig): TrackerPoint[] {
@@ -82,14 +84,14 @@ export function trackerRawCSV(readings:TrackerReading[],cfg:TrackerConfig|null):
     const safe=/^[=+@-]/.test(value.trimStart())?"'"+value:value;
     return '"'+safe.replace(/"/g,'""')+'"';
   };
-  const header='index,timestamp_utc,vessel_mass_g,loss_g,completion_percent,remaining_thca_g,converted_thc_g,thca_percent,thc_percent,measured_temperature_c,technician_note,model_status';
+  const header='index,timestamp_utc,vessel_mass_g,loss_g,completion_percent,remaining_thca_g,converted_thc_g,thca_percent,thc_percent,measured_temperature_c,technician_note,model_status,acidic_cannabinoid';
   return [header,...readings.map((r,i)=>{
     const snapshot=cfg&&setup?trackerSnapshot(r.weightG,cfg,setup):null;
     return [i+1,new Date(r.timestamp).toISOString(),r.weightG,
       setup?Number((setup.initialTotalG-r.weightG).toPrecision(12)):'',
       snapshot?.completion??'',snapshot?.remainingThcaG??'',snapshot?.convertedThcG??'',
       snapshot?.thcaPct??'',snapshot?.thcPct??'',r.temperatureC??'',
-      quote(r.note??''),snapshot?'within_CO2_model':cfg?'outside_CO2_model':'baseline_unavailable',
+      quote(r.note??''),snapshot?'within_CO2_model':cfg?'outside_CO2_model':'baseline_unavailable',cfg?.cannabinoid??'THCa',
     ].join(',');
   })].join('\r\n')+'\r\n';
 }

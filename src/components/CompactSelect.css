@@ -58,3 +58,5 @@
 @media (prefers-reduced-motion: reduce) {
   .studio-compact-trigger { transition: none; }
 }
+
+/* Menu identity is supplied by contextual controls, not chemical reaction arrows. */

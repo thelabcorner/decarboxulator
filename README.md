@@ -21,12 +21,19 @@ To verify the compiled production app in locally installed Chrome or Edge:
 npm run build
 npm run test:ui
 npm run test:calculators
+npm run test:acids
 npm run test:offline
 npm run test:tracker-ui
 npm run test:webkit
 ```
 
 Both browser suites take an immutable snapshot of `dist/client` and start a temporary, loopback-only HTTP server automatically. This prevents concurrent Vite rebuilds from changing fingerprinted assets during a test run. Set `SMOKE_URL` only when intentionally testing another server. The responsive suite discovers and checks all routes (currently eleven) across 320/375/430/768/1440px, including command search, mobile viewport/keyboard constraints, independent scrolling, saved calculations, sharing, and native-install gating. The offline suite verifies service-worker activation, cached calculator navigation and hydration with the network disabled, and route-specific scroll restoration. The UI suite additionally runs mobile/desktop WebKit geometry tests (including a simulated keyboard-constrained viewport) and checks the tracker's horizontal measurement-log ScrollView. `test:webkit` runs that cross-engine stage without the longer Chromium suite. Desktop Playwright WebKit with iPhone viewport emulation is not a substitute for a physical iOS Safari test. Mobile keeps the status bar consistently hidden, rather than letting input focus shift the tap targets. Screenshots are written to ignored `artifacts/`.
+
+## Multi-acid cannabinoid calculations (V4)
+
+THCa remains the default in every calculator. V4 also supports **CBDa → CBD**, **CBGa → CBG**, **CBCa → CBC**, and **CBNa → CBN**. Each calculator uses its own selected acid rather than a global setting; the edible and cartridge recipe builders select compounds **per row** for mixed-cannabinoid formulas. Selections persist in local workspaces and share links, and tracker runs persist their original acidic cannabinoid in IndexedDB/archives. Legacy records without a cannabinoid field retain the THCa default.
+
+The shared `src/lib/cannabinoids.ts` registry provides the molar masses and theoretical acid-to-neutral/CO2 ratios, while `src/components/CannabinoidSelector.tsx` reuses V4's existing compact, accessible portal context menu. Theoretical complete decarboxylation is **not** a kinetic prediction or a measured potency assay; different acids can react at different rates. See [the implementation and scientific limitations](docs/ACIDIC_CANNABINOID_SUPPORT.md). Run `npm run test:acids` after `npm run build` to check Chromium/WebKit selector interaction, persistence, reset and 320 px layouts.
 
 ## Architecture
 

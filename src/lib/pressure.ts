@@ -7,7 +7,8 @@
  * Other gas generation, condensable vapors, sample displacement, dissolution,
  * unequal temperatures and changing pressure boundaries are excluded.
  */
-import { MW_THCA, MW_CO2, type ParsedAmount } from './decarb';
+import { type ParsedAmount } from './decarb';
+import { cannabinoidChemistry, DEFAULT_ACID_CANNABINOID, type AcidCannabinoid } from './cannabinoids';
 
 export const R_SI = 8.31446261815324;            // Pa·m³/(mol·K)
 export const PSI_PER_PA = 1 / 6894.757293168;
@@ -51,6 +52,8 @@ export interface PressureInput {
   ambientPsi?: number;
   /** Fraction of THCa converted, range [0,1]. Not a reaction efficiency guarantee. */
   efficiency?: number;
+  /** Acidic cannabinoid for stoichiometry. Defaults to THCa. */
+  cannabinoid?: AcidCannabinoid;
 }
 export interface PressureResult {
   thcaG: number;
@@ -80,9 +83,10 @@ export function computePressure(input: PressureInput): PressureResult | null {
   if (![weightG,thcaPct,tempValue,headspaceFloz,sealTempF,ambientPsi,fraction,tempK,sealK].every(Number.isFinite) ||
       weightG <= 0 || thcaPct < 0 || thcaPct > 100 || headspaceFloz <= 0 ||
       sealK <= 0 || tempK <= 0 || ambientPsi <= 0 || fraction < 0 || fraction > 1) return null;
+  const {acidMw, co2Mw} = cannabinoidChemistry(input.cannabinoid ?? DEFAULT_ACID_CANNABINOID);
   const thcaG = weightG * thcaPct / 100;
-  const nCo2Mol = thcaG * fraction / MW_THCA;
-  const co2G = nCo2Mol * MW_CO2;
+  const nCo2Mol = thcaG * fraction / acidMw;
+  const co2G = nCo2Mol * co2Mw;
   const pAirPsi = ambientPsi * tempK / sealK;
   const pCo2Psi = (nCo2Mol * R_SI * tempK / (headspaceFloz * FLOZ_TO_M3)) * PSI_PER_PA;
   const pAbsPsi = pAirPsi + pCo2Psi;
