@@ -133,8 +133,8 @@ for(const file of files) {
       html.includes('id="pressure-thca"');
     const pressureTrackerWorkbench=route==='tools/pressure-tracker/' &&
       /class="[^"]*pressure-tracker-workbench/.test(html) &&
-      html.includes('APPARENT CONVERSION') && html.includes('Starting inventory') &&
-      html.includes('Current observation') && html.includes('Initial pressure');
+      html.includes('APPARENT CONVERSION') && html.includes('Run setup') &&
+      html.includes('Live observation') && html.includes('Initial pressure');
     assert(/class="[^"]*calculator-grid/.test(html) || appWorkbench || calculatorWorkbench ||
       pressureWorkbench || pressureTrackerWorkbench,
       `${route}: primary calculator absent from prerendered HTML`);
@@ -149,7 +149,7 @@ for(const file of files) {
     assert(html.includes(expectedToolQuestion), `${route}: missing visible tool-specific reference questions`);
   }
   if(route==='tools/thc-to-thca/') {
-    assert(/<h1[^>]*>[^<]*Starting THCa for Target THC/.test(html), 'Reverse entry needs its own server-rendered heading');
+    assert(/<h1[^>]*>[^<]*THC → THCa/.test(html), 'Reverse entry needs its own server-rendered heading');
     assert(html.includes('Target THC mass'), 'Reverse entry must SSR the inverse calculator mode');
   }
   console.log('PASS',route || '/');

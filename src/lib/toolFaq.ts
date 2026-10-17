@@ -47,7 +47,9 @@ export const TOOL_QUESTIONS: Record<ToolId, readonly Faq[]> = {
   ],
   pressure: [
     { question: 'Does the pressure result include solvent or terpene vapor?',
-      answer: 'No. The model adds the pressure from heated trapped air and CO2 released by THCa. It omits vapor pressure, material displacement and changing gas volume, so the number is not a guaranteed maximum.' },
+      answer: 'No. The model adds pressure from initially trapped gas and decarboxylation CO2. It requires the actual free gas volume: the optional headspace estimator subtracts entered material and equipment displacement, but does not model changing headspace, thermal expansion, phase changes, solvent or terpene vapor. The result is not a guaranteed maximum.' },
+    { question: 'Should I enter vessel capacity or free gas headspace?',
+      answer: 'Use actual free gas headspace, not nominal vessel capacity. If unknown, select Estimate and enter the internal vessel capacity minus the material and other contents that truly displace gas. The mass/density method needs a defensible true displacement density; gas-connected pores in loosely packed solids are not automatically excluded from headspace.' },
     { question: 'Why are gauge and absolute pressure different?',
       answer: 'Absolute pressure is referenced to vacuum. Gauge pressure subtracts the assumed surrounding atmospheric pressure. The same gas state can therefore have two different numerical pressure readings.' },
     { question: 'Can a jar be considered safe because the predicted pressure is low?',
@@ -64,6 +66,8 @@ export const TOOL_QUESTIONS: Record<ToolId, readonly Faq[]> = {
   'pressure-tracker': [
     { question: 'Can a pressure reading determine decarboxylation completion?',
       answer: 'It estimates apparent CO2-equivalent gas generation, not chemically verified conversion. The calculation removes the initial trapped-gas temperature contribution and, in vent mode, adds measured discharged gas. Unmeasured vapors, leaks, headspace changes and gas absorption break the idealized correspondence.' },
+    { question: 'What if I know the vessel size but not the headspace?',
+      answer: 'Switch Free gas headspace to Estimate and enter the vessel internal capacity plus material and equipment displacement, or enter sample mass and an actual displacement density. The result remains an approximation because usable gas volume may change with temperature, foam, fill level, gas-connected porosity, and apparatus internals.' },
     { question: 'How can the tracker start below atmospheric pressure?',
       answer: 'Select absolute PSIA and enter a value below local ambient, or select gauge PSIG and enter a negative reading. An initial vacuum is not zero pressure; all gas-law calculations use absolute pressure and Kelvin.' },
     { question: 'Can I count vent releases instead of logging each one?',

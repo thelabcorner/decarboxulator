@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 import { Activity, AlertTriangle, Download, ListPlus, RotateCcw, Trash2 } from 'lucide-react';
+import { HeadspaceEditor } from './HeadspaceEditor';
+import { HEADSPACE_DEFAULTS, resolveHeadspace } from '../lib/headspace';
 import { NumberField } from './NumberField';
 import { CannabinoidSelector } from './CannabinoidSelector';
 import { FieldGrid, Metric, Metrics, Notice, Panel, Selector, Unavailable } from './ui';
@@ -13,6 +15,7 @@ import { asAbsolutePsi, parsePressureReading, parseVentLog, parsePressureLog,
 import './PressureTrackerWorkbench.css';
 
 const DEFAULTS = {
+  ...HEADSPACE_DEFAULTS,
   unit:'g' as const,
   cannabinoid:DEFAULT_ACID_CANNABINOID,
   sampleG:'10',acidPercent:'80',headspaceFloz:'16',ambientPsi:'14.6959488',
@@ -68,7 +71,7 @@ export function PressureTrackerWorkbench() {
   const ambient=parseAmount(s.ambientPsi,{min:Number.MIN_VALUE});
   const sample=parseAmount(s.sampleG,{min:Number.MIN_VALUE});
   const acid=parseAmount(s.acidPercent,{max:100,min:Number.MIN_VALUE});
-  const volume=parseAmount(s.headspaceFloz,{min:Number.MIN_VALUE});
+  const volume=resolveHeadspace(s,s.headspaceFloz,s.sampleG);
   const initialTemp=parseTemperature(s.initialGasTemp,'C');
   const currentTemp=parseTemperature(s.currentGasTemp,'C');
   const initialRaw=parsePressureReading(s.initialPressure);
@@ -152,9 +155,15 @@ export function PressureTrackerWorkbench() {
   const progress=result?result.apparentPercent:null;
   return <div className="pressure-tracker-workbench">
     <header className="pressure-tracker-header">
-      <div><span className="pressure-tracker-eyebrow"><Activity size={13}/> CO2-EQUIVALENT PROGRESS</span>
-        <h2>{mode==='seal'?'Seal mode':'Vent mode'} / live estimate</h2>
-        <p>Pressure measurements, not mass loss. Results are conditional on the gas inventory model.</p></div>
+      <div className="pressure-tracker-toolbar-heading">
+        <span className="pressure-tracker-eyebrow"><Activity size={13}/> Measurement workspace</span>
+        <small>{locked?'Baseline locked · clear history to edit':mode==='seal'?'Closed gas balance · temperature corrected':'Retained + vented gas · temperature corrected'}</small>
+      </div>
+      <fieldset className="studio-fieldset pressure-tracker-method" disabled={locked}>
+        <Selector label="Accounting mode" value={mode}
+          onChange={v=>ws.setField('pressureTrackerMode',v)}
+          options={[{value:'seal',label:'Seal'},{value:'vent',label:'Vent'}]}/>
+      </fieldset>
       <WorkspaceActions onReset={ws.reset} shareUrl={ws.shareUrl} tool="Pressure tracker"
         result={result?fmt(result.apparentPercent)+'% apparent progress':null}/>
     </header>
@@ -172,27 +181,26 @@ export function PressureTrackerWorkbench() {
           'CO2-only ideal-gas interpretation, not assay-confirmed conversion'}</p>
       </div>
       <div className="pressure-tracker-kpis">
-        <div><span>Target at current temperature & vent history</span>
+        <div><span>Target pressure · current state</span>
           <strong>{result?.targetPressureAbsPsi===null||!result?'—':fmt(result.targetPressureAbsPsi)} <small>PSIA</small></strong>
           <small>{result?.targetPressureGaugePsi!==null&&result?fmt(result.targetPressureGaugePsi)+' PSIG':'Not physically attainable under recorded vent balance'}</small></div>
         <div><span>Observed gas equivalent</span><strong>{result?fmt(result.co2EquivalentG,4):'—'} <small>g CO2 eq.</small></strong></div>
         <div><span>Theoretical maximum</span><strong>{result?fmt(result.theoreticalCo2G,4):'—'} <small>g CO2</small></strong></div>
       </div>
     </div>
-    <Notice variant="warning">A hot sealed vessel can rupture without warning. This tracker calculates an idealized gas inventory;
-      it cannot establish containment safety, a maximum pressure, or a safe venting practice. Use a purpose-rated,
-      independently protected measurement apparatus. Vacuum does not eliminate the danger.</Notice>
-    <Panel title="Tracking mode" detail="Choose how gas is accounted for">
-      <fieldset className="studio-fieldset" disabled={locked}>
-      <Selector label="Method" value={mode} onChange={v=>ws.setField('pressureTrackerMode',v)}
-        options={[{value:'seal',label:'Seal · no gas escapes'},{value:'vent',label:'Vent · measured releases'}]}/>
-      </fieldset>
-      <p className="pressure-tracker-explain">{mode==='seal'
-        ? 'No intentional gas release. The observed inventory change is corrected for the initially trapped gas and its initial temperature.'
-        : 'Pressure drops must be measured before and after each event. Released gas plus the change in retained gas determines net evolved-gas equivalents.'}</p>
-    </Panel>
+    <div className="pressure-tracker-model-limits">
+      <AlertTriangle size={14} aria-hidden="true"/>
+      <span>Model estimate only · not a pressure rating. Sealed heated vessels can rupture.</span>
+      <details><summary>Assumptions &amp; limitations</summary>
+        <p>{mode==='seal'
+          ? 'No intentional gas release; initial trapped gas is temperature corrected.'
+          : 'Vents require before/after pressure and temperature measurements. All releases must be accounted for.'}
+          The model excludes unmeasured vapor, leaks, changing gas volume and structural failure. A vacuum baseline
+          does not make a heated sealed vessel safe.</p>
+      </details>
+    </div>
     <div className="pressure-tracker-columns">
-      <Panel title="Starting inventory" detail={locked?'Locked after recording to preserve the interpretation':'Composition and baseline gas conditions'}>
+      <Panel title="Run setup" detail={locked?'Baseline locked while snapshots exist':'Initial sample, vessel, and gas baseline'}>
         <fieldset className="studio-fieldset" disabled={locked}>
           <CannabinoidSelector context="tracker" value={s.cannabinoid} onChange={v=>ws.setField('cannabinoid',v)}/>
           <FieldGrid>
@@ -201,13 +209,13 @@ export function PressureTrackerWorkbench() {
             <NumberField label={chem.acid+' fraction'} value={s.acidPercent} suffix="%"
               onChange={v=>ws.setField('acidPercent',v)} error={acid.error} max={100}/>
           </FieldGrid>
-          <FieldGrid>
-            <NumberField label="Free gas headspace" value={s.headspaceFloz} suffix="fl oz"
-              onChange={v=>ws.setField('headspaceFloz',v)} error={volume.error} min={0.000001}
-              hint="Gas volume, not vessel capacity"/>
-            <NumberField label="Surrounding atmosphere" value={s.ambientPsi} suffix="PSIA"
-              onChange={v=>ws.setField('ambientPsi',v)} error={ambient.error} min={0.000001}/>
-          </FieldGrid>
+          <HeadspaceEditor fields={s} sampleMassG={s.sampleG} manualFloz={s.headspaceFloz}
+            onField={(key,value)=>ws.setFields({[key]:value})} onManual={v=>ws.setField('headspaceFloz',v)}
+            disabled={locked}/>
+          <details className="pressure-tracker-gas-baseline" open>
+            <summary>Initial gas conditions <span>vacuum / ambient</span></summary>
+          <NumberField label="Surrounding atmosphere" value={s.ambientPsi} suffix="PSIA"
+            onChange={v=>ws.setField('ambientPsi',v)} error={ambient.error} min={0.000001}/>
           <Selector label="Pressure reading reference" value={s.pressureBasis}
             onChange={setPressureBasis}
             options={[{value:'psia',label:'Absolute · PSIA'},{value:'psig',label:'Gauge / vacuum · PSIG'}]}/>
@@ -220,12 +228,12 @@ export function PressureTrackerWorkbench() {
             <NumberField label="Initial gas temperature" value={s.initialGasTemp} suffix="°C"
               onChange={v=>ws.setField('initialGasTemp',v)} min={-273.14999} error={initialTemp.error}/>
           </FieldGrid>
-          <p className="pressure-tracker-help">A vacuum starting condition is a pressure below local ambient PSIA, or a negative PSIG reading.
-            Enter the baseline before measurable CO2 generation.</p>
+          <p className="pressure-tracker-help">Negative PSIG denotes vacuum relative to local atmosphere. Baseline must precede measurable CO2 generation.</p>
+          </details>
         </fieldset>
         {locked&&<Notice>Baseline locked while measurements are recorded. Clear the reading history before changing it.</Notice>}
       </Panel>
-      <Panel title="Current observation" detail="Enter measured gas pressure and temperature together">
+      <Panel title="Live observation" detail="Measured pressure and gas temperature">
         <FieldGrid>
           <NumberField label="Current pressure" value={s.currentPressure}
             onChange={v=>ws.setField('currentPressure',v)} suffix={s.pressureBasis.toUpperCase()}
@@ -244,8 +252,7 @@ export function PressureTrackerWorkbench() {
         </Metrics>}
         <button type="button" className="tracker-command-primary" onClick={record}
           disabled={!result||readings.length>=200}><ListPlus size={15}/> Record pressure snapshot</button>
-        <p className="pressure-tracker-help">A pressure crossing is only meaningful at its stated gas temperature and vent history.
-          The target changes as those inputs change.</p>
+        <p className="pressure-tracker-help">Pressure targets depend on the gas temperature, baseline and vent history.</p>
       </Panel>
     </div>
     {mode==='vent'&&<Panel title="Vented-gas accounting" detail="Count calibrated identical cycles or record individual pressure drops">
@@ -302,8 +309,8 @@ export function PressureTrackerWorkbench() {
           <small>{fmt(r.pressureAbsPsi,3)} PSIA · {fmt(r.tempC,1)}°C</small>
         </div>)}</div>:<Unavailable>Record a pressure snapshot to retain an observed history.</Unavailable>}
     </Panel>
-    <section className="pressure-tracker-derivation" aria-label="Calculation methodology">
-      <h2><AlertTriangle size={15}/> Interpreting the estimate</h2>
+    <details className="pressure-tracker-derivation" aria-label="Calculation methodology">
+      <summary><AlertTriangle size={15}/> Calculation method &amp; interpretation</summary>
       <p>At fixed gas volume V, retained inventory is n = PV/(RT). Seal mode computes the difference
         between current and starting inventory. Vent mode adds Σ V/R × (Pbefore/Tbefore − Pafter/Tafter),
         with measured absolute P and Kelvin T at each vent. The result divided by the selected
@@ -313,6 +320,6 @@ export function PressureTrackerWorkbench() {
         free headspace can invalidate the CO2-only interpretation. Gas composition and actual
         molecular conversion are not measured. An emergency relief system must never be treated
         as the metering element.</p>
-    </section>
+    </details>
   </div>;
 }

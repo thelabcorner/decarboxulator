@@ -1,5 +1,7 @@
 import { AlertTriangle, ArrowDownRight, ArrowUpRight, ChartNoAxesCombined, FlaskConical, Info, RotateCcw, Thermometer, Wind, Grid3x3 } from 'lucide-react';
 import { NumberField } from './NumberField';
+import { HeadspaceEditor } from './HeadspaceEditor';
+import { HEADSPACE_DEFAULTS, resolveHeadspace } from '../lib/headspace';
 import { CannabinoidSelector } from './CannabinoidSelector';
 import { FieldGrid, Formula, Notice, Selector, Unavailable } from './ui';
 import { WorkspaceActions } from './WorkspaceActions';
@@ -17,6 +19,7 @@ import {
 import './PressureWorkbench.css';
 
 const PRESSURE_DEFAULTS = {
+  ...HEADSPACE_DEFAULTS,
   unit:'g' as const, weight:'28',thcaPct:'85',temp:'240',volume:'16',
   tempUnit:'F' as TempUnit,sealTemp:'70',ambientPsi:'14.6959488',
   sealPressure:'14.6959488',sealPressureBasis:'psia' as 'psia' | 'psig',conversionPct:'100',
@@ -39,7 +42,7 @@ export function PressureWorkbench(){
     mass:parseAmount(weight,{max:MAX_INPUT}),
     acid:parseAmount(thcaPct,{max:100}),
     temperature:parseTemperature(temp,unit),
-    volume:parseAmount(volume,{min:Number.MIN_VALUE}),
+    volume:resolveHeadspace(ws.values,volume,weight),
     seal:parseTemperature(sealTemp,unit),
     ambient:parseAmount(ambientPsi,{min:Number.MIN_VALUE}),
     sealPressure:parsePressureReading(sealPressure),
@@ -67,7 +70,7 @@ export function PressureWorkbench(){
       sealTemp:s===null?sealTemp:display(convertTemp(s,unit,next))});
   }
   function useScenario(nextTemp:number,nextVolume:number){
-    ws.setFields({temp:display(nextTemp),volume:display(nextVolume)});
+    ws.setFields({temp:display(nextTemp),headspaceMode:'manual',volume:display(nextVolume)});
   }
   // Exact counterfactuals—not local tangent approximations or vessel ratings.
   const reducedConversion=result?computePressure({
@@ -130,16 +133,13 @@ export function PressureWorkbench(){
             <NumberField id="pressure-temp" label="Process temperature" value={temp}
               onChange={v=>ws.setField('temp',v)} suffix={`°${unit}`} error={parsed.temperature.error}
               min={unit==='F'?-459.6699:-273.1499}/>
-            <NumberField id="pressure-vol" label="Free gas headspace" value={volume}
-              onChange={v=>ws.setField('volume',v)} suffix="fl oz" error={parsed.volume.error}
-              hint="Gas space, not total vessel capacity" min={0.000000001}/>
-          </FieldGrid>
-          <FieldGrid>
             <NumberField id="pressure-weight" label="Sample mass" value={weight}
               onChange={v=>ws.setField('weight',v)} suffix="g" error={parsed.mass.error}/>
-            <NumberField id="pressure-thca" label={`${chem.acid} fraction`} value={thcaPct}
-              onChange={v=>ws.setField('thcaPct',v)} suffix="%" error={parsed.acid.error} max={100}/>
           </FieldGrid>
+          <NumberField id="pressure-thca" label={`${chem.acid} fraction`} value={thcaPct}
+            onChange={v=>ws.setField('thcaPct',v)} suffix="%" error={parsed.acid.error} max={100}/>
+          <HeadspaceEditor manualId="pressure-vol" fields={ws.values} sampleMassG={weight} manualFloz={volume}
+            onField={(key,value)=>ws.setFields({[key]:value})} onManual={v=>ws.setField('volume',v)}/>
           <CannabinoidSelector context="pressure" value={validCannabinoid}
              onChange={v=>ws.setField('cannabinoid',v)}/>
           {validCannabinoid!=='THCa'&&<Notice>Stoichiometry uses {chem.acid} → {chem.neutral} + CO2 (Mᴀ {chem.acidMw} g/mol). This changes the assumed CO2 amount; the model does not predict the conversion rate of {chem.acid}.</Notice>}
@@ -181,7 +181,7 @@ export function PressureWorkbench(){
             })}><RotateCcw size={12}/> Restore standard assumptions</button>
           </details>
           <div className="pressure-controls-caution"><AlertTriangle size={15}/>
-            <span>This model cannot determine if any sealed vessel is suitable. Vapor generation and actual free-gas volume are not established.</span>
+            <span>Model only; not a vessel rating. Verify actual free gas volume. Additional vapors and phase changes are excluded.</span>
           </div>
           <a className="pressure-reference-jump" href="#tool-reference"
             onClick={()=>{const el=document.getElementById('tool-reference');if(el instanceof HTMLDetailsElement)el.open=true;}}>

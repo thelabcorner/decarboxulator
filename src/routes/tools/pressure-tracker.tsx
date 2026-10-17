@@ -17,6 +17,10 @@ export const Route=createFileRoute('/tools/pressure-tracker')({
         <h2>Why pressure can estimate evolved CO2</h2>
         <p>The ideal gas law gives gas inventory n=PV/(RT), where P is measured absolute
           pressure, V is free gas headspace and T is gas temperature in kelvin.
+          The shared headspace tool accepts a measured gas volume or estimates it
+          as internal vessel capacity minus material and equipment displacement.
+          Mass ÷ density is offered only when the supplied density represents actual
+          gas-excluded material volume, not a porous packed envelope.
           Seal mode subtracts the initial inventory from the current inventory.
           Heating trapped air alone changes pressure, so comparing PSI readings
           without the temperature and initial inventory correction is incorrect.</p>

@@ -26,6 +26,19 @@ P_target_gauge = P_target_absolute - P_amb
 
 The code uses SI `R=8.31446261815324 J/(mol K)`, `PSI_PER_PA` (psi/Pa) and `FLOZ_TO_M3`. All pressures inside the gas balance are **PSIA**, never gauge, and all temperatures are kelvin. Free headspace is the gas volume, not the nominal container capacity. If initial pressure is supplied as PSIG, first compute `P_0=PSIG+P_amb`. Negative PSIG is legitimate; negative PSIA is not.
 
+## Free-gas headspace estimator (shared with vessel-pressure heatmap)
+
+The entered **free communicating gas volume** is not the container's marked volume or the volume occupied by a loosely packed sample. Both pressure tools now expose two mutually exclusive input modes:
+
+- **Known:** manually specify measured free gas headspace in US fluid ounces.
+- **Estimate:** specify actual internal vessel capacity in US fluid ounces or mL; subtract measured *material displacement* and other gas-excluding items (probe, stir bar, insert). Alternatively compute material displacement as starting sample mass divided by a **user-supplied, defensible displacement density** in g/mL. No default density is inferred from cannabinoid, appearance, phase, or sample mass.
+
+`V_gas,ml = V_vessel,ml - (V_material displaced,ml + V_internal hardware,ml)`, where `1 US fl oz = 29.5735295625 mL`. Both capacity and displacement must be finite, nonnegative where appropriate, and the free gas volume must be strictly positive. Missing/invalid inputs suspend pressure and apparent-progress results rather than falling back to an unrelated manual estimate. Switching pressure-landscape scenarios intentionally selects Known volume so that the scenario point is unambiguous.
+
+**Porous-material warning:** a sample's packed or envelope volume is not automatically its gas-excluded displacement volume; accessible/interconnected pore voids may be part of communicating gas space. Mass divided by density only estimates *true gas-excluded volume* if the chosen density describes that quantity. There is no universal or defensible default for mixtures, foams, powders, resins or oils. The calculated headspace is an initial or assumed fixed geometry, not a time-resolved headspace model. Expansion, swelling, liquid level variation, foaming, evaporation, absorption, condensation, flexible walls and hardware changes may invalidate it. This estimator is not a vessel rating.
+
+Headspace changes alter both modeled pressure and pressure-derived percent completion. In the tracker, volume assumptions are baseline-locked when pressure snapshots exist to prevent retroactive re-interpretation of measurements. Unit and browser QA exercise both manual and estimated modes and impossible-displacement refusal.
+
 The result is total evolved-gas equivalents inferred from an inventory balance, **not CO2 partial moles**, unless all other gas sources and sinks can be excluded. A gas-composition measurement can distinguish evolving CO2 from initial air, water vapor, purge gas and solvents. Evolving gas may remain dissolved, adsorbed or condensed. Changing free headspace due to material expansion, phase change, thermal dilation, condensation or flexing violates fixed-V. An unexpectedly high value (>100%) or negative apparent conversion remains visible and flagged, never clipped.
 
 ## Seal mode

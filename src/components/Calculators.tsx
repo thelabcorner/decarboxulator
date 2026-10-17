@@ -6,7 +6,8 @@ import { MassBalance } from './MassBalance';
 import { CalculatorStudio } from './CalculatorStudio';
 import { WorkspaceActions } from './WorkspaceActions';
 import { CannabinoidSelector } from './CannabinoidSelector';
-import { FieldGrid, Formula, Metric, Metrics, Notice, Panel, PrimaryResult, Selector, Unavailable, UnitSelector } from './ui';
+import './ConversionDirection.css';
+import { FieldGrid, Formula, Metric, Metrics, Notice, Panel, PrimaryResult, Unavailable, UnitSelector } from './ui';
 import { useCalculatorWorkspace } from '../lib/useCalculatorWorkspace';
 import { cannabinoidChemistry, DEFAULT_ACID_CANNABINOID, type AcidCannabinoid } from '../lib/cannabinoids';
 import {
@@ -70,8 +71,8 @@ export function ConversionCalculator({entryDirection}: {entryDirection?: Directi
     } else workspace.setField('direction',next);
   }
   return (
-    <CalculatorStudio name={isDecarb ? `${chemistry.acid} product yield` : `${chemistry.acid} starting mass`} category="Stoichiometry"
-      summary="Molecular mass model" label={isDecarb ? `Theoretical ${to} produced` : `Equivalent starting ${to}`}
+    <CalculatorStudio name={isDecarb ? `${chemistry.acid} → ${chemistry.neutral}` : `${chemistry.neutral} → ${chemistry.acid}`} category="Stoichiometry"
+      summary={isDecarb ? 'Product yield · molecular mass model' : 'Starting mass needed · inverse mass calculation'} label={isDecarb ? `Theoretical ${to} produced` : `Equivalent starting ${to}`}
       value={result ? formatAmount(result.outputGrams,unit) : null} unit={unit}
       note={isDecarb ? 'Assumes complete conversion' : 'Target mass equivalent, not a reverse reaction'}
       metrics={[
@@ -82,10 +83,14 @@ export function ConversionCalculator({entryDirection}: {entryDirection?: Directi
         action={<WorkspaceActions onReset={workspace.reset} shareUrl={workspace.shareUrl}
           tool={isDecarb ? `${from} theoretical yield` : `Starting ${to} required for target ${from}`} result={result ? `${formatAmount(result.outputGrams,unit)} ${unit}` : null}/>}>
         <div className="input-stack">
-          <Selector label="Solve for" value={direction} onChange={changeDirection} options={[
-             {value:'decarb',label:'Product yield'},
-             {value:'reverse',label:'Starting mass needed'},
-           ]}/>
+          <div className="conversion-direction" role="group" aria-label="Calculator direction">
+            <button type="button" aria-pressed={direction==='decarb'} onClick={()=>changeDirection('decarb')}>
+              <strong>{chemistry.acid} → {chemistry.neutral}</strong><small>Product yield</small>
+            </button>
+            <button type="button" aria-pressed={direction==='reverse'} onClick={()=>changeDirection('reverse')}>
+              <strong>{chemistry.neutral} → {chemistry.acid}</strong><small>Starting mass needed</small>
+            </button>
+          </div>
            <CannabinoidSelector context="conversion" value={cannabinoid} onChange={next=>workspace.setField('cannabinoid',next)}/>
            {!isDecarb && <p className="studio-chemical-method-note">Enter a {chemistry.neutral} target. The output is the {chemistry.acid} starting mass equivalent for complete decarboxylation—not {chemistry.neutral} converting into {chemistry.acid}.</p>}
           <FieldGrid>
