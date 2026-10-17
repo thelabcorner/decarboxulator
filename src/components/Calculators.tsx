@@ -76,7 +76,7 @@ export function ConversionCalculator({entryDirection}: {entryDirection?: Directi
       value={result ? formatAmount(result.outputGrams,unit) : null} unit={unit}
       note={isDecarb ? 'Assumes complete conversion' : 'Target mass equivalent, not a reverse reaction'}
       metrics={[
-        {label:isDecarb ? 'Potential CO2 loss' : 'Associated CO2 fraction',value:result ? formatAmount(result.co2Grams,unit) : '—',unit},
+        {label:isDecarb ? 'Potential CO2 loss' : 'Associated CO2 fraction',value:result ? formatAmount(result.co2Grams,unit) : '-',unit},
         {label:'Conversion factor',value:formatNumber(chemistry.ratio*100,3),unit:'%'},
       ]}
       input={<Panel title={isDecarb ? 'Yield inputs' : 'Target-based planning'} detail={isDecarb ? 'Calculate potential neutral-cannabinoid yield' : 'Determine required starting acid, not reverse chemistry'}
@@ -92,7 +92,7 @@ export function ConversionCalculator({entryDirection}: {entryDirection?: Directi
             </button>
           </div>
            <CannabinoidSelector context="conversion" value={cannabinoid} onChange={next=>workspace.setField('cannabinoid',next)}/>
-           {!isDecarb && <p className="studio-chemical-method-note">Enter a {chemistry.neutral} target. The output is the {chemistry.acid} starting mass equivalent for complete decarboxylation—not {chemistry.neutral} converting into {chemistry.acid}.</p>}
+           {!isDecarb && <p className="studio-chemical-method-note">Enter a {chemistry.neutral} target. The output is the {chemistry.acid} starting mass equivalent for complete decarboxylation. It does not represent {chemistry.neutral} converting into {chemistry.acid}.</p>}
           <FieldGrid>
             <NumberField id="convert-amount" label={isDecarb ? `Starting ${from} mass` : `Target ${from} mass`}
               value={amount} onChange={value=>workspace.setField('amount',value)} error={parsed.error}
@@ -153,8 +153,8 @@ export function BatchCalculator() {
       label={`Potential ${chemistry.neutral} produced`} value={result ? formatAmount(result.thcGrams,unit) : null}
       unit={unit} note={`Starting batch, ${chemistry.acid} composition and theoretical CO2 loss`}
       metrics={[
-        {label:'Final batch mass',value:result?formatAmount(result.finalWeightGrams,unit):'—',unit},
-        {label:`Final ${chemistry.neutral} fraction`,value:result?formatNumber(result.finalThcPercent,2):'—',unit:'%'},
+        {label:'Final batch mass',value:result?formatAmount(result.finalWeightGrams,unit):'-',unit},
+        {label:`Final ${chemistry.neutral} fraction`,value:result?formatNumber(result.finalThcPercent,2):'-',unit:'%'},
       ]}
       input={<Panel title="Batch parameters" detail={`Starting mass and measured ${chemistry.acid} content`}
         action={<WorkspaceActions onReset={workspace.reset} shareUrl={workspace.shareUrl} tool="Batch yield"
@@ -213,8 +213,8 @@ export function AnalyzerCalculator() {
       value={result?formatNumber(result.thcaPercent,2):null} unit="%"
       note="Mass-loss estimate only; not a measured potency assay"
       metrics={[
-        {label:'Observed loss',value:result?formatAmount(result.lossGrams,unit):'—',unit},
-        {label:`${chemistry.neutral} produced`,value:result?formatAmount(result.thcGrams,unit):'—',unit},
+        {label:'Observed loss',value:result?formatAmount(result.lossGrams,unit):'-',unit},
+        {label:`${chemistry.neutral} produced`,value:result?formatAmount(result.thcGrams,unit):'-',unit},
       ]}
       input={<Panel title="Conditional mass-loss estimate" detail="Compare initial and final weights under a single-acid model"
         action={<WorkspaceActions onReset={workspace.reset} shareUrl={workspace.shareUrl}

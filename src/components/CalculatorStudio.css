@@ -19,7 +19,7 @@
   .calculator-route-shell .tool-heading h1 {font-size:13px;}
   .calculator-route-shell .tool-heading-reference span {display:none;}
 }
-/* Decarboxulator V4 — unified desktop/mobile calculation workstation.
+/* Decarboxulator V4; unified desktop/mobile calculation workstation.
    Matches Tracker Monitor without reproducing its session-specific controls. */
 .calculator-studio {display:grid;gap:9px;min-width:0;max-width:100%;
   font-variant-numeric:tabular-nums;}

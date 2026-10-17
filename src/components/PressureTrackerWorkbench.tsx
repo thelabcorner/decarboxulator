@@ -170,22 +170,22 @@ export function PressureTrackerWorkbench() {
     <div className="pressure-tracker-overview">
       <div className="pressure-tracker-primary">
         <span>APPARENT CONVERSION</span>
-        <output aria-live="polite">{progress===null?'—':fmt(progress)}<small>%</small></output>
+        <output aria-live="polite">{progress===null?'-':fmt(progress)}<small>%</small></output>
         <div className="pressure-tracker-progress" role="progressbar"
           aria-label="Apparent progress within theoretical range" aria-valuemin={0} aria-valuemax={100}
           aria-valuenow={progress===null?undefined:Math.max(0,Math.min(100,progress))}>
           <div style={{width:String(progress===null?0:Math.max(0,Math.min(100,progress)))+'%'}}/>
         </div>
-        <p>{result?.status==='above-theoretical'?'Above the theoretical CO2 capacity — measurement is flagged':
-          result?.status==='below-baseline'?'Below initial gas inventory — measurement is flagged':
+        <p>{result?.status==='above-theoretical'?'Above theoretical CO2 capacity. Measurement flagged':
+          result?.status==='below-baseline'?'Below initial gas inventory. Measurement flagged':
           'CO2-only ideal-gas interpretation, not assay-confirmed conversion'}</p>
       </div>
       <div className="pressure-tracker-kpis">
         <div><span>Target pressure · current state</span>
-          <strong>{result?.targetPressureAbsPsi===null||!result?'—':fmt(result.targetPressureAbsPsi)} <small>PSIA</small></strong>
+          <strong>{result?.targetPressureAbsPsi===null||!result?'-':fmt(result.targetPressureAbsPsi)} <small>PSIA</small></strong>
           <small>{result?.targetPressureGaugePsi!==null&&result?fmt(result.targetPressureGaugePsi)+' PSIG':'Not physically attainable under recorded vent balance'}</small></div>
-        <div><span>Observed gas equivalent</span><strong>{result?fmt(result.co2EquivalentG,4):'—'} <small>g CO2 eq.</small></strong></div>
-        <div><span>Theoretical maximum</span><strong>{result?fmt(result.theoreticalCo2G,4):'—'} <small>g CO2</small></strong></div>
+        <div><span>Observed gas equivalent</span><strong>{result?fmt(result.co2EquivalentG,4):'-'} <small>g CO2 eq.</small></strong></div>
+        <div><span>Theoretical maximum</span><strong>{result?fmt(result.theoreticalCo2G,4):'-'} <small>g CO2</small></strong></div>
       </div>
     </div>
     <div className="pressure-tracker-model-limits">

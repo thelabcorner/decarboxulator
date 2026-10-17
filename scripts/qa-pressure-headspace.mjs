@@ -48,7 +48,7 @@ try{
         const current=tracker.getByLabel('Current pressure',{exact:true});
         await current.fill('24');
         const before=await tracker.locator('.pressure-tracker-primary output').innerText();
-        check(before!=='—',label+' tracker valid reading',before);
+        check(before!=='-',label+' tracker valid reading',before);
         const editor=tracker.locator('.headspace-editor');
         await editor.getByRole('button',{name:'Estimate',exact:true}).click();
         check(await editor.getByLabel('Internal vessel capacity').count()===1,label+' exposes vessel capacity');
@@ -61,7 +61,7 @@ try{
         check(after!==before,label+' live estimate propagates into tracker progress',{before,after});
         await editor.getByLabel('Material volume displaced').fill('260');
         check(await editor.locator('.headspace-editor-error').count()===1,label+' invalid displacement error shown');
-        check((await tracker.locator('.pressure-tracker-primary output').innerText()).includes('—'),label+' impossible volume refuses result');
+        check((await tracker.locator('.pressure-tracker-primary output').innerText()).includes('-'),label+' impossible volume refuses result');
         await editor.getByRole('button',{name:'Mass ÷ density'}).click();
         await editor.getByLabel('Material density').fill('1');
         check(await editor.locator('.headspace-editor-result').count()===1,label+' density path recovers');

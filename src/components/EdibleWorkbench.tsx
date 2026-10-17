@@ -63,8 +63,8 @@ export function EdibleWorkbench() {
     value={primaryMg!==null?formatNumber(primaryMg,2):null} unit="mg"
     note="Calculated from ingredient assay, conversion and downstream recovery"
     metrics={[
-      {label:'Total THC / batch',value:result?formatNumber(result.totalThcMg,2):'—',unit:'mg'},
-      {label:'Portions',value:result?String(result.servings):'—'},
+      {label:'Total THC / batch',value:result?formatNumber(result.totalThcMg,2):'-',unit:'mg'},
+      {label:'Portions',value:result?String(result.servings):'-'},
     ]}
     input={<Panel title="Formulation builder" detail="Set cannabinoid content, conversion, and servings"
       action={<WorkspaceActions onReset={ws.reset} shareUrl={ws.shareUrl} tool="Edible formulation"

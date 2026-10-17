@@ -1,4 +1,4 @@
-/* V4 knowledge-base workspace — compact controls, no article/blog layout. */
+/* V4 knowledge-base workspace; compact controls, no article/blog layout. */
 .science-studio{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:0.8rem;align-items:start;max-width:100%;min-width:0;}
 .science-studio-main,.science-studio-side{display:grid;gap:0.8rem;min-width:0;}
 .science-method-panel .panel-content{display:grid;gap:0.85rem;}

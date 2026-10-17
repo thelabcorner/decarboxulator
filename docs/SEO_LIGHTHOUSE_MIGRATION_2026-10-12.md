@@ -1,4 +1,4 @@
-# Decarboxulator V4: SEO and Lighthouse migration QA — 2026-10-12
+# Decarboxulator V4: SEO and Lighthouse migration QA; 2026-10-12
 
 ## Baseline: independent production Lighthouse 12.8.2 (mobile)
 

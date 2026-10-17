@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run assets:render && vite build && tsc -b && npm run seo:generate && npm run offline:generate && npm run seo:verify",
+    "build": "npm run check:punctuation && npm run assets:render && vite build && tsc -b && npm run seo:generate && npm run offline:generate && npm run seo:verify && npm run check:dist-punctuation",
+    "check:punctuation": "node scripts/verify-punctuation.mjs",
+    "check:dist-punctuation": "node scripts/verify-punctuation.mjs --dist",
     "build:pages": "node scripts/build-pages.mjs",
     "build:cloudflare": "node scripts/build-cloudflare.mjs",
     "deploy:cloudflare": "npm run build:cloudflare && wrangler pages deploy dist/client --project-name decarboxulator-v4 --branch main",

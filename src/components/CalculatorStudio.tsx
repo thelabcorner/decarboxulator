@@ -85,7 +85,7 @@ export function CalculatorStudio({
           {metrics.length > 0 && <dl className="calculator-app-stats">
             {metrics.map(item => <div key={item.label}>
               <dt>{item.label}</dt>
-              <dd>{value === null ? '—' : item.value}
+              <dd>{value === null ? '-' : item.value}
                 {value !== null && item.unit && <small>{item.unit}</small>}</dd>
             </div>)}
           </dl>}

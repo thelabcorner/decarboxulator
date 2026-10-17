@@ -1,4 +1,4 @@
-# V4 — acidic cannabinoid support
+# V4; acidic cannabinoid support
 
 Status: implemented as **theoretical molecular-mass stoichiometry**; independent empirical kinetics remain observation-only.
 
@@ -28,7 +28,7 @@ Default is **THCa** for every new calculator and tracker session. Legacy numeric
 ## Scientific applicability and limitations
 
 - Reference: National Research Council Canada, **CBIS-1 certificate of analysis** (THCa, CBDa, CBGa, CBNa and their neutral counterparts): https://nrc-digital-repository.canada.ca/eng/view/crt/?dsl=en&id=335aa529-82d3-4744-9c85-525dfe7e3ac0
-- Reference: *Cannabinoids—Characteristics and Potential for Use in Food Production* (Molecules 2021): https://pmc.ncbi.nlm.nih.gov/articles/PMC8588477/
+- Reference: *Cannabinoids: Characteristics and Potential for Use in Food Production* (Molecules 2021): https://pmc.ncbi.nlm.nih.gov/articles/PMC8588477/
 - Reference for CBCa: FDA GSRS registry (358.47 g/mol): https://precision.fda.gov/ginas/app/ui/substances/NNW8UMP980
 - Kinetics reference: Wang et al., *Decarboxylation Study of Acidic Cannabinoids* (Cannabis and Cannabinoid Research, 2016): https://pubmed.ncbi.nlm.nih.gov/28861498/ ; full text https://pmc.ncbi.nlm.nih.gov/articles/PMC5549281/
 

@@ -135,7 +135,7 @@ export function PressureHeatmap({cells,unit,currentPsi,onUseScenario}:Props) {
     </div>
     <div className="pressure-field-foot">
       <strong>Reading the field</strong>
-      <span>Color is relative pressure magnitude—not a safe/unsafe boundary. The lime outline marks your exact inputs; select any cell to inspect its modeled pressure.</span>
+      <span>Color is relative pressure magnitude, not a safety threshold. The lime outline marks your exact inputs; select any cell to inspect its modeled pressure.</span>
     </div>
   </section>;
 }

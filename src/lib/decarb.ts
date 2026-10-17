@@ -53,7 +53,7 @@ export function fromGrams(grams: number, unit: UnitKey): number {
   return grams / UNITS[unit].toGrams;
 }
 export function formatNumber(value: number, digits = 3): string {
-  if (!Number.isFinite(value)) return '—';
+  if (!Number.isFinite(value)) return '-';
   if (value !== 0 && Math.abs(value) < 0.0005) return value.toExponential(3);
   return value.toLocaleString('en-US', { maximumFractionDigits: digits, minimumFractionDigits: Math.min(digits, 2) });
 }

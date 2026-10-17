@@ -1,4 +1,4 @@
-# Decarboxulator V4 — SEOptimer follow-up and root discovery repair
+# Decarboxulator V4; SEOptimer follow-up and root discovery repair
 
 Date: 2026-10-12. Scope: published GitHub Pages origin `https://thelabcorner.github.io/`, calculator prefix `/decarboxulator/`, and historic V3 indexed URLs.
 

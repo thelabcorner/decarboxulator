@@ -50,7 +50,7 @@ try {
     check((await page.locator('.tracker-hero-number').innerText()).includes('14.54'),
       width+' live readout responds to measured loss');
     await page.reload({waitUntil:'networkidle'});
-    check(await page.locator('.tracker-hero-number').innerText() !== '—',width+' IndexedDB reading survives reload');
+    check(await page.locator('.tracker-hero-number').innerText() !== '-',width+' IndexedDB reading survives reload');
     check(errors.length===0,width+' no client JS errors',errors);
     await page.close();
   }

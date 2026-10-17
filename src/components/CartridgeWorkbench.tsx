@@ -58,8 +58,8 @@ export function CartridgeWorkbench() {
     value={result?formatNumber(targetMode?result.totalInputWeightG:result.totalFinalWeightG,3):null} unit="g"
     note="Modeled blend mass, cartridge count and compound composition"
     metrics={[
-      {label:'Complete cartridges',value:result?String(result.effectiveCarts):'—'},
-      {label:'Final blend mass',value:result?formatNumber(result.totalFinalWeightG,3):'—',unit:'g'},
+      {label:'Complete cartridges',value:result?String(result.effectiveCarts):'-'},
+      {label:'Final blend mass',value:result?formatNumber(result.totalFinalWeightG,3):'-',unit:'g'},
     ]}
     input={<Panel title="Batch configuration" detail="Choose a finished fill target or an available starting mass"
       action={<WorkspaceActions onReset={ws.reset} shareUrl={ws.shareUrl} tool="Cartridge formulation"

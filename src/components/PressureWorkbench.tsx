@@ -72,7 +72,7 @@ export function PressureWorkbench(){
   function useScenario(nextTemp:number,nextVolume:number){
     ws.setFields({temp:display(nextTemp),headspaceMode:'manual',volume:display(nextVolume)});
   }
-  // Exact counterfactuals—not local tangent approximations or vessel ratings.
+  // Exact counterfactuals, not local tangent approximations or vessel ratings.
   const reducedConversion=result?computePressure({
     weightG:parsed.mass.value!,thcaPct:parsed.acid.value!,
     tempValue:parsed.temperature.value!,tempUnit:unit,headspaceFloz:parsed.volume.value!,
@@ -97,13 +97,13 @@ export function PressureWorkbench(){
     <div className="pressure-kpi-strip">
       <div className="pressure-kpi-primary">
         <span><ChartNoAxesCombined size={13}/> MODELED GAUGE PRESSURE</span>
-        <div>{result?<><strong>{value(result.pGaugePsi)}</strong><em>PSI</em></>:<strong>—</strong>}</div>
+        <div>{result?<><strong>{value(result.pGaugePsi)}</strong><em>PSI</em></>:<strong>-</strong>}</div>
         <small>Relative to entered ambient pressure · idealized, not a safety rating</small>
       </div>
       <div className="pressure-kpi-secondary">
-        <div><span>Absolute pressure</span><strong>{result?value(result.pAbsPsi):'—'} <small>PSIA</small></strong></div>
-        <div><span>CO2 contribution</span><strong>{result?value(result.pCo2Psi):'—'} <small>PSI</small></strong></div>
-        <div><span>Initial trapped gas at process T</span><strong>{result?value(result.pAirPsi):'—'} <small>PSIA</small></strong></div>
+        <div><span>Absolute pressure</span><strong>{result?value(result.pAbsPsi):'-'} <small>PSIA</small></strong></div>
+        <div><span>CO2 contribution</span><strong>{result?value(result.pCo2Psi):'-'} <small>PSI</small></strong></div>
+        <div><span>Initial trapped gas at process T</span><strong>{result?value(result.pAirPsi):'-'} <small>PSIA</small></strong></div>
       </div>
     </div>
 
@@ -195,10 +195,10 @@ export function PressureWorkbench(){
       <div className="pressure-analysis-title"><span className="pressure-eyebrow">DECOMPOSITION / SENSITIVITY</span>
         <h2>What drives the estimate?</h2></div>
       <div className="pressure-analysis-metrics">
-        <div><span>{chem.acid} mass</span><strong>{result?value(result.thcaG,3):'—'} <small>g</small></strong></div>
-        <div><span>Theoretical CO2 evolved</span><strong>{result?value(result.co2G,3):'—'} <small>g</small></strong></div>
-        <div><span>Thermal rise above seal baseline</span><strong>{result?value(result.pThermalGaugePsi):'—'} <small>PSI</small></strong></div>
-        <div><span>At 0% conversion</span><strong>{reducedConversion?value(reducedConversion.pGaugePsi):'—'} <small>PSIG</small></strong></div>
+        <div><span>{chem.acid} mass</span><strong>{result?value(result.thcaG,3):'-'} <small>g</small></strong></div>
+        <div><span>Theoretical CO2 evolved</span><strong>{result?value(result.co2G,3):'-'} <small>g</small></strong></div>
+        <div><span>Thermal rise above seal baseline</span><strong>{result?value(result.pThermalGaugePsi):'-'} <small>PSI</small></strong></div>
+        <div><span>At 0% conversion</span><strong>{reducedConversion?value(reducedConversion.pGaugePsi):'-'} <small>PSIG</small></strong></div>
       </div>
       {result&&<div className="pressure-sensitivity">
         <span>Local model comparisons</span>

@@ -1,4 +1,4 @@
-# Decarboxulator V4 — scientific validation ledger
+# Decarboxulator V4; scientific validation ledger
 
 Status: verified against PubChem/NRC/NIST source values and independently exercised by `tests/scientific-audit.test.ts`. Last source review: 2026-10-11.
 
@@ -22,7 +22,7 @@ Released gas mass fraction: `q = 1-r ≈ 0.12277`. Ideal one-mole mass balance: 
 
 ## 2. Calculator equation audit
 
-### A — THCa / THC converter
+### A; THCa / THC converter
 
 For `m_acid` grams THCa and complete stoichiometric conversion:
 `m_THC = m_acid * r`;
@@ -30,7 +30,7 @@ For `m_acid` grams THCa and complete stoichiometric conversion:
 
 Reverse mode: `m_acid_equivalent = m_THC_target / r`. This is a **mass equivalence**, not a chemically reversible step and not an actual recovery rate.
 
-### B — Batch theoretical yield
+### B; Batch theoretical yield
 
 For starting total mass `B` and acidic THCa mass fraction `x`:
 `m_acid = B*x`, `m_THC = B*x*r`, `m_CO2 = B*x*q`,
@@ -38,7 +38,7 @@ For starting total mass `B` and acidic THCa mass fraction `x`:
 
 A pure-THCa batch is **100% THC by mass in this idealization after losing CO₂**, not 87.72% THC of the *new* final mass. The 87.72% applies to starting acid mass. Starting THC, other acids, any evaporating material, and degradation are not included.
 
-### C — Gravimetric THCa analysis
+### C; Gravimetric THCa analysis
 
 Measured mass decrease `Δm = initial - final`, assuming **all of it** is THCa-derived CO₂:
 `inferred_acid = Δm/q`; `original_acid_fraction = Δm/(q*initial)`.
@@ -50,7 +50,7 @@ The separately fitted first-order/stretched-exponential/induction curves and 80%
 
 Balance readability (entered in grams) is presented as apparent-percentage sensitivity per one mass increment, *not* a statistical confidence interval or measurement uncertainty budget. The kinetic model additionally uses a simple independent quantization-noise floor when estimating its **conditional model sensitivity**; this does not cover calibration or other systematic uncertainty. For a research record, independently validate calibration, repeatability, changes in tare, ambient draft/temperature conditions, sample removal, and volatilization; where practical use independent validated chemical assays.
 
-### D — Edible formulation
+### D; Edible formulation
 
 Let starting ingredient mass be `B_g` g, original THCa mass fraction `a`, original neutral THC mass fraction `n`, fraction of THCa converted `η_c` (0–1), downstream recovery fraction `η_r` (0–1), and number of **whole** servings `N`:
 
@@ -59,7 +59,7 @@ Let starting ingredient mass be `B_g` g, original THCa mass fraction `a`, origin
 
 **η_c applies only to THCa**, whereas **η_r applies to the combined neutral THC pool**, including the pre-existing THC. These are distinct physical effects, so one recovery slider must not silently stand in for both. Both defaults are 100% (theoretical maximum). Homogeneity and experimental assay are not modeled. This is a mass estimate, not an effects or dosing prediction.
 
-### E — Idealized sealed-vessel gas pressure
+### E; Idealized sealed-vessel gas pressure
 
 Within a **fixed headspace volume** `V`, initial trapped dry air absolute pressure `P_s`, sealing temperature `T_s`, final process temperature `T`, and THCa conversion fraction `η`:
 
@@ -81,7 +81,7 @@ The model omits gas dissolution, condensable vapors, water/solvent vapor, wall c
 
 **Verification:** `tests/pressure-study.test.ts` compares independent dimensional pressure expressions, numerical and analytical sensitivities, 1,200 deterministically sampled valid scenarios, °F/°C equivalence, near-absolute-zero guardrails, center-point exactness and 49-cell consistency. `scripts/test-pressure-ui.mjs` checks the interactive field at six responsive widths and in both themes, including mobile 5×5 visibility, keyboard movement, scenario application and temperature-unit invariance. These are mathematical/software consistency tests, **not** calibration against physical pressure data or laboratory vessel certification.
 
-### F — CO₂-based progress tracker
+### F; CO₂-based progress tracker
 
 For stable vessel tare `t`, starting acid mass `A`, inert/nonvolatile material `I`, and current measured gross mass `m`:
 `m_start = t+A+I`, `max_CO2_loss = A*q`,
@@ -91,7 +91,7 @@ Reject mathematical conversion inference when observed loss falls outside the ze
 
 At completion fraction `f`, `remaining_acid = A*(1-f)`, `converted_THC = A*f*r`, `remaining_content = remaining_acid + converted_THC + I`. The three content fractions must sum to 100% within floating-point tolerance.
 
-### G — Cartridge formulation
+### G; Cartridge formulation
 
 Cartridge count `N` and fill capacity `c_g` define **desired final** mass `F=N*c_g`, rather than treating F as starting blend mass. Parts `p_i` describe **starting** blend mass proportions; `x_acid = sum(p_THCa)/sum(p_i)`. With conversion selected:
 

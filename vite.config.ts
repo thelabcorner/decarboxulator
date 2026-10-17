@@ -22,6 +22,16 @@ export default defineConfig({
       },
     }),
     react(),
+    // Some third-party development diagnostics include this punctuation in bundled strings.
+    // Normalize at renderChunk so emitted content hashes describe the final bytes.
+    {
+      name: 'no-em-dashes-in-bundles',
+      enforce: 'post',
+      renderChunk(code) {
+        const normalized = code.replaceAll(String.fromCodePoint(0x2014), ';');
+        return normalized === code ? null : normalized;
+      },
+    },
   ],
   server: { host: '0.0.0.0', port: 3000 },
 });

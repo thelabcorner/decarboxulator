@@ -19,7 +19,7 @@ import './TrackerSessions.css';
 
 const EMPTY_READINGS: TrackerReading[] = [];
 function smallTime(hours: number | null) {
-  if (hours === null || !Number.isFinite(hours) || hours < 0) return '—';
+  if (hours === null || !Number.isFinite(hours) || hours < 0) return '-';
   const minutes = Math.round(hours*60);
   return minutes >= 60 ? `${Math.floor(minutes/60)}h ${minutes%60}m` : `${minutes}m`;
 }
@@ -228,7 +228,7 @@ export function TrackerWorkbench() {
           </span>
         </div>
         <div className="tracker-hero-number">
-          <strong>{last?formatNumber(last.snapshot.completion,2):'—'}</strong>
+          <strong>{last?formatNumber(last.snapshot.completion,2):'-'}</strong>
           {last?<span>%</span>:<span className="tracker-awaiting">Awaiting first reading</span>}
         </div>
         <div className="tracker-hero-caption">{last
@@ -240,9 +240,9 @@ export function TrackerWorkbench() {
           <div className="tracker-progress-fill" style={{width:`${last?.snapshot.completion??0}%`}}/>
         </div>
         <div className="tracker-monitor-metrics">
-          <div><span>Initial vessel</span><strong>{setup?formatNumber(setup.initialTotalG,3):'—'} <small>g</small></strong></div>
-          <div><span>Last reading</span><strong>{last?formatNumber(last.weightG,3):'—'} <small>g</small></strong></div>
-          <div><span>Expected CO2</span><strong>{setup?formatNumber(setup.expectedCo2LossG,3):'—'} <small>g</small></strong></div>
+          <div><span>Initial vessel</span><strong>{setup?formatNumber(setup.initialTotalG,3):'-'} <small>g</small></strong></div>
+          <div><span>Last reading</span><strong>{last?formatNumber(last.weightG,3):'-'} <small>g</small></strong></div>
+          <div><span>Expected CO2</span><strong>{setup?formatNumber(setup.expectedCo2LossG,3):'-'} <small>g</small></strong></div>
         </div>
       </div>
       {setup&&session?.startedAt&&<KineticChart points={points} startedAt={session.startedAt}
@@ -254,9 +254,9 @@ export function TrackerWorkbench() {
       {kinetics?.status==='fitted'&&<div className="kinetic-monitor-outlook">
         <span><strong>Empirical forecast</strong><small>Conditional on the observed run · not chemical completion</small></span>
         <span><small>90% apparent · remaining</small><strong>{kinetics.forecast90Hours!==null&&kinetics.forecast90Hours>kinetics.elapsedHours
-          ?smallTime(kinetics.forecast90Hours-kinetics.elapsedHours):'—'}</strong></span>
+          ?smallTime(kinetics.forecast90Hours-kinetics.elapsedHours):'-'}</strong></span>
         <span><small>95% apparent · remaining</small><strong>{kinetics.forecast95Hours!==null&&kinetics.forecast95Hours>kinetics.elapsedHours
-          ?smallTime(kinetics.forecast95Hours-kinetics.elapsedHours):'—'}</strong></span>
+          ?smallTime(kinetics.forecast95Hours-kinetics.elapsedHours):'-'}</strong></span>
       </div>}
       <div className="tracker-live-commands">
         {session?.status==='completed'
@@ -391,7 +391,7 @@ export function TrackerWorkbench() {
         {session?.status==='draft'&&<button type="button" className="tracker-command-primary"
           disabled={!cfg||!ws.ready} onClick={startSession}><Play size={15}/> Start recording</button>}
         {session?.status==='completed'&&<Notice>Run marked complete on {new Date(session.completedAt!).toLocaleString()}.
-          This describes the lab record's status—not independently verified conversion.</Notice>}
+          This describes the lab record's status, not independently verified conversion.</Notice>}
       </div>
     </Panel>
     <Panel title="Method & measurement guide" detail="Expanded v2.3 instructions · essential assumptions" className="panel-full">
@@ -468,8 +468,8 @@ export function TrackerWorkbench() {
         <Metrics>
           <Metric label="Elapsed" value={smallTime(analytics?.elapsedHours??durationH)}/>
           <Metric label="Readings (raw)" value={storedReadings.length}/>
-          <Metric label={`Average ${chem.neutral} formation`} value={analytics?.avgThcRateGph==null?'—':formatNumber(analytics.avgThcRateGph,4)} suffix="g/h"/>
-          <Metric label="Latest interval rate" value={analytics?.intervalThcRateGph==null?'—':formatNumber(analytics.intervalThcRateGph,4)} suffix="g/h"/>
+          <Metric label={`Average ${chem.neutral} formation`} value={analytics?.avgThcRateGph==null?'-':formatNumber(analytics.avgThcRateGph,4)} suffix="g/h"/>
+          <Metric label="Latest interval rate" value={analytics?.intervalThcRateGph==null?'-':formatNumber(analytics.intervalThcRateGph,4)} suffix="g/h"/>
           <Metric label="Latest interval" value={smallTime(analytics?.lastIntervalHours??null)}/>
           <Metric label="Linear ETA (descriptive only)" value={smallTime(analytics?.estimatedRemainingHours??null)}/>
         </Metrics>
@@ -500,11 +500,11 @@ export function TrackerWorkbench() {
             <td>{i+1}</td>
             <td>{new Date(point.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'})}</td>
             <td>{formatNumber(point.weightG,4)} g</td>
-             <td>{setup?formatNumber(setup.initialTotalG-point.weightG,4)+' g':'—'}</td>
+             <td>{setup?formatNumber(setup.initialTotalG-point.weightG,4)+' g':'-'}</td>
              <td>{point.snapshot?formatNumber(point.snapshot.completion,2)+'%':
                <span className="tracker-invalid-reading">Outside model</span>}</td>
-             <td>{point.temperatureC==null?'—':formatNumber(point.temperatureC,1)}</td>
-             <td title={point.note??''} className="tracker-note-cell">{point.note||'—'}</td>
+             <td>{point.temperatureC==null?'-':formatNumber(point.temperatureC,1)}</td>
+             <td title={point.note??''} className="tracker-note-cell">{point.note||'-'}</td>
              <td><button type="button" className="text-button" aria-label={`Remove reading ${i+1}`}
                disabled={session?.status==='completed'}
                title={session?.status==='completed'?'Reopen the completed run to edit readings':'Delete this measurement'}

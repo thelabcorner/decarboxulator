@@ -3,7 +3,7 @@
  * Mean molecular masses (g/mol), not kinetic yields or process recovery.
  * References:
  * NRC Canada CBIS-1 reference material certificate (THCa, CBDa, CBGa, CBNa);
- * Cannabinoids—Characteristics and Potential for Use in Food Production
+ * Cannabinoids: Characteristics and Potential for Use in Food Production
  * (Molecules 2021, 26, 6723); acid mass = neutral mass + CO2.
  *
  * An acid selector changes stoichiometry only. It must never silently transfer

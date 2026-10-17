@@ -1,4 +1,4 @@
-# Progress tracker — empirical kinetic modeling contract
+# Progress tracker; empirical kinetic modeling contract
 
 The tracker fits **CO2-equivalent apparent mass loss**, not measured THCa/THC concentrations. No kinetics model transforms a gravimetric estimate into an analytical potency assay. All results presume fixed vessel tare, complete release of generated CO2, known starting THCa mass, and no unrelated volatile losses or sample transfers.
 

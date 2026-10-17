@@ -117,7 +117,7 @@
   .tracker-text-field :is(input,textarea), .tracker-library-search input {font-size:16px;}
 }
 
-/* V4 Tracker Studio — four task-focused workspaces, one scrolling owner.
+/* V4 Tracker Studio; four task-focused workspaces, one scrolling owner.
  * Compact New York / zinc instrumentation, not a continuous web form. */
 .tracker-workbench {
   display:flex; flex-direction:column; align-items:stretch; min-width:0;

@@ -102,7 +102,7 @@
   border: 1px solid var(--border);
 }
 
-/* Dense V4 studio workbenches — the V3 builders rebuilt as controls, not article cards. */
+/* Dense V4 studio workbenches; the V3 builders rebuilt as controls, not article cards. */
 .studio-builder-title { display:flex;justify-content:space-between;gap:0.65rem;align-items:center; }
 .studio-builder-list { display:grid;gap:0.5rem; }
 .studio-builder-row { display:grid;gap:0.48rem;padding:0.7rem;border:1px solid var(--border);border-radius:7px;background:var(--panel-inset);min-width:0; }
