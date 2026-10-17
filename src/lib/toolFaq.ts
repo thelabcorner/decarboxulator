@@ -6,8 +6,10 @@ export const TOOL_QUESTIONS: Record<ToolId, readonly Faq[]> = {
   conversion: [
     { question: 'How much THC can 1 gram of THCa theoretically produce?',
       answer: 'At complete conversion, 1 gram of pure THCa corresponds to about 0.877 grams of THC. The remaining mass is released as carbon dioxide. This is a stoichiometric ceiling, not a guaranteed measured yield.' },
-    { question: 'Why is the conversion factor 0.87723?',
-       answer: 'The bulk molar-mass ratio of THC (314.46 g/mol) to THCa (358.47 g/mol), consistent with PubChem and NRC reference materials, determines the theoretical retained mass after CO2 release.' },
+    { question: 'What is the THCa to THC conversion rate or 0.877 conversion factor?',
+      answer: 'For theoretical mass conversion at complete decarboxylation, multiply pure THCa mass by 314.46/358.47, or approximately 0.87723. This 87.723% retained-mass fraction reflects CO2 loss; it is not a measured chemical conversion efficiency or a rate over time. Actual reaction speed requires separate time-dependent data.' },
+    { question: 'How do I use the THCa to THC conversion formula in grams?',
+      answer: 'Theoretical THC grams = pure THCa grams × 0.87723. For 10 grams of pure THCa, the result is about 8.772 grams of THC and 1.228 grams of released CO2, assuming complete conversion and no other losses.' },
     { question: 'Does the reverse setting convert THC back into THCa?',
       answer: 'No. Reverse mode calculates the THCa starting mass equivalent to a desired THC output. It does not model an actual reverse reaction.' },
   ],
@@ -63,7 +65,7 @@ export const TOOL_QUESTIONS: Record<ToolId, readonly Faq[]> = {
     { question: 'Does a stable weight prove decarboxylation has finished?',
       answer: 'No. A mass-loss plateau can occur for reasons unrelated to cannabinoid conversion. Chemical analysis is needed to establish the remaining THCa and formed THC.' },
     { question: 'Where are tracker sessions saved?',
-      answer: 'Sessions are stored in this browser’s IndexedDB on this device. They are not linked to an account. Clearing site data can erase them, so export a backup before changing browsers or clearing storage.' },
+      answer: 'Tracker sessions and saved calculator results share one IndexedDB library on this device, with a combined limit of 25,565 entries. They are not linked to an account. Clearing site data can erase them, so use the library Export all command to save a portable backup.' },
   ],
   'pressure-tracker': [
     { question: 'How can the model estimate CO2 partial pressure without a gas analyzer?',

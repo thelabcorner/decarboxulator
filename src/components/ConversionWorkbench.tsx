@@ -30,9 +30,10 @@ export function ConversionWorkbench({direction}: {direction: Direction}) {
         <p>Planning starts from the desired theoretical THC mass. Because each mole of THCa loses one molecule of CO2 during decarboxylation, divide the target THC mass by the ratio 314.46 ÷ 358.47 (approximately 0.87723) to obtain its THCa mass equivalent. For example, 10 g of target THC corresponds to approximately 11.399 g of pure starting THCa.</p>
         <p>The result assumes complete conversion without additional losses. This is not a chemical conversion of THC into THCa, and practical starting masses depend on assay purity, reaction completion, degradation, and material recovery.</p>
       </> : <>
-        <h2>THCa conversion factor (default selection)</h2>
-        <p>At complete decarboxylation, every mole of THCa produces one mole of THC and one mole of CO2. The bulk-mass factor is 314.46 ÷ 358.47 ≈ 0.87723, using reference molar masses (PubChem CID 16078 and 98523; NRC Canada). A 10 g pure THCa sample therefore has a theoretical THC yield of approximately 8.772 g.</p>
-        <p>The reverse mode calculates the starting acid mass corresponding to a target THC mass. It does not describe a physically reversible reaction or an experimental recovery prediction.</p>
+        <h2>THCa to THC conversion formula and 0.877 factor</h2>
+        <p>When one mole of THCa loses CO2 during decarboxylation, it yields one mole of THC. With reference molar masses of 358.47 g/mol for THCa and 314.46 g/mol for THC (PubChem CID 16078 and 98523; NRC Canada), the theoretical mass relationship is <strong>THC mass (g) = THCa mass (g) × (314.46 ÷ 358.47) ≈ THCa mass × 0.87723</strong>.</p>
+        <p>For example, 10 g of pure THCa can theoretically produce approximately 8.772 g of THC and release approximately 1.228 g of CO2. The 0.87723 factor is the <em>retained-mass ratio at complete conversion</em>, not a reaction rate per minute, a measured conversion efficiency, or a prediction of when decarboxylation finishes.</p>
+        <p>For a target amount of THC, reverse mode divides by the same factor to calculate the corresponding pure starting THCa mass. Neither direction incorporates chemical degradation, incomplete conversion, or material transfer losses.</p>
       </>}
       <p>These THCa examples document the default route. When you select CBDa, CBGa, CBCa, or CBNa, the live calculator uses that compound's own molecular masses; reaction rates and degradation behaviour are not assumed equivalent.</p>
     </ToolReference>
