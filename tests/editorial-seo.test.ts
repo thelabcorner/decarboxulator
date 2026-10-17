@@ -22,7 +22,7 @@ const EMPTY_PROMISES = /\b(?:delve|foster|leverage|utilize|facilitate|empower|st
 
 describe('scientific editorial and search copy', () => {
   it('separates concise in-app workbench headings from route-specific search descriptions', () => {
-    expect(TOOLS).toHaveLength(8);
+    expect(TOOLS).toHaveLength(9);
     expect(new Set(TOOLS.map(tool => tool.heading)).size).toBe(TOOLS.length);
     expect(new Set(TOOLS.map(tool => tool.description)).size).toBe(TOOLS.length);
     for (const tool of TOOLS) {

@@ -17,6 +17,7 @@ import { Route as ToolsCartridgeFormulationRouteImport } from './routes/tools/ca
 import { Route as ToolsDecarbTrackerRouteImport } from './routes/tools/decarb-tracker'
 import { Route as ToolsEdibleDosageRouteImport } from './routes/tools/edible-dosage'
 import { Route as ToolsMaxPressureRouteImport } from './routes/tools/max-pressure'
+import { Route as ToolsPressureTrackerRouteImport } from './routes/tools/pressure-tracker'
 import { Route as ToolsThcToThcaRouteImport } from './routes/tools/thc-to-thca'
 import { Route as ToolsThcaPercentageRouteImport } from './routes/tools/thca-percentage'
 import { Route as ToolsThcaToThcRouteImport } from './routes/tools/thca-to-thc'
@@ -63,6 +64,11 @@ const ToolsMaxPressureRoute = ToolsMaxPressureRouteImport.update({
   path: '/tools/max-pressure',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ToolsPressureTrackerRoute = ToolsPressureTrackerRouteImport.update({
+  id: '/tools/pressure-tracker',
+  path: '/tools/pressure-tracker',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ToolsThcToThcaRoute = ToolsThcToThcaRouteImport.update({
   id: '/tools/thc-to-thca',
   path: '/tools/thc-to-thca',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/tools/decarb-tracker': typeof ToolsDecarbTrackerRoute
   '/tools/edible-dosage': typeof ToolsEdibleDosageRoute
   '/tools/max-pressure': typeof ToolsMaxPressureRoute
+  '/tools/pressure-tracker': typeof ToolsPressureTrackerRoute
   '/tools/thc-to-thca': typeof ToolsThcToThcaRoute
   '/tools/thca-percentage': typeof ToolsThcaPercentageRoute
   '/tools/thca-to-thc': typeof ToolsThcaToThcRoute
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/tools/decarb-tracker': typeof ToolsDecarbTrackerRoute
   '/tools/edible-dosage': typeof ToolsEdibleDosageRoute
   '/tools/max-pressure': typeof ToolsMaxPressureRoute
+  '/tools/pressure-tracker': typeof ToolsPressureTrackerRoute
   '/tools/thc-to-thca': typeof ToolsThcToThcaRoute
   '/tools/thca-percentage': typeof ToolsThcaPercentageRoute
   '/tools/thca-to-thc': typeof ToolsThcaToThcRoute
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/tools/decarb-tracker': typeof ToolsDecarbTrackerRoute
   '/tools/edible-dosage': typeof ToolsEdibleDosageRoute
   '/tools/max-pressure': typeof ToolsMaxPressureRoute
+  '/tools/pressure-tracker': typeof ToolsPressureTrackerRoute
   '/tools/thc-to-thca': typeof ToolsThcToThcaRoute
   '/tools/thca-percentage': typeof ToolsThcaPercentageRoute
   '/tools/thca-to-thc': typeof ToolsThcaToThcRoute
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/tools/decarb-tracker'
     | '/tools/edible-dosage'
     | '/tools/max-pressure'
+    | '/tools/pressure-tracker'
     | '/tools/thc-to-thca'
     | '/tools/thca-percentage'
     | '/tools/thca-to-thc'
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/tools/decarb-tracker'
     | '/tools/edible-dosage'
     | '/tools/max-pressure'
+    | '/tools/pressure-tracker'
     | '/tools/thc-to-thca'
     | '/tools/thca-percentage'
     | '/tools/thca-to-thc'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/tools/decarb-tracker'
     | '/tools/edible-dosage'
     | '/tools/max-pressure'
+    | '/tools/pressure-tracker'
     | '/tools/thc-to-thca'
     | '/tools/thca-percentage'
     | '/tools/thca-to-thc'
@@ -170,6 +182,7 @@ export interface RootRouteChildren {
   ToolsDecarbTrackerRoute: typeof ToolsDecarbTrackerRoute
   ToolsEdibleDosageRoute: typeof ToolsEdibleDosageRoute
   ToolsMaxPressureRoute: typeof ToolsMaxPressureRoute
+  ToolsPressureTrackerRoute: typeof ToolsPressureTrackerRoute
   ToolsThcToThcaRoute: typeof ToolsThcToThcaRoute
   ToolsThcaPercentageRoute: typeof ToolsThcaPercentageRoute
   ToolsThcaToThcRoute: typeof ToolsThcaToThcRoute
@@ -233,6 +246,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsMaxPressureRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tools/pressure-tracker': {
+      id: '/tools/pressure-tracker'
+      path: '/tools/pressure-tracker'
+      fullPath: '/tools/pressure-tracker'
+      preLoaderRoute: typeof ToolsPressureTrackerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tools/thc-to-thca': {
       id: '/tools/thc-to-thca'
       path: '/tools/thc-to-thca'
@@ -266,6 +286,7 @@ const rootRouteChildren: RootRouteChildren = {
   ToolsDecarbTrackerRoute: ToolsDecarbTrackerRoute,
   ToolsEdibleDosageRoute: ToolsEdibleDosageRoute,
   ToolsMaxPressureRoute: ToolsMaxPressureRoute,
+  ToolsPressureTrackerRoute: ToolsPressureTrackerRoute,
   ToolsThcToThcaRoute: ToolsThcToThcaRoute,
   ToolsThcaPercentageRoute: ToolsThcaPercentageRoute,
   ToolsThcaToThcRoute: ToolsThcaToThcRoute,

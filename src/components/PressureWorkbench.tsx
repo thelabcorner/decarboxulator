@@ -4,6 +4,7 @@ import { CannabinoidSelector } from './CannabinoidSelector';
 import { FieldGrid, Formula, Notice, Selector, Unavailable } from './ui';
 import { WorkspaceActions } from './WorkspaceActions';
 import { PressureHeatmap } from './PressureHeatmap';
+import { asAbsolutePsi, parsePressureReading } from '../lib/pressureTracker';
 import { useCalculatorWorkspace } from '../lib/useCalculatorWorkspace';
 import { formatNumber, parseAmount, MAX_INPUT } from '../lib/decarb';
 import {
@@ -17,7 +18,8 @@ import './PressureWorkbench.css';
 
 const PRESSURE_DEFAULTS = {
   unit:'g' as const, weight:'28',thcaPct:'85',temp:'240',volume:'16',
-  tempUnit:'F' as TempUnit,sealTemp:'70',ambientPsi:'14.6959488',conversionPct:'100',
+  tempUnit:'F' as TempUnit,sealTemp:'70',ambientPsi:'14.6959488',
+  sealPressure:'14.6959488',sealPressureBasis:'psia' as 'psia' | 'psig',conversionPct:'100',
   cannabinoid: DEFAULT_ACID_CANNABINOID as AcidCannabinoid,
 };
 const value = (number:number,places=1) => formatNumber(number,places);
@@ -29,7 +31,7 @@ const display = (number:number) => String(Number(number.toPrecision(10)));
  */
 export function PressureWorkbench(){
   const ws=useCalculatorWorkspace('pressure',PRESSURE_DEFAULTS);
-  const {weight,thcaPct,temp,volume,tempUnit,sealTemp,ambientPsi,conversionPct,cannabinoid}=ws.values;
+  const {weight,thcaPct,temp,volume,tempUnit,sealTemp,ambientPsi,sealPressure,sealPressureBasis,conversionPct,cannabinoid}=ws.values;
   const unit:TempUnit=tempUnit==='C'?'C':'F';
   const validCannabinoid: AcidCannabinoid = isAcidCannabinoid(cannabinoid) ? cannabinoid : DEFAULT_ACID_CANNABINOID;
   const chem = cannabinoidChemistry(validCannabinoid);
@@ -40,14 +42,17 @@ export function PressureWorkbench(){
     volume:parseAmount(volume,{min:Number.MIN_VALUE}),
     seal:parseTemperature(sealTemp,unit),
     ambient:parseAmount(ambientPsi,{min:Number.MIN_VALUE}),
+    sealPressure:parsePressureReading(sealPressure),
     conversion:parseAmount(conversionPct,{max:100}),
   };
-  const inputsValid=Object.values(parsed).every(p=>p.value!==null);
+  const sealAbsolute = parsed.ambient.value!==null && parsed.sealPressure.value!==null
+    ? asAbsolutePsi(parsed.sealPressure.value,sealPressureBasis,parsed.ambient.value):null;
+  const inputsValid=Object.values(parsed).every(p=>p.value!==null) && sealAbsolute!==null;
   const modelInput=inputsValid?{
       weightG:parsed.mass.value!,thcaPct:parsed.acid.value!,
       tempValue:parsed.temperature.value!,tempUnit:unit,
       headspaceFloz:parsed.volume.value!,sealTempF:convertTemp(parsed.seal.value!,unit,'F'),
-      ambientPsi:parsed.ambient.value!,efficiency:parsed.conversion.value!/100,
+      ambientPsi:parsed.ambient.value!,sealPsi:sealAbsolute!,efficiency:parsed.conversion.value!/100,
       cannabinoid:validCannabinoid,
     }:null;
   // 50 closed-form gas-law evaluations are cheaper than memo machinery; every
@@ -69,21 +74,21 @@ export function PressureWorkbench(){
     weightG:parsed.mass.value!,thcaPct:parsed.acid.value!,
     tempValue:parsed.temperature.value!,tempUnit:unit,headspaceFloz:parsed.volume.value!,
     sealTempF:convertTemp(parsed.seal.value!,unit,'F'),
-    ambientPsi:parsed.ambient.value!,efficiency:0,cannabinoid:validCannabinoid,
+    ambientPsi:parsed.ambient.value!,sealPsi:sealAbsolute!,efficiency:0,cannabinoid:validCannabinoid,
   }):null;
   const higherVolume=result?computePressure({
     weightG:parsed.mass.value!,thcaPct:parsed.acid.value!,
     tempValue:parsed.temperature.value!,tempUnit:unit,
     headspaceFloz:parsed.volume.value!*1.1,
     sealTempF:convertTemp(parsed.seal.value!,unit,'F'),
-    ambientPsi:parsed.ambient.value!,efficiency:parsed.conversion.value!/100,cannabinoid:validCannabinoid,
+    ambientPsi:parsed.ambient.value!,sealPsi:sealAbsolute!,efficiency:parsed.conversion.value!/100,cannabinoid:validCannabinoid,
   }):null;
   const tempPlusTen=result?computePressure({
     weightG:parsed.mass.value!,thcaPct:parsed.acid.value!,
     tempValue:parsed.temperature.value!+(unit==='F'?18:10),
     tempUnit:unit,headspaceFloz:parsed.volume.value!,
     sealTempF:convertTemp(parsed.seal.value!,unit,'F'),
-    ambientPsi:parsed.ambient.value!,efficiency:parsed.conversion.value!/100,cannabinoid:validCannabinoid,
+    ambientPsi:parsed.ambient.value!,sealPsi:sealAbsolute!,efficiency:parsed.conversion.value!/100,cannabinoid:validCannabinoid,
   }):null;
   return <div className="pressure-workbench">
     <div className="pressure-kpi-strip">
@@ -95,7 +100,7 @@ export function PressureWorkbench(){
       <div className="pressure-kpi-secondary">
         <div><span>Absolute pressure</span><strong>{result?value(result.pAbsPsi):'—'} <small>PSIA</small></strong></div>
         <div><span>CO2 contribution</span><strong>{result?value(result.pCo2Psi):'—'} <small>PSI</small></strong></div>
-        <div><span>Trapped gas contribution</span><strong>{result?value(result.pAirPsi):'—'} <small>PSIA</small></strong></div>
+        <div><span>Initial trapped gas at process T</span><strong>{result?value(result.pAirPsi):'—'} <small>PSIA</small></strong></div>
       </div>
     </div>
 
@@ -153,16 +158,26 @@ export function PressureWorkbench(){
               <NumberField id="pressure-seal" label="Temperature when sealed" value={sealTemp}
                 onChange={v=>ws.setField('sealTemp',v)} suffix={`°${unit}`} error={parsed.seal.error}
                 min={unit==='F'?-459.6699:-273.1499}/>
-              <NumberField id="pressure-ambient" label="Seal / ambient pressure" value={ambientPsi}
+              <NumberField id="pressure-ambient" label="Outside ambient pressure" value={ambientPsi}
                 onChange={v=>ws.setField('ambientPsi',v)} suffix="PSIA"
                 error={parsed.ambient.error} min={0.000000001}/>
             </FieldGrid>
+            <Selector label="Initial pressure reference" value={sealPressureBasis}
+              onChange={v=>ws.setFields({sealPressureBasis:v,
+                sealPressure:sealAbsolute===null?sealPressure:display(v==='psig'?sealAbsolute-parsed.ambient.value!:sealAbsolute)})}
+              options={[{value:'psia',label:'Absolute (PSIA)'},{value:'psig',label:'Gauge / vacuum (PSIG)'}]}/>
+            <NumberField id="pressure-start-pressure" label="Initial gas pressure when sealed"
+              value={sealPressure} onChange={v=>ws.setField('sealPressure',v)}
+              suffix={sealPressureBasis.toUpperCase()} min={sealPressureBasis==='psia'?0:-1e9}
+              error={sealAbsolute===null?'Absolute pressure cannot be negative':parsed.sealPressure.error}
+              hint="Vacuum is negative PSIG or a positive PSIA value below ambient."/>
             <NumberField id="pressure-conversion" label={`Assumed ${chem.acid} conversion`} value={conversionPct}
               onChange={v=>ws.setField('conversionPct',v)} suffix="%"
               error={parsed.conversion.error} max={100}
               hint="Fraction converted at the modeled instant, not a measured assay"/>
             <button type="button" className="pressure-reset-assumptions" onClick={()=>ws.setFields({
-              sealTemp:display(convertTemp(70,'F',unit)),ambientPsi:display(P_ATM_PSI),conversionPct:'100',
+              sealTemp:display(convertTemp(70,'F',unit)),ambientPsi:display(P_ATM_PSI),
+               sealPressure:display(P_ATM_PSI),sealPressureBasis:'psia',conversionPct:'100',
             })}><RotateCcw size={12}/> Restore standard assumptions</button>
           </details>
           <div className="pressure-controls-caution"><AlertTriangle size={15}/>
@@ -182,7 +197,7 @@ export function PressureWorkbench(){
       <div className="pressure-analysis-metrics">
         <div><span>{chem.acid} mass</span><strong>{result?value(result.thcaG,3):'—'} <small>g</small></strong></div>
         <div><span>Theoretical CO2 evolved</span><strong>{result?value(result.co2G,3):'—'} <small>g</small></strong></div>
-        <div><span>Heating contribution</span><strong>{result?value(result.pThermalGaugePsi):'—'} <small>PSI</small></strong></div>
+        <div><span>Thermal rise above seal baseline</span><strong>{result?value(result.pThermalGaugePsi):'—'} <small>PSI</small></strong></div>
         <div><span>At 0% conversion</span><strong>{reducedConversion?value(reducedConversion.pGaugePsi):'—'} <small>PSIG</small></strong></div>
       </div>
       {result&&<div className="pressure-sensitivity">

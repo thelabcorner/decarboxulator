@@ -131,11 +131,17 @@ for(const file of files) {
       html.includes('Model parameters') && html.includes('MODELED GAUGE PRESSURE') &&
       html.includes('id="pressure-temp"') && html.includes('id="pressure-vol"') &&
       html.includes('id="pressure-thca"');
-    assert(/class="[^"]*calculator-grid/.test(html) || appWorkbench || calculatorWorkbench || pressureWorkbench,
+    const pressureTrackerWorkbench=route==='tools/pressure-tracker/' &&
+      /class="[^"]*pressure-tracker-workbench/.test(html) &&
+      html.includes('APPARENT CONVERSION') && html.includes('Starting inventory') &&
+      html.includes('Current observation') && html.includes('Initial pressure');
+    assert(/class="[^"]*calculator-grid/.test(html) || appWorkbench || calculatorWorkbench ||
+      pressureWorkbench || pressureTrackerWorkbench,
       `${route}: primary calculator absent from prerendered HTML`);
   }
   const expectedToolQuestion = {
     'tools/max-pressure/': 'Does the pressure result include solvent or terpene vapor?',
+    'tools/pressure-tracker/': 'Can a pressure reading determine decarboxylation completion?',
     'tools/decarb-tracker/': 'What does the apparent completion percentage measure?',
     'tools/cartridge-formulation/': 'Is target fill the starting mixture or the finished cartridge mass?',
   }[route];

@@ -1,0 +1,52 @@
+/* Pressure tracker: compact analytical instrument; no pressure color is a safety band. */
+.pressure-tracker-workbench{display:grid;gap:10px;min-width:0}
+.pressure-tracker-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:7px}
+.pressure-tracker-header h2{font-size:19px;letter-spacing:-.5px;color:var(--strong);font-weight:720;margin:4px 0 3px}
+.pressure-tracker-header p,.pressure-tracker-explain,.pressure-tracker-help{font-size:11px;color:var(--muted);line-height:1.6;margin:3px 0}
+.pressure-tracker-eyebrow{display:flex;align-items:center;gap:5px;color:var(--accent-ink);font-size:10px;font-weight:720;letter-spacing:.6px}
+.pressure-tracker-overview{display:grid;grid-template-columns:minmax(240px,1.1fr) minmax(0,1.9fr);background:var(--panel);border:1px solid var(--border);border-radius:7px;overflow:hidden}
+.pressure-tracker-primary{padding:19px;border-right:1px solid var(--border)}
+.pressure-tracker-primary>span{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.7px}
+.pressure-tracker-primary output{display:block;font-size:clamp(36px,5vw,56px);font-weight:740;font-variant-numeric:tabular-nums;line-height:1.2;letter-spacing:-2px;color:var(--strong)}
+.pressure-tracker-primary output small{font-size:16px;letter-spacing:normal;margin-left:6px;color:var(--muted)}
+.pressure-tracker-primary p{font-size:10px;color:var(--muted);line-height:1.5;margin:8px 0 0}
+.pressure-tracker-progress{height:6px;border-radius:6px;background:var(--border);overflow:hidden}
+.pressure-tracker-progress>div{height:100%;background:var(--accent);transition:width .2s}
+.pressure-tracker-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.pressure-tracker-kpis>div{display:flex;flex-direction:column;gap:8px;justify-content:center;min-width:0;padding:16px}
+.pressure-tracker-kpis>div+div{border-left:1px solid var(--border-subtle)}
+.pressure-tracker-kpis span,.pressure-tracker-kpis small{font-size:10px;color:var(--muted);line-height:1.4}
+.pressure-tracker-kpis strong{font-variant-numeric:tabular-nums;font-size:clamp(16px,2vw,23px);font-weight:710;letter-spacing:-.5px;color:var(--strong);overflow-wrap:anywhere}
+.pressure-tracker-kpis strong small{font-weight:500;white-space:nowrap}
+.pressure-tracker-columns{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;min-width:0}
+.pressure-tracker-columns>*{min-width:0}
+.pressure-tracker-workbench .studio-fieldset{min-width:0}
+.pressure-tracker-workbench .studio-fieldset:disabled{opacity:.65}
+.pressure-tracker-workbench .studio-panel .panel-content{display:grid;gap:12px}
+.pressure-tracker-workbench .field-grid{min-width:0}
+.pressure-tracker-events,.pressure-tracker-history{display:grid;gap:4px;max-height:250px;overflow:auto}
+.pressure-tracker-events>div,.pressure-tracker-history>div{display:flex;gap:10px;justify-content:space-between;align-items:center;border:1px solid var(--border-subtle);border-radius:5px;padding:8px;font-size:11px;color:var(--ink);flex-wrap:wrap}
+.pressure-tracker-events button,.pressure-tracker-logbar button{display:flex;align-items:center;gap:5px;border:1px solid var(--border);border-radius:5px;padding:7px;color:var(--ink);background:var(--panel)}
+.pressure-tracker-logbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.pressure-tracker-logbar span{margin-right:auto;font-size:11px;color:var(--muted)}
+.pressure-tracker-logbar button:disabled{opacity:.4}
+.pressure-tracker-history small{color:var(--muted)}
+.pressure-tracker-derivation{background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:16px}
+.pressure-tracker-derivation h2{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--strong)}
+.pressure-tracker-derivation p{font-size:12px;line-height:1.7;color:var(--muted);margin-top:8px}
+.pressure-tracker-workbench .tracker-command-primary,.pressure-tracker-workbench .tracker-command-secondary{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:5px;padding:10px 12px;font-size:12px;font-weight:650}
+.pressure-tracker-workbench .tracker-command-primary{background:var(--accent);color:var(--panel);border:1px solid transparent}
+.pressure-tracker-workbench .tracker-command-secondary{background:var(--panel-inset);color:var(--ink);border:1px solid var(--border)}
+.pressure-tracker-workbench .tracker-command-primary:disabled,.pressure-tracker-workbench .tracker-command-secondary:disabled{opacity:.4;cursor:not-allowed}
+@media(max-width:760px){.pressure-tracker-overview,.pressure-tracker-columns{grid-template-columns:1fr}
+  .pressure-tracker-primary{border-right:0;border-bottom:1px solid var(--border)}
+  .pressure-tracker-kpis>div{padding:12px 9px}
+  .pressure-tracker-header{align-items:flex-start;flex-wrap:wrap}
+}
+@media(max-width:390px){.pressure-tracker-kpis{grid-template-columns:1fr}.pressure-tracker-kpis>div+div{border-left:0;border-top:1px solid var(--border-subtle)}}
+
+.pressure-tracker-chart-wrap{width:100%;min-width:0;overflow:hidden;border:1px solid var(--border-subtle);border-radius:6px;padding:10px;background:var(--panel-inset)}
+.pressure-tracker-chart-wrap svg{display:block;width:100%;max-height:310px;overflow:visible;color:var(--muted)}
+.pressure-tracker-chart-legend{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.pressure-tracker-chart-key{display:inline-block;width:12px;height:2px;background:var(--accent)}

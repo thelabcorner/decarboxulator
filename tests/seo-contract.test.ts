@@ -20,10 +20,10 @@ function metadata(page: { path: string; title: string; description: string }) {
 describe('prerendered SEO contract', () => {
   const pages = [HOME, ...TOOLS, GUIDE];
 
-  it('provides ten distinct stable canonicals and route OG images', () => {
-    expect(pages).toHaveLength(10);
-    expect(new Set(pages.map(page => canonical(page.path))).size).toBe(10);
-    expect(new Set(pages.map(page => ogImagePath(page.path))).size).toBe(10);
+  it('provides eleven distinct stable canonicals and route OG images', () => {
+    expect(pages).toHaveLength(11);
+    expect(new Set(pages.map(page => canonical(page.path))).size).toBe(pages.length);
+    expect(new Set(pages.map(page => ogImagePath(page.path))).size).toBe(pages.length);
     for (const page of pages) {
       const { head } = metadata(page);
       expect(head.links).toEqual([{ rel: 'canonical', href: canonical(page.path) }]);

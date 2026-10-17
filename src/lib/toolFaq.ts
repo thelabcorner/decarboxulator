@@ -1,5 +1,5 @@
 export type Faq = { question: string; answer: string };
-export type ToolId = 'conversion' | 'reverse-conversion' | 'batch' | 'analysis' | 'edibles' | 'pressure' | 'tracker' | 'cartridge';
+export type ToolId = 'conversion' | 'reverse-conversion' | 'batch' | 'analysis' | 'edibles' | 'pressure' | 'tracker' | 'pressure-tracker' | 'cartridge';
 
 /** Indexable questions remain in SSR markup; native disclosures minimize workspace clutter. */
 export const TOOL_QUESTIONS: Record<ToolId, readonly Faq[]> = {
@@ -60,6 +60,14 @@ export const TOOL_QUESTIONS: Record<ToolId, readonly Faq[]> = {
       answer: 'No. A mass-loss plateau can occur for reasons unrelated to cannabinoid conversion. Chemical analysis is needed to establish the remaining THCa and formed THC.' },
     { question: 'Where are tracker sessions saved?',
       answer: 'Sessions are stored in this browser’s IndexedDB on this device. They are not linked to an account. Clearing site data can erase them, so export a backup before changing browsers or clearing storage.' },
+  ],
+  'pressure-tracker': [
+    { question: 'Can a pressure reading determine decarboxylation completion?',
+      answer: 'It estimates apparent CO2-equivalent gas generation, not chemically verified conversion. The calculation removes the initial trapped-gas temperature contribution and, in vent mode, adds measured discharged gas. Unmeasured vapors, leaks, headspace changes and gas absorption break the idealized correspondence.' },
+    { question: 'How can the tracker start below atmospheric pressure?',
+      answer: 'Select absolute PSIA and enter a value below local ambient, or select gauge PSIG and enter a negative reading. An initial vacuum is not zero pressure; all gas-law calculations use absolute pressure and Kelvin.' },
+    { question: 'Can I count vent releases instead of logging each one?',
+      answer: 'Counted mode multiplies a representative pressure-and-temperature-corrected event by the number of assumed identical cycles. This is less defensible than individually measured events and is only valid with demonstrably repeatable endpoints, no inflow, and negligible gas generation during each vent.' },
   ],
   cartridge: [
     { question: 'Is target fill the starting mixture or the finished cartridge mass?',

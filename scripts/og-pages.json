@@ -7,7 +7,7 @@
       "Calculator studio"
     ],
     "description": "Conversion, batch yields, mass-loss analysis, edible and cartridge formulas, gas pressure and tracking.",
-    "value": "08",
+    "value": "09",
     "valueLabel": "CALCULATOR ROUTES",
     "input": "THCa + parameters",
     "output": "Model-dependent results",
@@ -110,6 +110,17 @@
     "input": "Starting / current mass",
     "output": "Apparent conversion %",
     "detail": "ASSUMES CO2-ONLY LOSS"
+  },
+  {
+    "path": "/tools/pressure-tracker",
+    "section": "ANALYTICAL / PRESSURE TRACKER",
+    "title": ["Pressure progress", "tracker"],
+    "description": "Estimate CO2-equivalent apparent conversion from measured gas pressure, initial vacuum or atmospheric baselines, and vent accounting.",
+    "value": "PV/RT",
+    "valueLabel": "IDEAL-GAS INVENTORY",
+    "input": "Start + current PSIA",
+    "output": "Apparent progress %",
+    "detail": "NOT A CHEMICAL ASSAY"
   },
   {
     "path": "/tools/cartridge-formulation",
