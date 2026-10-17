@@ -1,6 +1,7 @@
 /**
  * Pressure-derived apparent decarboxylation progress, deliberately separate
- * from containment engineering. Dry ideal-gas, fixed gas-space volume.
+ * from containment engineering. Ideal-gas, fixed gas-space volume, with
+ * optional user-supplied Henry equilibrium and inferred gas composition.
  *
  * For a closed-to-inflow control volume:
  *   n_generated = [P(t)V/RT(t) - P(0)V/RT(0)] + Σ n_vented
@@ -15,6 +16,7 @@
  */
 import { cannabinoidChemistry, DEFAULT_ACID_CANNABINOID, type AcidCannabinoid } from './cannabinoids';
 import { FLOZ_TO_M3, PSI_PER_PA, R_SI } from './pressure';
+import {dissolvedCo2Moles,dissolvedCo2CapacityMolPerPa,type Co2Dissolution} from './co2Dissolution';
 
 export type PressureTrackerMode = 'seal' | 'vent';
 export interface VentEvent {
@@ -39,6 +41,8 @@ export interface PressureTrackerInput {
   targetPercent: number;
   /** Recorded event endpoints or a single representative counted event. */
   vents?: readonly VentEvent[];
+  /** Optional equilibrium correction, inferred from total pressure and vent accounting. */
+  dissolution?: Co2Dissolution;
 }
 export interface PressureTrackerResult {
   theoreticalCo2G: number;
@@ -55,6 +59,10 @@ export interface PressureTrackerResult {
   targetCo2G: number;
   /** Percent points per current-pressure PSI (instrument step, NOT accuracy). */
   percentagePointsPerPsi: number;
+  dissolvedCo2Mol: number;
+  co2PartialPressurePsi: number;
+  /** Trapped inert-gas pressure after recorded, ideally mixed vent losses. */
+  retainedAirPartialPressurePsi: number;
   eventCount: number;
   isCountedApproximation: boolean;
   status: 'in-range' | 'below-baseline' | 'above-theoretical';
@@ -103,6 +111,7 @@ export function pressureTracker(input: PressureTrackerInput, ambientPsi: number)
   const theoreticalCo2G = theoreticalCo2Mol * co2Mw;
   if (!(theoreticalCo2Mol>0) || !Number.isFinite(theoreticalCo2Mol)) return null;
   let ventedMol=0,eventCount=0,isCountedApproximation=false;
+  let inertRemainingFraction=1;
   for (const vent of vents) {
     if (![vent.beforePsi,vent.afterPsi,vent.beforeTempC,vent.afterTempC,vent.count].every(Number.isFinite) ||
       !isFiniteNonnegative(vent.beforePsi) || !isFiniteNonnegative(vent.afterPsi) ||
@@ -114,21 +123,54 @@ export function pressureTracker(input: PressureTrackerInput, ambientPsi: number)
     // A temperature-corrected non-drop is not a vented-mole estimate.
     if (!(removed > 0) || !Number.isFinite(removed)) return null;
     ventedMol+=removed*vent.count;
+    // Each brief, well-mixed discharge removes the same fraction of every
+    // gas present. Subsequent CO2 generation does not restore lost inert gas.
+    const before=vent.beforePsi/kelvin(vent.beforeTempC);
+    const after=vent.afterPsi/kelvin(vent.afterTempC);
+    const retainedFraction=after/before;
+    if(!Number.isFinite(retainedFraction)||retainedFraction<0||retainedFraction>=1)return null;
+    inertRemainingFraction*=Math.pow(retainedFraction,vent.count);
     eventCount+=vent.count;
     if (vent.count>1) isCountedApproximation=true;
   }
   const initialGasMol=mol(initialPsi,initialTempC,v);
   const currentGasMol=mol(currentPsi,currentTempC,v);
   const retainedChangeMol=currentGasMol-initialGasMol;
-  const generatedMol=retainedChangeMol+ventedMol;
+  // The initial trapped gas is assumed CO2-free. Short well-mixed vents
+  // reduce the inert inventory by (P_after/T_after)/(P_before/T_before).
+  // No separate CO2 sensor is needed; infer its partial pressure by difference.
+  const inertGasMol=mol(initialPsi,initialTempC,v)*inertRemainingFraction;
+  const airAtCurrent=psi(inertGasMol,currentTempC,v);
+  const inferredCo2Psi=currentPsi-airAtCurrent;
+  // Do not quietly clamp an inconsistent observation into a positive value.
+  const roundingTolerance=Math.max(1e-9,Math.abs(currentPsi)*1e-10);
+  if(input.dissolution && inferredCo2Psi < -roundingTolerance)return null;
+  const co2PartialPsi=Math.max(0,inferredCo2Psi);
+  const dissolvedCo2Mol=input.dissolution
+    ?dissolvedCo2Moles(co2PartialPsi,input.dissolution):0;
+  if(dissolvedCo2Mol===null)return null;
+  const generatedMol=retainedChangeMol+ventedMol+dissolvedCo2Mol;
   const apparentPercent=100*generatedMol/theoreticalCo2Mol;
   const targetCo2G=theoreticalCo2G*targetPercent/100;
   const targetRetainedMol=initialGasMol+theoreticalCo2Mol*targetPercent/100-ventedMol;
-  const rawTargetPressure=psi(targetRetainedMol,currentTempC,v);
-  const targetPressureAbsPsi=Number.isFinite(rawTargetPressure) && rawTargetPressure>=0 ? rawTargetPressure:null;
-  const percentagePointsPerPsi=100*mol(1,currentTempC,v)/theoreticalCo2Mol;
+  const liquidCapacity=input.dissolution?dissolvedCo2CapacityMolPerPa(input.dissolution):0;
+  if(liquidCapacity===null)return null;
+  const gasCapacity=v/(R_SI*kelvin(currentTempC));
+  // Already-released CO2 equals total removed gas minus discharged inert gas.
+  // Assuming no additional future vents, the target is the pressure required
+  // for the remaining CO2 (gas plus dissolved equilibrium inventory).
+  const ventedCo2Mol=ventedMol-(initialGasMol-inertGasMol);
+  const targetRemainingCo2Mol=theoreticalCo2Mol*targetPercent/100-ventedCo2Mol;
+  const rawTargetPressure=input.dissolution
+    ?airAtCurrent+(targetRemainingCo2Mol/(gasCapacity+liquidCapacity))*PSI_PER_PA
+    :psi(targetRetainedMol,currentTempC,v);
+  const targetPressureAbsPsi=Number.isFinite(rawTargetPressure) && rawTargetPressure>=0 &&
+    (!input.dissolution || targetRemainingCo2Mol>=-Math.max(1e-12,theoreticalCo2Mol*1e-10))
+    ? rawTargetPressure : null;
+  const percentagePointsPerPsi=100*(gasCapacity+(input.dissolution?liquidCapacity:0)) /
+    PSI_PER_PA/theoreticalCo2Mol;
   if (![initialGasMol,currentGasMol,retainedChangeMol,ventedMol,generatedMol,
-    apparentPercent,percentagePointsPerPsi].every(Number.isFinite)) return null;
+    apparentPercent,percentagePointsPerPsi,dissolvedCo2Mol].every(Number.isFinite)) return null;
   const tolerance=1e-8;
   const status=apparentPercent < -tolerance ? 'below-baseline' :
     apparentPercent>100+tolerance ? 'above-theoretical' : 'in-range';
@@ -137,7 +179,9 @@ export function pressureTracker(input: PressureTrackerInput, ambientPsi: number)
     retainedChangeMol,ventedMol,generatedMol,co2EquivalentG:generatedMol*co2Mw,
     apparentPercent,targetPressureAbsPsi,
     targetPressureGaugePsi:targetPressureAbsPsi===null?null:targetPressureAbsPsi-ambientPsi,
-    targetCo2G,percentagePointsPerPsi,eventCount,isCountedApproximation,status,
+    targetCo2G,percentagePointsPerPsi,dissolvedCo2Mol,
+    co2PartialPressurePsi:co2PartialPsi,retainedAirPartialPressurePsi:airAtCurrent,
+    eventCount,isCountedApproximation,status,
   };
 }
 

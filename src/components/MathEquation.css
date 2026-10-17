@@ -1,0 +1,20 @@
+/* Dark/light zinc analytical typography, never a page-style math callout. */
+.dcxr-equation{display:block;margin:9px 0 12px;min-width:0;max-width:100%;border:1px solid var(--border-subtle);border-radius:5px;background:var(--panel-inset);overflow:hidden;color:var(--strong)}
+.dcxr-equation-caption{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:7px 11px;border-bottom:1px solid var(--border-subtle);color:var(--muted);font-size:10px;letter-spacing:.04px;font-weight:620}
+.dcxr-equation-caption:empty{display:none}
+.dcxr-equation-number{font-variant-numeric:tabular-nums;color:var(--subtle);font-weight:500}
+.dcxr-equation-scroll{padding:12px 14px;min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:var(--subtle) transparent}
+.dcxr-equation-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.dcxr-equation-render{min-width:max-content;max-width:100%;display:table;margin:0 auto;font-size:12.5px;line-height:1.7}
+.dcxr-equation .katex-display{margin:0;text-align:center}
+.dcxr-equation .katex{font-size:1.04em;line-height:1.25;color:inherit}
+.dcxr-equation[data-compact] .dcxr-equation-scroll{padding:10px 12px}
+.dcxr-equation[data-compact] .dcxr-equation-render{font-size:11.7px}
+.dcxr-math-inline{display:inline;white-space:nowrap;color:var(--strong);vertical-align:baseline}
+.dcxr-math-inline .katex{font-size:1em;color:inherit}
+.dcxr-math-inline .katex-html{white-space:nowrap}
+.formula-disclosure .dcxr-equation{margin:0;background:transparent;border:0;border-radius:0}
+.formula-disclosure .dcxr-equation-scroll{border-top:1px solid var(--border-subtle);padding:11px 8px 10px}
+.formula-disclosure .dcxr-equation-render{font-size:11.5px}
+.science-method-panel>.panel-content>.dcxr-equation{margin:0}
+@media(max-width:620px){.dcxr-equation-scroll{padding:11px 10px}.dcxr-equation-render{font-size:11.5px}.dcxr-equation-caption{padding:7px 9px}}

@@ -1,0 +1,28 @@
+/* Zinc/New York scientific notation. KaTeX uses its packaged sans-serif math
+   font through authored \mathsf tokens. Do not overwrite glyph metrics globally. */
+.studio-math-inline{display:inline;white-space:nowrap;color:var(--strong);font-size:1.03em}
+.studio-math-inline .katex{font-size:1em}
+.studio-math-equation{min-width:0;margin:12px 0 16px;border:1px solid var(--border);border-radius:6px;background:var(--panel-inset);overflow:hidden}
+.studio-math-heading{display:flex;justify-content:space-between;gap:12px;padding:9px 12px 0;font-size:9px;font-weight:650;letter-spacing:.5px;color:var(--subtle);text-transform:uppercase}
+.studio-math-heading span:last-child{font-variant-numeric:tabular-nums;letter-spacing:.15px;color:var(--muted)}
+.studio-math-viewport{max-width:100%;min-width:0;overflow:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:var(--border) transparent;outline-offset:-2px}
+.studio-math-viewport:focus-visible{outline:2px solid var(--accent-ink)}
+.studio-math-typeset{display:table;min-width:100%;padding:14px 12px;white-space:nowrap;color:var(--strong)}
+.studio-math-typeset .katex{font-size:1.04em}
+.studio-math-typeset .katex-display{margin:0;text-align:center}
+.studio-math-typeset .katex-display>.katex{text-align:center}
+.studio-math-equation figcaption{border-top:1px solid var(--border-subtle);padding:9px 12px 10px;color:var(--muted);font-size:10.5px;line-height:1.55}
+.studio-math-equation[data-compact=true] .studio-math-typeset{padding:10px}
+.studio-math-equation[data-compact=true] .katex{font-size:.96em}
+.formula-disclosure .studio-math-typeset{padding:14px 8px}
+.formula-disclosure .studio-math-typeset .katex{font-size:1.03em}
+.formula-disclosure .studio-math-viewport{background:var(--panel-inset);border:1px solid var(--border-subtle);border-radius:5px}
+.formula-disclosure .studio-math-description{font-size:10px;line-height:1.5;color:var(--muted);margin:8px 1px 4px}
+.pressure-equation .studio-math-viewport{background:var(--panel-inset)}
+.pressure-equation .studio-math-typeset{font-size:12px}
+@media(max-width:560px){
+  .studio-math-typeset{padding:12px 9px}
+  .studio-math-typeset .katex{font-size:.96em}
+  .studio-math-equation figcaption{padding-inline:10px}
+  .studio-math-heading{padding-inline:10px}
+}

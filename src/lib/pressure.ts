@@ -4,11 +4,13 @@
  * Assumptions: rigid fixed gas volume, initially sealed at absolute P0/T0,
  * independently specified initial gas pressure and outside gauge reference, ideal-gas behavior,
  * no exchange of gas, and an explicitly chosen fraction of THCa releasing CO2.
- * Other gas generation, condensable vapors, sample displacement, dissolution,
+ * Other gas generation, condensable vapors, sample displacement,
  * unequal temperatures and changing pressure boundaries are excluded.
+ * Optional dissolution uses user-supplied Henry equilibrium data, not a universal liquid model.
  */
 import { type ParsedAmount } from './decarb';
 import { cannabinoidChemistry, DEFAULT_ACID_CANNABINOID, type AcidCannabinoid } from './cannabinoids';
+import {dissolvedCo2CapacityMolPerPa, type Co2Dissolution} from './co2Dissolution';
 
 export const R_SI = 8.31446261815324;            // Pa·m³/(mol·K)
 export const PSI_PER_PA = 1 / 6894.757293168;
@@ -56,6 +58,7 @@ export interface PressureInput {
   efficiency?: number;
   /** Acidic cannabinoid for stoichiometry. Defaults to THCa. */
   cannabinoid?: AcidCannabinoid;
+  dissolution?: Co2Dissolution;
 }
 export interface PressureResult {
   thcaG: number;
@@ -64,6 +67,8 @@ export interface PressureResult {
   /** Absolute pressure from the original trapped gas at process temperature. */
   pAirPsi: number;
   pCo2Psi: number;
+  dissolvedCo2Mol: number;
+  dissolvedCo2Fraction: number;
   pAbsPsi: number;
   /** Difference relative to the reference ambient pressure. May be negative. */
   pGaugePsi: number;
@@ -93,16 +98,23 @@ export function computePressure(input: PressureInput): PressureResult | null {
   const nCo2Mol = thcaG * fraction / acidMw;
   const co2G = nCo2Mol * co2Mw;
   const pAirPsi = sealPsi * tempK / sealK;
-  const pCo2Psi = (nCo2Mol * R_SI * tempK / (headspaceFloz * FLOZ_TO_M3)) * PSI_PER_PA;
+  const gasCapacity=(headspaceFloz*FLOZ_TO_M3)/(R_SI*tempK);
+  const liquidCapacity=input.dissolution ? dissolvedCo2CapacityMolPerPa(input.dissolution) : 0;
+  if (liquidCapacity===null) return null;
+  const totalCapacity=gasCapacity+liquidCapacity;
+  const pCo2Psi=(nCo2Mol/totalCapacity)*PSI_PER_PA;
+  const dissolvedCo2Mol=nCo2Mol*(liquidCapacity/totalCapacity);
+  const dissolvedCo2Fraction=liquidCapacity/totalCapacity;
   const pAbsPsi = pAirPsi + pCo2Psi;
   const pGaugePsi = pAbsPsi - ambientPsi;
   const pThermalGaugePsi = pAirPsi - sealPsi;
   const pBaselineGaugePsi = sealPsi - ambientPsi;
-  const dGaugePerFloz = -pCo2Psi / headspaceFloz;
-  const dGaugePerC = pAbsPsi / tempK;  // ∂P_gauge/∂T at constant volume and extent
-  if (![thcaG,nCo2Mol,co2G,pAirPsi,pCo2Psi,pAbsPsi,pGaugePsi,
+  const dGaugePerFloz = -pCo2Psi*(gasCapacity/totalCapacity)/headspaceFloz;
+  const dGaugePerC = (pAirPsi+pCo2Psi*gasCapacity/totalCapacity)/tempK;
+  // Both derivatives hold the entered Henry coefficient constant.
+  if (![thcaG,nCo2Mol,co2G,pAirPsi,pCo2Psi,dissolvedCo2Mol,dissolvedCo2Fraction,pAbsPsi,pGaugePsi,
     pThermalGaugePsi,pBaselineGaugePsi,dGaugePerFloz,dGaugePerC].every(Number.isFinite)) return null;
-  return {thcaG,nCo2Mol,co2G,pAirPsi,pCo2Psi,pAbsPsi,pGaugePsi,
+  return {thcaG,nCo2Mol,co2G,pAirPsi,pCo2Psi,dissolvedCo2Mol,dissolvedCo2Fraction,pAbsPsi,pGaugePsi,
     pThermalGaugePsi,pBaselineGaugePsi,dGaugePerFloz,dGaugePerC};
 }
 

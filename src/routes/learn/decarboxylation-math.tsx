@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { ArrowRight, ChevronDown, Search, X } from 'lucide-react';
-import { Formula, ToolHeading } from '../../components/ui';
+import { ToolHeading } from '../../components/ui';
+import { MathEquation } from '../../components/MathNotation';
 import { MW_THCA, MW_THC, MW_CO2, CONVERSION_RATIO, CO2_RATIO } from '../../lib/decarb';
 import { SCIENCE_FAQ, SCIENCE_CATEGORIES, type ScienceCategory } from '../../lib/scienceFaq';
 import { GUIDE, TOOLS, pageHead } from '../../lib/site';
@@ -27,7 +28,13 @@ function ScienceGuide(){
           <div className="panel-heading"><div className="panel-heading-copy"><h2>Mass balance</h2>
             <p>THCa → THC + CO2, by mass</p></div><span className="small-label">Reference 01</span></div>
           <div className="panel-content">
-            <Formula>THCa → THC + CO2</Formula>
+            <MathEquation label="01 / REACTION"
+              tex={String.raw`\mathsf{THCa}\longrightarrow\mathsf{THC}+\mathsf{CO}_2`}
+              caption="One mole of THCa yields one mole each of THC and CO2 in the simplified stoichiometric model."
+              compact/>
+            <MathEquation label="02 / MASS RATIO"
+              tex={String.raw`\frac{\mathsf{m}_{\mathsf{THC}}}{\mathsf{m}_{\mathsf{THCa}}}=\frac{M_{\mathsf{THC}}}{M_{\mathsf{THCa}}}=\frac{314.46}{358.47}\approx0.87723`}
+              compact/>
             <div className="science-constants">
               <div><small>THCa</small><strong>{MW_THCA} <em>g/mol</em></strong></div>
               <div><small>THC</small><strong>{MW_THC} <em>g/mol</em></strong></div>

@@ -39,6 +39,23 @@ The entered **free communicating gas volume** is not the container's marked volu
 
 Headspace changes alter both modeled pressure and pressure-derived percent completion. In the tracker, volume assumptions are baseline-locked when pressure snapshots exist to prevent retroactive re-interpretation of measurements. Unit and browser QA exercise both manual and estimated modes and impossible-displacement refusal.
 
+## Optional Henry's law correction (field-estimated partial pressure)
+
+The default remains **off**, with the original dry ideal-gas results preserved. Opting in requires the absorbing liquid volume (mL) and a **user-supplied Henry solubility coefficient** in mol/(L atm) for the actual liquid at the modeled temperature. The application does not invent a coefficient for cannabis concentrates, oils, solvents or arbitrary blends. The simple linear equilibrium form is `n_CO2,dissolved = (V_liquid,L) k_H (P_CO2,PSI/14.6959487755)`.
+
+**Do not request a field CO2 partial-pressure measurement.** Estimate CO2 partial pressure from existing absolute total-pressure observations and inert gas bookkeeping. The initial trapped gas is assumed CO2-free, with zero initially dissolved CO2.
+
+- Seal: `P_inert,t = P_initial * T_t/T_initial`. `P_CO2,t = P_total,t - P_inert,t`.
+- Vent: for each short well-mixed measured release, `f_i = (P_after/T_after)/(P_before/T_before)`, using absolute pressures and Kelvin. The surviving inert-gas fraction is `F = product(f_i ** count_i)`. Therefore `P_inert,t = P_initial * T_t/T_initial * F` and `P_CO2,t = P_total,t - P_inert,t`.
+- Cumulative CO2-equivalent evolution is `n_current - n_initial + sum(n_vented) + n_CO2,dissolved`. In vent mode, released gas includes both inert gas and CO2. Counted identical cycles propagate their gas-retention factors multiplicatively.
+- When historical vents are fixed and no additional release is assumed, the inverse target includes the inferred surviving inert gas and current Henry equilibrium capacity. If released CO2 already exceeds a lower target, that target is physically unattainable under the stated history.
+
+These statements assume rapid homogeneous gas mixing, **negligible generation, inflow, dissolution/exsolution and temperature transients during each vent**, equilibrium **after** the event, fixed dry-gas headspace, and no independently significant non-CO2 vapors or sinks. If CO2 desorbs or dissolves substantially during a vent, the pressure drop measures a *net* gas inventory change rather than released flow and the correction becomes underdetermined without other measurements. This model must not pretend otherwise. A negative inferred CO2 partial pressure inconsistent with the measured total is rejected rather than clipped. A coefficient appropriate at room temperature is not automatically valid during heating or across the entire pressure heatmap; its temperature dependence is not modeled. The correction is not a safety limit.
+
+## Standalone instrument resolution finders
+
+`/tools/scale-resolution` calculates display increments for the chosen minimum and recommended apparent-completion percentage-point rounding bounds. Two independent rounded weight readings contribute up to one total display increment of worst-case difference error. `/tools/gauge-resolution` includes initial/current pressure and recorded vent before/after input rounding for each count. Both tools distinguish readout readability from calibration accuracy, dynamic response, noise, sample composition and chemical specificity. The gauge finder currently evaluates the dry ideal-gas baseline, not the optional dissolution model.
+
 The result is total evolved-gas equivalents inferred from an inventory balance, **not CO2 partial moles**, unless all other gas sources and sinks can be excluded. A gas-composition measurement can distinguish evolving CO2 from initial air, water vapor, purge gas and solvents. Evolving gas may remain dissolved, adsorbed or condensed. Changing free headspace due to material expansion, phase change, thermal dilation, condensation or flexing violates fixed-V. An unexpectedly high value (>100%) or negative apparent conversion remains visible and flagged, never clipped.
 
 ## Seal mode

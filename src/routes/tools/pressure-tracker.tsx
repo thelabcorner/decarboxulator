@@ -22,13 +22,17 @@ export const Route=createFileRoute('/tools/pressure-tracker')({
           Mass ÷ density is offered only when the supplied density represents actual
           gas-excluded material volume, not a porous packed envelope.
           Seal mode subtracts the initial inventory from the current inventory.
+          Optional Henry equilibrium infers CO2 partial pressure from total PSI and
+          the surviving initial trapped gas, without a gas-composition sensor.
           Heating trapped air alone changes pressure, so comparing PSI readings
           without the temperature and initial inventory correction is incorrect.</p>
         <p>Vent mode additionally sums the temperature-corrected gas inventory lost
           during each isolated release event. The counted-cycle option approximates
           that sum by multiplying a calibrated pressure drop by the number of equivalent
-          cycles; logged events use individual measured before/after states. The
-          algorithm computes net evolved-gas equivalents, attributed to CO2 only
+          cycles; logged events use individual measured before/after states.
+          The same measured temperature-corrected endpoints estimate the fraction
+          of well-mixed inert gas remaining after each vent. The algorithm computes
+          net evolved-gas equivalents, attributed to CO2 only
           when no other gas sources, leaks, inlet flow or significant absorption exist.</p>
         <p>Progress uses the same selected cannabinoid molar-mass ratio as the
           gravimetric tracker. A pressure target is conditional on the observed

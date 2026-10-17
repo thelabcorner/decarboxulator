@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { Activity, AlertTriangle, Download, ListPlus, RotateCcw, Trash2 } from 'lucide-react';
 import { HeadspaceEditor } from './HeadspaceEditor';
+import { MathEquation } from './MathNotation';
+import {Co2DissolutionEditor, CO2_DISSOLUTION_DEFAULTS, getDissolution} from './Co2DissolutionEditor';
 import { HEADSPACE_DEFAULTS, resolveHeadspace } from '../lib/headspace';
 import { NumberField } from './NumberField';
 import { CannabinoidSelector } from './CannabinoidSelector';
@@ -16,6 +18,7 @@ import './PressureTrackerWorkbench.css';
 
 const DEFAULTS = {
   ...HEADSPACE_DEFAULTS,
+  ...CO2_DISSOLUTION_DEFAULTS,
   unit:'g' as const,
   cannabinoid:DEFAULT_ACID_CANNABINOID,
   sampleG:'10',acidPercent:'80',headspaceFloz:'16',ambientPsi:'14.6959488',
@@ -72,6 +75,7 @@ export function PressureTrackerWorkbench() {
   const sample=parseAmount(s.sampleG,{min:Number.MIN_VALUE});
   const acid=parseAmount(s.acidPercent,{max:100,min:Number.MIN_VALUE});
   const volume=resolveHeadspace(s,s.headspaceFloz,s.sampleG);
+  const dissolution=getDissolution(s);
   const initialTemp=parseTemperature(s.initialGasTemp,'C');
   const currentTemp=parseTemperature(s.currentGasTemp,'C');
   const initialRaw=parsePressureReading(s.initialPressure);
@@ -111,12 +115,14 @@ export function PressureTrackerWorkbench() {
       (counted.value===0?[]:[{...event!,count:counted.value!}]):null;
   const valid=sample.value!==null&&acid.value!==null&&volume.value!==null&&
     initialAbs!==null&&currentAbs!==null&&initialTemp.value!==null&&
-    currentTemp.value!==null&&target.value!==null&&ambient.value!==null&&vents!==null;
+    currentTemp.value!==null&&target.value!==null&&ambient.value!==null&&vents!==null&&
+    (s.co2Dissolution==='off'||dissolution.value!==null);
   const result=valid?pressureTracker({
     mode,sampleG:sample.value!,acidPercent:acid.value!,
     headspaceFloz:volume.value!,initialPsi:initialAbs!,initialTempC:initialTemp.value!,
     currentPsi:currentAbs!,currentTempC:currentTemp.value!,targetPercent:target.value!,
     vents:vents!,cannabinoid:s.cannabinoid,
+    ...(dissolution.value?{dissolution:dissolution.value}:{}),
   },ambient.value!):null;
 
   function setPressureBasis(next:'psia'|'psig') {
@@ -209,6 +215,8 @@ export function PressureTrackerWorkbench() {
             <NumberField label={chem.acid+' fraction'} value={s.acidPercent} suffix="%"
               onChange={v=>ws.setField('acidPercent',v)} error={acid.error} max={100}/>
           </FieldGrid>
+          <Co2DissolutionEditor fields={s} disabled={locked}
+            onChange={(key,value)=>ws.setFields({[key]:value})}/>
           <HeadspaceEditor fields={s} sampleMassG={s.sampleG} manualFloz={s.headspaceFloz}
             onField={(key,value)=>ws.setFields({[key]:value})} onManual={v=>ws.setField('headspaceFloz',v)}
             disabled={locked}/>
@@ -249,10 +257,12 @@ export function PressureTrackerWorkbench() {
           <Metric label="Retained inventory change" value={fmt(result.retainedChangeMol,6)} suffix="mol"/>
           <Metric label="Pressure readout sensitivity" value={fmt(result.percentagePointsPerPsi,3)} suffix="pp/PSI"/>
           <Metric label="Gas accounted for by vents" value={fmt(result.ventedMol,6)} suffix="mol"/>
+          {s.co2Dissolution==='on'&&<Metric label="CO2 dissolved at equilibrium" value={fmt(result.dissolvedCo2Mol,6)} suffix="mol"/>}
         </Metrics>}
         <button type="button" className="tracker-command-primary" onClick={record}
           disabled={!result||readings.length>=200}><ListPlus size={15}/> Record pressure snapshot</button>
-        <p className="pressure-tracker-help">Pressure targets depend on the gas temperature, baseline and vent history.</p>
+        <p className="pressure-tracker-help">Pressure targets depend on the gas temperature, baseline and vent history.
+          {s.co2Dissolution==='on'&&mode==='vent'?' Assumes no further venting beyond the recorded events.':''}</p>
       </Panel>
     </div>
     {mode==='vent'&&<Panel title="Vented-gas accounting" detail="Count calibrated identical cycles or record individual pressure drops">
@@ -311,11 +321,16 @@ export function PressureTrackerWorkbench() {
     </Panel>
     <details className="pressure-tracker-derivation" aria-label="Calculation methodology">
       <summary><AlertTriangle size={15}/> Calculation method &amp; interpretation</summary>
-      <p>At fixed gas volume V, retained inventory is n = PV/(RT). Seal mode computes the difference
-        between current and starting inventory. Vent mode adds Σ V/R × (Pbefore/Tbefore − Pafter/Tafter),
-        with measured absolute P and Kelvin T at each vent. The result divided by the selected
-        {chem.acid} theoretical CO2 moles yields an apparent percentage; values outside 0–100%
-        are flagged, never silently clipped.</p>
+      <MathEquation compact label="01 / GAS INVENTORY"
+        tex={String.raw`n_{g,t}=\frac{P_tV_g}{RT_t}\qquad n_{g,0}=\frac{P_0V_g}{RT_0}`}
+        caption="Temperature-corrected initial and current total gas inventory at fixed headspace."/>
+      <MathEquation compact label="02 / VENT MASS BALANCE"
+        tex={String.raw`n_{\mathsf{generated}}=n_{g,t}-n_{g,0}+\sum_j\frac{V_g}{R}\left(\frac{P_{j,b}}{T_{j,b}}-\frac{P_{j,a}}{T_{j,a}}\right)`}
+        caption="Measured before/after vent pressures and temperatures. Counted cycles approximate repeated identical events."/>
+      {s.co2Dissolution==='on'&&<MathEquation compact label="03 / DISSOLVED CARBON DIOXIDE"
+        tex={String.raw`\begin{aligned}P_{\mathsf{CO_2}}&=P_{\mathsf{total}}-P_{\mathsf{inert}}\\n_{\mathsf{diss}}&=k_HV_{\ell}\frac{P_{\mathsf{CO_2}}}{P_{\mathsf{atm}}}\end{aligned}`}
+        caption="Optional equilibrium correction with inferred CO2 partial pressure; no gas analyzer is required."/>}
+      <p>The derived gas equivalent is divided by the selected {chem.acid} theoretical CO2 capacity to estimate apparent completion. Results outside 0 to 100% are flagged rather than clipped. Short, well-mixed vents are assumed to reduce all gas species proportionally. Significant dissolution, exsolution, gas production or inflow during a vent cannot be resolved by the pressure drop alone.</p>
       <p>Any initial air, water vapor, solvents, other evolved gases, leaks, gas uptake or change in
         free headspace can invalidate the CO2-only interpretation. Gas composition and actual
         molecular conversion are not measured. An emergency relief system must never be treated
