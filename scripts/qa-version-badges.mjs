@@ -63,10 +63,10 @@ try {
           await page.screenshot({path:'artifacts/qa-version-badges-mobile.png'});
         }
         if (width <= 760) await page.getByRole('button', {name:'Browse calculators'}).click();
-        assert.equal(await page.locator('.workbench-tool-directory .calculator-version-badge').count(), 8);
+        assert.equal(await page.locator('.workbench-tool-directory .calculator-version-badge').count(), 11);
         await page.locator('.rail-bottom [aria-label="Search calculators"]').click();
         await page.getByRole('dialog', {name:'Find a calculator'}).waitFor({state:'visible'});
-        assert.equal(await page.locator('.tool-search-result .calculator-version-badge').count(), 8);
+        assert.equal(await page.locator('.tool-search-result .calculator-version-badge').count(), 11);
         console.log('PASS', width, theme, '8 badges in sidebar, directory and search, no overflow');
       } finally { await context.close(); }
     }

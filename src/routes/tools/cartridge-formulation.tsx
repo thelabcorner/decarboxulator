@@ -10,7 +10,7 @@ export const Route = createFileRoute('/tools/cartridge-formulation')({
   head: () => pageHead(tool),
   component: () => (
     <div className="calculator-route-shell">
-       <ToolHeading section="Calculators / Formulation" title={tool.heading} description={tool.summary} index="08" reference/>
+       <ToolHeading section="Calculators / Formulation" title={tool.heading} description={tool.summary} index="11" reference/>
       <CartridgeCalculator/>
       <ToolReference>
          <h2>Starting blend mass and finished cartridge targets</h2>

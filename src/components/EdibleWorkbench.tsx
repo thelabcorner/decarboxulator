@@ -125,7 +125,9 @@ export function EdibleWorkbench() {
         </div>
         <button type="button" className="action-button action-button-secondary" disabled={rows.length>=MAX_EDIBLE_ROWS}
           onClick={()=>setRows([...rows,edibleRow()])}><Plus size={15}/> Add ingredient</button>
-        <Formula>Selected acid input × (neutral molar mass / acid molar mass) × assumed acid conversion; THCa and starting THC additionally use the THC recovery percentage.</Formula>
+        <Formula
+          tex={String.raw`\mathsf{m}_{\mathsf{neutral}}=\mathsf{m}_{\mathsf{acid}}\,\frac{M_{\mathsf{neutral}}}{M_{\mathsf{acid}}}\,\eta_{\mathsf{conversion}}`}
+          caption="For THC-producing or already-neutral THC ingredients, downstream recovery is applied separately. Other cannabinoids remain separate."/>
       </div>
     </Panel>}
     output={<Panel title="Recipe output" detail={mode === 'desired' ? 'Required starting material to meet the target' : 'Modeled batch totals and per-serving profile'}>

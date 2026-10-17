@@ -7,7 +7,7 @@
       "Calculator studio"
     ],
     "description": "Conversion, batch yields, mass-loss analysis, edible and cartridge formulas, gas pressure and tracking.",
-    "value": "09",
+    "value": "11",
     "valueLabel": "CALCULATOR ROUTES",
     "input": "THCa + parameters",
     "output": "Model-dependent results",
@@ -121,6 +121,28 @@
     "input": "Start + current PSIA",
     "output": "Apparent progress %",
     "detail": "NOT A CHEMICAL ASSAY"
+  },
+  {
+    "path": "/tools/scale-resolution",
+    "section": "INSTRUMENTATION / BALANCE",
+    "title": ["Scale", "resolution"],
+    "description": "Find the balance display increment needed to track a chosen apparent decarboxylation progress increment.",
+    "value": "0.1 pp",
+    "valueLabel": "EDITABLE READABILITY TARGET",
+    "input": "Mass + acid fraction",
+    "output": "Maximum increment (g)",
+    "detail": "READABILITY, NOT ACCURACY"
+  },
+  {
+    "path": "/tools/gauge-resolution",
+    "section": "INSTRUMENTATION / PRESSURE",
+    "title": ["Gauge", "resolution"],
+    "description": "Find gauge readability from headspace, temperature, cannabinoid mass, and measured vent count.",
+    "value": "0.1 pp",
+    "valueLabel": "EDITABLE READABILITY TARGET",
+    "input": "Headspace + gas history",
+    "output": "Maximum increment (PSI)",
+    "detail": "READABILITY, NOT PRESSURE RATING"
   },
   {
     "path": "/tools/cartridge-formulation",

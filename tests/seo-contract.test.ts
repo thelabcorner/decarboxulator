@@ -20,8 +20,8 @@ function metadata(page: { path: string; title: string; description: string }) {
 describe('prerendered SEO contract', () => {
   const pages = [HOME, ...TOOLS, GUIDE];
 
-  it('provides eleven distinct stable canonicals and route OG images', () => {
-    expect(pages).toHaveLength(11);
+  it('provides thirteen distinct stable canonicals and route OG images', () => {
+    expect(pages).toHaveLength(13);
     expect(new Set(pages.map(page => canonical(page.path))).size).toBe(pages.length);
     expect(new Set(pages.map(page => ogImagePath(page.path))).size).toBe(pages.length);
     for (const page of pages) {

@@ -54,7 +54,8 @@ function trackRoute() {
 export function GoogleAnalytics() {
   const router = useRouter();
   useEffect(() => {
-    if (!import.meta.env.PROD || !isAnalyticsHost(window.location.hostname)) return;
+    if (!import.meta.env.PROD || import.meta.env.VITE_PREVIEW_MODE === 'true' ||
+        !isAnalyticsHost(window.location.hostname)) return;
     trackRoute();
     const unsubscribe = router.subscribe('onRendered', ({ pathChanged }) => {
       if (pathChanged) trackRoute();
