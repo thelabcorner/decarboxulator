@@ -2,6 +2,7 @@ import { COMPOUND_TYPES, type CompoundRow } from './cartridge';
 import { parseEdibleRows, type EdibleRow } from './edibleFormula';
 import { MAX_INPUT, parseAmount, UNIT_KEYS } from './decarb';
 import { isAcidCannabinoid } from './cannabinoids';
+import { parsePressureLog, parseVentLog } from './pressureTracker';
 
 export const MAX_COMPOUND_ROWS = 20;
 // IndexedDB-backed runs support extended multi-hour/multi-day campaigns.
@@ -58,6 +59,14 @@ export function validWorkspaceValue(key: string, proposed: unknown, initial: str
   if (key === 'cannabinoid') return isAcidCannabinoid(proposed);
   if (key === 'direction') return proposed === 'decarb' || proposed === 'reverse';
   if (key === 'tempUnit') return proposed === 'C' || proposed === 'F';
+  if (key === 'pressureBasis' || key === 'sealPressureBasis') return proposed === 'psia' || proposed === 'psig';
+  if (key === 'pressureTrackerMode') return proposed === 'seal' || proposed === 'vent';
+  if (key === 'ventAccounting') return proposed === 'counted' || proposed === 'recorded';
+  if (key === 'ventLog') return parseVentLog(proposed) !== null;
+  if (key === 'pressureLog') return parsePressureLog(proposed) !== null;
+  if (['sealPressure','initialPressure','currentPressure','ventBeforePressure','ventAfterPressure',
+    'initialGasTemp','currentGasTemp','ventBeforeTemp','ventAfterTemp'].includes(key))
+    return proposed.length <= 40 && /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i.test(proposed) && Number.isFinite(Number(proposed));
   if (key === 'tracking' || key === 'autoBalance') return proposed === 'yes' || proposed === 'no';
   if (key === 'trackerMode') return proposed === 'manual' || proposed === 'percentage';
   if (key === 'batchMode') return proposed === 'target' || proposed === 'available';
