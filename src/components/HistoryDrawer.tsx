@@ -1,16 +1,21 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft, ArrowUpRight, Bookmark, Check, ChevronRight, Clock3, Download,
   FileDown, FileUp, FolderOpen, Heart, Pencil, RotateCcw, Search, Star,
   Tag, Trash2, X,
 } from 'lucide-react';
 import {
-  clearCalculationHistory, exportCalculationLibrary, filterCalculations,
-  importCalculationLibrary, MAX_CALCULATIONS, removeCalculation, restoreCalculation,
+  clearCalculationHistory, filterCalculations,
+  MAX_CALCULATIONS, removeCalculation, restoreCalculations,
   updateCalculation, useCalculationHistory,
   type CalculationSort, type SavedCalculation,
 } from '../lib/history';
 import { useDialogFocus } from '../lib/useDialogFocus';
+import {
+  readUnifiedLibrary, encodeUnifiedLibrary, importUnifiedLibrary,
+  deleteUnifiedRun, cloneUnifiedRun, setUnifiedRunStatus, legacySessionJSON,
+} from '../lib/unifiedLibrary';
+import type { TrackerSession } from '../lib/trackerSessions';
 import { ScrollView } from './ScrollView';
 import { CompactSelect } from './CompactSelect';
 import './SavedLibrary.css';
@@ -20,12 +25,14 @@ function dateLabel(timestamp: number) {
     year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
   }).format(timestamp);
 }
-function downloadLibrary() {
-  const blob = new Blob([exportCalculationLibrary()], { type: 'application/json;charset=utf-8' });
+async function downloadLibrary() {
+  const json=encodeUnifiedLibrary(await readUnifiedLibrary());
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+  if(blob.size>64*1024*1024)throw Error('Full library backup exceeds 64 MB. Export smaller legacy archives by record type.');
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.download = 'decarboxulator-calculations-' + new Date().toISOString().slice(0, 10) + '.json';
+  anchor.download = 'decarboxulator-library-' + new Date().toISOString().slice(0, 10) + '.json';
   document.body.append(anchor);
   anchor.click();
   anchor.remove();
@@ -152,43 +159,100 @@ export function HistoryDrawer({ open, onClose, requestedId }: {
   const [confirmClear, setConfirmClear] = useState(false);
   const [removed, setRemoved] = useState<SavedCalculation[]>([]);
   const [notice, setNotice] = useState('');
+  const [scope,setScope]=useState<'all'|'calculations'|'sessions'>('all');
+  const [selectedRunId,setSelectedRunId]=useState<string|null>(null);
+  const [runs,setRuns]=useState<TrackerSession[]>([]);
+  const [total,setTotal]=useState(0);
+  const [pageSize,setPageSize]=useState(160);
+  const [loadError,setLoadError]=useState<string|null>(null);
+  useEffect(()=>{
+    if(!open)return;
+    let alive=true;
+    const refresh=async()=>{
+      try{
+        const data=await readUnifiedLibrary();
+        if(alive){setRuns(data.sessions);setTotal(data.total);setLoadError(null);}
+      }catch(e){if(alive)setLoadError(e instanceof Error?e.message:'Could not read library');}
+    };
+    void refresh();
+    window.addEventListener('decarboxulator:library-changed',refresh);
+    let channel:BroadcastChannel|null=null;
+    try{channel=new BroadcastChannel('decarboxulator-v4:library');channel.onmessage=()=>void refresh();}catch{/* unavailable */}
+    return ()=>{alive=false;window.removeEventListener('decarboxulator:library-changed',refresh);channel?.close();};
+  },[open]);
 
 
   const toolNames = useMemo(() => [...new Set(entries.map(entry => entry.tool))].sort(), [entries]);
   const visible = useMemo(() => filterCalculations(entries, {query, tool, favorites, sort}),
     [entries, query, tool, favorites, sort]);
   const selected = entries.find(entry => entry.id === selectedId) ?? null;
-
-  function update(record: SavedCalculation, patch: {name?:string;note?:string;tags?:string[];favorite?:boolean}) {
-    setNotice(updateCalculation(record.id, patch) ? 'Changes saved.' : 'Could not save changes on this device.');
+  const selectedRun=runs.find(r=>r.id===selectedRunId)??null;
+  const runVisible=useMemo(()=>runs.filter(run=>{
+    if(favorites||tool!=='all')return false;
+    const q=query.trim().toLocaleLowerCase();
+    return !q||(run.title+' '+run.notes+' '+run.status).toLocaleLowerCase().includes(q);
+  }),[runs,query,favorites,tool]);
+  const results=useMemo(()=>{
+    const list=[
+      ...(scope==='sessions'?[]:visible.map(record=>({type:'calculation' as const,id:record.id,updatedAt:record.updatedAt,name:record.name,record}))),
+      ...(scope==='calculations'?[]:runVisible.map(run=>({type:'session' as const,id:run.id,updatedAt:run.updatedAt,name:run.title,run}))),
+    ];
+    list.sort((a,b)=>sort==='oldest'?a.updatedAt-b.updatedAt:
+      sort==='name'?a.name.localeCompare(b.name):
+      sort==='tool'?a.type.localeCompare(b.type)||b.updatedAt-a.updatedAt:
+      b.updatedAt-a.updatedAt);
+    return list;
+  },[visible,runVisible,scope,sort]);
+  const showing=results.slice(0,pageSize);
+  async function updateRun(id:string,action:'clone'|'delete'|'completed'|'paused'){
+    try{
+      if(action==='delete'){
+        if(!window.confirm('Permanently delete this run and all its readings? Export a backup first if needed.'))return;
+        await deleteUnifiedRun(id);setSelectedRunId(null);
+      } else if(action==='clone'){await cloneUnifiedRun(id);}
+      else{await setUnifiedRunStatus(id,action);}
+      setNotice('Run updated in the shared library.');
+    }catch(e){setNotice(e instanceof Error?e.message:'Could not update run.');}
   }
-  function remove(record: SavedCalculation) {
-    if (removeCalculation(record.id)) {
+  function exportRun(run:TrackerSession){
+    const blob=new Blob([legacySessionJSON(run)],{type:'application/json;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const anchor=document.createElement('a');
+    anchor.href=url;anchor.download='decarboxulator-run-'+run.id.slice(0,22)+'.json';
+    anchor.click();window.setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  const trackerLink=(id:string)=>import.meta.env.BASE_URL+'tools/decarb-tracker/?session='+encodeURIComponent(id);
+
+  async function update(record: SavedCalculation, patch: {name?:string;note?:string;tags?:string[];favorite?:boolean}) {
+    setNotice(await updateCalculation(record.id, patch) ? 'Changes saved.' : 'Could not save changes on this device.');
+  }
+  async function remove(record: SavedCalculation) {
+    if (await removeCalculation(record.id)) {
       setRemoved(prev => [record, ...prev]);
       setNotice('Calculation deleted. Undo is available.');
       setShowDetail(false);
       setSelectedId(null);
     } else setNotice('Could not delete this calculation.');
   }
-  function clear() {
+  async function clear() {
     const backup = [...entries];
-    if (clearCalculationHistory()) {
+    if (await clearCalculationHistory()) {
       setRemoved(backup);
       setNotice(backup.length + ' calculations deleted. Undo is available.');
       setShowDetail(false); setSelectedId(null); setConfirmClear(false);
     } else setNotice('Could not clear the library.');
   }
-  function undo() {
-    const ok = removed.map(record => restoreCalculation(record)).every(Boolean);
-    if (ok) {setRemoved([]); setNotice('Calculations restored.');}
-    else setNotice('Some records could not be restored; export your library before retrying.');
+  async function undo() {
+    if (await restoreCalculations(removed)) {
+      setRemoved([]); setNotice('Calculations restored.');
+    } else setNotice('Restore failed without modifying existing records. Export a backup before retrying.');
   }
   async function importFile(file: File | undefined) {
     if (!file) return;
     try {
-      if (file.size > 2 * 1024 * 1024) throw new Error('Choose a JSON file smaller than 2 MB.');
-      const added = importCalculationLibrary(await file.text());
-      setNotice(added ? added + ' calculations imported.' : 'No new calculations to import.');
+      if (file.size > 64 * 1024 * 1024) throw new Error('Choose a JSON file smaller than 64 MB.');
+      const added = await importUnifiedLibrary(await file.text());
+      setNotice('Imported '+added.calculations+' calculations and '+added.sessions+' runs. Existing records were preserved.');
     } catch (error) {
       setNotice(error instanceof Error ? error.message : 'Import failed.');
     } finally {
@@ -198,45 +262,51 @@ export function HistoryDrawer({ open, onClose, requestedId }: {
 
   if (!open) return null;
   return <>
-    <button className="saved-library-backdrop" aria-label="Close saved calculations" type="button" onClick={onClose}/>
+    <button className="saved-library-backdrop" aria-label="Close saved library" type="button" onClick={onClose}/>
     <aside ref={dialogRef} className="saved-library-dialog" data-show-detail={showDetail}
       role="dialog" aria-modal="true" aria-labelledby="saved-library-title">
       <div className="saved-library-header">
         <div><span className="saved-library-kicker"><FolderOpen size={13}/> Workspace / Library</span>
-          <h2 id="saved-library-title">Saved calculations</h2>
-          <p>{entries.length} of {MAX_CALCULATIONS} records stored on this device</p>
+          <h2 id="saved-library-title">Saved library</h2>
+          <p>{total.toLocaleString()} / {MAX_CALCULATIONS.toLocaleString()} entries · {runs.length.toLocaleString()} tracker runs · {entries.length.toLocaleString()} calculations</p>
         </div>
         <button className="saved-library-icon-button" data-dialog-initial type="button"
-          aria-label="Close saved calculations" onClick={onClose}><X size={17}/></button>
+          aria-label="Close saved library" onClick={onClose}><X size={17}/></button>
       </div>
       <div className="saved-library-actions">
         <button type="button" className="saved-library-small" onClick={() => {
-          try {downloadLibrary();setNotice('Library exported to a JSON file.');}
-          catch {setNotice('Export unavailable in this browser.');}
-        }} disabled={!entries.length}><FileDown size={14}/> Export</button>
+          void downloadLibrary().then(()=>setNotice('Unified library exported with calculations and tracker sessions.'))
+            .catch(e=>setNotice(e instanceof Error?e.message:'Export unavailable in this browser.'));
+        }} disabled={!total}><FileDown size={14}/> Export all</button>
         <button type="button" className="saved-library-small" onClick={() => importRef.current?.click()}>
           <FileUp size={14}/> Import</button>
         <input hidden ref={importRef} type="file" tabIndex={-1} accept=".json,application/json"
-          aria-label="Import saved calculations from JSON" onChange={e => void importFile(e.target.files?.[0])}/>
+          aria-label="Import saved library from JSON" onChange={e => void importFile(e.target.files?.[0])}/>
         <span className="saved-library-actions-spacer"/>
         <button type="button" className="saved-library-small" disabled={!entries.length}
-          onClick={() => setConfirmClear(value => !value)}><Trash2 size={14}/> Clear</button>
+          onClick={() => setConfirmClear(value => !value)}><Trash2 size={14}/> Clear calculations</button>
       </div>
       {confirmClear && <div className="saved-library-clear-confirm" role="group" aria-label="Confirm clear library">
-        <span>Delete all {entries.length} saved calculations?</span>
+        <span>Delete {entries.length} calculations? Tracker runs will remain untouched.</span>
         <button type="button" onClick={() => setConfirmClear(false)}>Cancel</button>
-        <button type="button" onClick={clear}>Delete all</button>
+        <button type="button" onClick={() => void clear()}>Delete all</button>
       </div>}
-      {(notice || removed.length > 0) && <div className="saved-library-feedback" role="status">
-        <span>{notice}</span>{removed.length ? <button type="button" onClick={undo}><RotateCcw size={13}/> Undo</button> : null}
+      {(notice || removed.length > 0 || loadError) && <div className="saved-library-feedback" role="status">
+        <span>{loadError||notice}</span>{removed.length ? <button type="button" onClick={() => void undo()}><RotateCcw size={13}/> Undo</button> : null}
       </div>}
       <div className="saved-library-body">
-        <section className="saved-library-list-pane" aria-label="Calculation records">
+        <section className="saved-library-list-pane" aria-label="Saved records">
           <div className="saved-library-filters">
             <label className="saved-library-search"><Search size={15}/>
-              <span className="sr-only">Search calculations</span>
-              <input type="search" placeholder="Search results, names, notes…" value={query} onChange={e=>setQuery(e.target.value)}/>
+              <span className="sr-only">Search unified saved library</span>
+              <input type="search" placeholder="Search calculations and tracker runs…" value={query} onChange={e=>setQuery(e.target.value)}/>
             </label>
+            <div className="saved-library-scope" role="group" aria-label="Record type">
+              {(['all','calculations','sessions'] as const).map(value=><button type="button" key={value}
+                aria-pressed={scope===value} onClick={()=>{setScope(value);setTool('all');setFavorites(false);setPageSize(160);setSelectedId(null);setSelectedRunId(null);}}>
+                {value==='all'?'All records':value==='calculations'?'Calculations':'Tracker runs'}
+              </button>)}
+            </div>
             <div className="saved-library-filter-row">
               <CompactSelect ariaLabel="Filter by calculator" value={tool} onChange={setTool}
                 options={[{value:'all',label:'All calculators'},...toolNames.map(name=>({value:name,label:name}))]}/>
@@ -248,24 +318,89 @@ export function HistoryDrawer({ open, onClose, requestedId }: {
                 onClick={()=>setFavorites(value=>!value)}><Star size={15} fill={favorites ? 'currentColor' : 'none'}/></button>
             </div>
           </div>
-          <div className="saved-library-results-label">{visible.length} {visible.length === 1 ? 'calculation' : 'calculations'}</div>
-          <ScrollView className="saved-library-list" viewportLabel="Saved calculations list">
-            {visible.length ? visible.map(record=><LibraryRow key={record.id} record={record} active={selectedId === record.id}
-              onInspect={() => {setSelectedId(record.id);setShowDetail(true);}}
-              onFavorite={() => update(record, {favorite: !record.favorite})}/>) :
+          <div className="saved-library-results-label">{results.length.toLocaleString()} matching records · showing {showing.length.toLocaleString()}</div>
+          <ScrollView className="saved-library-list" viewportLabel="Unified saved records">
+            {showing.length ? showing.map(item=>item.type==='calculation'
+              ?<LibraryRow key={'calc:'+item.id} record={item.record} active={selectedId===item.id}
+                onInspect={()=>{setSelectedId(item.id);setSelectedRunId(null);setShowDetail(true);}}
+                onFavorite={()=>void update(item.record,{favorite:!item.record.favorite})}/>
+              :<div key={'run:'+item.id} className="saved-library-row" data-selected={selectedRunId===item.id}>
+                <button type="button" className="saved-library-row-main"
+                  onClick={()=>{setSelectedRunId(item.id);setSelectedId(null);setShowDetail(true);}}
+                  aria-label={'Inspect tracker run '+item.run.title}>
+                  <span className="saved-library-row-icon"><FolderOpen size={15}/></span>
+                  <span className="saved-library-row-copy">
+                    <strong>{item.run.title}</strong>
+                    <span className="saved-library-row-result">{item.run.status} · {item.run.readings.length} measurements</span>
+                    <small>Tracker run · {dateLabel(item.run.updatedAt)}</small>
+                  </span>
+                  <ChevronRight size={15} className="saved-library-row-chevron"/>
+                </button>
+              </div>) :
               <div className="saved-library-empty">
                 <Bookmark size={24} strokeWidth={1.2}/>
-                <strong>{entries.length ? 'No matching calculations' : 'Your library is empty'}</strong>
-                <p>{entries.length ? 'Adjust your filters or search.' : 'Save any calculator result to keep its inputs and revisit it here.'}</p>
-                {entries.length ? <button type="button" onClick={()=>{setQuery('');setTool('all');setFavorites(false);}}>Reset filters</button> : null}
+                <strong>{total?'No matching records':'Your library is empty'}</strong>
+                <p>{total?'Adjust the search or record filters.':'Save a calculation or create a tracker run to begin.'}</p>
+                {total?<button type="button" onClick={()=>{setQuery('');setScope('all');setTool('all');setFavorites(false);}}>Reset filters</button>:null}
               </div>}
+            {results.length>pageSize&&<button type="button" className="saved-library-more"
+              onClick={()=>setPageSize(n=>Math.min(results.length,n+160))}>
+              Show 160 more · {results.length-pageSize} remaining
+            </button>}
           </ScrollView>
         </section>
         {selected && <Inspector key={selected.id} record={selected}
           onClose={()=>setShowDetail(false)} onUpdate={update} onRemove={remove} message={setNotice}/>}
-        {!selected && <div className="saved-library-no-selection">
+        {selectedRun&&<div className="saved-library-inspector">
+          <div className="saved-library-inspector-toolbar">
+            <button type="button" className="saved-library-back"
+              onClick={()=>{setSelectedRunId(null);setShowDetail(false);}}><ArrowLeft size={15}/> Library</button>
+            <span>Tracker run details</span>
+          </div>
+          <ScrollView className="saved-library-inspector-scroll" viewportLabel="Tracker run details">
+            <div className="saved-library-record-heading">
+              <span className="saved-library-kicker">Laboratory run · {selectedRun.status}</span>
+              <h3>{selectedRun.title}</h3>
+              <span className="saved-library-date"><Clock3 size={12}/> Updated {dateLabel(selectedRun.updatedAt)}</span>
+            </div>
+            <section className="saved-library-result-panel" aria-label="Run measurements">
+              <span>Recorded readings</span>
+              <strong>{selectedRun.readings.length.toLocaleString()}</strong>
+              <small>Preserved as time-stamped measurements with the saved tracker setup.</small>
+              <a className="saved-library-primary" href={trackerLink(selectedRun.id)}>
+                <FolderOpen size={15}/> Open in tracker <ArrowUpRight size={14}/>
+              </a>
+            </section>
+            <div className="saved-library-properties">
+              <div><span>Status</span><p>{selectedRun.status}</p></div>
+              <div><span>Notes</span><p>{selectedRun.notes||'No notes added'}</p></div>
+              <div><span>Started</span><p>{selectedRun.startedAt?dateLabel(selectedRun.startedAt):'Not started'}</p></div>
+            </div>
+            <div className="saved-library-run-actions">
+              <button type="button" className="saved-library-small" onClick={()=>exportRun(selectedRun)}>
+                <FileDown size={13}/> Export run
+              </button>
+              <button type="button" className="saved-library-small" onClick={()=>void updateRun(selectedRun.id,'clone')}>
+                <Bookmark size={13}/> Copy setup
+              </button>
+              {selectedRun.status==='completed'
+                ?<button type="button" className="saved-library-small" onClick={()=>void updateRun(selectedRun.id,'paused')}>
+                  <RotateCcw size={13}/> Reopen
+                </button>
+                :<button type="button" className="saved-library-small" disabled={!selectedRun.readings.length}
+                  onClick={()=>void updateRun(selectedRun.id,'completed')}><Check size={13}/> Complete</button>}
+            </div>
+            <div className="saved-library-danger">
+              <button type="button" className="saved-library-small" onClick={()=>void updateRun(selectedRun.id,'delete')}>
+                <Trash2 size={14}/> Delete tracker run
+              </button>
+            </div>
+          </ScrollView>
+        </div>}
+        {!selected&&!selectedRun && <div className="saved-library-no-selection">
           <Bookmark size={26} strokeWidth={1.2}/>
-          <strong>Select a calculation</strong><p>Inspect, label, and reopen saved inputs without leaving the studio.</p>
+          <strong>Select a saved record</strong>
+          <p>Inspect results, review tracker runs, and reopen the original workspace.</p>
         </div>}
       </div>
       <div className="saved-library-footer"><Heart size={12}/> Stored locally, not synced to an account <span><Download size={12}/> Export a backup</span></div>

@@ -235,7 +235,7 @@ export function StudioLayout() {
           </nav>
           <div className="rail-bottom">
             <RailButton label="Search calculators" onClick={openSearch}><Search size={18} strokeWidth={1.75}/></RailButton>
-            <RailButton label="Saved calculations" onClick={() => openLibrary()}><History size={18} strokeWidth={1.75}/></RailButton>
+            <RailButton label="Saved library" onClick={() => openLibrary()}><History size={18} strokeWidth={1.75}/></RailButton>
             <RailButton label="Install Decarboxulator app" onClick={openInstall} active={installOpen}><Download size={18} strokeWidth={1.75}/></RailButton>
             <RailButton label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'} onClick={toggleTheme}>
               {theme === 'dark' ? <Sun size={18} strokeWidth={1.75}/> : <Moon size={18} strokeWidth={1.75}/>}
@@ -290,7 +290,7 @@ export function StudioLayout() {
             <button type="button" className="toolbar-search" onClick={openSearch} aria-label="Search calculators">
               <Search size={15}/><span>Find a tool</span><kbd><Command size={11}/> K</kbd>
             </button>
-            <button type="button" className="icon-button" title="Saved calculations" aria-label="Saved calculations" onClick={() => openLibrary()}>
+            <button type="button" className="icon-button" title="Saved library" aria-label="Saved library" onClick={() => openLibrary()}>
               <History size={16}/>
             </button>
             <button type="button" className="icon-button toolbar-theme-button" title="Change theme" aria-label="Change theme" onClick={toggleTheme}>

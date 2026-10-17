@@ -108,7 +108,7 @@ describe('tracker portable backup', () => {
     expect(mergeTrackerBackup(first.collection,[remote]).report).toEqual({added:0,skipped:1});
   });
 
-  it('does not partially merge when the full 500-run capacity is exceeded', () => {
+  it('does not partially merge when the shared 25,565-entry capacity is exceeded', () => {
     const existing = Array.from({length:499}, (_,i) =>
       session({id:'id-'+i,title:'Existing run '+i,createdAt:time+i,updatedAt:time+i}));
     const source = [
@@ -116,9 +116,9 @@ describe('tracker portable backup', () => {
       session({id:'new-2',title:'New two'}),
     ];
     const original = collection(existing);
-    expect(() => mergeTrackerBackup(original,source)).toThrow(/500-session/);
+    expect(() => mergeTrackerBackup(original,source,undefined,25065)).toThrow(/25,565-entry/);
     expect(original.sessions.length).toBe(499);
-    expect(mergeTrackerBackup(original,[source[0]]).report.added).toBe(1);
+    expect(mergeTrackerBackup(original,[source[0]],undefined,25065).report.added).toBe(1);
   });
 
   it('round-trips a fully populated 500-run library at the documented field limits', () => {

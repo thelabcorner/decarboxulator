@@ -1,5 +1,6 @@
 import { parseTrackerReadings, validWorkspaceValue, type TrackerReading } from './workspacePayload';
 import { DEFAULT_ACID_CANNABINOID, isAcidCannabinoid } from './cannabinoids';
+import { openRecordDatabase, RECORD_LIBRARY_LIMIT, notifyLibraryChange } from './recordLibrary';
 
 /** Each laboratory run is its own independent, versioned record. */
 export const TRACKER_DEFAULTS = {
@@ -26,10 +27,9 @@ export interface TrackerSession {
 }
 export interface TrackerCollection { activeId: string; sessions: TrackerSession[] }
 
-const DB_NAME = 'decarboxulator-v4-tracker';
 export const LEGACY_TRACKER_KEY = 'decarboxulator-v4:workspace:tracker';
 const STATUS: TrackerStatus[] = ['draft', 'running', 'paused', 'completed'];
-const MAX_SESSIONS = 500;
+export const MAX_SESSIONS = RECORD_LIBRARY_LIMIT;
 
 export function newTrackerSession(now = Date.now()): TrackerSession {
   return {
@@ -132,24 +132,7 @@ export function migrateLegacyTracker(raw: string | null, now = Date.now()): Trac
   return s;
 }
 
-export function openTrackerDatabase(): Promise<IDBDatabase> {
-  return new Promise((resolve,reject) => {
-    if (!('indexedDB' in globalThis)) return reject(new Error('IndexedDB unavailable'));
-    const request = indexedDB.open(DB_NAME,1);
-    request.onupgradeneeded = () => {
-      const db = request.result;
-      if (!db.objectStoreNames.contains('sessions')) db.createObjectStore('sessions',{keyPath:'id'});
-      if (!db.objectStoreNames.contains('meta')) db.createObjectStore('meta',{keyPath:'key'});
-    };
-    request.onerror = () => reject(request.error ?? new Error('Could not open local database'));
-    request.onblocked = () => reject(new Error('Close other tabs using the older tracker database'));
-    request.onsuccess = () => {
-      const db = request.result;
-      db.onversionchange = () => db.close();
-      resolve(db);
-    };
-  });
-}
+export const openTrackerDatabase = openRecordDatabase;
 
 export function readTrackerCollection(db: IDBDatabase): Promise<TrackerCollection> {
   return new Promise((resolve,reject) => {
@@ -173,19 +156,44 @@ export function readTrackerCollection(db: IDBDatabase): Promise<TrackerCollectio
 /** Session edits + active pointer commit together: never create a split state. */
 export function writeTrackerDelta(
   db: IDBDatabase, changes: TrackerSession[], removed: string[], activeId: string,
+  expected?: ReadonlyMap<string,TrackerSession>,
 ): Promise<void> {
   return new Promise((resolve,reject) => {
     let tx: IDBTransaction;
+    let conflict:Error|null=null;
     try {
-      tx=db.transaction(['sessions','meta'],'readwrite',{durability:'strict'});
+      tx=db.transaction(['sessions','meta','calculations'],'readwrite',{durability:'strict'});
       const store=tx.objectStore('sessions');
+      if(expected){
+        for(const id of new Set([...changes.map(s=>s.id),...removed])){
+          const request=store.get(id);
+          request.onsuccess=()=>{
+            const recorded=request.result??null;
+            const previously=expected.get(id)??null;
+            if(JSON.stringify(recorded)!==JSON.stringify(previously)){
+              conflict=new Error('This tracker run changed in another tab. No changes were overwritten. Export your unsaved run before reloading to reconcile.');
+              tx.abort();
+            }
+          };
+        }
+      }
       for (const s of changes) store.put(s);
       for (const id of removed) store.delete(id);
       tx.objectStore('meta').put({key:'activeId',value:activeId});
+      // Capacity is checked by the database after the changes, not by a
+      // potentially stale React array. Abort atomically on overflow.
+      const sessionCount=store.count();
+      const calculationCount=tx.objectStore('calculations').count();
+      let counted=0;
+      const check=()=>{
+        if(++counted===2&&sessionCount.result+calculationCount.result>RECORD_LIBRARY_LIMIT)tx.abort();
+      };
+      sessionCount.onsuccess=check;
+      calculationCount.onsuccess=check;
     } catch (e) { reject(e); return; }
-    tx.oncomplete=()=>resolve();
-    tx.onerror=()=>reject(tx.error ?? new Error('Could not save tracker session'));
-    tx.onabort=()=>reject(tx.error ?? new Error('Tracker save aborted'));
+    tx.oncomplete=()=>{notifyLibraryChange();resolve();};
+    tx.onerror=()=>reject(conflict??tx.error??new Error('Could not save tracker session'));
+    tx.onabort=()=>reject(conflict??new Error('Tracker save aborted. The shared 25,565-entry limit or browser storage capacity may have been reached.'));
   });
 }
 
@@ -194,10 +202,11 @@ export async function initializeTrackerCollection(db: IDBDatabase, legacy: strin
   // initialize concurrently; a separate getAll() then put() creates duplicate
   // first drafts. One readwrite transaction serializes the decision with put.
   return new Promise((resolve,reject) => {
-    const tx=db.transaction(['sessions','meta'],'readwrite',{durability:'strict'});
+    const tx=db.transaction(['sessions','meta','calculations'],'readwrite',{durability:'strict'});
     const store=tx.objectStore('sessions');
     const request=store.getAll();
     const activeRequest=tx.objectStore('meta').get('activeId');
+    const calculationCount=tx.objectStore('calculations').count();
     let created: TrackerSession | null = null;
     let invalid=false;
     request.onsuccess=()=>{
@@ -209,9 +218,12 @@ export async function initializeTrackerCollection(db: IDBDatabase, legacy: strin
       }
       const existing=entries as TrackerSession[];
       if (!existing.length) {
-        created=migrateLegacyTracker(legacy) ?? newTrackerSession();
-        store.put(created);
-        tx.objectStore('meta').put({key:'activeId',value:created.id});
+        calculationCount.onsuccess=()=>{
+          if(calculationCount.result>=RECORD_LIBRARY_LIMIT)return;
+          created=migrateLegacyTracker(legacy) ?? newTrackerSession();
+          store.put(created);
+          tx.objectStore('meta').put({key:'activeId',value:created.id});
+        };
       }
     };
     tx.oncomplete=()=>{
@@ -247,4 +259,4 @@ export function trackerCollectionDelta(previous: TrackerCollection, current: Tra
   };
 }
 
-export function canCreateTrackerSession(length: number) { return length < MAX_SESSIONS; }
+export function canCreateTrackerSession(length: number, calculationCount=0) { return length+calculationCount < MAX_SESSIONS; }

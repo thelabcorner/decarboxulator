@@ -6,7 +6,7 @@ import { ScrollView } from './ScrollView';
 import { FieldGrid, Metric, Metrics, Notice, Panel, Selector, Unavailable } from './ui';
 import { useTrackerSessions } from '../lib/useTrackerSessions';
 import { TRACKER_DEFAULTS, canCreateTrackerSession } from '../lib/trackerSessions';
-import { TrackerSessionLibrary } from './TrackerSessionLibrary';
+import { useSavedLibrary } from '../lib/SavedLibraryContext';
 import { formatNumber, parseAmount, trackerSetup, trackerSnapshot, type TrackerConfig } from '../lib/decarb';
 import { MAX_TRACKER_READINGS, type TrackerReading } from '../lib/workspacePayload';
 import { cannabinoidChemistry, DEFAULT_ACID_CANNABINOID, isAcidCannabinoid, type AcidCannabinoid } from '../lib/cannabinoids';
@@ -77,7 +77,7 @@ export function TrackerWorkbench() {
   const validCannabinoid: AcidCannabinoid = isAcidCannabinoid(cannabinoid) ? cannabinoid : DEFAULT_ACID_CANNABINOID;
   const chem = cannabinoidChemistry(validCannabinoid);
   const startedAt=session?.startedAt??0;
-  const [libraryOpen,setLibraryOpen]=useState(false);
+  const openLibrary=useSavedLibrary();
   const [showLockedSetup,setShowLockedSetup]=useState(false);
   const [tab,setTab]=useState<'live'|'setup'|'analysis'|'records'>('live');
   const userSelectedTab=useRef(false);
@@ -96,6 +96,11 @@ export function TrackerWorkbench() {
     // must not undo a deliberate New run → Setup or Review → Monitor transition.
     if (!userSelectedTab.current) setTab('live');
   },[ws.ready,activeSessionId]);
+  useEffect(()=>{
+    if(!ws.ready||!ws.sessions.length)return;
+    const id=new URLSearchParams(window.location.search).get('session');
+    if(id&&ws.sessions.some(s=>s.id===id))ws.selectSession(id);
+  },[ws.ready]);
   useEffect(()=>{
     if (!isTracking) return;
     const handle = window.setInterval(()=>setClock(Date.now()),15000);
@@ -183,11 +188,11 @@ export function TrackerWorkbench() {
           {ws.saveState==='error'?<CloudOff size={13}/>:<HardDrive size={13}/>}
           <span>{ws.saveState==='saved'?'Saved':ws.saveState==='saving'?'Saving…':ws.saveState==='loading'?'Opening…':'Not saved'}</span>
         </span>
-        <button type="button" className="tracker-mini-button" onClick={()=>setLibraryOpen(true)}
-          disabled={!ws.ready} title="Review tracker sessions"><Archive size={14}/> Sessions ({ws.sessions.length})</button>
+        <button type="button" className="tracker-mini-button" onClick={()=>openLibrary?.()}
+          disabled={!ws.ready} title="Browse tracker runs and saved calculations"><Archive size={14}/> Library ({(ws.sessions.length+ws.calculationCount).toLocaleString()})</button>
         <button type="button" className="tracker-mini-button tracker-mini-button-primary" onClick={()=>{
           ws.newSession();setTab('setup');
-        }} disabled={!ws.ready||!canCreateTrackerSession(ws.sessions.length)}>
+        }} disabled={!ws.ready||!canCreateTrackerSession(ws.sessions.length,ws.calculationCount)}>
           <Plus size={14}/> New run</button>
       </div>
     </header>
@@ -517,11 +522,5 @@ export function TrackerWorkbench() {
     </Panel>
 
     </section>}
-    {libraryOpen&&<TrackerSessionLibrary sessions={ws.sessions} activeId={ws.activeId}
-      onClose={()=>setLibraryOpen(false)}
-      onOpen={id=>{ws.selectSession(id);setTab('live');setLibraryOpen(false);}}
-      onClone={id=>{ws.cloneSession(id);setTab('setup');setLibraryOpen(false);}}
-      onDelete={ws.removeSession} onComplete={ws.markSessionComplete} onReopen={ws.reopenSession}
-      onImport={ws.importBackup} saveState={ws.saveState}/>}
   </div>;
 }

@@ -53,49 +53,54 @@ describe('saved calculation library', () => {
   });
 });
 
-describe('browser persistence and mutation', () => {
-  const map = new Map<string,string>();
-  beforeEach(() => {
-    map.clear();
-    vi.resetModules();
-    vi.stubGlobal('window',{
-      location:{origin,pathname:'/tools/thca-to-thc'},
-      addEventListener:vi.fn(),removeEventListener:vi.fn(),
-    });
-    vi.stubGlobal('localStorage',{
-      getItem:(key:string)=>map.get(key)??null,
-      setItem:(key:string,value:string)=>{map.set(key,value);},
-    });
+describe('browser persistence and mutation',()=>{
+  const map=new Map<string,string>();
+  beforeEach(async()=>{
+    map.clear();vi.resetModules();
+    const {IDBFactory}=await import('fake-indexeddb');
+    vi.stubGlobal('indexedDB',new IDBFactory());
+    const target=new EventTarget();
+    vi.stubGlobal('window',{location:{origin,pathname:'/tools/thca-to-thc'},
+      addEventListener:target.addEventListener.bind(target),
+      removeEventListener:target.removeEventListener.bind(target),
+      dispatchEvent:target.dispatchEvent.bind(target)});
+    vi.stubGlobal('localStorage',{getItem:(key:string)=>map.get(key)??null,
+      setItem:(key:string,value:string)=>{map.set(key,value);}});
   });
-  it('migrates prior history when the first new record is saved and deduplicates repeated saves', async () => {
+  it('migrates legacy records without deleting original data or reimporting later',async()=>{
     map.set('decarboxulator-v4:history',JSON.stringify([record({id:'legacy',name:'Old work'})]));
-    const h = await import('../src/lib/history');
+    const h=await import('../src/lib/history');
     const url=origin+'/tools/thca-to-thc?amount=10&unit=g';
-    expect(h.saveCalculation('THCa → THC','8.772 g',url)).toBe(true);
-    const rows=JSON.parse(map.get('decarboxulator-v4:saved-calculations')!).entries;
-    expect(rows).toHaveLength(1);
-    expect(rows[0].name).toBe('Old work');
-    expect(h.isCalculationSaved('THCa → THC',url,rows)).toBe(true);
+    expect(await h.saveCalculation('THCa → THC','8.772 g',url)).toBe(true);
+    expect(await h.saveCalculation('THCa → THC','8.772 g',url)).toBe(true);
+    const rows=JSON.parse(h.exportCalculationLibrary()).entries;
+    expect(rows).toHaveLength(1);expect(rows[0].name).toBe('Old work');
+    expect(map.has('decarboxulator-v4:history')).toBe(true);
+    expect(map.has('decarboxulator-v4:saved-calculations')).toBe(false);
+    expect(await h.clearCalculationHistory()).toBe(true);
+    expect((await h.calculationLibraryCounts()).calculations).toBe(0);
+    const {readUnifiedLibrary}=await import('../src/lib/unifiedLibrary');
+    expect((await readUnifiedLibrary()).calculations).toEqual([]);
   });
-  it('supports renaming, favorites, notes, deletion, restoration and import', async () => {
+  it('supports metadata, deletion, undo and archive imports',async()=>{
     const h=await import('../src/lib/history');
     const url=origin+'/tools/thca-to-thc?amount=25';
-    expect(h.saveCalculation('Conversion','21.9 g',url)).toBe(true);
-    const id=JSON.parse(map.get('decarboxulator-v4:saved-calculations')!).entries[0].id;
-    expect(h.updateCalculation(id,{name:'Research 07',note:'Trial run',favorite:true,tags:['trial']})).toBe(true);
-    const current=JSON.parse(map.get('decarboxulator-v4:saved-calculations')!).entries[0] as SavedCalculation;
-    expect(current).toMatchObject({name:'Research 07',note:'Trial run',favorite:true,tags:['trial']});
-    expect(h.removeCalculation(id)).toBe(true);
-    expect(JSON.parse(map.get('decarboxulator-v4:saved-calculations')!).entries).toHaveLength(0);
-    expect(h.restoreCalculation(current)).toBe(true);
+    expect(await h.saveCalculation('Conversion','21.9 g',url)).toBe(true);
+    const id=JSON.parse(h.exportCalculationLibrary()).entries[0].id;
+    expect(await h.updateCalculation(id,{name:'Research 07',note:'Trial run',favorite:true,tags:['trial']})).toBe(true);
+    const item=JSON.parse(h.exportCalculationLibrary()).entries[0] as SavedCalculation;
+    expect(item).toMatchObject({name:'Research 07',note:'Trial run',favorite:true,tags:['trial']});
+    expect(await h.removeCalculation(id)).toBe(true);
+    expect(JSON.parse(h.exportCalculationLibrary()).entries).toHaveLength(0);
+    expect(await h.restoreCalculation(item)).toBe(true);
     const exported=h.exportCalculationLibrary();
-    expect(h.importCalculationLibrary(exported)).toBe(0);
-    expect(h.clearCalculationHistory()).toBe(true);
-    expect(h.importCalculationLibrary(exported)).toBe(1);
+    expect(await h.importCalculationLibrary(exported)).toBe(0);
+    expect(await h.clearCalculationHistory()).toBe(true);
+    expect(await h.importCalculationLibrary(exported)).toBe(1);
   });
-  it('does not announce success when browser storage rejects writes', async () => {
-    vi.stubGlobal('localStorage', {getItem:()=>null,setItem:()=>{throw new Error('quota');}});
+  it('never reports success when IndexedDB is unavailable',async()=>{
+    vi.stubGlobal('indexedDB',undefined);
     const h=await import('../src/lib/history');
-    expect(h.saveCalculation('Conversion','1 g',origin+'/tools/thca-to-thc?amount=1')).toBe(false);
+    expect(await h.saveCalculation('Conversion','1 g',origin+'/tools/thca-to-thc?amount=1')).toBe(false);
   });
 });

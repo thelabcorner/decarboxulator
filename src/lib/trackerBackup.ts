@@ -9,7 +9,7 @@ import {
  */
 // Bound untrusted backup parsing. The 500-run × 500-reading maximum can exceed
 // 16 MB when notes are long; export individual runs if the archive is too large.
-export const TRACKER_BACKUP_MAX_BYTES = 16 * 1024 * 1024;
+export const TRACKER_BACKUP_MAX_BYTES = 64 * 1024 * 1024;
 export type TrackerImportReport = { added: number; skipped: number };
 
 type Archive = {
@@ -51,8 +51,8 @@ export function decodeTrackerBackup(raw: string): TrackerSession[] {
     ? [envelope.session]
     : envelope.format === 'decarboxulator-tracker-archive' && envelope.version === 1
       && Array.isArray(envelope.sessions) ? envelope.sessions : [];
-  if (!records.length || records.length > 500)
-    throw new Error('Backup must contain between 1 and 500 supported tracker sessions.');
+  if (!records.length || records.length > 25565)
+    throw new Error('Backup must contain between 1 and 25,565 supported tracker sessions.');
   const sessions = records.map(parseTrackerSession);
   if (sessions.some(session => !session))
     throw new Error('Backup contains invalid or unsupported tracker data; nothing was imported.');
@@ -76,6 +76,7 @@ function identity(session: TrackerSession): string {
 export function mergeTrackerBackup(
   original: TrackerCollection, incoming: readonly TrackerSession[],
   createId: () => string = () => newTrackerSession().id,
+  calculationCount = 0,
 ): { collection: TrackerCollection; report: TrackerImportReport } {
   const ids = new Set(original.sessions.map(session => session.id));
   const identities = new Set(original.sessions.map(identity));
@@ -86,8 +87,8 @@ export function mergeTrackerBackup(
       ? { ...source, status: 'paused' } : source;
     const fingerprint = identity(normalized);
     if (identities.has(fingerprint)) { skipped++; continue; }
-    if (!canCreateTrackerSession(original.sessions.length + added.length))
-      throw new Error('The 500-session on-device limit would be exceeded. Nothing was imported.');
+    if (!canCreateTrackerSession(original.sessions.length + added.length,calculationCount))
+      throw new Error('The shared 25,565-entry library limit would be exceeded. Nothing was imported.');
     let id = normalized.id;
     if (ids.has(id)) {
       // A distinct run with the same ID cannot overwrite local records.

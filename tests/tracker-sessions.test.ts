@@ -61,8 +61,10 @@ describe('IndexedDB tracker schema and migration', () => {
     expect(record?.fields.other).toBe(TRACKER_DEFAULTS.other);
   });
   it('bounds number of independent runs', () => {
-    expect(canCreateTrackerSession(499)).toBe(true);
-    expect(canCreateTrackerSession(500)).toBe(false);
+    expect(canCreateTrackerSession(25564)).toBe(true);
+    expect(canCreateTrackerSession(25565)).toBe(false);
+    expect(canCreateTrackerSession(25564,1)).toBe(false);
+    expect(canCreateTrackerSession(1000,24564)).toBe(true);
   });
   it('preserves measured temperatures and short free-text annotations across many observations', () => {
     const baseTime=1700000000000;

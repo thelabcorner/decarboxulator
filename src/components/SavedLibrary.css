@@ -1,4 +1,27 @@
 /* Saved calculation library: functional, opaque, macOS-inspired studio panel. */
+
+/* Unified, type-aware library navigation. Dense and touch-capable. */
+.saved-library-scope{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;
+  padding:3px;border:1px solid var(--border);border-radius:6px;background:var(--panel-inset);}
+.saved-library-scope button{min-height:30px;border:0;border-radius:4px;background:transparent;
+  padding:4px 3px;color:var(--muted);font-size:10px;font-weight:630;white-space:nowrap;}
+.saved-library-scope button[aria-pressed="true"]{color:var(--strong);background:var(--panel);
+  box-shadow:0 0 0 1px var(--border);}
+.saved-library-scope button:focus-visible,.saved-library-more:focus-visible{
+  outline:2px solid var(--accent-ink);outline-offset:1px;}
+.saved-library-more{display:block;width:100%;padding:12px;border:1px solid var(--border);
+  border-radius:5px;background:var(--panel-inset);color:var(--accent-ink);font-size:11px;
+  font-weight:650;text-align:center;}
+.saved-library-more:hover{background:var(--hover);}
+.saved-library-run-actions{padding:12px;display:flex;gap:6px;flex-wrap:wrap;
+  border-top:1px solid var(--border);}
+.saved-library-header p{font-variant-numeric:tabular-nums;line-height:1.4;}
+@media(max-width:420px){
+  .saved-library-scope button{font-size:10px;min-height:38px;}
+  .saved-library-header p{font-size:10px;}
+  .saved-library-run-actions .saved-library-small{min-height:36px;}
+}
+
 .saved-library-backdrop {
   position: fixed; inset: 0; z-index: 109; border: 0; border-radius: 0;
   background: #09090b8c; cursor: default;

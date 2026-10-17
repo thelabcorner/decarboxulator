@@ -35,9 +35,9 @@ export function WorkspaceActions({ onReset, shareUrl, tool, result }: {
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => setStatus('idle'), 2600);
   }
-  function save() {
+  async function save() {
     if (!result || !currentUrl) return;
-    const success = saveCalculation(tool, result, shareUrl());
+    const success = await saveCalculation(tool, result, shareUrl());
     updateStatus(success ? 'saved' : 'failed');
   }
 
@@ -49,7 +49,7 @@ export function WorkspaceActions({ onReset, shareUrl, tool, result }: {
       disabled={!currentUrl} aria-label="Share" title="Share an exact input snapshot" aria-haspopup="dialog">
       <Link2 size={13}/><span>Share</span>
     </button>
-    <button className="text-button" type="button" onClick={save} disabled={!result || !currentUrl}
+    <button className="text-button" type="button" onClick={() => void save()} disabled={!result || !currentUrl}
       aria-label={savedRecord ? 'Update saved calculation' : 'Save calculation'}
       title={savedRecord ? 'Update the saved calculation' : 'Save the current inputs and result'}>
       {status === 'saved' ? <Check size={13}/> : savedRecord ? <Bookmark size={13}/> : <BookmarkPlus size={13}/>}

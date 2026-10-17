@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync, mkdirSync } from 'node:fs';
 import { chromium } from '@playwright/test';
+import { startQASnapshot } from './qa-snapshot-server.mjs';
 
-const base = process.env.SMOKE_URL || 'http://127.0.0.1:42061';
+const snapshot=process.env.SMOKE_URL?null:await startQASnapshot({snapshotName:'qa-tracker-lifecycle-'+process.pid});
+const base=process.env.SMOKE_URL||snapshot.base;
 let browser;
 for (const channel of ['chrome','msedge']) {
   try { browser=await chromium.launch({headless:true,channel});break; }
@@ -45,8 +47,10 @@ try {
   await assertSaved(page);
   await page.getByRole('button',{name:'Start recording'}).click();
   await page.locator('#tracker-measurement').fill('40');
-  assert.equal(await page.getByRole('button',{name:'Record',exact:true}).isDisabled(),true,
-    'impossible loss / excess mass must not be recorded');
+  assert.equal(await page.getByRole('button',{name:'Record',exact:true}).isDisabled(),false,
+    'raw out-of-model measurements remain recordable for laboratory audit');
+  assert.match(await page.locator('.tracker-measurement-panel').innerText(),/flagged|outside|raw/i,
+    'out-of-model readings must be clearly identified, not interpreted as conversion');
   await page.locator('#tracker-measurement').fill('32');
   await page.locator('#tracker-observed-temp').fill('115.5');
   await page.locator('.tracker-reading-context .tracker-text-field input').fill('Stirred and stabilized');
@@ -75,18 +79,20 @@ try {
   records=await getRecords(page);
   assert.equal(records.sessions.length,2);
   assert.notEqual(records.activeId,alphaId);
-  await page.getByRole('button',{name:/Sessions \(2\)/}).click();
-  assert.equal(await page.locator('.tracker-session-row').count(),2);
-  const oldRow=page.locator('.tracker-session-row').filter({hasText:'Batch Alpha'});
+  await page.getByRole('button',{name:/Library \(2\)/}).click();
+  const drawer=page.getByRole('dialog',{name:'Saved library'});
+  await drawer.getByRole('button',{name:'Tracker runs'}).click();
+  await drawer.getByRole('button',{name:/Inspect tracker run Batch Alpha/}).click();
   const downloadPromise=page.waitForEvent('download');
-  await oldRow.getByRole('button',{name:'JSON'}).click();
+  await drawer.getByRole('button',{name:'Export run'}).click();
   const download=await downloadPromise;
   const backup=JSON.parse(readFileSync(await download.path(),'utf8'));
-  assert.equal(backup.session.id,alphaId);
-  assert.equal(backup.session.readings[0].weightG,32);
-  assert.equal(backup.session.readings[0].note,'Stirred and stabilized');
-  await oldRow.getByRole('button',{name:'Reopen'}).click();
-  await oldRow.getByRole('button',{name:'Review'}).click();
+  assert.equal(backup.sessions[0].id,alphaId);
+  assert.equal(backup.sessions[0].readings[0].weightG,32);
+  assert.equal(backup.sessions[0].readings[0].note,'Stirred and stabilized');
+  await drawer.getByRole('button',{name:'Reopen'}).click();
+  await drawer.getByRole('link',{name:/Open in tracker/}).click();
+  await page.locator('.tracker-run-copy').getByText(/Batch Alpha/).waitFor({timeout:15000});
   await assertSaved(page);
   assert.match(await page.locator('.tracker-run-copy').innerText(),/paused/i);
   await page.getByRole('button',{name:'Resume recording'}).click();
@@ -123,10 +129,11 @@ try {
   const damaged=await damagedContext.newPage();
   await damaged.goto(base+'/',{waitUntil:'domcontentloaded'});
   await damaged.evaluate(()=>new Promise((resolve,reject)=>{
-    const req=indexedDB.open('decarboxulator-v4-tracker',1);
+    const req=indexedDB.open('decarboxulator-v4-tracker',2);
     req.onupgradeneeded=()=>{
       req.result.createObjectStore('sessions',{keyPath:'id'});
       req.result.createObjectStore('meta',{keyPath:'key'});
+      req.result.createObjectStore('calculations',{keyPath:'id'});
     };
     req.onerror=()=>reject(req.error);
     req.onsuccess=()=>{
@@ -148,5 +155,5 @@ try {
   console.log('PASS: IndexedDB create/edit/autosave/reload, invalid mass, complete/reopen, JSON backup,');
   console.log('      multi-session switching, measurement retention, legacy migration, mobile/desktop rendering.');
 } finally {
-  await context.close();await browser.close();
+  await context.close();await browser.close();await snapshot?.close();
 }
