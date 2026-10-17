@@ -8,6 +8,7 @@ import { APP_MAJOR_VERSION, CREATOR_NAME, CREATOR_URL, FAQ_PATH, GUIDE_PATH, NAV
 const ToolSearch = lazy(() => import('./ToolSearch').then(module => ({default:module.ToolSearch})));
 const HistoryDrawer = lazy(() => import('./HistoryDrawer').then(module => ({default:module.HistoryDrawer})));
 import { SavedLibraryContext } from '../lib/SavedLibraryContext';
+import { CalculatorDirectory } from './CalculatorDirectory';
 import { DcxrMark } from './DcxrMark';
 import { ScrollView } from './ScrollView';
 import { InstallAppDialog } from './InstallAppDialog';
@@ -83,6 +84,13 @@ export function StudioLayout() {
     // Silently prepare offline capability. Both the installation guide and
     // native browser install prompt remain exclusive to the rail download action.
     if (!window.isSecureContext || !('serviceWorker' in navigator)) return;
+    if (import.meta.env.VITE_PREVIEW_MODE === 'true') {
+      // Preview builds always use the network. Clean up legacy offline registrations
+      // so users who visited previous preview releases stop receiving stale HTML.
+      void navigator.serviceWorker.getRegistration(import.meta.env.BASE_URL)
+        .then(registration => registration?.unregister()).catch(() => {});
+      return;
+    }
     const register = () => {
       const script = import.meta.env.BASE_URL + 'sw.js';
       // Check the MIME type: Vite's development fallback serves HTML for
@@ -290,7 +298,7 @@ export function StudioLayout() {
             </button>
           </div>
         </header>
-         <ScrollView key={pathname} as="main" id="main" className="content-main" viewportLabel="Calculator workspace" restoreKey={pathname}><Outlet/></ScrollView>
+         <ScrollView key={pathname} as="main" id="main" className="content-main" viewportLabel="Calculator workspace" restoreKey={pathname}><Outlet/>{pathname.startsWith('/tools/')&&<CalculatorDirectory currentPath={pathname}/>}</ScrollView>
         <footer className="studio-statusbar">
           <span>Decarboxulator <span className="statusbar-divider">/</span> Created by <a href={CREATOR_URL} target="_blank" rel="noopener noreferrer">{CREATOR_NAME}</a></span>
           <span className="studio-statusbar-links">

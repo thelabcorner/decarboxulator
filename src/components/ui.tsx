@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { ArrowUpRight, ChevronDown, ChevronRight, Info, Sigma } from 'lucide-react';
+import { MathNotation } from './MathNotation';
 import { UNITS, UNIT_KEYS, type UnitKey } from '../lib/decarb';
 
 /** WebSeal-size status chip: compact, filled, and intentionally not all-caps. */
@@ -111,10 +112,14 @@ export function ToolHeading({ section, title, description, index, reference = fa
   );
 }
 
-/** The equation is available on demand without pushing live results below the fold. */
-export function Formula({children}: {children:ReactNode}) {
+/** Real mathematical typesetting, while keeping live controls above the fold. */
+export function Formula({tex,children,caption}: {tex:string;children?:ReactNode;caption?:string}) {
   return <details className="formula-disclosure">
     <summary><Sigma size={14} strokeWidth={1.9}/> Equation <ChevronDown size={14} strokeWidth={1.7}/></summary>
-    <div className="formula">{children}</div>
+    <div className="formula">
+      <MathNotation tex={tex}/>
+      {caption&&<p className="studio-math-description">{caption}</p>}
+      {children&&<div className="studio-math-description">{children}</div>}
+    </div>
   </details>;
 }

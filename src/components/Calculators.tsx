@@ -108,8 +108,10 @@ export function ConversionCalculator({entryDirection}: {entryDirection?: Directi
           </div>
           <div className="formula-box">
             <span className="small-label">{isDecarb ? 'Theoretical decarboxylation' : 'Required-input calculation'}</span>
-            <Formula>{isDecarb ? `m(${chemistry.neutral}) = m(${chemistry.acid}) × ` : `m(${chemistry.acid} needed) = m(${chemistry.neutral} target) ÷ `}
-               <strong>{chemistry.ratio.toFixed(5)}</strong></Formula>
+            <Formula tex={isDecarb
+              ? String.raw`\mathsf{m}_{\mathsf{${chemistry.neutral}}}=\mathsf{m}_{\mathsf{${chemistry.acid}}}\,\frac{M_{\mathsf{${chemistry.neutral}}}}{M_{\mathsf{${chemistry.acid}}}}`
+              : String.raw`\mathsf{m}_{\mathsf{${chemistry.acid},required}}=\frac{\mathsf{m}_{\mathsf{${chemistry.neutral},target}}}{${chemistry.ratio.toFixed(5)}}`}
+              caption={`Molar mass ratio: ${chemistry.ratio.toFixed(5)}. Complete conversion assumed.`}/>
             <span className="fine-print">{chemistry.acidMw.toFixed(2)} g/mol {chemistry.acid} → {chemistry.neutralMw.toFixed(2)} g/mol {chemistry.neutral} + CO2</span>
           </div>
         </div>
@@ -171,7 +173,8 @@ export function BatchCalculator() {
             hint="Initial mass percentage measured before heating"/>
           <div className="formula-box">
             <span className="small-label">Calculation method</span>
-            <Formula>{`m(${chemistry.neutral}) = m(batch) × ${chemistry.acid}% × ${chemistry.ratio.toFixed(5)}`}</Formula>
+            <Formula tex={String.raw`\mathsf{m}_{\mathsf{${chemistry.neutral}}}=\mathsf{m}_{\mathsf{batch}}\,\frac{f_{\mathsf{${chemistry.acid}}}}{100}\,\frac{M_{\mathsf{${chemistry.neutral}}}}{M_{\mathsf{${chemistry.acid}}}}`}
+              caption={`f is the entered ${chemistry.acid} mass percentage.`}/>
             <span className="fine-print">{`Only the CO2 released from ${chemistry.acid} conversion is subtracted.`}</span>
           </div>
         </div>
@@ -231,7 +234,8 @@ export function AnalyzerCalculator() {
             onChange={value=>workspace.setField('final',value)} error={finalParsed.error} suffix={unit}/>
           <div className="formula-box">
             <span className="small-label">Mass balance</span>
-            <Formula>{`${chemistry.acid} = (initial mass − final mass) ÷ ${chemistry.co2Ratio.toFixed(5)}`}</Formula>
+            <Formula tex={String.raw`\mathsf{m}_{\mathsf{${chemistry.acid},eq}}=\frac{\mathsf{m}_{\mathsf{initial}}-\mathsf{m}_{\mathsf{final}}}{${chemistry.co2Ratio.toFixed(5)}}`}
+              caption="Assumes the entire measured loss is CO2 from the selected acid."/>
             <span className="fine-print">{`Valid only when measured loss is CO2 exclusively from ${chemistry.acid}.`}</span>
           </div>
         </div>

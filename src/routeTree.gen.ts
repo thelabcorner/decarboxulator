@@ -16,8 +16,10 @@ import { Route as ToolsBatchYieldRouteImport } from './routes/tools/batch-yield'
 import { Route as ToolsCartridgeFormulationRouteImport } from './routes/tools/cartridge-formulation'
 import { Route as ToolsDecarbTrackerRouteImport } from './routes/tools/decarb-tracker'
 import { Route as ToolsEdibleDosageRouteImport } from './routes/tools/edible-dosage'
+import { Route as ToolsGaugeResolutionRouteImport } from './routes/tools/gauge-resolution'
 import { Route as ToolsMaxPressureRouteImport } from './routes/tools/max-pressure'
 import { Route as ToolsPressureTrackerRouteImport } from './routes/tools/pressure-tracker'
+import { Route as ToolsScaleResolutionRouteImport } from './routes/tools/scale-resolution'
 import { Route as ToolsThcToThcaRouteImport } from './routes/tools/thc-to-thca'
 import { Route as ToolsThcaPercentageRouteImport } from './routes/tools/thca-percentage'
 import { Route as ToolsThcaToThcRouteImport } from './routes/tools/thca-to-thc'
@@ -59,6 +61,11 @@ const ToolsEdibleDosageRoute = ToolsEdibleDosageRouteImport.update({
   path: '/tools/edible-dosage',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ToolsGaugeResolutionRoute = ToolsGaugeResolutionRouteImport.update({
+  id: '/tools/gauge-resolution',
+  path: '/tools/gauge-resolution',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ToolsMaxPressureRoute = ToolsMaxPressureRouteImport.update({
   id: '/tools/max-pressure',
   path: '/tools/max-pressure',
@@ -67,6 +74,11 @@ const ToolsMaxPressureRoute = ToolsMaxPressureRouteImport.update({
 const ToolsPressureTrackerRoute = ToolsPressureTrackerRouteImport.update({
   id: '/tools/pressure-tracker',
   path: '/tools/pressure-tracker',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsScaleResolutionRoute = ToolsScaleResolutionRouteImport.update({
+  id: '/tools/scale-resolution',
+  path: '/tools/scale-resolution',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ToolsThcToThcaRoute = ToolsThcToThcaRouteImport.update({
@@ -93,8 +105,10 @@ export interface FileRoutesByFullPath {
   '/tools/cartridge-formulation': typeof ToolsCartridgeFormulationRoute
   '/tools/decarb-tracker': typeof ToolsDecarbTrackerRoute
   '/tools/edible-dosage': typeof ToolsEdibleDosageRoute
+  '/tools/gauge-resolution': typeof ToolsGaugeResolutionRoute
   '/tools/max-pressure': typeof ToolsMaxPressureRoute
   '/tools/pressure-tracker': typeof ToolsPressureTrackerRoute
+  '/tools/scale-resolution': typeof ToolsScaleResolutionRoute
   '/tools/thc-to-thca': typeof ToolsThcToThcaRoute
   '/tools/thca-percentage': typeof ToolsThcaPercentageRoute
   '/tools/thca-to-thc': typeof ToolsThcaToThcRoute
@@ -107,8 +121,10 @@ export interface FileRoutesByTo {
   '/tools/cartridge-formulation': typeof ToolsCartridgeFormulationRoute
   '/tools/decarb-tracker': typeof ToolsDecarbTrackerRoute
   '/tools/edible-dosage': typeof ToolsEdibleDosageRoute
+  '/tools/gauge-resolution': typeof ToolsGaugeResolutionRoute
   '/tools/max-pressure': typeof ToolsMaxPressureRoute
   '/tools/pressure-tracker': typeof ToolsPressureTrackerRoute
+  '/tools/scale-resolution': typeof ToolsScaleResolutionRoute
   '/tools/thc-to-thca': typeof ToolsThcToThcaRoute
   '/tools/thca-percentage': typeof ToolsThcaPercentageRoute
   '/tools/thca-to-thc': typeof ToolsThcaToThcRoute
@@ -122,8 +138,10 @@ export interface FileRoutesById {
   '/tools/cartridge-formulation': typeof ToolsCartridgeFormulationRoute
   '/tools/decarb-tracker': typeof ToolsDecarbTrackerRoute
   '/tools/edible-dosage': typeof ToolsEdibleDosageRoute
+  '/tools/gauge-resolution': typeof ToolsGaugeResolutionRoute
   '/tools/max-pressure': typeof ToolsMaxPressureRoute
   '/tools/pressure-tracker': typeof ToolsPressureTrackerRoute
+  '/tools/scale-resolution': typeof ToolsScaleResolutionRoute
   '/tools/thc-to-thca': typeof ToolsThcToThcaRoute
   '/tools/thca-percentage': typeof ToolsThcaPercentageRoute
   '/tools/thca-to-thc': typeof ToolsThcaToThcRoute
@@ -138,8 +156,10 @@ export interface FileRouteTypes {
     | '/tools/cartridge-formulation'
     | '/tools/decarb-tracker'
     | '/tools/edible-dosage'
+    | '/tools/gauge-resolution'
     | '/tools/max-pressure'
     | '/tools/pressure-tracker'
+    | '/tools/scale-resolution'
     | '/tools/thc-to-thca'
     | '/tools/thca-percentage'
     | '/tools/thca-to-thc'
@@ -152,8 +172,10 @@ export interface FileRouteTypes {
     | '/tools/cartridge-formulation'
     | '/tools/decarb-tracker'
     | '/tools/edible-dosage'
+    | '/tools/gauge-resolution'
     | '/tools/max-pressure'
     | '/tools/pressure-tracker'
+    | '/tools/scale-resolution'
     | '/tools/thc-to-thca'
     | '/tools/thca-percentage'
     | '/tools/thca-to-thc'
@@ -166,8 +188,10 @@ export interface FileRouteTypes {
     | '/tools/cartridge-formulation'
     | '/tools/decarb-tracker'
     | '/tools/edible-dosage'
+    | '/tools/gauge-resolution'
     | '/tools/max-pressure'
     | '/tools/pressure-tracker'
+    | '/tools/scale-resolution'
     | '/tools/thc-to-thca'
     | '/tools/thca-percentage'
     | '/tools/thca-to-thc'
@@ -181,8 +205,10 @@ export interface RootRouteChildren {
   ToolsCartridgeFormulationRoute: typeof ToolsCartridgeFormulationRoute
   ToolsDecarbTrackerRoute: typeof ToolsDecarbTrackerRoute
   ToolsEdibleDosageRoute: typeof ToolsEdibleDosageRoute
+  ToolsGaugeResolutionRoute: typeof ToolsGaugeResolutionRoute
   ToolsMaxPressureRoute: typeof ToolsMaxPressureRoute
   ToolsPressureTrackerRoute: typeof ToolsPressureTrackerRoute
+  ToolsScaleResolutionRoute: typeof ToolsScaleResolutionRoute
   ToolsThcToThcaRoute: typeof ToolsThcToThcaRoute
   ToolsThcaPercentageRoute: typeof ToolsThcaPercentageRoute
   ToolsThcaToThcRoute: typeof ToolsThcaToThcRoute
@@ -239,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsEdibleDosageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tools/gauge-resolution': {
+      id: '/tools/gauge-resolution'
+      path: '/tools/gauge-resolution'
+      fullPath: '/tools/gauge-resolution'
+      preLoaderRoute: typeof ToolsGaugeResolutionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tools/max-pressure': {
       id: '/tools/max-pressure'
       path: '/tools/max-pressure'
@@ -251,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/tools/pressure-tracker'
       fullPath: '/tools/pressure-tracker'
       preLoaderRoute: typeof ToolsPressureTrackerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/scale-resolution': {
+      id: '/tools/scale-resolution'
+      path: '/tools/scale-resolution'
+      fullPath: '/tools/scale-resolution'
+      preLoaderRoute: typeof ToolsScaleResolutionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tools/thc-to-thca': {
@@ -285,8 +325,10 @@ const rootRouteChildren: RootRouteChildren = {
   ToolsCartridgeFormulationRoute: ToolsCartridgeFormulationRoute,
   ToolsDecarbTrackerRoute: ToolsDecarbTrackerRoute,
   ToolsEdibleDosageRoute: ToolsEdibleDosageRoute,
+  ToolsGaugeResolutionRoute: ToolsGaugeResolutionRoute,
   ToolsMaxPressureRoute: ToolsMaxPressureRoute,
   ToolsPressureTrackerRoute: ToolsPressureTrackerRoute,
+  ToolsScaleResolutionRoute: ToolsScaleResolutionRoute,
   ToolsThcToThcaRoute: ToolsThcToThcaRoute,
   ToolsThcaPercentageRoute: ToolsThcaPercentageRoute,
   ToolsThcaToThcRoute: ToolsThcaToThcRoute,

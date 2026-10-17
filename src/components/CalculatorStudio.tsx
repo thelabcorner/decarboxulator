@@ -18,6 +18,7 @@ export interface CalculatorStudioProps {
   output: ReactNode;
   comparison?: ReactNode;
   comparisonLabel?: string;
+  overviewExtra?: ReactNode;
 }
 
 /**
@@ -27,7 +28,7 @@ export interface CalculatorStudioProps {
  */
 export function CalculatorStudio({
   name, category, summary, label, value, unit, note, metrics = [],
-  input, output, comparison, comparisonLabel = 'Comparison',
+  input, output, comparison, comparisonLabel = 'Comparison', overviewExtra,
 }: CalculatorStudioProps) {
   const id = useId().replace(/:/g, '');
   const [tab, setTab] = useState<Tab>('calculate');
@@ -89,6 +90,7 @@ export function CalculatorStudio({
                 {value !== null && item.unit && <small>{item.unit}</small>}</dd>
             </div>)}
           </dl>}
+          {overviewExtra}
           <button type="button" className="calculator-app-breakdown" onClick={() => setTab('results')}>
             <BarChart3 size={13} aria-hidden="true" /> View full calculation breakdown <ChevronRight size={14} aria-hidden="true" />
           </button>

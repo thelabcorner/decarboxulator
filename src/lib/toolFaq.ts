@@ -1,5 +1,5 @@
 export type Faq = { question: string; answer: string };
-export type ToolId = 'conversion' | 'reverse-conversion' | 'batch' | 'analysis' | 'edibles' | 'pressure' | 'tracker' | 'pressure-tracker' | 'cartridge';
+export type ToolId = 'conversion' | 'reverse-conversion' | 'batch' | 'analysis' | 'edibles' | 'pressure' | 'tracker' | 'pressure-tracker' | 'cartridge' | 'scale-resolution' | 'gauge-resolution';
 
 /** Indexable questions remain in SSR markup; native disclosures minimize workspace clutter. */
 export const TOOL_QUESTIONS: Record<ToolId, readonly Faq[]> = {
@@ -46,6 +46,8 @@ export const TOOL_QUESTIONS: Record<ToolId, readonly Faq[]> = {
       answer: 'CBN and CBD are different cannabinoids. Their input totals remain separate; neither contributes to THC-equivalent dose in this model and CBN is not included in CBD totals.' },
   ],
   pressure: [
+    { question: 'Can I estimate CO2 that stays dissolved in liquid?',
+      answer: 'Yes, as an optional Henry equilibrium model. Supply actual liquid volume and a solubility coefficient for the liquid at the modeled temperature. There is no valid universal coefficient for cannabinoid mixtures. The correction does not establish containment safety.' },
     { question: 'Does the pressure result include solvent or terpene vapor?',
       answer: 'No. The model adds pressure from initially trapped gas and decarboxylation CO2. It requires the actual free gas volume: the optional headspace estimator subtracts entered material and equipment displacement, but does not model changing headspace, thermal expansion, phase changes, solvent or terpene vapor. The result is not a guaranteed maximum.' },
     { question: 'Should I enter vessel capacity or free gas headspace?',
@@ -64,6 +66,8 @@ export const TOOL_QUESTIONS: Record<ToolId, readonly Faq[]> = {
       answer: 'Sessions are stored in this browser’s IndexedDB on this device. They are not linked to an account. Clearing site data can erase them, so export a backup before changing browsers or clearing storage.' },
   ],
   'pressure-tracker': [
+    { question: 'How can the model estimate CO2 partial pressure without a gas analyzer?',
+      answer: 'It assumes the initial headspace is CO2-free. In seal mode, initial trapped gas is temperature corrected; in vent mode its inventory is also reduced by each well-mixed vent retention fraction, (Pafter/Tafter)/(Pbefore/Tbefore). CO2 partial pressure is then the observed total absolute pressure minus the remaining trapped-gas contribution. Dissolution during the vent itself makes this approximation unreliable.' },
     { question: 'Can a pressure reading determine decarboxylation completion?',
       answer: 'It estimates apparent CO2-equivalent gas generation, not chemically verified conversion. The calculation removes the initial trapped-gas temperature contribution and, in vent mode, adds measured discharged gas. Unmeasured vapors, leaks, headspace changes and gas absorption break the idealized correspondence.' },
     { question: 'What if I know the vessel size but not the headspace?',
@@ -72,6 +76,14 @@ export const TOOL_QUESTIONS: Record<ToolId, readonly Faq[]> = {
       answer: 'Select absolute PSIA and enter a value below local ambient, or select gauge PSIG and enter a negative reading. An initial vacuum is not zero pressure; all gas-law calculations use absolute pressure and Kelvin.' },
     { question: 'Can I count vent releases instead of logging each one?',
       answer: 'Counted mode multiplies a representative pressure-and-temperature-corrected event by the number of assumed identical cycles. This is less defensible than individually measured events and is only valid with demonstrably repeatable endpoints, no inflow, and negligible gas generation during each vent.' },
+  ],
+  'scale-resolution': [
+    {question:'Is balance readability the same as accuracy?', answer:'No. This tool bounds idealized rounding effects for two weight readings. Calibration, repeatability, drift, non-CO2 loss and chemical specificity are not covered.'},
+    {question:'How is the required scale increment calculated?', answer:'The maximum theoretical CO2 mass is starting material mass times acid fraction times the acid-specific CO2 mass ratio. Two independently rounded weight readings can differ by up to one display increment, so the largest acceptable increment is expected CO2 mass times the selected percentage-point tolerance divided by 100.'},
+  ],
+  'gauge-resolution': [
+    {question:'Does the gauge calculator determine a safe instrument range?', answer:'No. It calculates readout increment required for a selected apparent completion sensitivity, not pressure range, burst rating, accuracy or safe operation. Temperature, leaks and changing headspace are excluded.'},
+    {question:'Why does venting require a finer pressure readout?', answer:'Each vent adds two more pressure endpoints. Rounding error from their readings contributes to cumulative evolved-gas estimates. The finder adds a worst-case bound for the initial, current and counted before-and-after readings, while assuming the dry ideal-gas model.'},
   ],
   cartridge: [
     { question: 'Is target fill the starting mixture or the finished cartridge mass?',
