@@ -9,7 +9,7 @@ import { useCalculatorWorkspace } from '../lib/useCalculatorWorkspace';
 import { formatNumber, parseAmount } from '../lib/decarb';
 import { isAcidCannabinoid } from '../lib/cannabinoids';
 import { calculateCartridge, calculateCartridgeFromInput, consolidateCompounds,
-  consolidateStartingCompounds,
+  consolidateStartingCompounds, summarizeCartridgeStages, type CartridgeStageMasses,
   COMPOUND_TYPES, type CompoundType, type AcidTreatment, type CompoundRow } from '../lib/cartridge';
 import { parseCompoundRows, MAX_COMPOUND_ROWS } from '../lib/workspacePayload';
 import './MoreCalculators.css';
@@ -30,9 +30,9 @@ const COLORS: Record<CompoundType,string> = {
   CBC:'#629f78',CBCa:'#92b69c',THCV:'#c583a8',Terpenes:'#47aba0',Other:'#9da2a9',
 };
 /** Actual starting weigh-out amounts. Not the finished composition percentages. */
-function StartingBatchBreakdown({items,totalG,acidTreatment,compact=false}: {
+function StartingBatchBreakdown({items,stages,acidTreatment,compact=false}: {
   items: ReadonlyArray<readonly [CompoundType,number]>;
-  totalG: number;
+  stages: CartridgeStageMasses;
   acidTreatment: AcidTreatment;
   compact?: boolean;
 }) {
@@ -52,9 +52,36 @@ function StartingBatchBreakdown({items,totalG,acidTreatment,compact=false}: {
         <dd>{formatNumber(weightG,3)} <small>g</small></dd>
       </div>)}
     </dl>
-    <div className="cartridge-bom-total">
-      <span>Total starting mass</span><strong>{formatNumber(totalG,3)} <small>g</small></strong>
+    <div className="cartridge-bom-subtotals" aria-label="Batch mass subtotals">
+      <div className="cartridge-bom-subtotal" data-stage="cannabinoids">
+        <span>Cannabinoids · starting</span><strong>{formatNumber(stages.startingCannabinoidsG,3)} <small>g</small></strong>
+      </div>
+      {stages.startingOtherG>0&&<div className="cartridge-bom-subtotal" data-stage="other">
+        <span>Other materials</span><strong>{formatNumber(stages.startingOtherG,3)} <small>g</small></strong>
+      </div>}
+      <div className="cartridge-bom-subtotal" data-stage="pre-terpene-start">
+        <span>Starting mass without terpenes</span>
+        <strong>{formatNumber(stages.preTerpeneStartingG,3)} <small>g</small></strong>
+      </div>
+      <div className="cartridge-bom-subtotal" data-stage="terpenes">
+        <span>Terpenes · add afterward</span>
+        <strong>{formatNumber(stages.terpeneAdditionG,3)} <small>g</small></strong>
+      </div>
     </div>
+    <div className="cartridge-bom-total" data-stage="gross-start">
+      <span>Gross starting ingredients</span><strong>{formatNumber(stages.grossStartingG,3)} <small>g</small></strong>
+    </div>
+    {!compact&&<div className="cartridge-bom-process" aria-label="Theoretical process mass balance">
+      <div className="cartridge-bom-process-title">Modeled mass balance · terpenes added afterward</div>
+      <dl className="cartridge-bom-process-list">
+        <div data-stage="co2"><dt>CO₂ released by acidic cannabinoids</dt><dd>− {formatNumber(stages.co2ReleasedG,3)} g</dd></div>
+        <div data-stage="cannabinoids-finished"><dt>Cannabinoids after modeled decarb</dt><dd>{formatNumber(stages.finishedCannabinoidsG,3)} g</dd></div>
+        <div data-stage="pre-terpene-finished"><dt>Finished blend before terpenes</dt><dd>{formatNumber(stages.preTerpeneFinishedG,3)} g</dd></div>
+        <div data-stage="terpenes-added"><dt>Terpenes added</dt><dd>+ {formatNumber(stages.terpeneAdditionG,3)} g</dd></div>
+        <div className="cartridge-bom-process-final" data-stage="final"><dt>Final gross blend</dt>
+          <dd>{formatNumber(stages.finalBlendG,3)} g</dd></div>
+      </dl>
+    </div>}
   </section>;
 }
 export function CartridgeWorkbench() {
@@ -77,6 +104,7 @@ export function CartridgeWorkbench() {
   const consolidated=useMemo(()=>result?consolidateCompounds(result.compounds):null,[result]);
   const startingIngredients=useMemo(()=>result?
     [...consolidateStartingCompounds(result.compounds)]:[],[result]);
+  const stages=useMemo(()=>result?summarizeCartridgeStages(result.compounds):null,[result]);
   const types=consolidated?[...consolidated].filter(([,d])=>d.pct>0):[];
   const partsTotal=rows.reduce((s,r)=>s+r.parts,0);
   const co2Loss=result?result.totalInputWeightG-result.totalFinalWeightG:0;
@@ -90,10 +118,12 @@ export function CartridgeWorkbench() {
     note="Modeled blend mass, cartridge count and compound composition"
     metrics={[
       {label:'Complete cartridges',value:result?String(result.effectiveCarts):'-'},
+      {label:'Starting without terpenes',value:stages?formatNumber(stages.preTerpeneStartingG,3):'-',unit:'g'},
+      {label:'Terpenes to add',value:stages?formatNumber(stages.terpeneAdditionG,3):'-',unit:'g'},
       {label:'Final blend mass',value:result?formatNumber(result.totalFinalWeightG,3):'-',unit:'g'},
     ]}
-    overviewExtra={result&&<StartingBatchBreakdown items={startingIngredients}
-      totalG={result.totalInputWeightG} acidTreatment={acidTreatment} compact/>}
+    overviewExtra={stages&&<StartingBatchBreakdown items={startingIngredients}
+      stages={stages} acidTreatment={acidTreatment} compact/>}
     input={<Panel title="Batch configuration" detail="Choose a finished fill target or an available starting mass"
       action={<WorkspaceActions onReset={ws.reset} shareUrl={ws.shareUrl} tool="Cartridge formulation"
         result={result?`${formatNumber(result.totalFinalWeightG,3)} g finished`:null}/>}>
@@ -159,11 +189,11 @@ export function CartridgeWorkbench() {
       </div>
     </Panel>}
     output={<Panel title="Production output" detail="Beginning-to-final mass balance">
-      {result&&consolidated&&cap.value!==null?<>
+      {result&&stages&&consolidated&&cap.value!==null?<>
         <PrimaryResult label={targetMode?'Required starting blend':'Final available blend'}
           value={formatNumber(targetMode?result.totalInputWeightG:result.totalFinalWeightG,3)} unit=" g"/>
         <StartingBatchBreakdown items={startingIngredients}
-          totalG={result.totalInputWeightG} acidTreatment={acidTreatment}/>
+          stages={stages} acidTreatment={acidTreatment}/>
         <Metrics>
           <Metric label="Starting material" value={formatNumber(result.totalInputWeightG,3)} suffix="g"/>
           <Metric label="Finished mass" value={formatNumber(result.totalFinalWeightG,3)} suffix="g" accent/>
@@ -191,7 +221,7 @@ export function CartridgeWorkbench() {
         {result.warnings.crystallization&&<Notice variant="warning">THCa percentage is above the screening threshold. Actual crystallization is dependent on thermodynamics, composition, temperature and time; this calculator cannot predict solubility.</Notice>}
         {result.warnings.cbdCryst&&<Notice variant="warning">CBD percentage is above a qualitative screening threshold, not a measured solubility limit.</Notice>}
         {result.warnings.terpenes&&<Notice variant="warning">High terpene fraction: verify material compatibility and measured formulation properties independently.</Notice>}
-        <Notice>Each selected acid follows its own theoretical acid-to-neutral molecular ratio. Complete decarboxylation is a mass-balance assumption, not a predicted reaction rate, guaranteed yield, or evidence of inhalation suitability.</Notice>
+        <Notice>Terpenes are modeled as an addition after decarboxylation. Starting mass without terpenes includes any Other materials, which remain separately identified and are not assumed suitable for heating. Only theoretical acid-to-neutral CO₂ loss is counted; processing losses, volatilization, transfer losses and actual conversion yield are not predicted.</Notice>
       </>:<Unavailable>Provide a valid positive capacity, batch quantity, and recipe with at least one positive part.</Unavailable>}
     </Panel>}
   />;

@@ -104,6 +104,17 @@ try {
             });
             check(before.masses.length===4&&Math.abs(before.sum-before.total)<0.003,
               label+' batch masses reconcile to the starting total',before);
+            const summary=await weighOut.evaluate(root=>{
+              const value=stage=>Number(root.querySelector('[data-stage="'+stage+'"] strong')?.textContent.replace(/[^0-9.-]/g,''));
+              return {cannabinoids:value('cannabinoids'),beforeTerpenes:value('pre-terpene-start'),
+                terpenes:value('terpenes'),gross:value('gross-start')};
+            });
+            check(Math.abs(summary.cannabinoids-summary.beforeTerpenes)<0.001
+              &&Math.abs(summary.beforeTerpenes+summary.terpenes-summary.gross)<0.002,
+              label+' pre-terpene charge plus terpene addition equals gross starting weight',summary);
+            const liveMetrics=await studio.locator('.calculator-app-stats').innerText();
+            check(liveMetrics.includes('Starting without terpenes')
+              &&liveMetrics.includes('Terpenes to add'),label+' stage totals visible without switching tabs');
             const fromCalculator=await weighOut.locator('.cartridge-bom-row dd').allTextContents();
             await breakdown.click();
             const detail=studio.locator('.calculator-app-details .cartridge-bom');
@@ -111,6 +122,24 @@ try {
             const fromDetail=await detail.locator('.cartridge-bom-row dd').allTextContents();
             check(JSON.stringify(fromDetail)===JSON.stringify(fromCalculator),
               label+' both tabs use identical starting quantities');
+            const staged=await detail.evaluate(root=>{
+              const value=stage=>{
+                const node=root.querySelector('[data-stage="'+stage+'"]');
+                const text=node?.querySelector('strong,dd')?.textContent||'';
+                return Number(text.replace(/[^0-9.-]/g,''));
+              };
+              return {gross:value('gross-start'),before:value('pre-terpene-start'),
+                terp:value('terpenes'),loss:value('co2'),
+                after:value('pre-terpene-finished'),final:value('final')};
+            });
+            check(Math.abs(staged.before-staged.loss-staged.after)<0.003
+              &&Math.abs(staged.after+staged.terp-staged.final)<0.003,
+              label+' theoretical staged mass balance closes within display rounding',staged);
+            const compactGeometry=await page.evaluate(()=>({
+              scroll:document.documentElement.scrollWidth,width:innerWidth,
+            }));
+            check(compactGeometry.scroll<=compactGeometry.width+1,
+              label+' staged breakdown avoids horizontal overflow',compactGeometry);
             const finishedHeader=await studio.locator('.formula-box .small-label').textContent();
             check(finishedHeader?.includes('Finished batch total'),
               label+' starting and finished batch totals are explicitly distinguished',finishedHeader);
@@ -121,6 +150,8 @@ try {
             await breakdown.click();
             check(await studio.locator('.calculator-app-details .cartridge-bom').count()===1,
               label+' available-batch mode retains breakdown weigh-out');
+            check(await studio.locator('.calculator-app-details [data-stage="pre-terpene-finished"]').count()===1,
+              label+' available-batch mode retains post-decarb pre-terpene subtotal');
           }
           if(fixture.route==='/tools/max-pressure/') {
             await nav.getByRole('tab',{name:'Heatmap'}).click();

@@ -199,3 +199,44 @@ export function consolidateStartingCompounds(compounds: CompoundResult[]): Map<C
   }
   return map;
 }
+
+/** Stage-aware mass accounting, reserving terpenes for addition after modeled decarb.
+ * 'Other' is tracked separately; no process loss or heat compatibility is assumed.
+ */
+export interface CartridgeStageMasses {
+  startingCannabinoidsG: number;
+  startingOtherG: number;
+  preTerpeneStartingG: number;
+  terpeneAdditionG: number;
+  grossStartingG: number;
+  co2ReleasedG: number;
+  finishedCannabinoidsG: number;
+  preTerpeneFinishedG: number;
+  finalBlendG: number;
+}
+export function summarizeCartridgeStages(compounds: readonly CompoundResult[]): CartridgeStageMasses {
+  let startingCannabinoidsG = 0;
+  let startingOtherG = 0;
+  let terpeneAdditionG = 0;
+  let co2ReleasedG = 0;
+  let finishedCannabinoidsG = 0;
+  for (const compound of compounds) {
+    if (compound.type === 'Terpenes') {
+      terpeneAdditionG += compound.inputWeightG;
+    } else if (compound.type === 'Other') {
+      startingOtherG += compound.inputWeightG;
+    } else {
+      startingCannabinoidsG += compound.inputWeightG;
+      finishedCannabinoidsG += compound.finalWeightG;
+      co2ReleasedG += compound.inputWeightG - compound.finalWeightG;
+    }
+  }
+  const preTerpeneStartingG = startingCannabinoidsG + startingOtherG;
+  const preTerpeneFinishedG = finishedCannabinoidsG + startingOtherG;
+  return {
+    startingCannabinoidsG, startingOtherG, preTerpeneStartingG,
+    terpeneAdditionG, grossStartingG: preTerpeneStartingG + terpeneAdditionG,
+    co2ReleasedG, finishedCannabinoidsG, preTerpeneFinishedG,
+    finalBlendG: preTerpeneFinishedG + terpeneAdditionG,
+  };
+}

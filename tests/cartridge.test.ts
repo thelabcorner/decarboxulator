@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateCartridge, calculateCartridgeFromInput, consolidateCompounds, consolidateStartingCompounds } from '../src/lib/cartridge';
+import { calculateCartridge, calculateCartridgeFromInput, consolidateCompounds, consolidateStartingCompounds, summarizeCartridgeStages } from '../src/lib/cartridge';
 import { CONVERSION_RATIO, CO2_RATIO, trackerSetup, trackerSnapshot } from '../src/lib/decarb';
 
 describe('cartridge formulation', () => {
@@ -125,6 +125,70 @@ describe('cartridge formulation', () => {
       expect(input.get('CBD')).toBeCloseTo(2,10);
       expect([...input.values()].reduce((s,v)=>s+v,0)).toBeCloseTo(10,10);
       expect(consolidateCompounds(result.compounds).has('THCa')).toBe(mode==='retain');
+    }
+  });
+  it('separates a technician cannabinoid-first batch into pre-terpene and final stages', () => {
+    const result=calculateCartridge([
+      {type:'THCa',parts:80},{type:'CBD',parts:22},{type:'Terpenes',parts:5},
+    ],8,1.05,'convert')!;
+    const stages=summarizeCartridgeStages(result.compounds);
+    expect(stages.startingCannabinoidsG).toBeCloseTo(8.816787018,8);
+    expect(stages.startingOtherG).toBe(0);
+    expect(stages.preTerpeneStartingG).toBeCloseTo(8.816787018,8);
+    expect(stages.terpeneAdditionG).toBeCloseTo(0.432195442,8);
+    expect(stages.grossStartingG).toBeCloseTo(result.totalInputWeightG,10);
+    expect(stages.co2ReleasedG).toBeCloseTo(0.84898246,8);
+    expect(stages.finishedCannabinoidsG).toBeCloseTo(7.967804558,8);
+    expect(stages.preTerpeneFinishedG).toBeCloseTo(8.4-stages.terpeneAdditionG,10);
+    expect(stages.finalBlendG).toBeCloseTo(8.4,10);
+  });
+  it('tracks multiple acid types, preexisting neutrals, terpenes, and Other separately', () => {
+    const rows=[
+      {type:'THCa' as const,parts:25},{type:'THCa' as const,parts:5},
+      {type:'CBDa' as const,parts:20},{type:'CBD' as const,parts:20},
+      {type:'Terpenes' as const,parts:10},{type:'Other' as const,parts:20},
+    ];
+    for (const treatment of ['convert','retain'] as const) {
+      for (const result of [
+        calculateCartridge(rows,12,0.5,treatment)!,
+        calculateCartridgeFromInput(rows,15,0.5,treatment)!,
+      ]) {
+        const s=summarizeCartridgeStages(result.compounds);
+        const acidLoss=result.compounds.reduce((mass,c)=>mass+c.inputWeightG-c.finalWeightG,0);
+        expect(s.startingCannabinoidsG).toBeCloseTo(result.totalInputWeightG*0.7,9);
+        expect(s.startingOtherG).toBeCloseTo(result.totalInputWeightG*0.2,9);
+        expect(s.terpeneAdditionG).toBeCloseTo(result.totalInputWeightG*0.1,9);
+        expect(s.preTerpeneStartingG).toBeCloseTo(s.startingCannabinoidsG+s.startingOtherG,10);
+        expect(s.grossStartingG).toBeCloseTo(result.totalInputWeightG,10);
+        expect(s.co2ReleasedG).toBeCloseTo(acidLoss,10);
+        expect(s.finishedCannabinoidsG+s.co2ReleasedG).toBeCloseTo(s.startingCannabinoidsG,10);
+        expect(s.preTerpeneFinishedG).toBeCloseTo(result.totalFinalWeightG-s.terpeneAdditionG,10);
+        expect(s.finalBlendG).toBeCloseTo(result.totalFinalWeightG,10);
+        expect(s.co2ReleasedG===0).toBe(treatment==='retain');
+      }
+    }
+  });
+  it('handles zero-terpene, terpene-only, Other-only and no-acid recipes', () => {
+    const recipes=[
+      [{type:'THCa' as const,parts:100}],
+      [{type:'Terpenes' as const,parts:100}],
+      [{type:'Other' as const,parts:100}],
+      [{type:'CBD' as const,parts:60},{type:'Terpenes' as const,parts:40}],
+      [{type:'THC' as const,parts:40},{type:'CBD' as const,parts:60}],
+    ];
+    for (const recipe of recipes) {
+      for (const treatment of ['convert','retain'] as const) {
+        const result=calculateCartridge(recipe,8,1.05,treatment)!;
+        const s=summarizeCartridgeStages(result.compounds);
+        expect(s.grossStartingG).toBeCloseTo(result.totalInputWeightG,10);
+        expect(s.finalBlendG).toBeCloseTo(result.totalFinalWeightG,10);
+        expect(s.preTerpeneStartingG+s.terpeneAdditionG).toBeCloseTo(s.grossStartingG,10);
+        expect(s.preTerpeneFinishedG+s.terpeneAdditionG).toBeCloseTo(s.finalBlendG,10);
+        expect(s.startingCannabinoidsG+s.startingOtherG).toBeCloseTo(s.preTerpeneStartingG,10);
+        if (!recipe.some(row=>row.type==='THCa')||treatment==='retain') {
+          expect(s.co2ReleasedG).toBeCloseTo(0,10);
+        }
+      }
     }
   });
   it('converts THCa regardless of coexisting neutral THC', () => {
