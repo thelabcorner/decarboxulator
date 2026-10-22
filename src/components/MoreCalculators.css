@@ -129,6 +129,27 @@
 .tracker-table-wrap .readings-table {white-space:nowrap;min-width:580px;}
 .tracker-table-wrap .readings-table th {text-align:right;}
 .tracker-table-wrap .readings-table th:first-child {text-align:left;}
+/* Pre-decarb production bill of materials. Visible on both calculator and breakdown. */
+.cartridge-bom {min-width:0;border:1px solid var(--border);border-radius:7px;overflow:hidden;background:var(--panel-inset);}
+.cartridge-bom-heading {display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:3px 10px;padding:10px 11px;border-bottom:1px solid var(--border-subtle);}
+.cartridge-bom-heading strong {font-size:11px;font-weight:700;color:var(--strong);}
+.cartridge-bom-heading > span {font-size:9.5px;color:var(--muted);}
+.cartridge-bom-list {margin:0;padding:2px 11px;}
+.cartridge-bom-row {display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border-subtle);min-width:0;}
+.cartridge-bom-row:last-child {border-bottom:0;}
+.cartridge-bom-row dt {display:flex;gap:8px;align-items:baseline;min-width:0;color:var(--strong);font-size:11px;font-weight:625;}
+.cartridge-bom-row dt i {display:block;align-self:center;flex:0 0 7px;width:7px;height:7px;border-radius:2px;}
+.cartridge-bom-row dt span {display:flex;flex-direction:column;min-width:0;gap:2px;}
+.cartridge-bom-row dt small {font-size:9px;font-weight:480;color:var(--muted);line-height:1.25;}
+.cartridge-bom-row dd {margin:0;white-space:nowrap;color:var(--strong);font-size:13px;font-weight:720;letter-spacing:-.2px;}
+.cartridge-bom-row dd small,.cartridge-bom-total small {color:var(--muted);font-size:10px;font-weight:540;}
+.cartridge-bom-total {display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);}
+.cartridge-bom-total strong {font-size:12px;font-weight:720;color:var(--strong);white-space:nowrap;}
+.calculator-app-overview .cartridge-bom {border:0;border-radius:0;border-bottom:1px solid var(--border-subtle);}
+.calculator-app-overview .cartridge-bom-heading {padding:10px 12px;}
+.calculator-app-overview .cartridge-bom-list {padding:2px 12px;}
+.calculator-app-overview .cartridge-bom-total {padding:9px 12px;}
+.cartridge-bom[data-compact="true"] .cartridge-bom-row {padding:6px 0;}
 @media(max-width:480px) {
   .studio-builder-row {padding:0.58rem;}
   .studio-builder-fields {gap:0.45rem;}

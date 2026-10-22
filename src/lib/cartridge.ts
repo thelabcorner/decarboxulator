@@ -189,3 +189,13 @@ export function consolidateCompounds(
   }
   return map;
 }
+
+/** Group starting ingredient masses, preserving THCa separately from final THC. */
+export function consolidateStartingCompounds(compounds: CompoundResult[]): Map<CompoundType, number> {
+  const map = new Map<CompoundType, number>();
+  for (const compound of compounds) {
+    if (!(compound.inputWeightG > 0)) continue;
+    map.set(compound.type, (map.get(compound.type) ?? 0) + compound.inputWeightG);
+  }
+  return map;
+}

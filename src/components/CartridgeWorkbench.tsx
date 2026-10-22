@@ -9,6 +9,7 @@ import { useCalculatorWorkspace } from '../lib/useCalculatorWorkspace';
 import { formatNumber, parseAmount } from '../lib/decarb';
 import { isAcidCannabinoid } from '../lib/cannabinoids';
 import { calculateCartridge, calculateCartridgeFromInput, consolidateCompounds,
+  consolidateStartingCompounds,
   COMPOUND_TYPES, type CompoundType, type AcidTreatment, type CompoundRow } from '../lib/cartridge';
 import { parseCompoundRows, MAX_COMPOUND_ROWS } from '../lib/workspacePayload';
 import './MoreCalculators.css';
@@ -28,6 +29,34 @@ const COLORS: Record<CompoundType,string> = {
   CBN:'#a184c2',CBNa:'#baa1d5',CBG:'#d2a74e',CBGa:'#edc675',
   CBC:'#629f78',CBCa:'#92b69c',THCV:'#c583a8',Terpenes:'#47aba0',Other:'#9da2a9',
 };
+/** Actual starting weigh-out amounts. Not the finished composition percentages. */
+function StartingBatchBreakdown({items,totalG,acidTreatment,compact=false}: {
+  items: ReadonlyArray<readonly [CompoundType,number]>;
+  totalG: number;
+  acidTreatment: AcidTreatment;
+  compact?: boolean;
+}) {
+  return <section className="cartridge-bom" data-compact={compact} aria-label="Starting batch ingredient weights">
+    <div className="cartridge-bom-heading">
+      <strong>Starting batch · weigh out</strong>
+      <span>Before decarboxylation</span>
+    </div>
+    <dl className="cartridge-bom-list">
+      {items.map(([type,weightG])=><div className="cartridge-bom-row" key={type}>
+        <dt><i style={{background:COLORS[type]}} aria-hidden="true"/>
+          <span>{isAcidCannabinoid(type)?type.toUpperCase():type}
+            {acidTreatment==='convert'&&isAcidCannabinoid(type)&&
+              <small>Starting acid · modeled conversion</small>}
+          </span>
+        </dt>
+        <dd>{formatNumber(weightG,3)} <small>g</small></dd>
+      </div>)}
+    </dl>
+    <div className="cartridge-bom-total">
+      <span>Total starting mass</span><strong>{formatNumber(totalG,3)} <small>g</small></strong>
+    </div>
+  </section>;
+}
 export function CartridgeWorkbench() {
   const ws=useCalculatorWorkspace('cartridge',DEFAULTS);
   const {cartCount,cartCapacity,rows:rowJson,acidTreatment,batchMode,startingBatch}=ws.values;
@@ -46,6 +75,8 @@ export function CartridgeWorkbench() {
     return batch.value!==null ? calculateCartridgeFromInput(rows,batch.value,cap.value,acidTreatment):null;
   },[cap.value,count.value,batch.value,rows,acidTreatment,targetMode]);
   const consolidated=useMemo(()=>result?consolidateCompounds(result.compounds):null,[result]);
+  const startingIngredients=useMemo(()=>result?
+    [...consolidateStartingCompounds(result.compounds)]:[],[result]);
   const types=consolidated?[...consolidated].filter(([,d])=>d.pct>0):[];
   const partsTotal=rows.reduce((s,r)=>s+r.parts,0);
   const co2Loss=result?result.totalInputWeightG-result.totalFinalWeightG:0;
@@ -61,6 +92,8 @@ export function CartridgeWorkbench() {
       {label:'Complete cartridges',value:result?String(result.effectiveCarts):'-'},
       {label:'Final blend mass',value:result?formatNumber(result.totalFinalWeightG,3):'-',unit:'g'},
     ]}
+    overviewExtra={result&&<StartingBatchBreakdown items={startingIngredients}
+      totalG={result.totalInputWeightG} acidTreatment={acidTreatment} compact/>}
     input={<Panel title="Batch configuration" detail="Choose a finished fill target or an available starting mass"
       action={<WorkspaceActions onReset={ws.reset} shareUrl={ws.shareUrl} tool="Cartridge formulation"
         result={result?`${formatNumber(result.totalFinalWeightG,3)} g finished`:null}/>}>
@@ -129,6 +162,8 @@ export function CartridgeWorkbench() {
       {result&&consolidated&&cap.value!==null?<>
         <PrimaryResult label={targetMode?'Required starting blend':'Final available blend'}
           value={formatNumber(targetMode?result.totalInputWeightG:result.totalFinalWeightG,3)} unit=" g"/>
+        <StartingBatchBreakdown items={startingIngredients}
+          totalG={result.totalInputWeightG} acidTreatment={acidTreatment}/>
         <Metrics>
           <Metric label="Starting material" value={formatNumber(result.totalInputWeightG,3)} suffix="g"/>
           <Metric label="Finished mass" value={formatNumber(result.totalFinalWeightG,3)} suffix="g" accent/>
@@ -139,7 +174,7 @@ export function CartridgeWorkbench() {
             label={`${entry.neutralType} from ${entry.acidType}`}
             value={formatNumber(entry.outputG,3)} suffix="g"/>)}
         </Metrics>
-        <div className="studio-builder-title"><span className="small-label">Final composition</span></div>
+        <div className="studio-builder-title"><span className="small-label">Finished composition · after modeled conversion</span></div>
         <div className="composition-bar" role="img" aria-label="Final formulation distribution">
           {types.map(([type,d])=><div className="comp-segment" key={type} style={{width:`${d.pct}%`,background:COLORS[type]}}
             title={`${type}: ${formatNumber(d.pct,2)}%`}>{d.pct>=9?`${formatNumber(d.pct,0)}%`:null}</div>)}
@@ -147,7 +182,7 @@ export function CartridgeWorkbench() {
         <div className="studio-legend">{types.map(([type,d])=><span key={type}>
           <i style={{background:COLORS[type]}}/>{type} · {formatNumber(d.pct,1)}%</span>)}</div>
         <div className="formula-box">
-          <span className="small-label">Total batch / per cartridge</span>
+          <span className="small-label">Finished batch total / per cartridge</span>
           {types.map(([type,d])=><div className="per-cart-row" key={type}>
             <span>{type} · {formatNumber(d.weightG,3)} g total</span>
             <span>{formatNumber(d.weightG/result.totalFinalWeightG*(cap.value ?? 0),3)} g / cart</span>

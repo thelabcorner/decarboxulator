@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateCartridge, consolidateCompounds } from '../src/lib/cartridge';
+import { calculateCartridge, calculateCartridgeFromInput, consolidateCompounds, consolidateStartingCompounds } from '../src/lib/cartridge';
 import { CONVERSION_RATIO, CO2_RATIO, trackerSetup, trackerSnapshot } from '../src/lib/decarb';
 
 describe('cartridge formulation', () => {
@@ -96,6 +96,36 @@ describe('cartridge formulation', () => {
     const map = consolidateCompounds(result!.compounds);
     expect(map.get('THC')!.pct).toBeCloseTo(100, 8);
     expect(map.size).toBe(1);
+  });
+  it('supplies pre-decarb batch inputs alongside finished output for eight cartridges', () => {
+    const result=calculateCartridge([
+      {type:'THCa',parts:80},{type:'CBD',parts:22},{type:'Terpenes',parts:5},
+    ],8,1.05,'convert')!;
+    const input=consolidateStartingCompounds(result.compounds);
+    const output=consolidateCompounds(result.compounds);
+    expect(result.totalFinalWeightG).toBeCloseTo(8.4,10);
+    expect(result.effectiveCarts).toBe(8);
+    expect(input.get('THCa')).toBeCloseTo(result.thcaInputG,10);
+    expect(input.get('THCa')!).toBeGreaterThan(result.thcFromThcaG);
+    expect(output.has('THCa')).toBe(false);
+    expect(output.get('THC')!.weightG).toBeCloseTo(result.thcFromThcaG,10);
+    expect(input.get('CBD')).toBeCloseTo(output.get('CBD')!.weightG,10);
+    expect(input.get('Terpenes')).toBeCloseTo(output.get('Terpenes')!.weightG,10);
+    expect([...input.values()].reduce((s,v)=>s+v,0)).toBeCloseTo(result.totalInputWeightG,10);
+    expect(result.totalInputWeightG-result.totalFinalWeightG)
+      .toBeCloseTo(result.thcaInputG-result.thcFromThcaG,10);
+  });
+  it('consolidates duplicate starting acids in available and retain modes', () => {
+    const rows=[{type:'THCa' as const,parts:30},{type:'THCa' as const,parts:50},{type:'CBD' as const,parts:20}];
+    for (const mode of ['convert','retain'] as const) {
+      const result=calculateCartridgeFromInput(rows,10,1,mode)!;
+      const input=consolidateStartingCompounds(result.compounds);
+      expect(input.size).toBe(2);
+      expect(input.get('THCa')).toBeCloseTo(8,10);
+      expect(input.get('CBD')).toBeCloseTo(2,10);
+      expect([...input.values()].reduce((s,v)=>s+v,0)).toBeCloseTo(10,10);
+      expect(consolidateCompounds(result.compounds).has('THCa')).toBe(mode==='retain');
+    }
   });
   it('converts THCa regardless of coexisting neutral THC', () => {
     const blend = [{type:'THC' as const,parts:50},{type:'THCa' as const,parts:50}];

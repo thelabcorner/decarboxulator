@@ -86,6 +86,42 @@ try {
             label+' tab switching preserves inputs and calculated output');
           const inputFont=await page.locator(fixture.field).evaluate(el=>getComputedStyle(el).fontSize);
           check(viewport.width>760 || parseFloat(inputFont)>=16,label+' no mobile Safari input zoom');
+          if (fixture.route==='/tools/cartridge-formulation/') {
+            // Exercise a real multi-component input bill of materials, not merely its math helper.
+            await studio.getByRole('button',{name:'Mixed cannabinoids'}).click();
+            const weighOut=studio.locator('.calculator-app-overview .cartridge-bom');
+            check(await weighOut.count()===1,label+' weigh-out visible on calculator tab');
+            const startingLabels=await weighOut.locator('.cartridge-bom-row dt').allInnerTexts();
+            for (const ingredient of ['THCA','CBD','Terpenes']) {
+              check(startingLabels.some(text=>text.split('\n')[0]===ingredient),
+                label+' starting batch includes '+ingredient,startingLabels);
+            }
+            const before=await weighOut.evaluate(root=>{
+              const number=text=>Number((text||'').replace(/[^0-9.-]/g,''));
+              const masses=[...root.querySelectorAll('.cartridge-bom-row dd')].map(el=>number(el.textContent));
+              return {masses,sum:masses.reduce((a,b)=>a+b,0),
+                total:number(root.querySelector('.cartridge-bom-total strong')?.textContent)};
+            });
+            check(before.masses.length===4&&Math.abs(before.sum-before.total)<0.003,
+              label+' batch masses reconcile to the starting total',before);
+            const fromCalculator=await weighOut.locator('.cartridge-bom-row dd').allTextContents();
+            await breakdown.click();
+            const detail=studio.locator('.calculator-app-details .cartridge-bom');
+            check(await detail.count()===1,label+' weigh-out visible on breakdown tab');
+            const fromDetail=await detail.locator('.cartridge-bom-row dd').allTextContents();
+            check(JSON.stringify(fromDetail)===JSON.stringify(fromCalculator),
+              label+' both tabs use identical starting quantities');
+            const finishedHeader=await studio.locator('.formula-box .small-label').textContent();
+            check(finishedHeader?.includes('Finished batch total'),
+              label+' starting and finished batch totals are explicitly distinguished',finishedHeader);
+            await calculate.click();
+            await studio.getByRole('button',{name:'Available batch'}).click();
+            check(await studio.locator('.calculator-app-overview .cartridge-bom').count()===1,
+              label+' available-batch mode retains weigh-out table');
+            await breakdown.click();
+            check(await studio.locator('.calculator-app-details .cartridge-bom').count()===1,
+              label+' available-batch mode retains breakdown weigh-out');
+          }
           if(fixture.route==='/tools/max-pressure/') {
             await nav.getByRole('tab',{name:'Heatmap'}).click();
             check(await studio.locator('.heatmap-table').count()===1,
