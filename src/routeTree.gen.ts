@@ -16,6 +16,7 @@ import { Route as ToolsBatchYieldRouteImport } from './routes/tools/batch-yield'
 import { Route as ToolsCartridgeFormulationRouteImport } from './routes/tools/cartridge-formulation'
 import { Route as ToolsDecarbTrackerRouteImport } from './routes/tools/decarb-tracker'
 import { Route as ToolsEdibleDosageRouteImport } from './routes/tools/edible-dosage'
+import { Route as ToolsExtractFormulationRouteImport } from './routes/tools/extract-formulation'
 import { Route as ToolsGaugeResolutionRouteImport } from './routes/tools/gauge-resolution'
 import { Route as ToolsMaxPressureRouteImport } from './routes/tools/max-pressure'
 import { Route as ToolsPressureTrackerRouteImport } from './routes/tools/pressure-tracker'
@@ -59,6 +60,11 @@ const ToolsDecarbTrackerRoute = ToolsDecarbTrackerRouteImport.update({
 const ToolsEdibleDosageRoute = ToolsEdibleDosageRouteImport.update({
   id: '/tools/edible-dosage',
   path: '/tools/edible-dosage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsExtractFormulationRoute = ToolsExtractFormulationRouteImport.update({
+  id: '/tools/extract-formulation',
+  path: '/tools/extract-formulation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ToolsGaugeResolutionRoute = ToolsGaugeResolutionRouteImport.update({
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/tools/cartridge-formulation': typeof ToolsCartridgeFormulationRoute
   '/tools/decarb-tracker': typeof ToolsDecarbTrackerRoute
   '/tools/edible-dosage': typeof ToolsEdibleDosageRoute
+  '/tools/extract-formulation': typeof ToolsExtractFormulationRoute
   '/tools/gauge-resolution': typeof ToolsGaugeResolutionRoute
   '/tools/max-pressure': typeof ToolsMaxPressureRoute
   '/tools/pressure-tracker': typeof ToolsPressureTrackerRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/tools/cartridge-formulation': typeof ToolsCartridgeFormulationRoute
   '/tools/decarb-tracker': typeof ToolsDecarbTrackerRoute
   '/tools/edible-dosage': typeof ToolsEdibleDosageRoute
+  '/tools/extract-formulation': typeof ToolsExtractFormulationRoute
   '/tools/gauge-resolution': typeof ToolsGaugeResolutionRoute
   '/tools/max-pressure': typeof ToolsMaxPressureRoute
   '/tools/pressure-tracker': typeof ToolsPressureTrackerRoute
@@ -138,6 +146,7 @@ export interface FileRoutesById {
   '/tools/cartridge-formulation': typeof ToolsCartridgeFormulationRoute
   '/tools/decarb-tracker': typeof ToolsDecarbTrackerRoute
   '/tools/edible-dosage': typeof ToolsEdibleDosageRoute
+  '/tools/extract-formulation': typeof ToolsExtractFormulationRoute
   '/tools/gauge-resolution': typeof ToolsGaugeResolutionRoute
   '/tools/max-pressure': typeof ToolsMaxPressureRoute
   '/tools/pressure-tracker': typeof ToolsPressureTrackerRoute
@@ -156,6 +165,7 @@ export interface FileRouteTypes {
     | '/tools/cartridge-formulation'
     | '/tools/decarb-tracker'
     | '/tools/edible-dosage'
+    | '/tools/extract-formulation'
     | '/tools/gauge-resolution'
     | '/tools/max-pressure'
     | '/tools/pressure-tracker'
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/tools/cartridge-formulation'
     | '/tools/decarb-tracker'
     | '/tools/edible-dosage'
+    | '/tools/extract-formulation'
     | '/tools/gauge-resolution'
     | '/tools/max-pressure'
     | '/tools/pressure-tracker'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/tools/cartridge-formulation'
     | '/tools/decarb-tracker'
     | '/tools/edible-dosage'
+    | '/tools/extract-formulation'
     | '/tools/gauge-resolution'
     | '/tools/max-pressure'
     | '/tools/pressure-tracker'
@@ -205,6 +217,7 @@ export interface RootRouteChildren {
   ToolsCartridgeFormulationRoute: typeof ToolsCartridgeFormulationRoute
   ToolsDecarbTrackerRoute: typeof ToolsDecarbTrackerRoute
   ToolsEdibleDosageRoute: typeof ToolsEdibleDosageRoute
+  ToolsExtractFormulationRoute: typeof ToolsExtractFormulationRoute
   ToolsGaugeResolutionRoute: typeof ToolsGaugeResolutionRoute
   ToolsMaxPressureRoute: typeof ToolsMaxPressureRoute
   ToolsPressureTrackerRoute: typeof ToolsPressureTrackerRoute
@@ -263,6 +276,13 @@ declare module '@tanstack/react-router' {
       path: '/tools/edible-dosage'
       fullPath: '/tools/edible-dosage'
       preLoaderRoute: typeof ToolsEdibleDosageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/extract-formulation': {
+      id: '/tools/extract-formulation'
+      path: '/tools/extract-formulation'
+      fullPath: '/tools/extract-formulation'
+      preLoaderRoute: typeof ToolsExtractFormulationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tools/gauge-resolution': {
@@ -325,6 +345,7 @@ const rootRouteChildren: RootRouteChildren = {
   ToolsCartridgeFormulationRoute: ToolsCartridgeFormulationRoute,
   ToolsDecarbTrackerRoute: ToolsDecarbTrackerRoute,
   ToolsEdibleDosageRoute: ToolsEdibleDosageRoute,
+  ToolsExtractFormulationRoute: ToolsExtractFormulationRoute,
   ToolsGaugeResolutionRoute: ToolsGaugeResolutionRoute,
   ToolsMaxPressureRoute: ToolsMaxPressureRoute,
   ToolsPressureTrackerRoute: ToolsPressureTrackerRoute,

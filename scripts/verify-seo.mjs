@@ -8,7 +8,7 @@ const origin = (process.env.VITE_SITE_URL || 'https://dcxr.thedabcorner.site/').
 const required = [
   '', 'tools/thca-to-thc/', 'tools/thc-to-thca/', 'tools/batch-yield/', 'tools/thca-percentage/',
   'tools/edible-dosage/', 'tools/max-pressure/', 'tools/decarb-tracker/',
-  'tools/cartridge-formulation/', 'learn/decarboxylation-math/', 'faq/',
+  'tools/cartridge-formulation/', 'tools/extract-formulation/', 'learn/decarboxylation-math/', 'faq/',
 ];
 function assert(condition, message) { if (!condition) throw new Error(message); }
 function collect(directory, items = []) {

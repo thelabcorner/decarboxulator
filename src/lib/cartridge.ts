@@ -37,6 +37,11 @@ export interface CartridgeResult {
   /** Starting blend mass (may exceed requested filled mass due to CO2 release). */
   totalInputWeightG: number;
   totalFinalWeightG: number;
+  /** Proportional post-formulation handling/transfer loss (not reaction CO2 loss). */
+  transferLossPercent: number;
+  transferLossG: number;
+  /** Recoverable finished blend after transfer; this controls usable fill count. */
+  recoverableWeightG: number;
   compounds: CompoundResult[];
   /** True if THCa rows are converted. Preserved for backward-compatible clients/tests. */
   thcaOnlyMode: boolean;
@@ -60,16 +65,21 @@ export function calculateCartridge(
   cartCount: number,
   cartCapacityG: number,
   acidTreatment: AcidTreatment = 'convert',
+  transferLossPercent = 0,
 ): CartridgeResult | null {
   if (!Array.isArray(rows) || rows.length === 0 ||
       !Number.isSafeInteger(cartCount) || cartCount <= 0 ||
       !Number.isFinite(cartCapacityG) || !(cartCapacityG > 0) ||
       (acidTreatment !== 'convert' && acidTreatment !== 'retain') ||
+      !Number.isFinite(transferLossPercent) || transferLossPercent < 0 || transferLossPercent >= 100 ||
       !rows.every(row => COMPOUND_TYPES.includes(row.type) && Number.isFinite(row.parts) && row.parts >= 0)) return null;
   const totalParts = rows.reduce((s, r) => s + r.parts, 0);
   if (!(totalParts > 0) || !Number.isFinite(totalParts)) return null;
 
-  const totalTargetWeightG = cartCount * cartCapacityG;
+  // The desired fill is the RECOVERED material. Solve backward through transfer
+  // loss and then decarb; the two independent mass-loss mechanisms never mix.
+  const transferRetention = 1 - transferLossPercent / 100;
+  const totalTargetWeightG = cartCount * cartCapacityG / transferRetention;
 
   // Backsolve starting mass: account for CO2 released from ALL acid types when converting.
   let totalCo2LossFraction = 0;
@@ -102,6 +112,9 @@ export function calculateCartridge(
   });
 
   const totalFinalWeightG = outputMasses.reduce((sum, r) => sum + r.finalWeightG, 0);
+  const recoverableWeightG = totalFinalWeightG * transferRetention;
+  const transferLossG = totalFinalWeightG - recoverableWeightG;
+  if (!Number.isFinite(totalFinalWeightG) || !Number.isFinite(recoverableWeightG)) return null;
   const compounds: CompoundResult[] = outputMasses.map(r => ({
     ...r, finalPct: totalFinalWeightG > 0 ? r.finalWeightG / totalFinalWeightG * 100 : 0,
   }));
@@ -130,7 +143,7 @@ export function calculateCartridge(
     }
   }
 
-  const effectiveCarts = Math.min(cartCount, Math.floor(totalFinalWeightG / cartCapacityG + 1e-10));
+  const effectiveCarts = Math.min(cartCount, Math.floor(recoverableWeightG / cartCapacityG + 1e-10));
 
   const consolidated = new Map<CompoundType, number>();
   for (const c of compounds) {
@@ -140,6 +153,7 @@ export function calculateCartridge(
   return {
     totalInputWeightG,
     totalFinalWeightG,
+    transferLossPercent, transferLossG, recoverableWeightG,
     compounds,
     thcaOnlyMode,
     thcaInputG,
@@ -158,22 +172,26 @@ export function calculateCartridge(
 export function calculateCartridgeFromInput(
   rows: CompoundRow[], initialBlendG: number, cartCapacityG: number,
   acidTreatment: AcidTreatment = 'convert',
+  transferLossPercent = 0,
 ): CartridgeResult | null {
   if (!Number.isFinite(initialBlendG) || initialBlendG <= 0 ||
       !Number.isFinite(cartCapacityG) || cartCapacityG <= 0) return null;
-  const unit = calculateCartridge(rows, 1, 1, acidTreatment);
+  const unit = calculateCartridge(rows, 1, 1, acidTreatment, transferLossPercent);
   if (!unit || !Number.isFinite(unit.totalInputWeightG) || unit.totalInputWeightG <= 0) return null;
   const scale = initialBlendG / unit.totalInputWeightG;
   const compounds = unit.compounds.map(c => ({
     ...c, inputWeightG: c.inputWeightG * scale, finalWeightG: c.finalWeightG * scale,
   }));
   const totalFinalWeightG = compounds.reduce((s, c) => s + c.finalWeightG, 0);
+  const recoverableWeightG = totalFinalWeightG * (1 - transferLossPercent / 100);
+  const transferLossG = totalFinalWeightG - recoverableWeightG;
   const acidBreakdown = unit.acidBreakdown.map(b => ({
     ...b, inputG: b.inputG * scale, outputG: b.outputG * scale,
   }));
-  const effectiveCarts = Math.floor(totalFinalWeightG / cartCapacityG + 1e-10);
+  const effectiveCarts = Math.floor(recoverableWeightG / cartCapacityG + 1e-10);
   return {
-    ...unit, totalInputWeightG: initialBlendG, totalFinalWeightG, compounds, acidBreakdown,
+    ...unit, totalInputWeightG: initialBlendG, totalFinalWeightG, recoverableWeightG, transferLossG,
+    compounds, acidBreakdown,
     thcaInputG: unit.thcaInputG * scale, thcFromThcaG: unit.thcFromThcaG * scale, effectiveCarts,
   };
 }

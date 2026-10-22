@@ -11,6 +11,7 @@ const fixtures = [
   {route:'/tools/thca-percentage/',field:'#analyzer-start',next:'52'},
   {route:'/tools/edible-dosage/',field:'#edible-servings',next:'20'},
   {route:'/tools/cartridge-formulation/',field:'#cart-count',next:'20'},
+  {route:'/tools/extract-formulation/',field:'#cart-count',next:'20'},
 ];
 const browsers = [['Chromium',chromium],['WebKit',webkit]];
 const viewports = [
@@ -40,6 +41,14 @@ try {
           // Network-idle can precede React hydration in slow WebKit runs.
           // Never type before the event handlers have had time to attach.
           await page.waitForTimeout(130);
+          if (fixture.route.includes('cartridge-formulation')||fixture.route.includes('extract-formulation')) {
+            const target=studio.getByRole('button',{name:'Required input'});
+            if(await target.getAttribute('aria-pressed')!=='true')await target.click();
+            // Both routes intentionally share the saved recipe; normalize just
+            // the QA baseline before testing 0% -> nonzero transfer loss.
+            if(await page.locator('#cart-transfer-loss').inputValue()!=='0')
+              await page.locator('#cart-transfer-loss').fill('0');
+          }
           const nav=studio.getByRole('tablist');
           const calculate=nav.getByRole('tab',{name:'Calculator'});
           const breakdown=nav.getByRole('tab',{name:'Breakdown'});
@@ -86,7 +95,15 @@ try {
             label+' tab switching preserves inputs and calculated output');
           const inputFont=await page.locator(fixture.field).evaluate(el=>getComputedStyle(el).fontSize);
           check(viewport.width>760 || parseFloat(inputFont)>=16,label+' no mobile Safari input zoom');
-          if (fixture.route==='/tools/cartridge-formulation/') {
+          if (fixture.route==='/tools/cartridge-formulation/'||fixture.route==='/tools/extract-formulation/') {
+            const isExtract=fixture.route.includes('/extract-');
+            const companion=page.locator('.conversion-companion a');
+            check(await companion.count()===1,label+' has a counterpart route link');
+            check((await companion.getAttribute('href'))?.includes(isExtract?'cartridge-formulation':'extract-formulation'),
+              label+' counterpart route resolves to the correct formulation mode');
+            check(await page.locator('h1').innerText()=== (isExtract?'Extract formulation':'Cartridge formulation'),
+              label+' mode-specific page heading');
+            check(await page.locator('#cart-transfer-loss').inputValue()==='0',label+' transfer-loss field supports zero baseline');
             // Exercise a real multi-component input bill of materials, not merely its math helper.
             await studio.getByRole('button',{name:'Mixed cannabinoids'}).click();
             const weighOut=studio.locator('.calculator-app-overview .cartridge-bom');
@@ -141,8 +158,24 @@ try {
             check(compactGeometry.scroll<=compactGeometry.width+1,
               label+' staged breakdown avoids horizontal overflow',compactGeometry);
             const finishedHeader=await studio.locator('.formula-box .small-label').textContent();
-            check(finishedHeader?.includes('Finished batch total'),
+            check(finishedHeader?.includes('Gross finished batch total'),
               label+' starting and finished batch totals are explicitly distinguished',finishedHeader);
+            await calculate.click();
+            const initialStarting=Number((await studio.locator('.calculator-app-kpi-value').innerText()).replace(/[^0-9.-]/g,''));
+            await page.locator('#cart-transfer-loss').fill('7.5');
+            await page.waitForFunction(before=>{
+              const text=document.querySelector('.calculator-app-kpi-value')?.textContent||'';
+              return Number(text.replace(/[^0-9.-]/g,''))>before+0.001;
+            },initialStarting,{timeout:8000});
+            check(Number((await studio.locator('.calculator-app-kpi-value').innerText()).replace(/[^0-9.-]/g,''))>initialStarting,
+              label+' transfer loss increases required starting mass');
+            await breakdown.click();
+            const lossSummary=await studio.locator('.calculator-app-details .cartridge-bom').evaluate(root=>{
+              const value=stage=>Number((root.querySelector('[data-stage="'+stage+'"] strong,[data-stage="'+stage+'"] dd')?.textContent||'').replace(/[^0-9.-]/g,''));
+              return {gross:value('final'),loss:value('transfer-loss'),recovered:value('recoverable')};
+            });
+            check(Math.abs(lossSummary.gross-lossSummary.loss-lossSummary.recovered)<0.003&&lossSummary.loss>0,
+              label+' transfer loss reconciles pre-transfer gross and recoverable net',lossSummary);
             await calculate.click();
             await studio.getByRole('button',{name:'Available batch'}).click();
             check(await studio.locator('.calculator-app-overview .cartridge-bom').count()===1,
@@ -152,6 +185,17 @@ try {
               label+' available-batch mode retains breakdown weigh-out');
             check(await studio.locator('.calculator-app-details [data-stage="pre-terpene-finished"]').count()===1,
               label+' available-batch mode retains post-decarb pre-terpene subtotal');
+            await companion.click();
+            await page.waitForFunction(target=>location.pathname.includes(target),
+              isExtract?'cartridge-formulation':'extract-formulation',{timeout:8000});
+            await page.waitForFunction(expected=>document.querySelector('h1')?.textContent?.trim()===expected,
+              isExtract?'Cartridge formulation':'Extract formulation',{timeout:8000});
+            check(await page.locator('h1').innerText()===(isExtract?'Cartridge formulation':'Extract formulation'),
+              label+' counterpart route is navigable without a duplicate calculator engine');
+            await page.waitForFunction(()=>document.querySelector('#cart-transfer-loss')?.value==='7.5',
+              null,{timeout:8000});
+            check(await page.locator('#cart-transfer-loss').inputValue()==='7.5',
+              label+' both formulation entry routes preserve the same saved transfer-loss assumptions');
           }
           if(fixture.route==='/tools/max-pressure/') {
             await nav.getByRole('tab',{name:'Heatmap'}).click();

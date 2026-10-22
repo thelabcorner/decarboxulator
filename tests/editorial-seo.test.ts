@@ -22,7 +22,7 @@ const EMPTY_PROMISES = /\b(?:delve|foster|leverage|utilize|facilitate|empower|st
 
 describe('scientific editorial and search copy', () => {
   it('separates concise in-app workbench headings from route-specific search descriptions', () => {
-    expect(TOOLS).toHaveLength(11);
+    expect(TOOLS).toHaveLength(12);
     expect(new Set(TOOLS.map(tool => tool.heading)).size).toBe(TOOLS.length);
     expect(new Set(TOOLS.map(tool => tool.description)).size).toBe(TOOLS.length);
     for (const tool of TOOLS) {
@@ -45,6 +45,7 @@ describe('scientific editorial and search copy', () => {
     expect(byId['pressure']).toMatch(/not a vessel rating|safe operating limit/i);
     expect(byId['tracker']).toMatch(/weight loss alone cannot confirm/i);
     expect(byId['cartridge']).toMatch(/starting and finished masses/i);
+    expect(byId['extract']).toMatch(/extract blends|extract/i);
   });
 
   it('uses grounded, direct copy without banned hype in authored metadata and FAQs', () => {

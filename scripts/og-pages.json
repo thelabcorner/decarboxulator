@@ -7,7 +7,7 @@
       "Calculator studio"
     ],
     "description": "Conversion, batch yields, mass-loss analysis, edible and cartridge formulas, gas pressure and tracking.",
-    "value": "11",
+    "value": "12",
     "valueLabel": "CALCULATOR ROUTES",
     "input": "THCa + parameters",
     "output": "Model-dependent results",
@@ -157,6 +157,20 @@
     "input": "Target fill + ratios",
     "output": "Ingredient starting mass",
     "detail": "EXPLICIT ACID TREATMENT"
+  },
+  {
+    "path": "/tools/extract-formulation",
+    "section": "FORMULATION / EXTRACT BLENDS",
+    "title": [
+      "Extract",
+      "formulation"
+    ],
+    "description": "Calculate extract blend ratios, theoretical conversion, material transfer losses and recovered batch yield.",
+    "value": "mR",
+    "valueLabel": "RECOVERABLE BLEND MASS",
+    "input": "Batch portions + ratio",
+    "output": "Net finished extract",
+    "detail": "TRANSFER AND CO2 LOSSES"
   },
   {
     "path": "/faq",

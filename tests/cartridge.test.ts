@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { calculateCartridge, calculateCartridgeFromInput, consolidateCompounds, consolidateStartingCompounds, summarizeCartridgeStages } from '../src/lib/cartridge';
 import { CONVERSION_RATIO, CO2_RATIO, trackerSetup, trackerSnapshot } from '../src/lib/decarb';
+import { validWorkspaceValue } from '../src/lib/workspacePayload';
 
 describe('cartridge formulation', () => {
   it('returns null for invalid inputs', () => {
@@ -189,6 +190,60 @@ describe('cartridge formulation', () => {
           expect(s.co2ReleasedG).toBeCloseTo(0,10);
         }
       }
+    }
+  });
+  it('backsolves target fills through independent stoichiometric and transfer losses', () => {
+    const rows=[{type:'THCa' as const,parts:80},{type:'CBD' as const,parts:22},{type:'Terpenes' as const,parts:5}];
+    const baseline=calculateCartridge(rows,8,1.05,'convert')!;
+    const result=calculateCartridge(rows,8,1.05,'convert',5)!;
+    expect(result.transferLossPercent).toBe(5);
+    expect(result.totalInputWeightG).toBeCloseTo(baseline.totalInputWeightG/0.95,10);
+    expect(result.totalFinalWeightG).toBeCloseTo(8.4/0.95,10);
+    expect(result.transferLossG).toBeCloseTo(result.totalFinalWeightG*0.05,10);
+    expect(result.recoverableWeightG).toBeCloseTo(8.4,10);
+    expect(result.effectiveCarts).toBe(8);
+    const s=summarizeCartridgeStages(result.compounds);
+    expect(result.totalInputWeightG-result.totalFinalWeightG).toBeCloseTo(s.co2ReleasedG,10);
+    expect(s.grossStartingG).toBeCloseTo(result.totalInputWeightG,10);
+    expect(s.finalBlendG-result.transferLossG).toBeCloseTo(result.recoverableWeightG,10);
+    expect(s.preTerpeneStartingG+s.terpeneAdditionG).toBeCloseTo(s.grossStartingG,10);
+  });
+  it('subtracts transfer loss from available-batch yield and complete portions', () => {
+    const rows=[{type:'THCa' as const,parts:50},{type:'CBDa' as const,parts:25},
+      {type:'CBD' as const,parts:20},{type:'Terpenes' as const,parts:5}];
+    const baseline=calculateCartridgeFromInput(rows,10,1,'convert',0)!;
+    const lossy=calculateCartridgeFromInput(rows,10,1,'convert',13)!;
+    expect(lossy.totalInputWeightG).toBeCloseTo(10,10);
+    expect(lossy.totalFinalWeightG).toBeCloseTo(baseline.totalFinalWeightG,10);
+    expect(lossy.transferLossG).toBeCloseTo(lossy.totalFinalWeightG*0.13,10);
+    expect(lossy.recoverableWeightG).toBeCloseTo(lossy.totalFinalWeightG*0.87,10);
+    expect(lossy.effectiveCarts).toBe(Math.floor(lossy.recoverableWeightG+1e-10));
+    expect(lossy.effectiveCarts).toBeLessThanOrEqual(baseline.effectiveCarts);
+    lossy.acidBreakdown.forEach((entry,i)=>{
+      expect(entry.inputG).toBeCloseTo(baseline.acidBreakdown[i].inputG,10);
+      expect(entry.outputG).toBeCloseTo(baseline.acidBreakdown[i].outputG,10);
+    });
+    lossy.compounds.forEach((compound,i)=>{
+      expect(compound.inputWeightG).toBeCloseTo(baseline.compounds[i].inputWeightG,10);
+      expect(compound.finalWeightG).toBeCloseTo(baseline.compounds[i].finalWeightG,10);
+      expect(compound.finalPct).toBeCloseTo(baseline.compounds[i].finalPct,10);
+    });
+  });
+  it('preserves 0% behavior and rejects invalid transfer loss values', () => {
+    const rows=[{type:'CBD' as const,parts:85},{type:'Terpenes' as const,parts:15}];
+    expect(calculateCartridge(rows,10,1,'retain',0)).toEqual(calculateCartridge(rows,10,1,'retain'));
+    const lossy=calculateCartridge(rows,10,1,'retain',20)!;
+    expect(lossy.totalInputWeightG).toBeCloseTo(12.5,10);
+    expect(lossy.totalFinalWeightG).toBeCloseTo(12.5,10);
+    expect(lossy.recoverableWeightG).toBeCloseTo(10,10);
+    expect(lossy.transferLossG).toBeCloseTo(2.5,10);
+    for(const invalid of [100,-0.01,Infinity,NaN]) {
+      expect(calculateCartridge(rows,10,1,'retain',invalid)).toBeNull();
+      expect(calculateCartridgeFromInput(rows,10,1,'retain',invalid)).toBeNull();
+    }
+    expect(validWorkspaceValue('transferLoss','5.25','0')).toBe(true);
+    for(const invalid of ['100','-1','NaN','Infinity','99.999','']) {
+      expect(validWorkspaceValue('transferLoss',invalid,'0')).toBe(false);
     }
   });
   it('converts THCa regardless of coexisting neutral THC', () => {

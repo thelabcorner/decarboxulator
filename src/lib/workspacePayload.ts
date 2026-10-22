@@ -70,6 +70,7 @@ export function validWorkspaceValue(key: string, proposed: unknown, initial: str
   if (key === 'tracking' || key === 'autoBalance') return proposed === 'yes' || proposed === 'no';
   if (key === 'trackerMode') return proposed === 'manual' || proposed === 'percentage';
   if (key === 'batchMode') return proposed === 'target' || proposed === 'available';
+  if (key === 'transferLoss') return proposed.length <= 40 && parseAmount(proposed,{min:0,max:99.99}).value !== null;
   if (key === 'acidTreatment') return proposed === 'convert' || proposed === 'retain';
   if (key === 'temp') return proposed.length <= 40 &&
     /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i.test(proposed) &&

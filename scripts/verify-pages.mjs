@@ -26,7 +26,7 @@ try {
    const routes=[
      '', 'tools/thca-to-thc/', 'tools/thc-to-thca/', 'tools/batch-yield/',
      'tools/thca-percentage/', 'tools/edible-dosage/', 'tools/max-pressure/',
-     'tools/decarb-tracker/', 'tools/cartridge-formulation/', 'learn/decarboxylation-math/',
+      'tools/decarb-tracker/', 'tools/cartridge-formulation/', 'tools/extract-formulation/', 'learn/decarboxylation-math/',
    ];
   for(const route of routes) {
     const response=await page.goto(base+route,{waitUntil:'networkidle'});

@@ -1,5 +1,5 @@
 export type Faq = { question: string; answer: string };
-export type ToolId = 'conversion' | 'reverse-conversion' | 'batch' | 'analysis' | 'edibles' | 'pressure' | 'tracker' | 'pressure-tracker' | 'cartridge' | 'scale-resolution' | 'gauge-resolution';
+export type ToolId = 'conversion' | 'reverse-conversion' | 'batch' | 'analysis' | 'edibles' | 'pressure' | 'tracker' | 'pressure-tracker' | 'cartridge' | 'extract' | 'scale-resolution' | 'gauge-resolution';
 
 /** Indexable questions remain in SSR markup; native disclosures minimize workspace clutter. */
 export const TOOL_QUESTIONS: Record<ToolId, readonly Faq[]> = {
@@ -94,6 +94,18 @@ export const TOOL_QUESTIONS: Record<ToolId, readonly Faq[]> = {
       answer: 'Parts set relative starting ingredient masses. Two parts THC and one part terpene describe a 2:1 starting-mass ratio, before any modeled THCa conversion loss.' },
     { question: 'Do the composition flags predict crystallization?',
       answer: 'No. The flags are qualitative checks of entered composition. They do not measure solubility, predict nucleation or establish stability through temperature changes.' },
+    { question: 'Can I use this calculator for extract blends rather than cartridges?',
+      answer: 'Yes. Both modes use the same formulation and mass-balance calculations. Switch to Extract formulation for portion and extract-batch terminology, or keep Cartridge formulation for fill-oriented labels. No ingredients or numerical assumptions change between modes.' },
+    { question: 'How does transfer loss affect starting mass and available yield?',
+      answer: 'Transfer loss is the entered percentage of the completed blend lost during handling after decarboxylation and terpene addition. Target mode scales the starting ingredient weights upward so recovered mass can meet the desired fill target. Available-batch mode reduces recoverable yield and complete cartridge count. Reaction CO2 loss is modeled separately. The default is 0%.' },
+  ],
+  extract: [
+    { question: 'Can this calculator plan extract formulations without cartridges?',
+      answer: 'Yes. Extract mode uses exactly the same calculation engine as Cartridge mode with portion and extract-blend terminology. Set one portion to the desired batch mass for a single extract blend, or divide into multiple portions. Recipes and mass assumptions are shared between both routes.' },
+    { question: 'What is the difference between gross finished mass and recoverable mass?',
+      answer: 'Gross finished mass is the theoretical composition after any modeled decarboxylation, before handling loss. Recoverable mass is the gross mass multiplied by one minus the entered transfer loss percentage. Terpene addition is accounted for separately from the pre-terpene cannabinoid charge.' },
+    { question: 'Does transfer loss represent evaporation or incomplete decarboxylation?',
+      answer: 'No. Transfer loss is an independently entered estimate of proportional handling loss after the blend is made. It does not estimate terpene evaporation, incomplete conversion, degradation, or phase-dependent losses. The same assumption is used in both extract and cartridge modes.' },
   ],
 };
 
