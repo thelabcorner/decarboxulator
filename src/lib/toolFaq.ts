@@ -56,6 +56,8 @@ export const TOOL_QUESTIONS: Record<ToolId, readonly Faq[]> = {
       answer: 'Use actual free gas headspace, not nominal vessel capacity. If unknown, select Estimate and enter the internal vessel capacity minus the material and other contents that truly displace gas. The mass/density method needs a defensible true displacement density; gas-connected pores in loosely packed solids are not automatically excluded from headspace.' },
     { question: 'Why are gauge and absolute pressure different?',
       answer: 'Absolute pressure is referenced to vacuum. Gauge pressure subtracts the assumed surrounding atmospheric pressure. The same gas state can therefore have two different numerical pressure readings.' },
+    { question: 'Can I start the vessel at atmospheric pressure or under vacuum?',
+      answer: 'Yes. The Initial sealed-gas pressure section accepts PSIA or signed PSIG relative to the entered outside ambient pressure. At ambient sets the sealed gas equal to the outside pressure; values below ambient PSIA, or negative PSIG, represent an initial vacuum. The 50% ambient preset is an illustration, not a prescribed setting. Only the initial gas inventory of a sealed vessel is modeled, not a pump maintaining vacuum throughout the process.' },
     { question: 'Can a jar be considered safe because the predicted pressure is low?',
       answer: 'No. The equation does not evaluate glass strength, closures, temperature gradients or failure modes. Ordinary jars are not pressure-rated processing equipment.' },
   ],

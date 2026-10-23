@@ -53,6 +53,18 @@ export function PressureWorkbench(){
   };
   const sealAbsolute = parsed.ambient.value!==null && parsed.sealPressure.value!==null
     ? asAbsolutePsi(parsed.sealPressure.value,sealPressureBasis,parsed.ambient.value):null;
+  const startingCondition=sealAbsolute===null||parsed.ambient.value===null?'invalid'
+    :Math.abs(sealAbsolute-parsed.ambient.value)<1e-6?'atmospheric'
+    :sealAbsolute<parsed.ambient.value?'vacuum':'pressurized';
+  function setInitialPressureFraction(fraction:number) {
+    if(parsed.ambient.value===null)return;
+    ws.setFields({sealPressureBasis:'psia',sealPressure:display(parsed.ambient.value*fraction)});
+  }
+  function changeInitialPressureBasis(basis:'psia'|'psig') {
+    ws.setFields({sealPressureBasis:basis,
+      sealPressure:sealAbsolute===null?sealPressure:
+        display(basis==='psig'?sealAbsolute-parsed.ambient.value!:sealAbsolute)});
+  }
   const inputsValid=Object.values(parsed).every(p=>p.value!==null) && sealAbsolute!==null &&
     (ws.values.co2Dissolution==='off'||dissolution.value!==null);
   const modelInput=inputsValid?{
@@ -149,6 +161,42 @@ export function PressureWorkbench(){
           <Co2DissolutionEditor fields={ws.values} onChange={(key,value)=>ws.setFields({[key]:value})}/>
           <HeadspaceEditor manualId="pressure-vol" fields={ws.values} sampleMassG={weight} manualFloz={volume}
             onField={(key,value)=>ws.setFields({[key]:value})} onManual={v=>ws.setField('volume',v)}/>
+          <section className="pressure-starting" aria-label="Initial sealed gas pressure">
+            <div className="pressure-starting-heading">
+              <strong>Initial sealed-gas pressure</strong>
+              <span data-condition={startingCondition}>{startingCondition==='vacuum'?'Under vacuum'
+                :startingCondition==='atmospheric'?'At ambient'
+                :startingCondition==='pressurized'?'Above ambient':'Check pressure'}</span>
+            </div>
+            <div className="pressure-starting-presets" role="group" aria-label="Initial pressure examples">
+              <button type="button" onClick={()=>setInitialPressureFraction(1)}
+                aria-pressed={startingCondition==='atmospheric'}>At ambient</button>
+              <button type="button" onClick={()=>setInitialPressureFraction(0.5)}
+                aria-pressed={sealAbsolute!==null&&parsed.ambient.value!==null&&
+                  Math.abs(sealAbsolute-parsed.ambient.value/2)<1e-6}>50% ambient · example vacuum</button>
+            </div>
+            <Selector label="Initial pressure units" value={sealPressureBasis}
+              onChange={changeInitialPressureBasis}
+              options={[{value:'psia',label:'Absolute · PSIA'},{value:'psig',label:'Gauge / vacuum · PSIG'}]}/>
+            <FieldGrid>
+              <NumberField id="pressure-start-pressure" label="Pressure when sealed" value={sealPressure}
+                onChange={v=>ws.setField('sealPressure',v)} suffix={sealPressureBasis.toUpperCase()}
+                min={sealPressureBasis==='psia'?0:-1e9}
+                error={parsed.sealPressure.error??(sealAbsolute===null?'Absolute pressure cannot be negative':null)}
+                hint="Below ambient PSIA = vacuum; negative PSIG = vacuum."/>
+              <NumberField id="pressure-ambient" label="Outside ambient pressure" value={ambientPsi}
+                onChange={v=>ws.setField('ambientPsi',v)} suffix="PSIA"
+                error={parsed.ambient.error} min={0.000000001}/>
+            </FieldGrid>
+            <p className="pressure-starting-readout" aria-live="polite">
+              {sealAbsolute===null||parsed.ambient.value===null?'Enter a valid nonnegative absolute starting pressure.'
+                :`${formatNumber(sealAbsolute,3)} PSIA · ${formatNumber(sealAbsolute-parsed.ambient.value,3)} PSIG at sealing`}
+            </p>
+            <p className="pressure-starting-note">
+              Models a closed vessel initially sealed at this pressure. A pump continuously
+              maintaining vacuum or a vented vessel is not modeled. The 50% example is illustrative, not a recommended setpoint.
+            </p>
+          </section>
           <CannabinoidSelector context="pressure" value={validCannabinoid}
              onChange={v=>ws.setField('cannabinoid',v)}/>
           {validCannabinoid!=='THCa'&&<Notice>Stoichiometry uses {chem.acid} → {chem.neutral} + CO2 (Mᴀ {chem.acidMw} g/mol). This changes the assumed CO2 amount; the model does not predict the conversion rate of {chem.acid}.</Notice>}
@@ -163,23 +211,9 @@ export function PressureWorkbench(){
           <details className="pressure-assumptions">
             <summary><Wind size={14}/> Gas / reaction assumptions <span>Editable</span></summary>
             <p>These defaults define the thought experiment. They are not measurements of your actual vessel or a validated operating procedure.</p>
-            <FieldGrid>
-              <NumberField id="pressure-seal" label="Temperature when sealed" value={sealTemp}
-                onChange={v=>ws.setField('sealTemp',v)} suffix={`°${unit}`} error={parsed.seal.error}
-                min={unit==='F'?-459.6699:-273.1499}/>
-              <NumberField id="pressure-ambient" label="Outside ambient pressure" value={ambientPsi}
-                onChange={v=>ws.setField('ambientPsi',v)} suffix="PSIA"
-                error={parsed.ambient.error} min={0.000000001}/>
-            </FieldGrid>
-            <Selector label="Initial pressure reference" value={sealPressureBasis}
-              onChange={v=>ws.setFields({sealPressureBasis:v,
-                sealPressure:sealAbsolute===null?sealPressure:display(v==='psig'?sealAbsolute-parsed.ambient.value!:sealAbsolute)})}
-              options={[{value:'psia',label:'Absolute (PSIA)'},{value:'psig',label:'Gauge / vacuum (PSIG)'}]}/>
-            <NumberField id="pressure-start-pressure" label="Initial gas pressure when sealed"
-              value={sealPressure} onChange={v=>ws.setField('sealPressure',v)}
-              suffix={sealPressureBasis.toUpperCase()} min={sealPressureBasis==='psia'?0:-1e9}
-              error={sealAbsolute===null?'Absolute pressure cannot be negative':parsed.sealPressure.error}
-              hint="Vacuum is negative PSIG or a positive PSIA value below ambient."/>
+            <NumberField id="pressure-seal" label="Temperature when sealed" value={sealTemp}
+              onChange={v=>ws.setField('sealTemp',v)} suffix={`°${unit}`} error={parsed.seal.error}
+              min={unit==='F'?-459.6699:-273.1499}/>
             <NumberField id="pressure-conversion" label={`Assumed ${chem.acid} conversion`} value={conversionPct}
               onChange={v=>ws.setField('conversionPct',v)} suffix="%"
               error={parsed.conversion.error} max={100}

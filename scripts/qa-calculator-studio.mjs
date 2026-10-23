@@ -240,6 +240,51 @@ try {
         const newVol=await page.locator('#pressure-vol').inputValue();
         check(oldTemp!==newTemp||oldVol!==newVol,
           pressureLabel+' selected scenario updates actual calculator fields');
+        // Vacuum and atmospheric baselines must be discoverable without opening
+        // the advanced assumptions disclosure. The field must propagate to the
+        // gauge KPI and all 49 independent pressure scenario evaluations.
+        const startPressure=pressure.locator('#pressure-start-pressure');
+        const ambientPressure=pressure.locator('#pressure-ambient');
+        const startPresets=pressure.getByRole('group',{name:'Initial pressure examples'});
+        const atmPreset=startPresets.getByRole('button',{name:'At ambient'});
+        const vacuumPreset=startPresets.getByRole('button',{name:/50% ambient/});
+        check(await startPressure.isVisible()&&await ambientPressure.isVisible(),
+          pressureLabel+' initial PSIA and reference ambient are top-level editable fields');
+        await atmPreset.click();
+        const ambientValue=Number(await ambientPressure.inputValue());
+        const atmosphereGauge=Number((await gauge.innerText()).replace(/[^0-9.-]/g,''));
+        const initialCo2=await pressure.locator('.pressure-kpi-secondary>div').nth(1).innerText();
+        check(Math.abs(Number(await startPressure.inputValue())-ambientValue)<0.0001,
+          pressureLabel+' atmospheric preset matches current ambient');
+        await vacuumPreset.click();
+        const vacuumGauge=Number((await gauge.innerText()).replace(/[^0-9.-]/g,''));
+        const vacuumValue=Number(await startPressure.inputValue());
+        check(Math.abs(vacuumValue-ambientValue/2)<0.0001&&vacuumGauge<atmosphereGauge,
+          pressureLabel+' vacuum preset lowers trapped-gas and total pressure',
+          {vacuumValue,ambientValue,vacuumGauge,atmosphereGauge});
+        check(await pressure.locator('.pressure-starting-heading [data-condition="vacuum"]').count()===1,
+          pressureLabel+' explains selected initial condition as vacuum');
+        check(await pressure.locator('.pressure-kpi-secondary>div').nth(1).innerText()===initialCo2,
+          pressureLabel+' initial vacuum does not change stoichiometric CO2 pressure');
+        check(await pressure.locator('.pressure-starting-readout').innerText()!=='' &&
+          await pressure.locator('.pressure-map-cell').count()===49,
+          pressureLabel+' vacuum model retains 49 calculated cells and dual pressure readout');
+        await pressure.getByRole('group',{name:'Initial pressure units'})
+          .getByRole('button',{name:/Gauge \/ vacuum/}).click();
+        const signedGauge=Number(await startPressure.inputValue());
+        check(Math.abs(signedGauge-(vacuumValue-ambientValue))<0.0001&&signedGauge<0,
+          pressureLabel+' unit switch preserves physical pressure as negative PSIG',
+          {vacuumValue,signedGauge,ambientValue});
+        check(Math.abs(Number((await gauge.innerText()).replace(/[^0-9.-]/g,''))-vacuumGauge)<0.11,
+          pressureLabel+' absolute/gauge input conversion preserves modeled output');
+        await startPressure.fill(String(-ambientValue-1));
+        check(await startPressure.getAttribute('aria-invalid')==='true'&&
+          await pressure.locator('.pressure-field-empty').count()===1,
+          pressureLabel+' rejects negative absolute pressure rather than drawing invalid cells');
+        await atmPreset.click();
+        check(await startPressure.getAttribute('aria-invalid')==='false'&&
+          await pressure.locator('.pressure-map-cell').count()===49,
+          pressureLabel+' atmospheric shortcut recovers from invalid vacuum entry');
         const pressureGeometry=await page.evaluate(()=>{
           const stage=document.querySelector('.workspace-stage')?.getBoundingClientRect();
           const panel=document.querySelector('.pressure-workbench')?.getBoundingClientRect();

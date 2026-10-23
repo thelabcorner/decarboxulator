@@ -30,6 +30,20 @@ describe('independent pressure physics and study-field validation',()=>{
       for(let j=1;j<7;j++)expect(grid[j][i].pCo2Psi).toBeLessThan(grid[j-1][i].pCo2Psi);
     }
   });
+  it('recomputes all heatmap cells from the selected starting vacuum instead of default atmospheric pressure',()=>{
+    const atAmbient=buildPressureHeatmap({...baseline,sealPsi:P_ATM_PSI});
+    const underVacuum=buildPressureHeatmap({...baseline,sealPsi:4.5});
+    const factor=toKelvin(baseline.tempValue,'F')/toKelvin(baseline.sealTempF,'F');
+    for(let r=0;r<7;r++)for(let c=0;c<7;c++){
+      const a=atAmbient[r][c], v=underVacuum[r][c];
+      near(a.pCo2Psi,v.pCo2Psi,1e-8);
+      near(a.pAbsPsi-v.pAbsPsi,(P_ATM_PSI-4.5)*
+        toKelvin(a.tempValue,'F')/toKelvin(baseline.sealTempF,'F'));
+      near(a.pGaugePsi-v.pGaugePsi,a.pAbsPsi-v.pAbsPsi);
+    }
+    expect(factor).toBeGreaterThan(1);
+    near(underVacuum[3][3].pAbsPsi,computePressure({...baseline,sealPsi:4.5})!.pAbsPsi);
+  });
   it('preserves absolute physical scenarios after changing temperature units',()=>{
     const fGrid=buildPressureHeatmap(baseline);
     const cGrid=buildPressureHeatmap({...baseline,tempUnit:'C',

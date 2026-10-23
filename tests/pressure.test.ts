@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { computePressure, buildHeatmap, toKelvin, convertTemp, P_ATM_PSI, R_SI, FLOZ_TO_M3, PSI_PER_PA, HEADSPACE_FACTORS, PRESSURE_OFFSETS, PRESSURE_CENTER_INDEX } from '../src/lib/pressure';
 import { MW_THCA, MW_CO2, CONVERSION_RATIO } from '../src/lib/decarb';
+import { asAbsolutePsi, parsePressureReading } from '../src/lib/pressureTracker';
 
 describe('pressure model', () => {
   it('converts temperatures to Kelvin correctly', () => {
@@ -57,6 +58,40 @@ describe('pressure model', () => {
   it('gauge pressure = absolute minus ambient', () => {
     const result = computePressure({ weightG: 28, thcaPct: 85, tempValue: 240, tempUnit: 'F', headspaceFloz: 16 });
     expect(result!.pGaugePsi).toBeCloseTo(result!.pAbsPsi - P_ATM_PSI, 8);
+  });
+
+  it('distinguishes atmospheric and evacuated sealed-headspace pressure from produced CO2', () => {
+    const common={weightG:28,thcaPct:85,tempValue:240,tempUnit:'F' as const,
+      headspaceFloz:16,sealTempF:70,ambientPsi:P_ATM_PSI};
+    const atmosphere=computePressure({...common,sealPsi:P_ATM_PSI})!;
+    const vacuum=computePressure({...common,sealPsi:P_ATM_PSI/2})!;
+    const deepVacuum=computePressure({...common,sealPsi:0})!;
+    const thermalFactor=toKelvin(240,'F')/toKelvin(70,'F');
+    expect(atmosphere.pAirPsi).toBeCloseTo(P_ATM_PSI*thermalFactor,9);
+    expect(vacuum.pAirPsi).toBeCloseTo(P_ATM_PSI*thermalFactor/2,9);
+    expect(deepVacuum.pAirPsi).toBe(0);
+    expect(vacuum.pCo2Psi).toBeCloseTo(atmosphere.pCo2Psi,12);
+    expect(deepVacuum.pCo2Psi).toBeCloseTo(atmosphere.pCo2Psi,12);
+    expect(atmosphere.pAbsPsi-vacuum.pAbsPsi).toBeCloseTo(P_ATM_PSI*thermalFactor/2,9);
+    expect(vacuum.pGaugePsi).toBeCloseTo(vacuum.pAbsPsi-P_ATM_PSI,9);
+    const vacuumNoCO2=computePressure({...common,sealPsi:P_ATM_PSI/2,efficiency:0})!;
+    expect(vacuumNoCO2.pGaugePsi).toBeCloseTo(P_ATM_PSI*(thermalFactor/2-1),10);
+  });
+  it('supports equivalent vacuum values in PSIA and signed PSIG without negative absolutes', () => {
+    const ambient=P_ATM_PSI;
+    const measuredAbsolute=3.5;
+    const measuredGauge=measuredAbsolute-ambient;
+    expect(parsePressureReading(String(measuredGauge)).value).toBeCloseTo(measuredGauge,12);
+    expect(asAbsolutePsi(measuredAbsolute,'psia',ambient)).toBeCloseTo(measuredAbsolute,12);
+    expect(asAbsolutePsi(measuredGauge,'psig',ambient)).toBeCloseTo(measuredAbsolute,12);
+    expect(asAbsolutePsi(-ambient,'psig',ambient)).toBeCloseTo(0,10);
+    expect(asAbsolutePsi(-ambient-0.001,'psig',ambient)).toBeNull();
+    expect(asAbsolutePsi(-0.1,'psia',ambient)).toBeNull();
+    expect(asAbsolutePsi(1,'unknown' as 'psia',ambient)).toBeNull();
+    const model={weightG:6,thcaPct:0,tempValue:150,tempUnit:'F' as const,
+      headspaceFloz:16,sealTempF:70,ambientPsi:ambient};
+    expect(computePressure({...model,sealPsi:asAbsolutePsi(measuredGauge,'psig',ambient)!})!.pAbsPsi)
+      .toBeCloseTo(computePressure({...model,sealPsi:measuredAbsolute})!.pAbsPsi,12);
   });
 
   it('reports physical pressure without claiming a safety classification', () => {
